@@ -23,7 +23,7 @@ on:
 env:
   PROJECT_NAME: "pi_portal"
   SELECTED_PYPI_REPOSITORY: "test"
-  USERNAME: "niall-byrne"
+  USERNAME: "pi-portal"
 
 jobs:
   release:

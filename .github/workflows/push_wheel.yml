@@ -12,7 +12,7 @@ on:
 
 env:
   PROJECT_NAME: "pi_portal"
-  USERNAME: "niall-byrne"
+  USERNAME: "pi-portal"
   VERBOSE_NOTIFICATIONS: 0
 
 jobs:

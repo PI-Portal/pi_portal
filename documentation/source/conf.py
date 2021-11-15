@@ -9,6 +9,8 @@
 import os
 import sys
 
+os.environ["SPHINX"] = "1"
+
 if os.path.exists('/app'):
   sys.path.insert(0, os.path.abspath('/app'))
 if os.path.exists('../../pi_portal'):
@@ -37,6 +39,8 @@ extensions = [
 # Exclude tests from sphinx_autopackagesummary here
 autosummary_mock_imports = [
     "pi_portal.tests",
+    "pi_portal.modules.tests",
+    "pi_portal.modules.tests.slack_cli.tests",
 ]
 
 source_suffix = {

@@ -35,19 +35,25 @@
   [tool.poetry]
     authors = ["Niall Byrne <niall@niallbyrne.ca>"]
     description = "Raspberry PI Door Logger"
-    documentation = "https://github.com/niall-byrne/pi_portal/README.md"
+    documentation = "https://github.com/pi-portal/pi_portal/README.md"
     exclude = ["**/tests/*", "**/*.sh"]
-    homepage = "https://github.com/niall-byrne/pi_portal"
-    include = ["pi_portal/data/*"]
+    homepage = "https://github.com/pi-portal/pi_portal"
+    include = ["pi_portal/bin/*", "pi_portal/installation/**/*"]
     keywords = []
     license = "MPL-2.0"
     name = "pi_portal"
     readme = "README.md"
-    repository = "https://github.com/niall-byrne/pi_portal"
+    repository = "https://github.com/pi-portal/pi_portal"
     version = "0.0.1"
 
     [tool.poetry.dependencies]
+      boto3 = "^1.20.7"
+      click = "^8.0.3"
+      fake-rpi = "^0.7.1"
+      humanize = "^3.12.0"
       python = ">=3.7.0,<4.0.0"
+      requests = "^2.26.0"
+      slack-sdk = "^3.11.2"
 
       [tool.poetry.dependencies.pib_cli]
         extras = ["docs", "types"]
@@ -55,6 +61,11 @@
         version = "0.1.3"
 
     [tool.poetry.dev-dependencies]
+      fake-rpi = "^0.7.1"
+      freezegun = "^1.1.0"
+      pydocstyle = "^6.1.1"
+      types-freezegun = "^1.1.3"
+      types-requests = "^2.26.0"
 
     [tool.poetry.extras]
       docs = ["pib_cli"]
@@ -63,7 +74,7 @@
       include = "pi_portal"
 
     [tool.poetry.scripts]
-      pi_portal = "pi_portal.app:main"
+      pi_portal = "pi_portal.cli:cli"
 
   [tool.pylint]
 
@@ -94,7 +105,7 @@
     [tool.pylint.design]
       ignored-argument-names = "_.*"
       max-args = 5
-      max-attributes = 7
+      max-attributes = 8
       max-branches = 12
       max-locals = 15
       max-parents = 10

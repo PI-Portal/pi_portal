@@ -1,4 +1,4 @@
 Repository README.md
 ====================
 
-`pi_portal repository <https://github.com/niall-byrne/pi_portal>`_
+`pi_portal repository <https://github.com/pi-portal/pi_portal>`_

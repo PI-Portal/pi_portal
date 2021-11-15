@@ -56,6 +56,7 @@ RUN apt-get install -y              \
     --no-install-recommends         \
     curl                            \
     fish                            \
+    golang                          \
     golang-github-pelletier-go-toml \
     jq                              \
     openssh-client                  \
@@ -63,6 +64,9 @@ RUN apt-get install -y              \
     sudo                            \
     tig                             \
     vim
+
+# Install LOGZ IO Certificate
+RUN curl https://raw.githubusercontent.com/logzio/public-certificates/master/AAACertificateServices.crt --create-dirs -o /etc/pki/tls/certs/COMODORSADomainValidationSecureServerCA.crt
 
 # Install Git Leaks
 RUN curl --fail -sL "https://github.com/zricethezav/gitleaks/releases/download/${GITLEAKSVERSION}/gitleaks-linux-amd64"    \

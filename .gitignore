@@ -145,3 +145,10 @@ override.env
 
 # Autosummary Documentation
 documentation/source/codebase/pi_portal/_autosummary/
+
+# User Config Files
+local.config.json
+
+# Binaries
+pi_portal/bin
+
