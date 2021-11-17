@@ -19,13 +19,13 @@ class UserConfiguration:
   def __init__(self):
     self.user_config = {}
 
-  def load(self) -> Dict:
+  def load(self, file_name: str = "config.json") -> Dict:
     """Load the end user's configuration file."""
 
     if "SPHINX" in os.environ:
       return self.user_config
 
-    with open("config.json", "r", encoding="utf-8") as file_handle:
+    with open(file_name, "r", encoding="utf-8") as file_handle:
       self.user_config = json.load(file_handle)
 
     self.validate()

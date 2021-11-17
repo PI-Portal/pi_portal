@@ -3,12 +3,16 @@
 import os
 import pathlib
 
-import pi_portal
 from pi_portal import config
+from pi_portal.modules import config_file
 
 
-def installer(config_file: str):
+def installer(user_config_file: str):
   """Run the onboard installer."""
+
+  configuration = config_file.UserConfiguration()
+  user_config = configuration.load(user_config_file)
+  absolute_path = os.path.abspath(user_config_file)
 
   script_directory = pathlib.Path(
       os.path.dirname(__file__)
@@ -17,7 +21,7 @@ def installer(config_file: str):
   os.chdir(script_directory)
   os.system(  # nosec
       "sudo bash install.sh "
-      f"'{pi_portal.user_config['LOGZ_IO_CODE']}' "
+      f"'{user_config['LOGZ_IO_CODE']}' "
       f"'{config.SUPERVISOR_SOCKET_PATH}' "
-      f"'{config_file}'"
+      f"'{absolute_path}'"
   )
