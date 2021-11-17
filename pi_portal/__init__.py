@@ -2,4 +2,5 @@
 
 from pi_portal.modules import config_file
 
-user_config = config_file.load()
+configuration = config_file.UserConfiguration()
+user_config = configuration.load()
