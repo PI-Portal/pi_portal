@@ -5,18 +5,18 @@ from unittest import TestCase, mock
 
 from pi_portal import config
 from pi_portal.modules import motion, s3
-from pi_portal.modules.tests.fixtures import environment
+from pi_portal.modules.tests.fixtures import mock_state
 
 
 class TestMotion(TestCase):
   """Test the Motion class."""
 
-  @environment.patch
+  @mock_state.patch
   def setUp(self):
     self.motion_client = motion.Motion()
     self.motion_client.s3_client = mock.MagicMock()
 
-  @environment.patch
+  @mock_state.patch
   def test_initialization(self):
     motion_client = motion.Motion()
     self.assertEqual(

@@ -3,7 +3,7 @@
 from unittest import TestCase, mock
 
 from pi_portal.modules import slack_cli
-from pi_portal.modules.tests.fixtures import environment
+from pi_portal.modules.tests.fixtures import mock_state
 
 
 class TestSlackCLIHarness(TestCase):
@@ -11,7 +11,7 @@ class TestSlackCLIHarness(TestCase):
 
   __test__ = False
 
-  @environment.patch
+  @mock_state.patch
   def setUp(self):
     self.slack_client = mock.MagicMock()
     self.cli = slack_cli.SlackCLI(client=self.slack_client)

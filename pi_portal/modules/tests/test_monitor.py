@@ -5,19 +5,19 @@ from unittest import TestCase, mock
 
 from pi_portal import config
 from pi_portal.modules import monitor, slack
-from pi_portal.modules.tests.fixtures import environment
+from pi_portal.modules.tests.fixtures import mock_state
 
 
 class TestMonitorLogger(TestCase):
   """Test the Monitor class."""
 
-  @environment.patch
+  @mock_state.patch
   def setUp(self):
     self.monitor = monitor.Monitor()
     self.monitor.slack_client = mock.MagicMock()
     self.monitor.interval = 0.01
 
-  @environment.patch
+  @mock_state.patch
   def test_initialize(self):
     instance = monitor.Monitor()
     self.assertTrue(instance.running)
@@ -29,7 +29,7 @@ class TestMonitorLogger(TestCase):
     self.assertIsInstance(instance.log, logging.Logger)
     self.assertIsInstance(instance.slack_client, slack.Client)
 
-  @environment.patch
+  @mock_state.patch
   @mock.patch("RPi.GPIO.setup")
   def test_initialize_hardware(self, m_setup):
     instance = monitor.Monitor()

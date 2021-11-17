@@ -1,8 +1,8 @@
 """S3 Integration class."""
 
 import boto3
-import pi_portal
 from botocore.exceptions import ClientError
+from pi_portal.modules import state
 
 
 class S3BucketException(Exception):
@@ -13,7 +13,8 @@ class S3Bucket:
   """S3 integration class."""
 
   def __init__(self):
-    self.bucket_name = pi_portal.user_config['S3_BUCKET_NAME']
+    current_state = state.State()
+    self.bucket_name = current_state.user_config['S3_BUCKET_NAME']
     self.boto_client = boto3.client('s3')
 
   def upload(self, file_name: str):

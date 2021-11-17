@@ -24,7 +24,7 @@ class TestSlackCLI(TestSlackCLIHarness):
   def test_command_id(self):
     self.cli.command_id()
     self.cli.slack_client.send_message.assert_called_once_with(
-        f"ID: {self.cli.slack_client.log_uuid}"
+        f"ID: {self.cli.slack_client.config.log_uuid}"
     )
 
   def test_command_arm_not_running(self):

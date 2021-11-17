@@ -6,7 +6,7 @@ from unittest import TestCase, mock
 
 from pi_portal import config
 from pi_portal.modules import installer
-from pi_portal.modules.tests.fixtures import environment
+from pi_portal.modules.tests.fixtures import mock_state
 
 SCRIPT_DIRECTORY = pathlib.Path(
     os.path.dirname(__file__)
@@ -20,7 +20,7 @@ MOCK_CONFIG_FILE_CONTENT = {
 class TestInstaller(TestCase):
   """Test the installation/configuration module."""
 
-  @environment.patch
+  @mock_state.patch
   @mock.patch(installer.__name__ + ".os.system")
   @mock.patch(installer.__name__ + ".os.chdir")
   @mock.patch(installer.__name__ + ".config_file.UserConfiguration")

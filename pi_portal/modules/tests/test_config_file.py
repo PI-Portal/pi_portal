@@ -1,7 +1,6 @@
 """Test user configuration loader."""
 
 import json
-import os
 from unittest import TestCase, mock
 
 from pi_portal.modules import config_file
@@ -37,11 +36,6 @@ class TestUserConfigurationLoad(TestCase):
     result = self.configuration.load()
     self.assertEqual(result, MOCK_JSON)
     self.configuration.validate.assert_called_once_with()
-
-  @mock.patch.dict(os.environ, {"SPHINX": "1"}, clear=True)
-  def test_load_sphinx(self):
-    result = self.configuration.load()
-    self.assertEqual(result, {})
 
 
 class TestUserConfigurationValidate(TestCase):

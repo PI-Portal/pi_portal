@@ -3,7 +3,7 @@
 from unittest import TestCase, mock
 
 from pi_portal.modules import slack_cli, supervisor
-from pi_portal.modules.tests.fixtures import environment
+from pi_portal.modules.tests.fixtures import mock_state
 
 
 class TestSlackCLI(TestCase):
@@ -12,7 +12,7 @@ class TestSlackCLI(TestCase):
   def setUp(self):
     self.slack_client = mock.Mock()
 
-  @environment.patch
+  @mock_state.patch
   def test_initialize(self):
     cli = slack_cli.SlackCLI(client=self.slack_client)
     self.assertEqual(cli.prefix, "command_")

@@ -1,10 +1,17 @@
 """Slack Integration."""
 
-import pi_portal
-from pi_portal.modules import motion, slack_cli
+from pi_portal.modules import motion, slack_cli, state
 from pi_portal.modules.logger import LOG_UUID
 from slack_sdk import WebClient
 from slack_sdk.rtm_v2 import RTMClient
+
+
+class ClientConfiguration:
+  """Configuration for the Slack integration."""
+
+  log_uuid = LOG_UUID
+  interval = 1
+  upload_file_title = "Motion Upload"
 
 
 class Client:
@@ -13,14 +20,13 @@ class Client:
   retries = 5
 
   def __init__(self):
-    self.web = WebClient(token=pi_portal.user_config['SLACK_BOT_TOKEN'])
-    self.rtm = RTMClient(token=pi_portal.user_config["SLACK_BOT_TOKEN"])
-    self.channel = pi_portal.user_config['SLACK_CHANNEL']
-    self.channel_id = pi_portal.user_config['SLACK_CHANNEL_ID']
-    self.log_uuid = LOG_UUID
-    self.interval = 1
-    self.upload_file_title = "Motion Upload"
+    current_state = state.State()
+    self.web = WebClient(token=current_state.user_config['SLACK_BOT_TOKEN'])
+    self.rtm = RTMClient(token=current_state.user_config["SLACK_BOT_TOKEN"])
+    self.channel = current_state.user_config['SLACK_CHANNEL']
+    self.channel_id = current_state.user_config['SLACK_CHANNEL_ID']
     self.motion_client = motion.Motion()
+    self.config = ClientConfiguration()
 
   def handle_event(self, event: dict):
     """Process a validated event, and call any valid commands."""
@@ -51,7 +57,9 @@ class Client:
     for _ in range(0, self.retries):
       try:
         response = self.web.files_upload(
-            channels=self.channel, file=file_name, title=self.upload_file_title
+            channels=self.channel,
+            file=file_name,
+            title=self.config.upload_file_title,
         )
         return response
       finally:

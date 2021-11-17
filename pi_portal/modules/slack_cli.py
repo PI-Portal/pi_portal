@@ -56,7 +56,7 @@ class SlackCLI:
   def command_id(self):
     """Report the logger ID the bot is currently running with."""
 
-    self.slack_client.send_message(f"ID: {self.slack_client.log_uuid}")
+    self.slack_client.send_message(f"ID: {self.slack_client.config.log_uuid}")
 
   def command_arm(self):
     """Arm the security system."""

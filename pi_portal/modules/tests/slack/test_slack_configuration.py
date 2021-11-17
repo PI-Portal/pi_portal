@@ -1,31 +1,28 @@
-"""Test Slack Client Class."""
+"""Test Slack client configuration."""
 
 from unittest import TestCase, mock
 
 from pi_portal.modules import motion, slack
-from pi_portal.modules.logger import LOG_UUID
-from pi_portal.modules.tests.fixtures import environment
+from pi_portal.modules.tests.fixtures import mock_state
 
 
 class TestSlackClient(TestCase):
-  """Test the SlackClient class."""
+  """Test the ClientConfiguration class."""
 
-  @environment.patch
+  @mock_state.patch
   def setUp(self):
     self.slack_client = slack.Client()
     self.slack_client.motion_client = mock.MagicMock()
 
-  @environment.patch
+  @mock_state.patch
   def test_initialize(self):
     client = slack.Client()
-    self.assertEqual(client.web.token, environment.MOCK_TOKEN)
-    self.assertEqual(client.rtm.token, environment.MOCK_TOKEN)
-    self.assertEqual(client.channel, environment.MOCK_CHANNEL)
-    self.assertEqual(client.channel_id, environment.MOCK_CHANNEL_ID)
-    self.assertEqual(client.log_uuid, LOG_UUID)
-    self.assertEqual(client.interval, 1)
-    self.assertEqual(client.upload_file_title, "Motion Upload")
+    self.assertEqual(client.web.token, mock_state.MOCK_TOKEN)
+    self.assertEqual(client.rtm.token, mock_state.MOCK_TOKEN)
+    self.assertEqual(client.channel, mock_state.MOCK_CHANNEL)
+    self.assertEqual(client.channel_id, mock_state.MOCK_CHANNEL_ID)
     self.assertIsInstance(client.motion_client, motion.Motion)
+    self.assertIsInstance(client.config, slack.ClientConfiguration)
 
   @mock.patch(slack.__name__ + ".slack_cli.SlackCLI")
   def test_handle_event_invalid_command(self, m_slack_cli):
@@ -94,7 +91,7 @@ class TestSlackClient(TestCase):
     self.slack_client.web.files_upload.assert_called_once_with(
         channels=self.slack_client.channel,
         file=test_file,
-        title=self.slack_client.upload_file_title
+        title=self.slack_client.config.upload_file_title
     )
 
   def test_send_video(self):

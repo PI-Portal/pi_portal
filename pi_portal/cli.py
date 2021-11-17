@@ -12,6 +12,7 @@ def cli() -> None:
 @cli.command("monitor")
 def monitor() -> None:
   """Begin monitoring the door."""
+  modules.state.State().load()
   door_monitor = modules.monitor.Monitor()
   door_monitor.log = modules.logger.setup_logger(
       door_monitor.log, config.LOGFILE_PATH
@@ -22,6 +23,7 @@ def monitor() -> None:
 @cli.command("slack_bot")
 def slack_bot() -> None:
   """Connect the interactive Slack bot."""
+  modules.state.State().load()
   slack_client = modules.slack.Client()
   slack_client.subscribe()
 
@@ -30,6 +32,7 @@ def slack_bot() -> None:
 @click.argument('filename', type=click.Path(exists=True))
 def upload_video(filename: str) -> None:
   """Upload a video to Slack and S3."""
+  modules.state.State().load()
   slack_client = modules.slack.Client()
   slack_client.send_video(filename)
 
