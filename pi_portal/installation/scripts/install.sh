@@ -43,11 +43,6 @@ install_filebeat() {
   sed -i "s/<<LOGZ_IO_CODE>>/${LOGZ_IO_CODE}/g" /etc/filebeat/filebeat.yml
 }
 
-install_packages() {
-  apt-get update
-  apt-get install -y motion supervisor
-}
-
 safely_start_supervisor() {
   if [[ -S "${SUPERVISOR_SOCKET_PATH}" ]]; then
     service supervisor stop
@@ -61,7 +56,6 @@ main() {
   pushd "${SCRIPT_DIR}" || exit 127
     cd ../..
 
-    install_packages
     install_filebeat
 
     configure_supervisor
