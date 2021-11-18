@@ -1,5 +1,6 @@
 """Fixtures for mocking required environment variables."""
 
+from typing import Any, Callable, TypeVar
 from unittest import mock
 
 from pi_portal.modules import state
@@ -10,10 +11,12 @@ MOCK_CHANNEL_ID = "CHHH111"
 MOCK_S3_BUCKET_NAME = 'MOCK_S3_BUCKET_NAME'
 MOCK_LOGZ_IO_CODE = "secretCode"
 
+RT = TypeVar("RT")
 
-def patch(func):
 
-  def patched_function(*args, **kwargs):
+def patch(func: Callable[..., RT]) -> Callable[..., RT]:
+
+  def patched_function(*args: Any, **kwargs: Any) -> RT:
 
     with mock.patch(state.__name__ + ".State") as mock_state:
 
@@ -25,6 +28,6 @@ def patch(func):
           "LOGZ_IO_CODE": MOCK_LOGZ_IO_CODE
       }
 
-      func(*args, **kwargs)
+      return func(*args, **kwargs)
 
   return patched_function

@@ -7,7 +7,7 @@ import requests
 from pi_portal import config
 from pi_portal.modules import s3
 from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
+from requests.packages.urllib3 import Retry  # pylint: disable=import-error
 
 
 class MotionException(BaseException):

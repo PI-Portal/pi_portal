@@ -54,13 +54,13 @@ class Monitor:
       self.log_state_changes(old_state)
       time.sleep(self.interval)
 
-  def update_state(self) -> None:
+  def update_state(self):
     """Poll GPIO and update the known state for the doors."""
 
     for switch, pin in self.hardware.items():
       self.state[switch] = self.GPIO.input(pin) == self.GPIO_OPEN
 
-  def log_state_changes(self, old_state: MonitorStateType) -> None:
+  def log_state_changes(self, old_state: MonitorStateType):
     """Log any detected differences in state."""
 
     for switch, _ in self.hardware.items():
@@ -75,5 +75,5 @@ class Monitor:
         )
         self.slack_client.send_message(slack_message)
 
-  def _door_state_name(self, door_gpio_value: Optional[bool]):
+  def _door_state_name(self, door_gpio_value: Optional[bool]) -> str:
     return DoorState(door_gpio_value == self.GPIO_OPEN).name

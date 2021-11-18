@@ -2,6 +2,7 @@
 
 import xmlrpc.client
 from enum import Enum
+from typing import Dict, cast
 
 from pi_portal import config
 from pi_portal.modules.socket import UnixStreamTransport
@@ -60,7 +61,10 @@ class SupervisorClient:
     """Retrieve the current state of the specified supervisor process."""
 
     try:
-      return self.server.supervisor.getProcessInfo(process.value)['statename']
+      return cast(
+          Dict,
+          self.server.supervisor.getProcessInfo(process.value),
+      )['statename']
     except xmlrpc.client.Fault as exc:
       raise SupervisorException from exc
 
@@ -68,6 +72,9 @@ class SupervisorClient:
     """Retrieve the uptime the specified supervisor process."""
 
     try:
-      return self.server.supervisor.getProcessInfo(process.value)['start']
+      return cast(
+          Dict,
+          self.server.supervisor.getProcessInfo(process.value),
+      )['start']
     except xmlrpc.client.Fault as exc:
       raise SupervisorException from exc

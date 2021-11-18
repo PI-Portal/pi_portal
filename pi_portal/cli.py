@@ -5,12 +5,12 @@ from . import config, modules
 
 
 @click.group()
-def cli() -> None:
+def cli():
   """Door Monitor CLI."""
 
 
 @cli.command("monitor")
-def monitor() -> None:
+def monitor():
   """Begin monitoring the door."""
   modules.state.State().load()
   door_monitor = modules.monitor.Monitor()
@@ -21,7 +21,7 @@ def monitor() -> None:
 
 
 @cli.command("slack_bot")
-def slack_bot() -> None:
+def slack_bot():
   """Connect the interactive Slack bot."""
   modules.state.State().load()
   slack_client = modules.slack.Client()
@@ -30,7 +30,7 @@ def slack_bot() -> None:
 
 @cli.command("upload_video")
 @click.argument('filename', type=click.Path(exists=True))
-def upload_video(filename: str) -> None:
+def upload_video(filename: str):
   """Upload a video to Slack and S3."""
   modules.state.State().load()
   slack_client = modules.slack.Client()
@@ -39,6 +39,6 @@ def upload_video(filename: str) -> None:
 
 @cli.command("installer")
 @click.argument('config_file', type=click.Path(exists=True))
-def installer(config_file: str) -> None:
+def installer(config_file: str):
   """Run the installation script, (requires root)."""
   modules.installer.installer(config_file)
