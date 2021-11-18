@@ -10,11 +10,14 @@ MOCK_JSON = {
     "mock_setting": True
 }
 MOCK_VALID_JSON = {
+    "AWS_ACCESS_KEY_ID": "... AWS key with write access to video bucket ...",
+    "AWS_SECRET_ACCESS_KEY":
+        ("... AWS secret key with write access to video bucket ..."),
+    "S3_BUCKET_NAME": "... s3 video bucket name ...",
+    "LOGZ_IO_CODE": "... logz io's logger code ...",
     "SLACK_BOT_TOKEN": "...token from slack...",
     "SLACK_CHANNEL": "... proper name of slack channel ...",
     "SLACK_CHANNEL_ID": ".. slack's ID for the channel ...",
-    "LOGZ_IO_CODE": "... logz io's logger code ...",
-    "S3_BUCKET_NAME": "... s3 bucket name ..."
 }
 
 
@@ -56,10 +59,12 @@ class TestUserConfigurationValidate(TestCase):
 
     self.assertListEqual(
         json.loads(exc.exception.args[0]), [
+            "'AWS_ACCESS_KEY_ID' is a required property",
+            "'AWS_SECRET_ACCESS_KEY' is a required property",
+            "'LOGZ_IO_CODE' is a required property",
+            "'S3_BUCKET_NAME' is a required property",
             "'SLACK_BOT_TOKEN' is a required property",
             "'SLACK_CHANNEL' is a required property",
             "'SLACK_CHANNEL_ID' is a required property",
-            "'LOGZ_IO_CODE' is a required property",
-            "'S3_BUCKET_NAME' is a required property",
         ]
     )

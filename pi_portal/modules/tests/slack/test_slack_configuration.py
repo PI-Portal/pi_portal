@@ -17,10 +17,10 @@ class TestSlackClient(TestCase):
   @mock_state.patch
   def test_initialize(self):
     client = slack.Client()
-    self.assertEqual(client.web.token, mock_state.MOCK_TOKEN)
-    self.assertEqual(client.rtm.token, mock_state.MOCK_TOKEN)
-    self.assertEqual(client.channel, mock_state.MOCK_CHANNEL)
-    self.assertEqual(client.channel_id, mock_state.MOCK_CHANNEL_ID)
+    self.assertEqual(client.web.token, mock_state.MOCK_SLACK_TOKEN)
+    self.assertEqual(client.rtm.token, mock_state.MOCK_SLACK_TOKEN)
+    self.assertEqual(client.channel, mock_state.MOCK_SLACK_CHANNEL)
+    self.assertEqual(client.channel_id, mock_state.MOCK_SLACK_CHANNEL_ID)
     self.assertIsInstance(client.motion_client, motion.Motion)
     self.assertIsInstance(client.config, slack.ClientConfiguration)
 

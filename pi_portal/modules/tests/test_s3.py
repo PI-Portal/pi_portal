@@ -23,6 +23,16 @@ class TestS3Bucket(TestCase):
     self.assertEqual(s3_client.bucket_name, mock_state.MOCK_S3_BUCKET_NAME)
     self.assertIsInstance(s3_client.boto_client, BaseClient)
 
+  @mock_state.patch
+  @mock.patch(s3.__name__ + ".boto3")
+  def test_boto_client_initialization(self, m_boto):
+    s3.S3Bucket()
+    m_boto.client.assert_called_once_with(
+        's3',
+        aws_access_key_id=mock_state.MOCK_AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=mock_state.MOCK_AWS_SECRET_ACCESS_KEY,
+    )
+
   def test_upload_file(self):
     mock_file_name = "mock_file_name.mp4"
     self.s3_client.upload(mock_file_name)
