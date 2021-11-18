@@ -11,6 +11,7 @@
   commands:
     - "./scripts/arm/filebeat.sh"
     - "poetry build"
+    - "bash -c 'cd dist; for file in *py3-none-any*.whl ; do mv \"${file}\" \"${file//py3-none-any/py3-none-linux_armv7l}\"; done'"
   success: "Wheel Built"
   failure: "Error Building Wheel"
 - name: "coverage"
