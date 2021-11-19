@@ -26,7 +26,7 @@ class Motion:
     self.data_folder = config.MOTION_FOLDER
     self.s3_client = s3.S3Bucket()
 
-  def archive_video_to_s3(self, file_name):
+  def archive_video(self, file_name: str):
     """Copy video to S3 for retention and delete locally.
 
     :param file_name: The path to upload and then remove.
@@ -34,29 +34,18 @@ class Motion:
     try:
       self.s3_client.upload(file_name)
       os.remove(file_name)
-    except s3.S3BucketException as exc:
+    except (s3.S3BucketException, OSError) as exc:
       raise MotionException("Unable to archive video to S3.") from exc
 
-  def cleanup_snapshots(self):
-    """Remove all videos from the motion data folder."""
+  def cleanup_snapshot(self, file_name: str):
+    """Delete snapshot locally.
 
-    for fname in self._list_snapshots():
-      os.remove(fname)
-
-  def _list_snapshots(self):
-    snapshots = glob.glob(os.path.join(self.data_folder, '/*.mp4'))
-    if self.snapshot_fname in snapshots:
-      snapshots.remove(self.snapshot_fname)
-    return snapshots
-
-  def cleanup_videos(self):
-    """Remove all videos from the motion data folder."""
-
-    for fname in self._list_videos():
-      os.remove(fname)
-
-  def _list_videos(self):
-    return glob.glob(os.path.join(self.data_folder, '/*.mp4'))
+    :param file_name: The path to remove.
+    """
+    try:
+      os.remove(file_name)
+    except OSError as exc:
+      raise MotionException("Unable to remove snapshot.") from exc
 
   def get_latest_video_filename(self) -> str:
     """Retrieve the filename of the latest video recording.
@@ -64,6 +53,9 @@ class Motion:
     :return: The path of the latest video file that was created.
     """
     return max(self._list_videos(), key=os.path.getctime)
+
+  def _list_videos(self):
+    return glob.glob(os.path.join(self.data_folder, '/*.mp4'))
 
   def take_snapshot(self):
     """Take a snapshot with Motion."""

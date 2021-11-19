@@ -32,6 +32,7 @@ class TestSlackClient(TestCase):
     test_event = {
         "text": "invalid_command"
     }
+
     self.slack_client.handle_event(test_event)
     m_slack_cli.return_value.command_id.assert_not_called()
 
@@ -42,12 +43,14 @@ class TestSlackClient(TestCase):
     test_event = {
         "text": "id"
     }
+
     self.slack_client.handle_event(test_event)
     m_slack_cli.return_value.command_id.assert_called_once_with()
 
   def test_handle_rtm_message_no_channel(self):
     self.slack_client.handle_event = mock.MagicMock()
     test_event = {}
+
     self.slack_client.handle_rtm_message(test_event)
     self.slack_client.handle_event.assert_not_called()
 
@@ -56,6 +59,7 @@ class TestSlackClient(TestCase):
     test_event = {
         'channel': 'mockChannel'
     }
+
     self.slack_client.handle_rtm_message(test_event)
     self.slack_client.handle_event.assert_not_called()
 
@@ -65,6 +69,7 @@ class TestSlackClient(TestCase):
         'channel': 'mockChannel',
         'text': "hello"
     }
+
     self.slack_client.handle_rtm_message(test_event)
     self.slack_client.handle_event.assert_not_called()
 
@@ -74,12 +79,14 @@ class TestSlackClient(TestCase):
         'channel': self.slack_client.channel_id,
         'text': "hello"
     }
+
     self.slack_client.handle_rtm_message(test_event)
     self.slack_client.handle_event.assert_called_once_with(test_event)
 
   def test_send_message(self):
     test_message = "test message"
     self.slack_client.web = mock.MagicMock()
+
     self.slack_client.send_message(test_message)
     self.slack_client.web.chat_postMessage.assert_called_once_with(
         channel=self.slack_client.channel, text=test_message
@@ -91,6 +98,7 @@ class TestSlackClient(TestCase):
     self.slack_client.web.chat_postMessage.side_effect = (
         SlackRequestError("Boom!")
     )
+
     self.slack_client.send_message(test_message)
     self.assertListEqual(
         self.slack_client.web.chat_postMessage.mock_calls,
@@ -103,6 +111,7 @@ class TestSlackClient(TestCase):
   def test_send_file(self):
     test_file = "/path/to/mock/file.txt"
     self.slack_client.web = mock.MagicMock()
+
     self.slack_client.send_file(test_file)
     self.slack_client.web.files_upload.assert_called_once_with(
         channels=self.slack_client.channel,
@@ -116,6 +125,7 @@ class TestSlackClient(TestCase):
     self.slack_client.web.files_upload.side_effect = (
         SlackRequestError("Boom!")
     )
+
     self.slack_client.send_file(test_file)
     self.assertListEqual(
         self.slack_client.web.files_upload.mock_calls, [
@@ -127,25 +137,55 @@ class TestSlackClient(TestCase):
         ] * self.slack_client.retries
     )
 
+  def test_send_snapshot(self):
+    test_snapshot = "/path/to/mock/snapshot.jpg"
+    self.slack_client.send_file = mock.MagicMock()
+
+    self.slack_client.send_snapshot(test_snapshot)
+    self.slack_client.send_file.assert_called_once_with(test_snapshot)
+    self.slack_client.motion_client.cleanup_snapshot.assert_called_once_with(
+        test_snapshot
+    )
+
+  def test_send_snapshot_exception(self):
+    test_snapshot = "/path/to/mock/snapshot.jpg"
+    self.slack_client.send_file = mock.MagicMock()
+    self.slack_client.web = mock.MagicMock()
+    self.slack_client.motion_client.cleanup_snapshot.side_effect = (
+        motion.MotionException("Boom!")
+    )
+
+    self.slack_client.send_snapshot(test_snapshot)
+    self.slack_client.send_file.assert_called_once_with(test_snapshot)
+    self.slack_client.motion_client.cleanup_snapshot.assert_called_once_with(
+        test_snapshot
+    )
+    self.slack_client.web.chat_postMessage.assert_called_once_with(
+        channel=self.slack_client.channel,
+        text="An error occurred cleaning up this snapshot.",
+    )
+
   def test_send_video(self):
     test_video = "/path/to/mock/video.mp4"
     self.slack_client.send_file = mock.MagicMock()
+
     self.slack_client.send_video(test_video)
     self.slack_client.send_file.assert_called_once_with(test_video)
-    self.slack_client.motion_client.archive_video_to_s3.assert_called_once_with(
+    self.slack_client.motion_client.archive_video.assert_called_once_with(
         test_video
     )
 
   def test_send_video_exception(self):
     test_video = "/path/to/mock/video.mp4"
+    self.slack_client.send_file = mock.MagicMock()
     self.slack_client.web = mock.MagicMock()
-    self.slack_client.motion_client.archive_video_to_s3.side_effect = (
+    self.slack_client.motion_client.archive_video.side_effect = (
         motion.MotionException("Boom!")
     )
-    self.slack_client.send_file = mock.MagicMock()
+
     self.slack_client.send_video(test_video)
     self.slack_client.send_file.assert_called_once_with(test_video)
-    self.slack_client.motion_client.archive_video_to_s3.assert_called_once_with(
+    self.slack_client.motion_client.archive_video.assert_called_once_with(
         test_video
     )
     self.slack_client.web.chat_postMessage.assert_called_once_with(

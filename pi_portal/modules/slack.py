@@ -83,6 +83,18 @@ class Client:
       except (SlackRequestError, SlackApiError):
         pass
 
+  def send_snapshot(self, file_name: str):
+    """Send a snapshot to Slack, and erase it locally.
+
+    :param file_name: The path of the file to process.
+    """
+
+    try:
+      self.send_file(file_name)
+      self.motion_client.cleanup_snapshot(file_name)
+    except motion.MotionException:
+      self.send_message("An error occurred cleaning up this snapshot.")
+
   def send_video(self, file_name: str):
     """Send a video to Slack, and have motion archive it in S3.
 
@@ -91,7 +103,7 @@ class Client:
 
     try:
       self.send_file(file_name)
-      self.motion_client.archive_video_to_s3(file_name)
+      self.motion_client.archive_video(file_name)
     except motion.MotionException:
       self.send_message("An error occurred archiving this video.")
 

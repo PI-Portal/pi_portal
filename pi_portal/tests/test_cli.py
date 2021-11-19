@@ -39,7 +39,7 @@ class TestCLI(TestCase):
     self.runner.invoke(cli.cli, command)
     m_state.State.return_value.load.assert_called_once_with()
     m_slack.Client.assert_called_once_with()
-    m_slack.Client.return_value.send_file.assert_called_once_with(
+    m_slack.Client.return_value.send_snapshot.assert_called_once_with(
         mock_snapshot_name
     )
 

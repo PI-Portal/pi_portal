@@ -38,7 +38,7 @@ def upload_snapshot(filename: str):
 
   modules.state.State().load()
   slack_client = modules.slack.Client()
-  slack_client.send_file(filename)
+  slack_client.send_snapshot(filename)
 
 
 @cli.command("upload_video")

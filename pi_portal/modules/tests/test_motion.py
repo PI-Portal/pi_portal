@@ -1,6 +1,5 @@
 """Test Motion Integration."""
 
-import os
 from unittest import TestCase, mock
 
 from pi_portal import config
@@ -50,49 +49,38 @@ class TestMotion(TestCase):
     fname = self.motion_client.get_latest_video_filename()
     self.assertEqual(fname, m_glob.return_value[1])
 
-  @mock.patch(motion.__name__ + ".glob.glob")
   @mock.patch(motion.__name__ + ".os.remove")
-  def test_cleanup_videos(self, m_remove, m_glob):
-    m_glob.return_value = ["1.mp4", "2.mp4"]
-    self.motion_client.cleanup_videos()
-
-    m_glob.assert_called_once_with(
-        os.path.join(self.motion_client.data_folder, '/*.mp4')
-    )
-    for fname in m_glob.return_value:
-      m_remove.assert_any_call(fname)
-    self.assertEqual(m_remove.call_count, len(m_glob.return_value))
-
-  @mock.patch(motion.__name__ + ".glob.glob")
-  @mock.patch(motion.__name__ + ".os.remove")
-  def test_cleanup_snapshots(self, m_remove, m_glob):
-    m_glob.return_value = ["1.mp4", "2.mp4", self.motion_client.snapshot_fname]
-    self.motion_client.cleanup_snapshots()
-
-    m_glob.assert_called_once_with(
-        os.path.join(self.motion_client.data_folder, '/*.mp4')
-    )
-    for fname in m_glob.return_value:
-      if fname != self.motion_client.snapshot_fname:
-        m_remove.assert_any_call(fname)
-    self.assertEqual(m_remove.call_count, len(m_glob.return_value))
-
-  @mock.patch(motion.__name__ + ".os.remove")
-  def test_archive_video_to_s3(self, m_remove):
+  def test_archive_video(self, m_remove):
     mock_video_name = "mock_video.mp4"
-    self.motion_client.archive_video_to_s3(mock_video_name)
+    self.motion_client.archive_video(mock_video_name)
     self.motion_client.s3_client.upload.assert_called_once_with(mock_video_name)
     m_remove.assert_called_once_with(mock_video_name)
 
   @mock.patch(motion.__name__ + ".os.remove")
-  def test_archive_video_to_s3_failure(self, m_remove):
+  def test_archive_video_exception(self, m_remove):
     mock_video_name = "mock_video.mp4"
     self.motion_client.s3_client.upload.side_effect = s3.S3BucketException(
         "Boom!"
     )
 
     with self.assertRaises(motion.MotionException):
-      self.motion_client.archive_video_to_s3(mock_video_name)
+      self.motion_client.archive_video(mock_video_name)
 
     self.motion_client.s3_client.upload.assert_called_once_with(mock_video_name)
     m_remove.assert_not_called()
+
+  @mock.patch(motion.__name__ + ".os.remove")
+  def test_cleanup_snapshot(self, m_remove):
+    mock_snapshot_name = "mock_snapshot.jpg"
+    self.motion_client.cleanup_snapshot(mock_snapshot_name)
+    m_remove.assert_called_once_with(mock_snapshot_name)
+
+  @mock.patch(motion.__name__ + ".os.remove")
+  def test_cleanup_snapshot_exception(self, m_remove):
+    mock_snapshot_name = "mock_snapshot.jpg"
+    m_remove.side_effect = OSError("Boom!")
+
+    with self.assertRaises(motion.MotionException):
+      self.motion_client.cleanup_snapshot(mock_snapshot_name)
+
+    m_remove.assert_called_once_with(mock_snapshot_name)
