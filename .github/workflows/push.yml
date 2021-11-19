@@ -85,6 +85,11 @@ jobs:
     needs: [build, dockerfile_test, documentation_test, security_test, shellcheck_test, start_notification, workflow_lint_test]
 
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        include:
+          - python-version: 3.7
 
     steps:
       - name: Create Release -- Checkout
@@ -97,6 +102,24 @@ jobs:
           source .github/scripts/setup.sh
         env:
           WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          PYTHON_VERSION: ${{ matrix.python-version }}
+
+      - name: Create Release -- Create Docker Mounted Content
+        if: contains(github.ref, '/tags/v')
+        run: |
+          echo | ssh-keygen
+          touch ${HOME}/.gitconfig
+          touch ${HOME}/.gitconfig_global
+
+      - name: Create Release -- Ensure File System is Writable by the Container
+        if: contains(github.ref, '/tags/v')
+        run: |
+          sudo chmod -R o+w .
+
+      - name: Create Release -- Build Container
+        if: contains(github.ref, '/tags/v')
+        run: |
+          source .github/scripts/build_container.sh
 
       - name: Create Release -- Prepare Content
         if: contains(github.ref, '/tags/v')
@@ -113,6 +136,7 @@ jobs:
       - name: Create Release -- Create Github Release
         if: contains(github.ref, '/tags/v')
         uses: actions/create-release@v1
+        id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -121,11 +145,34 @@ jobs:
           body: |
             ${{ steps.Changelog.outputs.changelog }}
             ## Deployment Checklist
-            - [ ] Ensure documentation is accurate
             - [ ] Ensure readthedocs integration is working
-            - [ ] Ensure unnecessary alerts are ignored/disabled
           draft: true
           prerelease: false
+
+      - name: Create Release -- Build Wheel
+        if: contains(github.ref, '/tags/v')
+        run: |
+          docker-compose exec -T "${PROJECT_NAME}" dev build-wheel
+
+      - name: Create Release -- Identify Wheel
+        if: contains(github.ref, '/tags/v')
+        run: |
+          cd dist
+          WHEEL_NAME=$(ls *.whl)
+          cd ..
+          echo "WHEEL_NAME=${WHEEL_NAME}" >> $GITHUB_ENV
+
+      - name: Create Release -- Upload Release Asset
+        if: contains(github.ref, '/tags/v')
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/${{ env.WHEEL_NAME }}
+          asset_name: ${{ env.WHEEL_NAME }}
+          asset_content_type: application/zip
 
       - name: Create Release -- Report Success
         if: contains(github.ref, '/tags/v')
