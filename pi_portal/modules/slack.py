@@ -3,6 +3,7 @@
 from pi_portal.modules import motion, slack_cli, state
 from pi_portal.modules.logger import LOG_UUID
 from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError, SlackRequestError
 from slack_sdk.rtm_v2 import RTMClient
 
 
@@ -58,7 +59,12 @@ class Client:
     :param message: The message to send to Slack.
     """
 
-    self.web.chat_postMessage(channel=self.channel, text=message)
+    for _ in range(0, self.retries):
+      try:
+        self.web.chat_postMessage(channel=self.channel, text=message)
+        break
+      except (SlackRequestError, SlackApiError):
+        pass
 
   def send_file(self, file_name: str):
     """Send a file with the Slack Web client.
@@ -68,13 +74,13 @@ class Client:
 
     for _ in range(0, self.retries):
       try:
-        response = self.web.files_upload(
+        self.web.files_upload(
             channels=self.channel,
             file=file_name,
             title=self.config.upload_file_title,
         )
-        return response
-      finally:
+        break
+      except (SlackRequestError, SlackApiError):
         pass
 
   def send_video(self, file_name: str):
