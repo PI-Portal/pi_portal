@@ -3,13 +3,15 @@
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 configure_motion() {
+  service motion stop
   update-rc.d -f motion remove
   cp ./installation/motion/motion.conf /etc/motion/motion.conf
+  mkdir -p /var/lib/motion
+  chown root:pi_portal /var/lib/motion
+  chmod 750 /var/lib/motion
 }
 
 configure_pi_portal() {
-  adduser --disabled-password --gecos "" pi_portal
-
   mkdir -p /opt/pi_portal
   touch /var/log/pi_portal.log
 
@@ -19,6 +21,7 @@ configure_pi_portal() {
   chmod +x /opt/pi_portal/portal.sh
   chown -R pi_portal:pi_portal /opt/pi_portal
   chown pi_portal:pi_portal /var/log/pi_portal.log
+  chmod 700 /opt/pi_portal/config.json
 }
 
 configure_supervisor() {
@@ -55,6 +58,8 @@ safely_start_supervisor() {
 main() {
   pushd "${SCRIPT_DIR}" || exit 127
     cd ../..
+
+    adduser --disabled-password --gecos "" --shell /bin/false pi_portal
 
     install_filebeat
 
