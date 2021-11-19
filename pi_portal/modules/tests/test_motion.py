@@ -23,7 +23,9 @@ class TestMotion(TestCase):
         self.motion_client.snapshot_url,
         'http://localhost:8080/0/action/snapshot'
     )
-    self.assertEqual(motion_client.snapshot_fname, 'lastsnap.jpg')
+    self.assertEqual(
+        motion_client.snapshot_fname, '/var/lib/motion/lastsnap.jpg'
+    )
     self.assertEqual(motion_client.snapshot_retries, 10)
     self.assertEqual(motion_client.s3_retries, 3)
     self.assertEqual(motion_client.data_folder, config.MOTION_FOLDER)
