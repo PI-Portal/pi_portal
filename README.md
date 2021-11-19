@@ -55,6 +55,10 @@ You will need to install the following dependencies:
 sudo apt-get install gcc motion supervisor libffi-dev libssl-dev python3-dev
 ```
 
+### Python
+
+Supports Python [3.7](https://www.python.org/downloads/release/python-370/), [3.8](https://www.python.org/downloads/release/python-380/) or [3.9](https://www.python.org/downloads/release/python-390/)
+
 ### PAAS Accounts
 
 - An [AWS](https://aws.amazon.com/) account
@@ -63,7 +67,7 @@ sudo apt-get install gcc motion supervisor libffi-dev libssl-dev python3-dev
 
 See [this guide](https://ritikjain1272.medium.com/how-to-make-a-slack-bot-in-python-using-slacks-rtm-api-335b393563cd) for setting up a bot account on Slack.
 
-### AWS Infrastructure
+#### AWS Infrastructure
 
 You'll need to create two S3 buckets:
 - one to archive logs
@@ -91,7 +95,7 @@ One set of credentials will be used by PI Portal for video files, the other by [
 
 You can also configure [lifecycle rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html) for these buckets to control data retention.  (And it's definately a good idea to ensure they are not publicly accessible!)  
 
-### Logz IO Integration
+#### Logz IO Integration
 
 [This service](https://logz.io/) has a generous free tier that will allow you to search your logs, and do long term retention in the S3 bucket you created.
 You will need to know your accounts `log token`, (check the website on how to configure filbeat to find it.)
