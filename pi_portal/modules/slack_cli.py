@@ -1,6 +1,6 @@
 """Slack CLI."""
 
-import sys
+import os
 from datetime import datetime
 from typing import TYPE_CHECKING, List
 
@@ -107,7 +107,8 @@ class SlackCLI:
     """Terminate the bot, and rely on supervisor to restart it."""
 
     self.slack_client.send_message("Rebooting myself ...")
-    exit(0)
+    self.slack_client.rtm.close()
+    os._exit(1)  # pylint: disable=protected-access
 
   def command_snapshot(self):
     """Post a realtime camera snapshot to Slack."""

@@ -5,7 +5,7 @@ from unittest import mock
 from freezegun import freeze_time
 from pi_portal.modules import slack_cli, supervisor
 from pi_portal.modules.tests.slack_cli.fixtures.harness import (
-  TestSlackCLIHarness,
+    TestSlackCLIHarness,
 )
 
 
@@ -118,12 +118,14 @@ class TestSlackCLI(TestSlackCLIHarness):
         f"Available Commands: {', '.join(commands)}"
     )
 
-  def test_command_restart(self):
-    with self.assertRaises(SystemExit):
-      self.cli.command_restart()
+  @mock.patch(slack_cli.__name__ + ".os._exit")
+  def test_command_restart(self, m_exit):
+    self.cli.command_restart()
     self.cli.slack_client.send_message.assert_called_once_with(
         "Rebooting myself ..."
     )
+    self.cli.slack_client.rtm.close.assert_called_once_with()
+    m_exit.assert_called_once_with(1)
 
   def test_command_snapshot_not_running(self):
     self.cli.supervisor_client.status.return_value = (
