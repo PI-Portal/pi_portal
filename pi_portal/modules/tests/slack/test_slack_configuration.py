@@ -122,6 +122,11 @@ class TestSlackClient(TestCase):
 
   def test_subscribe(self):
     self.slack_client.rtm = mock.MagicMock()
+    self.slack_client.web = mock.MagicMock()
     self.slack_client.subscribe()
+    self.slack_client.web.chat_postMessage.assert_called_once_with(
+        channel=self.slack_client.channel,
+        text="I've rebooted!  Now listening for commands...",
+    )
     self.slack_client.rtm.on.assert_called_once_with("message")
     self.slack_client.rtm.start.assert_called_once_with()

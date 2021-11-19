@@ -101,4 +101,5 @@ class Client:
 
       self.handle_rtm_message(event)  # pragma: no cover
 
+    self.send_message("I've rebooted!  Now listening for commands...")
     self.rtm.start()
