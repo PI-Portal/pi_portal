@@ -1,5 +1,6 @@
 """Test S3 Integration."""
 
+import os
 from unittest import TestCase, mock
 
 from botocore.client import BaseClient
@@ -34,21 +35,25 @@ class TestS3Bucket(TestCase):
     )
 
   def test_upload_file(self):
-    mock_file_name = "mock_file_name.mp4"
+    mock_file_name = "/dir/mock_file_name.mp4"
     self.s3_client.upload(mock_file_name)
     self.s3_client.boto_client.upload_file.assert_called_once_with(
-        mock_file_name, self.s3_client.bucket_name, mock_file_name
+        mock_file_name,
+        self.s3_client.bucket_name,
+        os.path.basename(mock_file_name),
     )
 
   def test_upload_file_exception(self):
     self.s3_client.boto_client.upload_file.side_effect = ClientError(
         error_response={}, operation_name="BOOM!"
     )
-    mock_file_name = "mock_file_name.mp4"
+    mock_file_name = "/dir/mock_file_name.mp4"
 
     with self.assertRaises(s3.S3BucketException):
       self.s3_client.upload(mock_file_name)
 
     self.s3_client.boto_client.upload_file.assert_called_once_with(
-        mock_file_name, self.s3_client.bucket_name, mock_file_name
+        mock_file_name,
+        self.s3_client.bucket_name,
+        os.path.basename(mock_file_name),
     )

@@ -1,5 +1,7 @@
 """S3 Integration class."""
 
+import os
+
 import boto3
 from botocore.exceptions import ClientError
 from pi_portal.modules import state
@@ -29,6 +31,8 @@ class S3Bucket:
     """
 
     try:
-      self.boto_client.upload_file(file_name, self.bucket_name, file_name)
+      self.boto_client.upload_file(
+          file_name, self.bucket_name, os.path.basename(file_name)
+      )
     except ClientError as exc:
       raise S3BucketException from exc
