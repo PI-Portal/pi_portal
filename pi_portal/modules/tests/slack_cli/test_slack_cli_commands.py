@@ -2,6 +2,7 @@
 
 from unittest import mock
 
+from freezegun import freeze_time
 from pi_portal.modules import slack_cli, supervisor
 from pi_portal.modules.tests.slack_cli.fixtures.harness import (
   TestSlackCLIHarness,
@@ -185,49 +186,52 @@ class TestSlackCLI(TestSlackCLIHarness):
         'Bot Uptime > Not Running'
     )
 
+  @freeze_time("2021-11-18-22:30:00")
   @mock.patch(slack_cli.__name__ + ".linux.uptime")
   def test_command_uptime_app_running(self, m_linux_uptime):
     self.cli.supervisor_client.status.side_effect = (
         supervisor.ProcessStatus.RUNNING.value,
         supervisor.ProcessStatus.STOPPED.value
     )
-    self.cli.supervisor_client.uptime.return_value = "3 days"
+    self.cli.supervisor_client.uptime.return_value = "1637290560"
     m_linux_uptime.return_value = "15 hours"
     self.cli.command_uptime()
     self.cli.slack_client.send_message.assert_called_once_with(
         'System Uptime > 15 hours\n'
-        'Monitor Uptime > 3 days\n'
+        'Monitor Uptime > 4 hours\n'
         'Bot Uptime > Not Running'
     )
 
+  @freeze_time("2021-11-18-22:30:00")
   @mock.patch(slack_cli.__name__ + ".linux.uptime")
   def test_command_uptime_bot_running(self, m_linux_uptime):
     self.cli.supervisor_client.status.side_effect = (
         supervisor.ProcessStatus.STOPPED.value,
         supervisor.ProcessStatus.RUNNING.value
     )
-    self.cli.supervisor_client.uptime.return_value = "3 days"
+    self.cli.supervisor_client.uptime.return_value = "1637288711"
     m_linux_uptime.return_value = "15 hours"
     self.cli.command_uptime()
     self.cli.slack_client.send_message.assert_called_once_with(
         'System Uptime > 15 hours\n'
         'Monitor Uptime > Not Running\n'
-        'Bot Uptime > 3 days'
+        'Bot Uptime > 3 hours'
     )
 
+  @freeze_time("2021-11-18-22:30:00")
   @mock.patch(slack_cli.__name__ + ".linux.uptime")
   def test_command_uptime_both_running(self, m_linux_uptime):
     self.cli.supervisor_client.status.side_effect = (
         supervisor.ProcessStatus.RUNNING.value,
         supervisor.ProcessStatus.RUNNING.value
     )
-    self.cli.supervisor_client.uptime.return_value = "3 days"
+    self.cli.supervisor_client.uptime.return_value = "1637288711"
     m_linux_uptime.return_value = "15 hours"
     self.cli.command_uptime()
     self.cli.slack_client.send_message.assert_called_once_with(
         'System Uptime > 15 hours\n'
-        'Monitor Uptime > 3 days\n'
-        'Bot Uptime > 3 days'
+        'Monitor Uptime > 3 hours\n'
+        'Bot Uptime > 3 hours'
     )
 
   def test_command_uptime_exception(self):

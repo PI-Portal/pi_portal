@@ -1,8 +1,10 @@
 """Slack CLI."""
 
 import sys
+from datetime import datetime
 from typing import TYPE_CHECKING, List
 
+import humanize
 from pi_portal.modules import linux, motion, supervisor
 
 if TYPE_CHECKING:
@@ -105,7 +107,7 @@ class SlackCLI:
     """Terminate the bot, and rely on supervisor to restart it."""
 
     self.slack_client.send_message("Rebooting myself ...")
-    sys.exit(1)
+    exit(0)
 
   def command_snapshot(self):
     """Post a realtime camera snapshot to Slack."""
@@ -140,13 +142,22 @@ class SlackCLI:
 
       status = self.supervisor_client.status(supervisor.ProcessList.MONITOR)
       if status == supervisor.ProcessStatus.RUNNING.value:
-        monitor_uptime = self.supervisor_client.uptime(
-            supervisor.ProcessList.MONITOR
+        monitor_uptime = humanize.naturaldelta(
+            datetime.now() - datetime.fromtimestamp(
+                int(
+                    self.supervisor_client.
+                    uptime(supervisor.ProcessList.MONITOR)
+                )
+            )
         )
 
       status = self.supervisor_client.status(supervisor.ProcessList.BOT)
       if status == supervisor.ProcessStatus.RUNNING.value:
-        bot_uptime = self.supervisor_client.uptime(supervisor.ProcessList.BOT)
+        bot_uptime = humanize.naturaldelta(
+            datetime.now() - datetime.fromtimestamp(
+                int(self.supervisor_client.uptime(supervisor.ProcessList.BOT))
+            )
+        )
 
       self.slack_client.send_message(
           f"System Uptime > {system_uptime}\n"
