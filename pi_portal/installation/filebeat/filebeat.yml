@@ -11,7 +11,19 @@ filebeat.inputs:
     type: pi_portal
   fields_under_root: true
   encoding: utf-8
-  ignore_older: 3h
+  ignore_older: 12h
+
+- type: log
+  paths:
+    - /var/log/syslog
+    - /var/log/auth.log
+  fields:
+    logzio_codec: plain
+    token: <<LOGZ_IO_CODE>>
+    type: pi_portal_system
+  fields_under_root: true
+  encoding: utf-8
+  ignore_older: 12h
 
 #For version 6.x and lower
 #filebeat.registry_file: /var/lib/filebeat/registry
