@@ -149,9 +149,6 @@ class TestSlackCLI(TestSlackCLIHarness):
         supervisor.ProcessList.CAMERA
     )
     self.cli.slack_client.motion_client.take_snapshot.assert_called_once_with()
-    self.cli.slack_client.send_file.assert_called_once_with(
-        self.cli.slack_client.motion_client.snapshot_fname
-    )
 
   def test_command_snapshot_exception(self):
     self.cli.supervisor_client.status.side_effect = (

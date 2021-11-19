@@ -33,15 +33,27 @@ class TestCLI(TestCase):
 
   @patch(cli.__name__ + ".modules.slack")
   @patch(cli.__name__ + ".modules.state")
+  def test_upload_snapshot(self, m_state, m_slack):
+    mock_snapshot_name = __file__
+    command = f"upload_snapshot {mock_snapshot_name}"
+    self.runner.invoke(cli.cli, command)
+    m_state.State.return_value.load.assert_called_once_with()
+    m_slack.Client.assert_called_once_with()
+    m_slack.Client.return_value.send_file.assert_called_once_with(
+        mock_snapshot_name
+    )
+
+  @patch(cli.__name__ + ".modules.slack")
+  @patch(cli.__name__ + ".modules.state")
   def test_upload_video(self, m_state, m_slack):
     mock_video_name = __file__
     command = f"upload_video {mock_video_name}"
     self.runner.invoke(cli.cli, command)
+    m_state.State.return_value.load.assert_called_once_with()
     m_slack.Client.assert_called_once_with()
     m_slack.Client.return_value.send_video.assert_called_once_with(
         mock_video_name
     )
-    m_state.State.return_value.load.assert_called_once_with()
 
   @patch(cli.__name__ + ".modules.installer")
   @patch(cli.__name__ + ".modules.state")

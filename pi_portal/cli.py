@@ -28,6 +28,19 @@ def slack_bot():
   slack_client.subscribe()
 
 
+@cli.command("upload_snapshot")
+@click.argument('filename', type=click.Path(exists=True))
+def upload_snapshot(filename: str):
+  """Upload a snapshot image to Slack.
+
+  :param filename: The path to the file to upload.
+  """
+
+  modules.state.State().load()
+  slack_client = modules.slack.Client()
+  slack_client.send_file(filename)
+
+
 @cli.command("upload_video")
 @click.argument('filename', type=click.Path(exists=True))
 def upload_video(filename: str):

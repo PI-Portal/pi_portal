@@ -121,9 +121,6 @@ class SlackCLI:
         self.slack_client.send_message("You must arm the system first.")
       else:
         self.slack_client.motion_client.take_snapshot()
-        self.slack_client.send_file(
-            self.slack_client.motion_client.snapshot_fname
-        )
     except (supervisor.SupervisorException, motion.MotionException):
       self.notify_error()
 
