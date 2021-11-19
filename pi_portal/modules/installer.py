@@ -8,7 +8,10 @@ from pi_portal.modules import config_file
 
 
 def installer(user_config_file: str):
-  """Run the onboard installer."""
+  """Run the onboard installer.
+
+  :param user_config_file: The path to user's config file.
+  """
 
   configuration = config_file.UserConfiguration()
   user_config = configuration.load(user_config_file)

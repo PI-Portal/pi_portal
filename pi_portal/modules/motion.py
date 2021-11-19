@@ -27,7 +27,10 @@ class Motion:
     self.s3_client = s3.S3Bucket()
 
   def archive_video_to_s3(self, file_name):
-    """Copy video to S3 for retention and delete locally."""
+    """Copy video to S3 for retention and delete locally.
+
+    :param file_name: The path to upload and then remove.
+    """
     try:
       self.s3_client.upload(file_name)
       os.remove(file_name)
@@ -56,7 +59,10 @@ class Motion:
     return glob.glob(os.path.join(self.data_folder, '/*.mp4'))
 
   def get_latest_video_filename(self) -> str:
-    """Retrieve the filename of the latest video recording."""
+    """Retrieve the filename of the latest video recording.
+
+    :return: The path of the latest video file that was created.
+    """
     return max(self._list_videos(), key=os.path.getctime)
 
   def take_snapshot(self):

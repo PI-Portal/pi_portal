@@ -29,7 +29,10 @@ class Client:
     self.config = ClientConfiguration()
 
   def handle_event(self, event: dict):
-    """Process a validated event, and call any valid commands."""
+    """Process a validated event, and call any valid commands.
+
+    :param event: A validated Slack RTM event message.
+    """
 
     cli = slack_cli.SlackCLI(client=self)
     command = cli.prefix + event['text'].lower()
@@ -38,7 +41,10 @@ class Client:
       getattr(cli, command)()
 
   def handle_rtm_message(self, event: dict):
-    """Validate a RTM message bound for this bot's channel."""
+    """Validate a RTM message bound for this bot's channel.
+
+    :param event: An unvalidated Slack RTM event message.
+    """
 
     if 'channel' not in event or 'text' not in event:
       return
@@ -47,12 +53,18 @@ class Client:
     self.handle_event(event)
 
   def send_message(self, message: str):
-    """Send a message with the Slack Web client."""
+    """Send a message with the Slack Web client.
+
+    :param message: The message to send to Slack.
+    """
 
     self.web.chat_postMessage(channel=self.channel, text=message)
 
   def send_file(self, file_name: str):
-    """Send a file with the Slack Web client."""
+    """Send a file with the Slack Web client.
+
+    :param file_name: The path to upload to Slack.
+    """
 
     for _ in range(0, self.retries):
       try:
@@ -66,7 +78,10 @@ class Client:
         pass
 
   def send_video(self, file_name: str):
-    """Send a video to Slack, and have motion archive it in S3."""
+    """Send a video to Slack, and have motion archive it in S3.
+
+    :param file_name: The path of the file to process.
+    """
 
     try:
       self.send_file(file_name)
@@ -79,7 +94,10 @@ class Client:
 
     @self.rtm.on("message")
     def handler(_, event: dict):
-      """Intercept messages on the RTM subscription."""
+      """Intercept messages on the RTM subscription.
+
+      :param event: An unvalidated Slack RTM event message.
+      """
 
       self.handle_rtm_message(event)  # pragma: no cover
 

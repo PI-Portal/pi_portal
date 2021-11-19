@@ -24,6 +24,9 @@ class UnixStreamTransport(xmlrpc.client.Transport):
     super(UnixStreamTransport, self).__init__()  # pylint: disable=super-with-arguments
 
   def make_connection(self, host: Union[Tuple[str, Dict[str, str]], str]):
-    """Connect to the specified unix socket, ignoring the host parameter."""
+    """Connect to the specified unix socket, ignoring the host parameter.
+
+    :param host: Unused parameter in this context.
+    """
 
     return UnixStreamHTTPConnection(self.socket_path)

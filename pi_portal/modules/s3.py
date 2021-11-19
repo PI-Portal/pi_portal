@@ -23,7 +23,10 @@ class S3Bucket:
     )
 
   def upload(self, file_name: str):
-    """Upload the specified file to the S3 bucket."""
+    """Upload the specified file to the S3 bucket.
+
+    :param file_name: The path of the file to upload.
+    """
 
     try:
       self.boto_client.upload_file(file_name, self.bucket_name, file_name)

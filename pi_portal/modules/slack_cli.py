@@ -45,7 +45,10 @@ class SlackCLI:
     self.slack_client.send_message("Shutting down ...")
 
   def get_commands(self) -> List[str]:
-    """Generate a list of valid commands."""
+    """Generate a list of valid commands.
+
+    :return: The list of valid commands.
+    """
 
     commands = []
     for method in dir(self):

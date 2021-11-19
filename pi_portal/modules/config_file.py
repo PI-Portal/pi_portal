@@ -20,7 +20,11 @@ class UserConfiguration:
     self.user_config = {}
 
   def load(self, file_name: str = "config.json") -> Dict:
-    """Load the end user's configuration file."""
+    """Load the end user's configuration file.
+
+    :param file_name: The path to the file to load.
+    :return: The parsed configuration.
+    """
 
     with open(file_name, "r", encoding="utf-8") as file_handle:
       self.user_config = json.load(file_handle)

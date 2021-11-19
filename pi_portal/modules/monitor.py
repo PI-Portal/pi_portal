@@ -61,7 +61,10 @@ class Monitor:
       self.state[switch] = self.GPIO.input(pin) == self.GPIO_OPEN
 
   def log_state_changes(self, old_state: MonitorStateType):
-    """Log any detected differences in state."""
+    """Log any detected differences in state.
+
+    :param old_state: A version of the state to diff against.
+    """
 
     for switch, _ in self.hardware.items():
       new_state = self.state[switch]

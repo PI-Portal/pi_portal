@@ -29,11 +29,9 @@ os.environ['PROJECT_NAME'] = project
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.todo',
-    'sphinx.ext.viewcode',
-    'sphinx_autopackagesummary',
+    'sphinx.ext.autodoc', 'sphinx.ext.autosummary', 'sphinx.ext.todo',
+    'sphinx.ext.viewcode', 'sphinx_autopackagesummary',
+    'sphinx_autodoc_typehints', 'sphinx-jsonschema', 'sphinx_click'
 ]
 
 # Exclude tests from sphinx_autopackagesummary here

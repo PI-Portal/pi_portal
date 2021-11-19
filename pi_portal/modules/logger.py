@@ -11,7 +11,13 @@ LOG_FORMATTER = logging.Formatter(
 
 
 def setup_logger(log: logging.Logger, fname: str) -> logging.Logger:
-  """Configure application logging."""
+  """Configure application logging.
+
+  :param log: The logger instance to configure.
+  :param fname: The path to write logs to.
+
+  :returns: The configured logger instance.
+  """
 
   log.setLevel(logging.DEBUG)
   log.handlers = []
