@@ -59,7 +59,7 @@ main() {
   pushd "${SCRIPT_DIR}" || exit 127
     cd ../..
 
-    adduser --disabled-password --gecos "" --shell /bin/false pi_portal
+    adduser --disabled-login --gecos "" --shell /bin/false --no-create-home pi_portal
 
     install_filebeat
 
