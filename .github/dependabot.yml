@@ -8,4 +8,4 @@ updates:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "pi-portal"
+      - "niall-byrne"
