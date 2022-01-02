@@ -82,7 +82,7 @@
       freezegun = "^1.1.0"
       pydocstyle = "^6.1.1"
       types-boto3 = "^1.0.1"
-      types-freezegun = "^1.1.3"
+      types-freezegun = "^1.1.4"
       types-requests = "^2.26.1"
 
     [tool.poetry.extras]
