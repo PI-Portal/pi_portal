@@ -7,7 +7,7 @@ from typing import cast
 from unittest import TestCase
 
 from freezegun import freeze_time
-from pi_portal.modules import logger
+from pi_portal.modules.general import logger
 
 
 class TestLogger(TestCase):

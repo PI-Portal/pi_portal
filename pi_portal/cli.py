@@ -2,7 +2,7 @@
 
 import click
 from . import config, modules
-from .modules import integrations, system
+from .modules import configuration, general, integrations, system
 
 
 @click.group()
@@ -13,9 +13,9 @@ def cli():
 @cli.command("monitor")
 def monitor():
   """Begin monitoring the door."""
-  modules.state.State().load()
+  configuration.state.State().load()
   door_monitor = modules.monitor.Monitor()
-  door_monitor.log = modules.logger.setup_logger(
+  door_monitor.log = general.logger.setup_logger(
       door_monitor.log, config.LOGFILE_PATH
   )
   door_monitor.start()
@@ -24,7 +24,7 @@ def monitor():
 @cli.command("slack_bot")
 def slack_bot():
   """Connect the interactive Slack bot."""
-  modules.state.State().load()
+  configuration.state.State().load()
   slack_client = integrations.slack.Client()
   slack_client.subscribe()
 
@@ -37,7 +37,7 @@ def upload_snapshot(filename: str):
   :param filename: The path to the file to upload.
   """
 
-  modules.state.State().load()
+  configuration.state.State().load()
   slack_client = integrations.slack.Client()
   slack_client.send_snapshot(filename)
 
@@ -50,7 +50,7 @@ def upload_video(filename: str):
   :param filename: The path to the file to upload.
   """
 
-  modules.state.State().load()
+  configuration.state.State().load()
   slack_client = integrations.slack.Client()
   slack_client.send_video(filename)
 

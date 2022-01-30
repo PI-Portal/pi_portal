@@ -4,7 +4,7 @@ import os
 
 import boto3
 from botocore.exceptions import ClientError
-from pi_portal.modules import state
+from pi_portal.modules.configuration import state
 
 
 class S3BucketException(Exception):

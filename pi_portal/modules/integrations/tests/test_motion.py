@@ -3,8 +3,8 @@
 from unittest import TestCase, mock
 
 from pi_portal import config
+from pi_portal.modules.configuration.tests.fixtures import mock_state
 from pi_portal.modules.integrations import motion, s3
-from pi_portal.modules.tests.fixtures import mock_state
 
 
 class TestMotion(TestCase):

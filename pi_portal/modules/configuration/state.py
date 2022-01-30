@@ -2,7 +2,7 @@
 
 from typing import Any, Dict
 
-from pi_portal.modules import config_file
+from pi_portal.modules.configuration import config_file
 
 
 class State:

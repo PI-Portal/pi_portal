@@ -4,7 +4,7 @@ import os
 import pathlib
 
 from pi_portal import config
-from pi_portal.modules import config_file
+from pi_portal.modules.configuration import config_file
 
 
 def installer(user_config_file: str):

@@ -2,8 +2,8 @@
 
 from unittest import TestCase
 
+from pi_portal.modules.general.logger import LOG_UUID
 from pi_portal.modules.integrations import slack
-from pi_portal.modules.logger import LOG_UUID
 
 
 class TestSlackClient(TestCase):
