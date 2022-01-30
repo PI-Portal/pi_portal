@@ -3,7 +3,7 @@
 from typing import Any, Callable, TypeVar
 from unittest import mock
 
-from pi_portal.modules import state
+from pi_portal.modules.configuration import state
 
 MOCK_AWS_ACCESS_KEY_ID = "awsKeyId"
 MOCK_AWS_SECRET_ACCESS_KEY = "awsKeySecret"

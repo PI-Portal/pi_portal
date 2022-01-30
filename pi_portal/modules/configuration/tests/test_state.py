@@ -2,7 +2,7 @@
 
 from unittest import TestCase, mock
 
-from pi_portal.modules import state
+from pi_portal.modules.configuration import state
 
 
 class TestRunningConfig(TestCase):

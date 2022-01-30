@@ -3,7 +3,7 @@
 import json
 from unittest import TestCase, mock
 
-from pi_portal.modules import config_file
+from pi_portal.modules.configuration import config_file
 
 MOCK_CONFIG = '{"mock_setting": true}'
 MOCK_JSON = {

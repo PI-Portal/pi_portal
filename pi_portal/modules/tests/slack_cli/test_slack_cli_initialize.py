@@ -3,8 +3,8 @@
 from unittest import TestCase, mock
 
 from pi_portal.modules import slack_cli
+from pi_portal.modules.configuration.tests.fixtures import mock_state
 from pi_portal.modules.system import supervisor
-from pi_portal.modules.tests.fixtures import mock_state
 
 
 class TestSlackCLI(TestCase):
