@@ -1,6 +1,6 @@
 """Test Slack CLI Class."""
 
-from pi_portal.modules.tests.slack_cli.fixtures.harness import (
+from pi_portal.modules.integrations.slack_cli.tests.fixtures.harness import (
     TestSlackCLIHarness,
 )
 
