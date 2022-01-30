@@ -160,7 +160,7 @@ class SlackCLI:
 
       self.slack_client.send_message(
           f"System Uptime > {system_uptime}\n"
-          f"Monitor Uptime > {monitor_uptime}\n"
+          f"Door Monitor Uptime > {monitor_uptime}\n"
           f"Bot Uptime > {bot_uptime}"
       )
 
