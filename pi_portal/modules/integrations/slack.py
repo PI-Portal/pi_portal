@@ -1,9 +1,9 @@
 """Slack Integration."""
 
-from pi_portal.modules import slack_cli
 from pi_portal.modules.configuration import state
 from pi_portal.modules.general.logger import LOG_UUID
 from pi_portal.modules.integrations import motion
+from pi_portal.modules.integrations.slack_cli import slack_cli
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError, SlackRequestError
 from slack_sdk.rtm_v2 import RTMClient

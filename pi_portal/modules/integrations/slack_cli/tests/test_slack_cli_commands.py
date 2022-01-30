@@ -3,11 +3,11 @@
 from unittest import mock
 
 from freezegun import freeze_time
-from pi_portal.modules import slack_cli
-from pi_portal.modules.system import supervisor
-from pi_portal.modules.tests.slack_cli.fixtures.harness import (
+from pi_portal.modules.integrations.slack_cli import slack_cli
+from pi_portal.modules.integrations.slack_cli.tests.fixtures.harness import (
     TestSlackCLIHarness,
 )
+from pi_portal.modules.system import supervisor
 
 
 class TestSlackCLI(TestSlackCLIHarness):
