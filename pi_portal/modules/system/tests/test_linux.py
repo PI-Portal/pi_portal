@@ -2,7 +2,7 @@
 
 from unittest import TestCase, mock
 
-from pi_portal.modules import linux
+from pi_portal.modules.system import linux
 
 MOCK_UPTIME_CONTENT = "52675.05 102804.94"
 

@@ -3,7 +3,7 @@
 import xmlrpc.client
 from unittest import TestCase, mock
 
-from pi_portal.modules import supervisor
+from pi_portal.modules.system import supervisor
 
 
 class TestSupervisorClient(TestCase):

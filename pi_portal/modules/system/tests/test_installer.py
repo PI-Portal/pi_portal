@@ -5,12 +5,12 @@ import pathlib
 from unittest import TestCase, mock
 
 from pi_portal import config
-from pi_portal.modules import installer
+from pi_portal.modules.system import installer
 from pi_portal.modules.tests.fixtures import mock_state
 
 SCRIPT_DIRECTORY = pathlib.Path(
     os.path.dirname(__file__)
-).parent.parent / "installation" / "scripts"
+).parent.parent.parent / "installation" / "scripts"
 
 MOCK_CONFIG_FILE_CONTENT = {
     'LOGZ_IO_CODE': "Mock Log Code"
