@@ -5,7 +5,7 @@ import os
 
 import requests
 from pi_portal import config
-from pi_portal.modules import s3
+from pi_portal.modules.integrations import s3
 from requests.adapters import HTTPAdapter
 from urllib3 import Retry
 

@@ -4,7 +4,8 @@ import logging
 from unittest import TestCase, mock
 
 from pi_portal import config
-from pi_portal.modules import monitor, slack
+from pi_portal.modules import monitor
+from pi_portal.modules.integrations import slack
 from pi_portal.modules.tests.fixtures import mock_state
 
 

@@ -8,7 +8,7 @@ from enum import Enum
 from typing import Dict, Optional, cast
 
 from pi_portal import config
-from pi_portal.modules import slack
+from pi_portal.modules.integrations import slack
 
 if os.uname()[4][:3] != 'arm':
   import fake_rpi

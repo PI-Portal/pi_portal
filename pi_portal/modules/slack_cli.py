@@ -5,11 +5,11 @@ from datetime import datetime
 from typing import TYPE_CHECKING, List
 
 import humanize
-from pi_portal.modules import motion
+from pi_portal.modules.integrations import motion
 from pi_portal.modules.system import linux, supervisor
 
 if TYPE_CHECKING:
-  from pi_portal.modules.slack import Client  # pragma: no cover
+  from pi_portal.modules.integrations.slack import Client  # pragma: no cover
 
 
 class SlackCLI:

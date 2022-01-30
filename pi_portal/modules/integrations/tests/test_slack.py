@@ -2,7 +2,7 @@
 
 from unittest import TestCase, mock
 
-from pi_portal.modules import motion, slack
+from pi_portal.modules.integrations import motion, slack
 from pi_portal.modules.tests.fixtures import mock_state
 from slack_sdk.errors import SlackRequestError
 
