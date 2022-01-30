@@ -1,7 +1,7 @@
-"""The Pi Portal Door Monitor Application."""
+"""The Pi Portal Door DoorMonitor Application."""
 
 import click
-from . import config, modules
+from . import config
 from .modules import configuration, general, integrations, system
 
 
@@ -14,7 +14,7 @@ def cli():
 def monitor():
   """Begin monitoring the door."""
   configuration.state.State().load()
-  door_monitor = modules.monitor.Monitor()
+  door_monitor = integrations.door_monitor.DoorMonitor()
   door_monitor.log = general.logger.setup_logger(
       door_monitor.log, config.LOGFILE_PATH
   )

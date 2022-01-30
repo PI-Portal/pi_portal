@@ -182,7 +182,7 @@ class TestSlackCLI(TestSlackCLIHarness):
     self.cli.command_uptime()
     self.cli.slack_client.send_message.assert_called_once_with(
         'System Uptime > 15 hours\n'
-        'Monitor Uptime > Not Running\n'
+        'Door Monitor Uptime > Not Running\n'
         'Bot Uptime > Not Running'
     )
 
@@ -198,7 +198,7 @@ class TestSlackCLI(TestSlackCLIHarness):
     self.cli.command_uptime()
     self.cli.slack_client.send_message.assert_called_once_with(
         'System Uptime > 15 hours\n'
-        'Monitor Uptime > 4 hours\n'
+        'Door Monitor Uptime > 4 hours\n'
         'Bot Uptime > Not Running'
     )
 
@@ -214,7 +214,7 @@ class TestSlackCLI(TestSlackCLIHarness):
     self.cli.command_uptime()
     self.cli.slack_client.send_message.assert_called_once_with(
         'System Uptime > 15 hours\n'
-        'Monitor Uptime > Not Running\n'
+        'Door Monitor Uptime > Not Running\n'
         'Bot Uptime > 3 hours'
     )
 
@@ -230,7 +230,7 @@ class TestSlackCLI(TestSlackCLIHarness):
     self.cli.command_uptime()
     self.cli.slack_client.send_message.assert_called_once_with(
         'System Uptime > 15 hours\n'
-        'Monitor Uptime > 3 hours\n'
+        'Door Monitor Uptime > 3 hours\n'
         'Bot Uptime > 3 hours'
     )
 

@@ -1,31 +1,31 @@
-"""Test Door Monitor Class."""
+"""Test the DoorMonitor Class."""
 
 import logging
 from unittest import TestCase, mock
 
 from pi_portal import config
-from pi_portal.modules import monitor
 from pi_portal.modules.configuration.tests.fixtures import mock_state
 from pi_portal.modules.integrations import slack
+from pi_portal.modules.integrations.gpio import door_monitor
 
 
 class TestMonitorLogger(TestCase):
-  """Test the Monitor class."""
+  """Test the DoorMonitor class."""
 
   @mock_state.patch
   def setUp(self):
-    self.monitor = monitor.Monitor()
+    self.monitor = door_monitor.DoorMonitor()
     self.monitor.slack_client = mock.MagicMock()
     self.monitor.interval = 0.01
 
   @mock_state.patch
   def test_initialize(self):
-    instance = monitor.Monitor()
+    instance = door_monitor.DoorMonitor()
     self.assertTrue(instance.running)
     self.assertEqual(instance.logger_name, "pi_portal")
     self.assertEqual(instance.state, config.GPIO_INITIAL_STATE)
     self.assertEqual(instance.interval, 0.5)
-    self.assertEqual(instance.GPIO, monitor.RPi.GPIO)
+    self.assertEqual(instance.GPIO, door_monitor.RPi.GPIO)
     self.assertEqual(instance.GPIO_OPEN, True)
     self.assertIsInstance(instance.log, logging.Logger)
     self.assertIsInstance(instance.slack_client, slack.Client)
@@ -33,7 +33,7 @@ class TestMonitorLogger(TestCase):
   @mock_state.patch
   @mock.patch("RPi.GPIO.setup")
   def test_initialize_hardware(self, m_setup):
-    instance = monitor.Monitor()
+    instance = door_monitor.DoorMonitor()
     for _, pin in instance.hardware.items():
       m_setup.assert_any_call(
           pin, instance.GPIO.IN, pull_up_down=instance.GPIO.PUD_UP
@@ -41,9 +41,10 @@ class TestMonitorLogger(TestCase):
     self.assertEqual(m_setup.call_count, len(instance.hardware))
 
   @mock.patch(
-      monitor.__name__ + ".Monitor.running", new_callable=mock.PropertyMock
+      door_monitor.__name__ + ".DoorMonitor.running",
+      new_callable=mock.PropertyMock
   )
-  @mock.patch(monitor.__name__ + ".Monitor.update_state")
+  @mock.patch(door_monitor.__name__ + ".DoorMonitor.update_state")
   def test_loop_no_change(self, m_update_state, m_running):
     m_running.side_effect = [True, False]
     m_update_state.return_value = None
@@ -55,9 +56,10 @@ class TestMonitorLogger(TestCase):
     self.monitor.slack_client.send_message.assert_not_called()
 
   @mock.patch(
-      monitor.__name__ + ".Monitor.running", new_callable=mock.PropertyMock
+      door_monitor.__name__ + ".DoorMonitor.running",
+      new_callable=mock.PropertyMock
   )
-  @mock.patch(monitor.__name__ + ".Monitor.GPIO.input")
+  @mock.patch(door_monitor.__name__ + ".DoorMonitor.GPIO.input")
   def test_loop_front_door_opens(self, m_input, m_running):
     self.monitor.state = {
         1: False,
@@ -75,9 +77,10 @@ class TestMonitorLogger(TestCase):
     )
 
   @mock.patch(
-      monitor.__name__ + ".Monitor.running", new_callable=mock.PropertyMock
+      door_monitor.__name__ + ".DoorMonitor.running",
+      new_callable=mock.PropertyMock
   )
-  @mock.patch(monitor.__name__ + ".Monitor.GPIO.input")
+  @mock.patch(door_monitor.__name__ + ".DoorMonitor.GPIO.input")
   def test_loop_back_door_opens(self, m_input, m_running):
     self.monitor.state = {
         1: False,
@@ -95,9 +98,10 @@ class TestMonitorLogger(TestCase):
     )
 
   @mock.patch(
-      monitor.__name__ + ".Monitor.running", new_callable=mock.PropertyMock
+      door_monitor.__name__ + ".DoorMonitor.running",
+      new_callable=mock.PropertyMock
   )
-  @mock.patch(monitor.__name__ + ".Monitor.GPIO.input")
+  @mock.patch(door_monitor.__name__ + ".DoorMonitor.GPIO.input")
   def test_loop_front_door_closes(self, m_input, m_running):
     self.monitor.state = {
         1: True,
@@ -115,9 +119,10 @@ class TestMonitorLogger(TestCase):
     )
 
   @mock.patch(
-      monitor.__name__ + ".Monitor.running", new_callable=mock.PropertyMock
+      door_monitor.__name__ + ".DoorMonitor.running",
+      new_callable=mock.PropertyMock
   )
-  @mock.patch(monitor.__name__ + ".Monitor.GPIO.input")
+  @mock.patch(door_monitor.__name__ + ".DoorMonitor.GPIO.input")
   def test_loop_back_door_closes(self, m_input, m_running):
     self.monitor.state = {
         1: True,

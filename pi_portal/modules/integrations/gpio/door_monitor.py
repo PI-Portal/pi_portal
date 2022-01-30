@@ -1,4 +1,4 @@
-"""Door Monitor Class."""
+"""DoorMonitor Class."""
 
 import logging
 import os
@@ -27,7 +27,7 @@ class DoorState(Enum):
   CLOSED = False
 
 
-class Monitor:
+class DoorMonitor:
   """Door state monitor and logger."""
 
   hardware: Dict[int, int] = config.GPIO_SWITCHES
