@@ -2,6 +2,7 @@
 
 import click
 from . import config, modules
+from .modules import system
 
 
 @click.group()
@@ -62,4 +63,4 @@ def installer(config_file: str):
   :param config_file: The path to the config file to use.
   """
 
-  modules.installer.installer(config_file)
+  system.installer.installer(config_file)
