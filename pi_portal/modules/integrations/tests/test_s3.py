@@ -5,7 +5,7 @@ from unittest import TestCase, mock
 
 from botocore.client import BaseClient
 from botocore.exceptions import ClientError
-from pi_portal.modules import s3
+from pi_portal.modules.integrations import s3
 from pi_portal.modules.tests.fixtures import mock_state
 
 

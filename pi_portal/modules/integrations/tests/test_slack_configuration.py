@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 
-from pi_portal.modules import slack
+from pi_portal.modules.integrations import slack
 from pi_portal.modules.logger import LOG_UUID
 
 

@@ -2,7 +2,7 @@
 
 import click
 from . import config, modules
-from .modules import system
+from .modules import integrations, system
 
 
 @click.group()
@@ -25,7 +25,7 @@ def monitor():
 def slack_bot():
   """Connect the interactive Slack bot."""
   modules.state.State().load()
-  slack_client = modules.slack.Client()
+  slack_client = integrations.slack.Client()
   slack_client.subscribe()
 
 
@@ -38,7 +38,7 @@ def upload_snapshot(filename: str):
   """
 
   modules.state.State().load()
-  slack_client = modules.slack.Client()
+  slack_client = integrations.slack.Client()
   slack_client.send_snapshot(filename)
 
 
@@ -51,7 +51,7 @@ def upload_video(filename: str):
   """
 
   modules.state.State().load()
-  slack_client = modules.slack.Client()
+  slack_client = integrations.slack.Client()
   slack_client.send_video(filename)
 
 
