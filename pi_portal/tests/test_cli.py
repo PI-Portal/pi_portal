@@ -22,7 +22,7 @@ class TestCLI(TestCase):
     m_monitor.Monitor.return_value.start.assert_called_once_with()
     m_state.State.return_value.load.assert_called_once_with()
 
-  @patch(cli.__name__ + ".modules.slack")
+  @patch(cli.__name__ + ".modules.integrations.slack")
   @patch(cli.__name__ + ".modules.state")
   def test_slack_bot(self, m_state, m_slack):
     command = "slack_bot"
@@ -31,7 +31,7 @@ class TestCLI(TestCase):
     m_slack.Client.return_value.subscribe.assert_called_once_with()
     m_state.State.return_value.load.assert_called_once_with()
 
-  @patch(cli.__name__ + ".modules.slack")
+  @patch(cli.__name__ + ".modules.integrations.slack")
   @patch(cli.__name__ + ".modules.state")
   def test_upload_snapshot(self, m_state, m_slack):
     mock_snapshot_name = __file__
@@ -43,7 +43,7 @@ class TestCLI(TestCase):
         mock_snapshot_name
     )
 
-  @patch(cli.__name__ + ".modules.slack")
+  @patch(cli.__name__ + ".modules.integrations.slack")
   @patch(cli.__name__ + ".modules.state")
   def test_upload_video(self, m_state, m_slack):
     mock_video_name = __file__

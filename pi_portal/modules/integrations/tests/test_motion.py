@@ -3,7 +3,7 @@
 from unittest import TestCase, mock
 
 from pi_portal import config
-from pi_portal.modules import motion, s3
+from pi_portal.modules.integrations import motion, s3
 from pi_portal.modules.tests.fixtures import mock_state
 
 
