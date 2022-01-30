@@ -13,17 +13,17 @@ class TestCLI(TestCase):
   def setUp(self):
     self.runner = CliRunner()
 
-  @patch(cli.__name__ + ".modules.monitor")
-  @patch(cli.__name__ + ".modules.configuration.state")
+  @patch(cli.__name__ + ".integrations.door_monitor")
+  @patch(cli.__name__ + ".configuration.state")
   def test_monitor(self, m_state, m_monitor):
     command = "monitor"
     self.runner.invoke(cli.cli, command)
-    m_monitor.Monitor.assert_called_once_with()
-    m_monitor.Monitor.return_value.start.assert_called_once_with()
+    m_monitor.DoorMonitor.assert_called_once_with()
+    m_monitor.DoorMonitor.return_value.start.assert_called_once_with()
     m_state.State.return_value.load.assert_called_once_with()
 
-  @patch(cli.__name__ + ".modules.integrations.slack")
-  @patch(cli.__name__ + ".modules.configuration.state")
+  @patch(cli.__name__ + ".integrations.slack")
+  @patch(cli.__name__ + ".configuration.state")
   def test_slack_bot(self, m_state, m_slack):
     command = "slack_bot"
     self.runner.invoke(cli.cli, command)
@@ -31,8 +31,8 @@ class TestCLI(TestCase):
     m_slack.Client.return_value.subscribe.assert_called_once_with()
     m_state.State.return_value.load.assert_called_once_with()
 
-  @patch(cli.__name__ + ".modules.integrations.slack")
-  @patch(cli.__name__ + ".modules.configuration.state")
+  @patch(cli.__name__ + ".integrations.slack")
+  @patch(cli.__name__ + ".configuration.state")
   def test_upload_snapshot(self, m_state, m_slack):
     mock_snapshot_name = __file__
     command = f"upload_snapshot {mock_snapshot_name}"
@@ -43,8 +43,8 @@ class TestCLI(TestCase):
         mock_snapshot_name
     )
 
-  @patch(cli.__name__ + ".modules.integrations.slack")
-  @patch(cli.__name__ + ".modules.configuration.state")
+  @patch(cli.__name__ + ".integrations.slack")
+  @patch(cli.__name__ + ".configuration.state")
   def test_upload_video(self, m_state, m_slack):
     mock_video_name = __file__
     command = f"upload_video {mock_video_name}"
@@ -55,8 +55,8 @@ class TestCLI(TestCase):
         mock_video_name
     )
 
-  @patch(cli.__name__ + ".modules.system.installer")
-  @patch(cli.__name__ + ".modules.configuration.state")
+  @patch(cli.__name__ + ".system.installer")
+  @patch(cli.__name__ + ".configuration.state")
   def test_installer(self, m_state, m_installer):
     mock_config_file = __file__
     command = f"installer {mock_config_file}"
