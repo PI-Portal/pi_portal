@@ -1,11 +1,11 @@
 """User configuration loader."""
 
 import json
-import os
 import pathlib
 import pprint
 from typing import Dict
 
+import pi_portal as root_module
 from jsonschema.validators import validator_for
 
 
@@ -36,7 +36,7 @@ class UserConfiguration:
   def validate(self):
     """Validate the end user's configuration file."""
 
-    schema_path = pathlib.Path(os.path.dirname(__file__)).parent / "schema"
+    schema_path = pathlib.Path(root_module.__file__).parent / "schema"
 
     with open(
         schema_path / "config_schema.json", "r", encoding="utf-8"
