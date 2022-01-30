@@ -5,7 +5,7 @@ from enum import Enum
 from typing import Dict, cast
 
 from pi_portal import config
-from pi_portal.modules.socket import UnixStreamTransport
+from pi_portal.modules.system.socket import UnixStreamTransport
 
 
 class ProcessStatus(Enum):

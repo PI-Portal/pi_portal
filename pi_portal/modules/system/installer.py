@@ -19,7 +19,7 @@ def installer(user_config_file: str):
 
   script_directory = pathlib.Path(
       os.path.dirname(__file__)
-  ).parent / "installation" / "scripts"
+  ).parent.parent / "installation" / "scripts"
 
   os.chdir(script_directory)
   os.system(  # nosec

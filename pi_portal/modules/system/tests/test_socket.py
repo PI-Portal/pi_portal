@@ -2,7 +2,7 @@
 
 from unittest import TestCase, mock
 
-from pi_portal.modules import socket
+from pi_portal.modules.system import socket
 
 
 class TestUnixStreamTransport(TestCase):

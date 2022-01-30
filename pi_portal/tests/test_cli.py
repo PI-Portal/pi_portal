@@ -55,7 +55,7 @@ class TestCLI(TestCase):
         mock_video_name
     )
 
-  @patch(cli.__name__ + ".modules.installer")
+  @patch(cli.__name__ + ".modules.system.installer")
   @patch(cli.__name__ + ".modules.state")
   def test_installer(self, m_state, m_installer):
     mock_config_file = __file__
