@@ -26,9 +26,10 @@ class TestSlackClient(TestCase):
     self.assertIsInstance(client.config, slack.ClientConfiguration)
 
   @mock.patch(slack.__name__ + ".slack_cli.SlackCLI")
-  def test_handle_event_invalid_command(self, m_slack_cli):
-    m_slack_cli.return_value.prefix = "command_"
-    m_slack_cli.return_value.get_commands.return_value = ['command_id']
+  @mock.patch(slack.__name__ + ".slack_cli.get_available_commands")
+  def test_handle_event_invalid_command(self, m_get, m_slack_cli):
+    m_slack_cli.return_value.method_prefix = "command_"
+    m_get.return_value = ['not_the_called_command']
     test_event = {
         "text": "invalid_command"
     }
@@ -37,9 +38,10 @@ class TestSlackClient(TestCase):
     m_slack_cli.return_value.command_id.assert_not_called()
 
   @mock.patch(slack.__name__ + ".slack_cli.SlackCLI")
-  def test_handle_event_valid_command(self, m_slack_cli):
-    m_slack_cli.return_value.prefix = "command_"
-    m_slack_cli.return_value.get_commands.return_value = ['command_id']
+  @mock.patch(slack.__name__ + ".slack_cli.get_available_commands")
+  def test_handle_event_valid_command(self, m_get, m_slack_cli):
+    m_slack_cli.return_value.method_prefix = "command_"
+    m_get.return_value = ['id']
     test_event = {
         "text": "id"
     }

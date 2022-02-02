@@ -37,11 +37,11 @@ class Client:
     :param event: A validated Slack RTM event message.
     """
 
-    cli = slack_cli.SlackCLI(client=self)
-    command = cli.prefix + event['text'].lower()
-    command_list = cli.get_commands()
+    command = event['text'].lower()
+    command_list = slack_cli.get_available_commands()
     if command in command_list:
-      getattr(cli, command)()
+      cli = slack_cli.SlackCLI(client=self)
+      getattr(cli, cli.method_prefix + command)()
 
   def handle_rtm_message(self, event: dict):
     """Validate a RTM message bound for this bot's channel.
