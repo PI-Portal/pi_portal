@@ -42,6 +42,8 @@ autosummary_mock_imports = [
     "pi_portal.modules.integrations.tests",
     "pi_portal.modules.integrations.gpio.tests",
     "pi_portal.modules.integrations.slack_cli.tests",
+    "pi_portal.modules.integrations.slack_cli.commands.tests",
+    "pi_portal.modules.integrations.slack_cli.commands.bases.tests",
     "pi_portal.modules.system.tests",
 ]
 
