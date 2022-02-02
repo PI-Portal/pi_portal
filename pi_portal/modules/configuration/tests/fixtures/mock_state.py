@@ -13,12 +13,12 @@ MOCK_SLACK_CHANNEL_ID = "CHHH111"
 MOCK_SLACK_TOKEN = "secretValue"
 MOCK_S3_BUCKET_NAME = 'MOCK_S3_BUCKET_NAME'
 
-RT = TypeVar("RT")
+TypeReturn = TypeVar("TypeReturn")
 
 
-def patch(func: Callable[..., RT]) -> Callable[..., RT]:
+def patch(func: Callable[..., TypeReturn]) -> Callable[..., TypeReturn]:
 
-  def patched_function(*args: Any, **kwargs: Any) -> RT:
+  def patched_function(*args: Any, **kwargs: Any) -> TypeReturn:
 
     with mock.patch(state.__name__ + ".State") as mock_state:
 
