@@ -1,30 +1,14 @@
 """A Supervisord client over a unix socket."""
 
 import xmlrpc.client
-from enum import Enum
 from typing import Dict, cast
 
 from pi_portal import config
 from pi_portal.modules.system.socket import UnixStreamTransport
-
-
-class ProcessStatus(Enum):
-  """Supervisor process states."""
-
-  FATAL = 'FATAL'
-  RESTARTING = 'RESTARTING'
-  RUNNING = 'RUNNING'
-  SHUTDOWN = 'SHUTDOWN'
-  STOPPED = 'STOPPED'
-
-
-class ProcessList(Enum):
-  """Supervisor processes."""
-
-  BOT = 'bot'
-  CAMERA = 'camera'
-  MONITOR = 'monitor'
-  FILEBEAT = 'filebeat'
+from pi_portal.modules.system.supervisor_config import (
+    ProcessList,
+    ProcessStatus,
+)
 
 
 class SupervisorException(Exception):
