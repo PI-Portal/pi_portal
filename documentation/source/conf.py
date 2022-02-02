@@ -45,6 +45,7 @@ autosummary_mock_imports = [
     "pi_portal.modules.integrations.slack_cli.commands.tests",
     "pi_portal.modules.integrations.slack_cli.commands.bases.tests",
     "pi_portal.modules.system.tests",
+    "pi_portal.modules.mixins.tests",
 ]
 
 source_suffix = {
