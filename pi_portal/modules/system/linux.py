@@ -1,5 +1,6 @@
 """Linux utilities for the Pi Portal project."""
 
+import time
 from datetime import timedelta
 
 import humanize
@@ -8,10 +9,9 @@ import humanize
 def uptime() -> str:
   """Report the system's uptime.
 
-  :return: The system's uptime as a naturalized string.
+  :returns: The system's uptime as a naturalized string.
   """
 
-  with open('/proc/uptime', 'r', encoding='utf-8') as file_handle:
-    uptime_linux_seconds = float(file_handle.readline().split()[0])
-    uptime_string_seconds = timedelta(seconds=uptime_linux_seconds)
-  return humanize.naturaldelta(uptime_string_seconds)
+  uptime_linux_seconds = time.monotonic()
+  uptime_timedelta = timedelta(seconds=uptime_linux_seconds)
+  return humanize.naturaldelta(uptime_timedelta)
