@@ -8,25 +8,27 @@ from pi_portal.modules.configuration import state
 class TestRunningConfig(TestCase):
   """Test the RunningConfig monostate."""
 
-  def setUp(self):
+  def setUp(self) -> None:
     self.state = state.State()
 
-  def test_mono_state(self):
-    self.state.test_attribute = 100
+  def test_mono_state(self) -> None:
+    self.state.user_config = {
+        'test': 'value'
+    }
 
     instance2 = state.State()
-    self.assertEqual(
-        self.state.test_attribute, getattr(instance2, 'test_attribute')
-    )
+    self.assertEqual(self.state.user_config, getattr(instance2, 'user_config'))
 
-  @mock.patch(state.__name__ + ".config_file.UserConfiguration")
-  def test_load_config(self, m_user_config):
+  @mock.patch(state.__name__ + ".UserConfiguration")
+  def test_load_config(self, m_user_config: mock.Mock) -> None:
     mock_config = {
         "a": "b"
     }
-    m_user_config.return_value.load.return_value = mock_config
+    m_user_config.return_value.user_config = mock_config
 
     self.state.load()
+
+    m_user_config.return_value.load.assert_called_once_with()
     self.assertEqual(self.state.user_config, mock_config)
 
     instance2 = state.State()
