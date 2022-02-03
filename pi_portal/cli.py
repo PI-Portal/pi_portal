@@ -2,7 +2,7 @@
 
 import click
 from . import config
-from .modules import configuration, general, integrations, system
+from .modules import configuration, integrations, system
 
 
 @click.group()
@@ -17,7 +17,7 @@ def cli(ctx: click.Context) -> None:
   running_state.load()
   ctx.obj = {
       'running_state': running_state,
-      'logging_config': general.LoggingConfiguration()
+      'logging_config': configuration.LoggingConfiguration()
   }
 
 
