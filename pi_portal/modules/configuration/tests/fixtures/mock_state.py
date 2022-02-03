@@ -31,6 +31,7 @@ def patch(func: Callable[..., TypeReturn]) -> Callable[..., TypeReturn]:
           "SLACK_CHANNEL_ID": MOCK_SLACK_CHANNEL_ID,
           "S3_BUCKET_NAME": MOCK_S3_BUCKET_NAME,
       }
+      mock_state.return_value.log_uuid = "test_uuid"
 
       return func(*args, **kwargs)
 

@@ -1,5 +1,6 @@
 """Slack CLI ID command."""
 
+from pi_portal.modules.configuration import state
 from .bases.command import CommandBase
 
 
@@ -9,4 +10,5 @@ class IDCommand(CommandBase):
   def invoke(self) -> None:
     """Send the unique id for this bot's instance."""
 
-    self.slack_client.send_message(f"ID: {self.slack_client.config.log_uuid}")
+    running_state = state.State()
+    self.slack_client.send_message(f"ID: {running_state.log_uuid}")

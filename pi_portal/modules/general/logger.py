@@ -1,27 +1,34 @@
 """Logger configuration."""
 
 import logging
-import uuid
 
-LOG_UUID = str(uuid.uuid4())
-
-LOG_FORMATTER = logging.Formatter(
-    "%(asctime)s [ " + LOG_UUID + " ] [ %(levelname)s ] %(message)s"
-)
+from pi_portal.modules.configuration import state
 
 
-def setup_logger(log: logging.Logger, fname: str) -> logging.Logger:
-  """Configure application logging.
+class LoggingConfiguration:
+  """Pi Portal logging configuration."""
 
-  :param log: The logger instance to configure.
-  :param fname: The path to write logs to.
+  level = logging.DEBUG
 
-  :returns: The configured logger instance.
-  """
+  def __init__(self) -> None:
+    running_state = state.State()
+    self.formatter = logging.Formatter(
+        "%(asctime)s [ " + running_state.log_uuid +
+        " ] [ %(levelname)s ] %(message)s"
+    )
 
-  log.setLevel(logging.DEBUG)
-  log.handlers = []
-  handler = logging.FileHandler(fname, delay=True)
-  handler.setFormatter(LOG_FORMATTER)
-  log.addHandler(handler)
-  return log
+  def configure(self, log: logging.Logger, fname: str) -> logging.Logger:
+    """Configure application logging.
+
+    :param log: The logger instance to configure.
+    :param fname: The path to write logs to.
+
+    :returns: The configured logger instance.
+    """
+
+    log.setLevel(self.level)
+    log.handlers = []
+    handler = logging.FileHandler(fname, delay=True)
+    handler.setFormatter(self.formatter)
+    log.addHandler(handler)
+    return log
