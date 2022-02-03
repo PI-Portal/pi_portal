@@ -8,7 +8,7 @@ from .. import cli
 
 
 @patch(cli.__name__ + ".configuration.state")
-@patch(cli.__name__ + ".general.LoggingConfiguration")
+@patch(cli.__name__ + ".configuration.LoggingConfiguration")
 class TestCLI(TestCase):
   """Test the Click CLI."""
 
