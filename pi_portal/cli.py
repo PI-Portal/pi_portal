@@ -41,7 +41,7 @@ def monitor(ctx: click.Context) -> None:
 def slack_bot() -> None:
   """Connect the interactive Slack bot."""
 
-  slack_client = integrations.slack.Client()
+  slack_client = integrations.slack.SlackClient()
   slack_client.subscribe()
 
 
@@ -53,7 +53,7 @@ def upload_snapshot(filename: str) -> None:
   :param filename: The path to the file to upload.
   """
 
-  slack_client = integrations.slack.Client()
+  slack_client = integrations.slack.SlackClient()
   slack_client.send_snapshot(filename)
 
 
@@ -65,7 +65,7 @@ def upload_video(filename: str) -> None:
   :param filename: The path to the file to upload.
   """
 
-  slack_client = integrations.slack.Client()
+  slack_client = integrations.slack.SlackClient()
   slack_client.send_video(filename)
 
 

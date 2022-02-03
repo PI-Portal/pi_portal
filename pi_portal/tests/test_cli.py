@@ -55,8 +55,8 @@ class TestCLI(TestCase):
     self.check_logging(m_logger)
     self.check_state(m_state)
 
-    m_slack.Client.assert_called_once_with()
-    m_slack.Client.return_value.subscribe.assert_called_once_with()
+    m_slack.SlackClient.assert_called_once_with()
+    m_slack.SlackClient.return_value.subscribe.assert_called_once_with()
 
   @patch(cli.__name__ + ".integrations.slack")
   def test_upload_snapshot(
@@ -72,8 +72,8 @@ class TestCLI(TestCase):
     self.check_logging(m_logger)
     self.check_state(m_state)
 
-    m_slack.Client.assert_called_once_with()
-    m_slack.Client.return_value.send_snapshot.assert_called_once_with(
+    m_slack.SlackClient.assert_called_once_with()
+    m_slack.SlackClient.return_value.send_snapshot.assert_called_once_with(
         mock_snapshot_name
     )
 
@@ -91,8 +91,8 @@ class TestCLI(TestCase):
     self.check_logging(m_logger)
     self.check_state(m_state)
 
-    m_slack.Client.assert_called_once_with()
-    m_slack.Client.return_value.send_video.assert_called_once_with(
+    m_slack.SlackClient.assert_called_once_with()
+    m_slack.SlackClient.return_value.send_video.assert_called_once_with(
         mock_video_name
     )
 
