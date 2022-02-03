@@ -1,4 +1,4 @@
-"""Test Supervisor Client Class."""
+"""Test Supervisor SlackClient Class."""
 
 import xmlrpc.client
 from unittest import TestCase, mock
