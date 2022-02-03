@@ -8,7 +8,7 @@ from enum import Enum
 from typing import Dict, Optional, cast
 
 from pi_portal import config
-from pi_portal.modules.integrations import slack
+from pi_portal.modules.integrations.slack import client
 
 if os.uname()[4][:3] != 'arm':
   import fake_rpi
@@ -43,7 +43,7 @@ class DoorMonitor:
     self.GPIO.setmode(self.GPIO.BCM)
     for _, pin in self.hardware.items():
       self.GPIO.setup(pin, self.GPIO.IN, pull_up_down=self.GPIO.PUD_UP)
-    self.slack_client = slack.Client()
+    self.slack_client = client.SlackClient()
 
   def start(self):
     """Begin the monitoring loop."""

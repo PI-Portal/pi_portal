@@ -5,8 +5,8 @@ from unittest import TestCase, mock
 
 from pi_portal import config
 from pi_portal.modules.configuration.tests.fixtures import mock_state
-from pi_portal.modules.integrations import slack
 from pi_portal.modules.integrations.gpio import door_monitor
+from pi_portal.modules.integrations.slack import client
 
 
 class TestMonitorLogger(TestCase):
@@ -28,7 +28,7 @@ class TestMonitorLogger(TestCase):
     self.assertEqual(instance.GPIO, door_monitor.RPi.GPIO)
     self.assertEqual(instance.GPIO_OPEN, True)
     self.assertIsInstance(instance.log, logging.Logger)
-    self.assertIsInstance(instance.slack_client, slack.Client)
+    self.assertIsInstance(instance.slack_client, client.SlackClient)
 
   @mock_state.patch
   @mock.patch("RPi.GPIO.setup")
