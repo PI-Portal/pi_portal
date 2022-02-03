@@ -11,13 +11,19 @@ class TestRunningConfig(TestCase):
   def setUp(self) -> None:
     self.state = state.State()
 
-  def test_mono_state(self) -> None:
+  def test_mono_state_user_config(self) -> None:
     self.state.user_config = {
         'test': 'value'
     }
 
     instance2 = state.State()
     self.assertEqual(self.state.user_config, getattr(instance2, 'user_config'))
+
+  def test_mono_state_log_uuid(self) -> None:
+    self.state.log_uuid = "test id"
+
+    instance2 = state.State()
+    self.assertEqual(self.state.log_uuid, getattr(instance2, 'log_uuid'))
 
   @mock.patch(state.__name__ + ".UserConfiguration")
   def test_load_config(self, m_user_config: mock.Mock) -> None:

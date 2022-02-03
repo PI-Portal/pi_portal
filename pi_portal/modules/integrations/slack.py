@@ -1,7 +1,6 @@
 """Slack Integration."""
 
 from pi_portal.modules.configuration import state
-from pi_portal.modules.general.logger import LOG_UUID
 from pi_portal.modules.integrations import motion
 from pi_portal.modules.integrations.slack_cli import slack_cli
 from slack_sdk import WebClient
@@ -12,7 +11,6 @@ from slack_sdk.rtm_v2 import RTMClient
 class ClientConfiguration:
   """Configuration for the Slack integration."""
 
-  log_uuid = LOG_UUID
   interval = 1
   upload_file_title = "Motion Upload"
 

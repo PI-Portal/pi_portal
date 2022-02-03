@@ -1,5 +1,6 @@
 """Borg monostate of the current running configuration."""
 
+import uuid
 from typing import Any, Dict
 
 from pi_portal.modules.configuration.user_config import UserConfiguration
@@ -14,6 +15,7 @@ class State:
     self.__dict__ = self.__shared_state
     if not self.__shared_state:
       self.user_config: Dict[str, str] = {}
+      self.log_uuid = str(uuid.uuid4())
 
   def load(self) -> None:
     """Load the end user configuration."""
