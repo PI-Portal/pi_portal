@@ -38,7 +38,6 @@ extensions = [
 autosummary_mock_imports = [
     "pi_portal.tests",
     "pi_portal.modules.configuration.tests",
-    "pi_portal.modules.general.tests",
     "pi_portal.modules.integrations.tests",
     "pi_portal.modules.integrations.gpio.tests",
     "pi_portal.modules.integrations.slack_cli.tests",

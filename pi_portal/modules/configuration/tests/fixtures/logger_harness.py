@@ -3,8 +3,7 @@
 import logging
 from unittest import TestCase
 
-from pi_portal.modules.configuration import state
-from pi_portal.modules.general import logger
+from pi_portal.modules.configuration import logger, state
 
 
 class LoggingConfigurationTestHarness(TestCase):
