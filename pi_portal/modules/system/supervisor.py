@@ -12,7 +12,7 @@ from pi_portal.modules.system.supervisor_config import (
 
 
 class SupervisorException(Exception):
-  """Exceptions for the Supervisor Client."""
+  """Exceptions for the Supervisor SlackClient."""
 
 
 class SupervisorClient:
