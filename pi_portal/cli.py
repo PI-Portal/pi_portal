@@ -32,7 +32,7 @@ def monitor(ctx: click.Context) -> None:
   door_monitor = integrations.door_monitor.DoorMonitor()
   door_monitor.log = ctx.obj['logging_config'].configure(
       door_monitor.log,
-      config.LOGFILE_PATH,
+      config.DOOR_MONITOR_LOGFILE_PATH,
   )
   door_monitor.start()
 
