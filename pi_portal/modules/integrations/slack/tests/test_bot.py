@@ -1,5 +1,5 @@
 """Test the SlackBot class."""
-
+import logging
 from typing import cast
 from unittest import TestCase, mock
 
@@ -18,10 +18,15 @@ class TestSlackBot(TestCase):
     self.bot = bot.SlackBot()
     self.bot.slack_client = mock.MagicMock()
     self.bot.command_list = self.command_list
+    self.bot.log = mock.Mock()
+
+  def _mock_log(self) -> mock.Mock:
+    return cast(mock.Mock, self.bot.log)
 
   @mock_state.patch
   def test_initialize(self) -> None:
     slack_bot = bot.SlackBot()
+    self.assertIsInstance(slack_bot.log, logging.Logger)
     self.assertEqual(slack_bot.rtm.token, mock_state.MOCK_SLACK_TOKEN)
     self.assertEqual(slack_bot.channel_id, mock_state.MOCK_SLACK_CHANNEL_ID)
     self.assertListEqual(slack_bot.command_list, cli.get_available_commands())
@@ -34,12 +39,21 @@ class TestSlackBot(TestCase):
     self.bot.handle_command(self.test_command)
     m_slack_cli.assert_called_once_with(bot=self.bot)
     m_slack_cli.return_value.command_id.assert_called_once_with()
+    self._mock_log().debug.assert_called_once_with(
+        "Received command: '%s'", self.test_command
+    )
+    self._mock_log().info.assert_called_once_with(
+        "Executing valid command: '%s'", self.test_command
+    )
 
   @mock.patch(slack.__name__ + ".cli.handler.SlackCLICommandHandler")
   def test_handle_command_invalid(self, m_slack_cli: mock.Mock) -> None:
     invalid_command = "Invalid Command"
     self.bot.handle_command(invalid_command)
     m_slack_cli.return_value.command_id.assert_not_called()
+    self._mock_log().debug.assert_called_once_with(
+        "Received command: '%s'", invalid_command
+    )
 
   def test_handle_event_valid(self) -> None:
     test_event = bot.TypeEvent(
