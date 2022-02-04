@@ -4,11 +4,23 @@ filebeat.inputs:
 
 - type: log
   paths:
-    - /var/log/pi_portal.log
+    - /var/log/pi_portal.door.log
   fields:
     logzio_codec: plain
     token: <<LOGZ_IO_CODE>>
     type: pi_portal
+  fields_under_root: true
+  encoding: utf-8
+  ignore_older: 12h
+
+- type: log
+  paths:
+    - /var/log/pi_portal.slack_bot.log
+    - /var/log/pi_portal.slack_client.log
+  fields:
+    logzio_codec: plain
+    token: <<LOGZ_IO_CODE>>
+    type: pi_portal_slack
   fields_under_root: true
   encoding: utf-8
   ignore_older: 12h

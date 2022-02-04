@@ -16,9 +16,13 @@ class TestSlackClient(TestCase):
   def setUp(self) -> None:
     self.slack_client = client.SlackClient()
     self.slack_client.motion_client = mock.MagicMock()
+    self.slack_client.log = mock.Mock()
 
   def _mock_motion_client(self) -> mock.Mock:
     return cast(mock.Mock, self.slack_client.motion_client)
+
+  def _mock_log(self) -> mock.Mock:
+    return cast(mock.Mock, self.slack_client.log)
 
   @mock_state.patch
   def test_initialize(self) -> None:
@@ -49,6 +53,11 @@ class TestSlackClient(TestCase):
             text=test_message,
         )] * self.slack_client.retries
     )
+    self.assertListEqual(
+        self._mock_log().error.mock_calls,
+        [mock.call("Failed to send message: '%s'", test_message)] *
+        self.slack_client.retries
+    )
 
   def test_send_file(self) -> None:
     test_file = "/path/to/mock/file.txt"
@@ -76,6 +85,11 @@ class TestSlackClient(TestCase):
             )
         ] * self.slack_client.retries
     )
+    self.assertListEqual(
+        self._mock_log().error.mock_calls,
+        [mock.call("Failed to send file: '%s'", test_file)] *
+        self.slack_client.retries
+    )
 
   def test_send_snapshot(self) -> None:
     test_snapshot = "/path/to/mock/snapshot.jpg"
@@ -90,16 +104,21 @@ class TestSlackClient(TestCase):
     test_snapshot = "/path/to/mock/snapshot.jpg"
     with mock.patch.object(self.slack_client, "send_file") as m_send:
       with mock.patch.object(self.slack_client, "web") as m_web:
-        self._mock_motion_client(
-        ).cleanup_snapshot.side_effect = (motion.MotionException("Boom!"))
+        self._mock_motion_client().cleanup_snapshot.side_effect = (
+          motion.MotionException("Boom!"),
+        )
         self.slack_client.send_snapshot(test_snapshot)
 
     m_send.assert_called_once_with(test_snapshot)
-    self._mock_motion_client(
-    ).cleanup_snapshot.assert_called_once_with(test_snapshot)
+    self._mock_motion_client().cleanup_snapshot.assert_called_once_with(
+      test_snapshot,
+    )
     m_web.chat_postMessage.assert_called_once_with(
         channel=self.slack_client.channel,
         text="An error occurred cleaning up this snapshot.",
+    )
+    self._mock_log().error.assert_called_once_with(
+      'Failed to remove old motion snapshot!',
     )
 
   def test_send_video(self) -> None:
@@ -123,4 +142,7 @@ class TestSlackClient(TestCase):
     m_web.chat_postMessage.assert_called_once_with(
         channel=self.slack_client.channel,
         text="An error occurred archiving this video.",
+    )
+    self._mock_log().error.assert_called_once_with(
+      "Failed to archive motion video capture!",
     )
