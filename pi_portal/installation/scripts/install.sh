@@ -2,6 +2,12 @@
 
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
+
+configure_log_file() {
+  touch "$1"
+  chown pi_portal:pi_portal "$1"
+}
+
 configure_motion() {
   service motion stop
   update-rc.d -f motion remove
@@ -13,14 +19,12 @@ configure_motion() {
 
 configure_pi_portal() {
   mkdir -p /opt/pi_portal
-  touch /var/log/pi_portal.log
 
   cp ./installation/scripts/portal.sh /opt/pi_portal/portal.sh
   cp "${CONFIG_FILE}" /opt/pi_portal/config.json
 
   chmod +x /opt/pi_portal/portal.sh
   chown -R pi_portal:pi_portal /opt/pi_portal
-  chown pi_portal:pi_portal /var/log/pi_portal.log
   chmod 700 /opt/pi_portal/config.json
 }
 
@@ -62,6 +66,10 @@ main() {
     adduser --disabled-login --gecos "" --shell /bin/false --no-create-home pi_portal
 
     install_filebeat
+
+    configure_log_file "/var/log/pi_portal.door.log"
+    configure_log_file "/var/log/pi_portal.slack_bot.log"
+    configure_log_file "/var/log/pi_portal.slack_client.log"
 
     configure_supervisor
     configure_pi_portal
