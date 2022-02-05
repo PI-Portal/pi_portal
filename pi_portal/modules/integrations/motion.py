@@ -2,6 +2,7 @@
 
 import glob
 import os
+from typing import List
 
 import requests
 from pi_portal import config
@@ -19,17 +20,18 @@ class Motion:
 
   snapshot_url = 'http://localhost:8080/0/action/snapshot'
   snapshot_fname = os.path.join(config.MOTION_FOLDER, 'lastsnap.jpg')
+  video_glob_pattern = os.path.join(config.MOTION_FOLDER, '/*.mp4')
   snapshot_retries = 10
   s3_retries = 3
 
-  def __init__(self):
-    self.data_folder = config.MOTION_FOLDER
+  def __init__(self) -> None:
     self.s3_client = s3.S3Bucket()
 
-  def archive_video(self, file_name: str):
+  def archive_video(self, file_name: str) -> None:
     """Copy video to S3 for retention and delete locally.
 
-    :param file_name: The path to upload and then remove.
+    :param file_name: The path to the file to upload and then delete.
+    :raises: :class:`MotionException`
     """
     try:
       self.s3_client.upload(file_name)
@@ -37,10 +39,11 @@ class Motion:
     except (s3.S3BucketException, OSError) as exc:
       raise MotionException("Unable to archive video to S3.") from exc
 
-  def cleanup_snapshot(self, file_name: str):
+  def cleanup_snapshot(self, file_name: str) -> None:
     """Delete snapshot locally.
 
-    :param file_name: The path to remove.
+    :param file_name: The path to the file to delete.
+    :raises: :class:`MotionException`
     """
     try:
       os.remove(file_name)
@@ -50,15 +53,19 @@ class Motion:
   def get_latest_video_filename(self) -> str:
     """Retrieve the filename of the latest video recording.
 
-    :return: The path of the latest video file that was created.
+    :returns: The path of the latest video file that was created.
+    :raises: :class:`MotionException`
     """
     return max(self._list_videos(), key=os.path.getctime)
 
-  def _list_videos(self):
-    return glob.glob(os.path.join(self.data_folder, '/*.mp4'))
+  def _list_videos(self) -> List[str]:
+    return glob.glob(self.video_glob_pattern)
 
-  def take_snapshot(self):
-    """Take a snapshot with Motion."""
+  def take_snapshot(self) -> None:
+    """Take a snapshot with Motion.
+
+    :raises: :class:`MotionException`
+    """
 
     retry_strategy = Retry(total=self.snapshot_retries)
     adapter = HTTPAdapter(max_retries=retry_strategy)
