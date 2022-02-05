@@ -31,10 +31,11 @@
 
   [tool.mypy]
     ignore_missing_imports = false
+    mypy_path = "pi_portal/stubs"
 
     [[tool.mypy.overrides]]
       ignore_missing_imports = true
-      module = ["fake_rpi.*", "humanize.*", "jsonschema.*", "RPi.*"]
+      module = ["fake_rpi.*", "jsonschema.*", "RPi.*"]
 
   [tool.poetry]
     authors = ["Niall Byrne <niall@niallbyrne.ca>"]
