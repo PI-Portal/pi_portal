@@ -11,7 +11,7 @@ from .process_command import SlackProcessCommandBase
 class SlackProcessManagementCommandBase(SlackProcessCommandBase):
   """A base command for the Slack CLI that manages a process.
 
-  :param client: The configured slack client to use.
+  :param bot: The configured slack bot in use.
   """
 
   process_command: Literal["start", "stop"]

@@ -8,7 +8,7 @@ from .bases.process_management_command import SlackProcessManagementCommandBase
 class DisarmCommand(SlackProcessManagementCommandBase):
   """Slack CLI command to stop the camera process.
 
-  :param client: The configured slack client to use.
+  :param bot: The configured slack bot in use.
   """
 
   process_name = ProcessList.CAMERA

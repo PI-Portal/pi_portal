@@ -8,7 +8,7 @@ from .process_status_command import SlackProcessStatusCommandBase
 class NestedSlackUptimeCommandBase(SlackProcessStatusCommandBase):
   """Retrieves uptime for the process and re-raises supervisor exceptions.
 
-  :param client: The configured slack client to use.
+  :param bot: The configured slack bot in use.
   """
 
   process_command: Literal["uptime"] = "uptime"

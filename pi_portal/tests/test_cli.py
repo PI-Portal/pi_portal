@@ -55,8 +55,8 @@ class TestCLI(TestCase):
     self.check_logging(m_logger)
     self.check_state(m_state)
 
-    m_slack.SlackClient.assert_called_once_with()
-    m_slack.SlackClient.return_value.subscribe.assert_called_once_with()
+    m_slack.SlackBot.assert_called_once_with()
+    m_slack.SlackBot.return_value.connect.assert_called_once_with()
 
   @patch(cli.__name__ + ".integrations.slack")
   def test_upload_snapshot(

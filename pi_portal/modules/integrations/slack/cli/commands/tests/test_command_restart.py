@@ -18,8 +18,8 @@ class TestRestartCommand(command_harness.CommandBaseTestHarness):
   @mock.patch(command_restart.__name__ + ".os._exit")
   def test_invoke(self, m_exit: mock.Mock) -> None:
     self.instance.invoke()
-    self.mock_slack_client.send_message.assert_called_once_with(
+    self.mock_slack_bot.slack_client.send_message.assert_called_once_with(
         "Rebooting myself ..."
     )
-    self.mock_slack_client.rtm.close.assert_called_once_with()
+    self.mock_slack_bot.rtm.close.assert_called_once_with()
     m_exit.assert_called_once_with(1)

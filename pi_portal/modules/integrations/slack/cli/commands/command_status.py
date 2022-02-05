@@ -8,7 +8,7 @@ from .bases.process_status_command import SlackProcessStatusCommandBase
 class StatusCommand(SlackProcessStatusCommandBase):
   """Slack CLI command to report the status of the camera.
 
-  :param client: The configured slack client to use.
+  :param bot: The configured slack bot in use.
   """
 
   process_name = ProcessList.CAMERA
@@ -18,4 +18,4 @@ class StatusCommand(SlackProcessStatusCommandBase):
     """Report if the camera is running or not."""
 
     super().hook_invoker()
-    self.slack_client.send_message(f"Status: {self.result}")
+    self.slack_bot.slack_client.send_message(f"Status: {self.result}")

@@ -8,8 +8,8 @@ from pi_portal.modules.integrations.slack.cli.commands.bases.command import (
 )
 
 if TYPE_CHECKING:
-  from pi_portal.modules.integrations.slack import \
-      SlackClient  # pragma: no cover
+  from pi_portal.modules.integrations.slack.bot import \
+      SlackBot  # pragma: no cover
 
 
 class SlackCLICommandHandler:
@@ -20,15 +20,15 @@ class SlackCLICommandHandler:
 
   method_prefix = "command_"
 
-  def __init__(self, slack_client: "SlackClient") -> None:
-    self.slack_client = slack_client
+  def __init__(self, bot: "SlackBot") -> None:
+    self.slack_bot = bot
 
   def handle(self, command_class: Type[SlackCommandBase]) -> None:
     """Handle a command class instance.
 
     :param command_class:  The command class to invoke.
     """
-    instance = command_class(self.slack_client)
+    instance = command_class(self.slack_bot)
     instance.invoke()
 
   def command_id(self) -> None:

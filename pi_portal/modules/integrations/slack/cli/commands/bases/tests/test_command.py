@@ -17,12 +17,12 @@ class TestSlackCLICommandBase(TestCase):
   """Test the SlackCommandBase class."""
 
   def setUp(self) -> None:
-    self.mock_slack_client = mock.MagicMock()
-    self.instance = ConcreteCLICommand(self.mock_slack_client)
+    self.mock_slack_bot = mock.MagicMock()
+    self.instance = ConcreteCLICommand(self.mock_slack_bot)
 
   def test_instantiate(self) -> None:
     self.assertIsInstance(self.instance.notifier, notifier.SlackCLINotifier)
-    self.assertEqual(self.instance.slack_client, self.mock_slack_client)
+    self.assertEqual(self.instance.slack_bot, self.mock_slack_bot)
 
   def test_invoke(self) -> None:
     with self.assertRaises(NotImplementedError):

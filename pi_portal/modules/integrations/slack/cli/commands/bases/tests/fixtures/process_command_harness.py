@@ -27,7 +27,7 @@ class ProcessCommandBaseTestHarness(SimpleProcessCommandBaseTestHarness):
     return cast(mock.Mock, self.instance.notifier)
 
   def test_instantiate(self) -> None:
-    instance = self.test_class(self.mock_slack_client)
+    instance = self.test_class(self.mock_slack_bot)
     self.assertIsInstance(
         instance.process, supervisor_process.SupervisorProcess
     )
