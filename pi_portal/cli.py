@@ -41,8 +41,8 @@ def monitor(ctx: click.Context) -> None:
 def slack_bot() -> None:
   """Connect the interactive Slack bot."""
 
-  slack_client = integrations.slack.SlackClient()
-  slack_client.subscribe()
+  rtm_bot = integrations.slack.SlackBot()
+  rtm_bot.connect()
 
 
 @cli.command("upload_snapshot")

@@ -6,19 +6,19 @@ from typing import TYPE_CHECKING
 from pi_portal.modules.integrations.slack.cli.notifier import SlackCLINotifier
 
 if TYPE_CHECKING:
-  from pi_portal.modules.integrations.slack.client import \
-      SlackClient  # pragma: no cover
+  from pi_portal.modules.integrations.slack.bot import \
+      SlackBot  # pragma: no cover
 
 
 class SlackCommandBase(abc.ABC):
   """A base command for the Slack CLI.
 
-  :param client: The configured slack client to use.
+  :param bot: The configured slack bot in use.
   """
 
-  def __init__(self, client: "SlackClient") -> None:
-    self.notifier = SlackCLINotifier(client)
-    self.slack_client = client
+  def __init__(self, bot: "SlackBot") -> None:
+    self.notifier = SlackCLINotifier(bot.slack_client)
+    self.slack_bot = bot
 
   @abc.abstractmethod
   def invoke(self) -> None:

@@ -57,7 +57,7 @@ class TestUptimeCommand(command_harness.CommandBaseTestHarness):
 
     self.instance.invoke()
 
-    self.mock_slack_client.send_message.assert_called_once_with(
+    self.mock_slack_bot.slack_client.send_message.assert_called_once_with(
         f"System Uptime > {m_linux.return_value}\n"
         f"Door Monitor Uptime > {m_door.return_value.result}\n"
         f"Bot Uptime > {m_bot.return_value.result}"
@@ -78,7 +78,7 @@ class TestUptimeCommand(command_harness.CommandBaseTestHarness):
     m_linux.return_value = "linux uptime"
 
     self.instance.invoke()
-    self.mock_slack_client.send_message.assert_not_called()
+    self.mock_slack_bot.slack_client.send_message.assert_not_called()
 
   @mock.patch(command_uptime.__name__ + ".BotUptimeCommand")
   @mock.patch(command_uptime.__name__ + ".DoorMonitorUptimeCommand")
@@ -95,4 +95,4 @@ class TestUptimeCommand(command_harness.CommandBaseTestHarness):
     m_linux.return_value = "linux uptime"
 
     self.instance.invoke()
-    self.mock_slack_client.send_message.assert_not_called()
+    self.mock_slack_bot.slack_client.send_message.assert_not_called()

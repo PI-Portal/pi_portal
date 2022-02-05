@@ -9,20 +9,20 @@ from pi_portal.modules.system.supervisor_process import SupervisorProcess
 from .command import SlackCommandBase
 
 if TYPE_CHECKING:
-  from pi_portal.modules.integrations.slack.client import \
-      SlackClient  # pragma: no cover
+  from pi_portal.modules.integrations.slack.bot import \
+      SlackBot  # pragma: no cover
 
 
 class SlackProcessCommandBase(SlackCommandBase, abc.ABC):
   """A base command for interacting with processes via the Slack CLI.
 
-  :param client: The configured slack client to use.
+  :param bot: The configured slack bot in use.
   """
 
   process_name: ProcessList
 
-  def __init__(self, client: "SlackClient") -> None:
-    super().__init__(client)
+  def __init__(self, bot: "SlackBot") -> None:
+    super().__init__(bot)
     self.process = SupervisorProcess(self.process_name)
 
   @abc.abstractmethod

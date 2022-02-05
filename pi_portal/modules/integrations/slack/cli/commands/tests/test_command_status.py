@@ -23,6 +23,6 @@ class TestStatusCommand(
   def test_invoke(self) -> None:
     self._mocked_process().status.return_value = ProcessStatus.RUNNING.value
     self.instance.invoke()
-    self.mock_slack_client.send_message.assert_called_once_with(
+    self.mock_slack_bot.slack_client.send_message.assert_called_once_with(
         f"Status: {ProcessStatus.RUNNING.value}"
     )
