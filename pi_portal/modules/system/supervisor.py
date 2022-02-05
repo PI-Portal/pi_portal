@@ -1,7 +1,7 @@
 """A Supervisord client over a unix socket."""
 
 import xmlrpc.client
-from typing import Dict, cast
+from typing import cast
 
 from pi_portal import config
 from pi_portal.modules.system.socket import UnixStreamTransport
@@ -9,14 +9,26 @@ from pi_portal.modules.system.supervisor_config import (
     ProcessList,
     ProcessStatus,
 )
+from typing_extensions import TypedDict
 
 
 class SupervisorException(Exception):
-  """Exceptions for the Supervisor SlackClient."""
+  """Exceptions for the SupervisorClient class."""
+
+
+class TypeSupervisorProcessInfo(TypedDict):
+  """Typed representation of a Supervisor getProcessInfo response."""
+
+  statename: ProcessStatus
+  start: str
 
 
 class SupervisorClient:
-  """A Supervisor client that connects via the local unix socket."""
+  """A Supervisor client that connects via the local unix socket.
+
+  :param host: Unused, instead the transport uses a unix socket.
+  :param port: Unused, instead the transport uses a unix socket.
+  """
 
   def __init__(self, host: str = 'localhost', port: int = 9001):
     self.server = xmlrpc.client.Server(
@@ -24,10 +36,11 @@ class SupervisorClient:
         transport=UnixStreamTransport(config.SUPERVISOR_SOCKET_PATH)
     )
 
-  def start(self, process: ProcessList):
-    """Start the specified supervisor process.
+  def start(self, process: ProcessList) -> None:
+    """Start the specified Supervisor process.
 
     :param process: The process to start.
+    :raises: :class:`SupervisorException`
     """
 
     try:
@@ -35,43 +48,45 @@ class SupervisorClient:
     except xmlrpc.client.Fault as exc:
       raise SupervisorException from exc
 
-  def stop(self, process: ProcessList):
-    """Stop the specified supervisor process.
+  def stop(self, process: ProcessList) -> None:
+    """Stop the specified Supervisor process.
 
     :param process: The process to stop.
+    :raises: :class:`SupervisorException`
     """
 
     try:
       self.server.supervisor.stopProcess(process.value)
-      return True
     except xmlrpc.client.Fault as exc:
       raise SupervisorException from exc
 
   def status(self, process: ProcessList) -> ProcessStatus:
-    """Retrieve the current state of the specified supervisor process.
+    """Retrieve the current state of the specified Supervisor process.
 
     :param process: The process to retrieve the status of.
-    :return: The status of the queried process.
+    :returns: The status of the queried process.
+    :raises: :class:`SupervisorException`
     """
 
     try:
       return cast(
-          Dict,
+          TypeSupervisorProcessInfo,
           self.server.supervisor.getProcessInfo(process.value),
       )['statename']
     except xmlrpc.client.Fault as exc:
       raise SupervisorException from exc
 
   def uptime(self, process: ProcessList) -> str:
-    """Retrieve the uptime the specified supervisor process.
+    """Retrieve the uptime of the specified Supervisor process.
 
     :param process: The process to retrieve the uptime of.
-    :return: The uptime of the queried process.
+    :returns: The uptime of the queried process.
+    :raises: :class:`SupervisorException`
     """
 
     try:
       return cast(
-          Dict,
+          TypeSupervisorProcessInfo,
           self.server.supervisor.getProcessInfo(process.value),
       )['start']
     except xmlrpc.client.Fault as exc:
