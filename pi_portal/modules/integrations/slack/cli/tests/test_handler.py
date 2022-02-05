@@ -11,12 +11,12 @@ class TestSlackCLI(TestCase):
 
   def setUp(self) -> None:
     self.slack_client = mock.Mock()
-    self.cli = handler.SlackCLICommandHandler(slack_client=self.slack_client)
+    self.cli = handler.SlackCLICommandHandler(bot=self.slack_client)
 
   @mock_state.patch
   def test_initialize(self) -> None:
     self.assertEqual(self.cli.method_prefix, "command_")
-    self.assertEqual(self.cli.slack_client, self.slack_client)
+    self.assertEqual(self.cli.slack_bot, self.slack_client)
 
   def test_handle(self) -> None:
     mock_command = mock.Mock()
@@ -31,7 +31,7 @@ class TestSlackCLICommands(TestCase):
   def setUp(self) -> None:
     self.slack_client = mock.Mock()
     self.mock_handle = mock.Mock()
-    self.cli = handler.SlackCLICommandHandler(slack_client=self.slack_client)
+    self.cli = handler.SlackCLICommandHandler(bot=self.slack_client)
     self.cli.handle = self.mock_handle  # type: ignore[assignment]
 
   def test_id_command(self) -> None:

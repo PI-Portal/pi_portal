@@ -2,11 +2,9 @@
 
 from pi_portal.modules.configuration import state
 from pi_portal.modules.integrations import motion
-from pi_portal.modules.integrations.slack import cli, config
-from pi_portal.modules.integrations.slack.cli import handler
+from pi_portal.modules.integrations.slack import config as slack_config
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError, SlackRequestError
-from slack_sdk.rtm_v2 import RTMClient
 
 
 class SlackClient:
@@ -14,40 +12,14 @@ class SlackClient:
 
   retries = 5
 
-  def __init__(self):
+  def __init__(self) -> None:
     current_state = state.State()
     self.web = WebClient(token=current_state.user_config['SLACK_BOT_TOKEN'])
-    self.rtm = RTMClient(token=current_state.user_config["SLACK_BOT_TOKEN"])
     self.channel = current_state.user_config['SLACK_CHANNEL']
-    self.channel_id = current_state.user_config['SLACK_CHANNEL_ID']
     self.motion_client = motion.Motion()
-    self.config = config.SlackClientConfiguration()
+    self.config = slack_config.SlackClientConfiguration()
 
-  def handle_event(self, event: dict):
-    """Process a validated event, and call any valid commands.
-
-    :param event: A validated Slack RTM event message.
-    """
-
-    command = event['text'].lower()
-    command_list = cli.get_available_commands()
-    if command in command_list:
-      slack_cli = handler.SlackCLICommandHandler(self)
-      getattr(slack_cli, slack_cli.method_prefix + command)()
-
-  def handle_rtm_message(self, event: dict):
-    """Validate a RTM message bound for this bot's channel.
-
-    :param event: An unvalidated Slack RTM event message.
-    """
-
-    if 'channel' not in event or 'text' not in event:
-      return
-    if event['channel'] != self.channel_id:
-      return
-    self.handle_event(event)
-
-  def send_message(self, message: str):
+  def send_message(self, message: str) -> None:
     """Send a message with the Slack Web client.
 
     :param message: The message to send to Slack.
@@ -60,7 +32,7 @@ class SlackClient:
       except (SlackRequestError, SlackApiError):
         pass
 
-  def send_file(self, file_name: str):
+  def send_file(self, file_name: str) -> None:
     """Send a file with the Slack Web client.
 
     :param file_name: The path to upload to Slack.
@@ -77,7 +49,7 @@ class SlackClient:
       except (SlackRequestError, SlackApiError):
         pass
 
-  def send_snapshot(self, file_name: str):
+  def send_snapshot(self, file_name: str) -> None:
     """Send a snapshot to Slack, and erase it locally.
 
     :param file_name: The path of the file to process.
@@ -89,7 +61,7 @@ class SlackClient:
     except motion.MotionException:
       self.send_message("An error occurred cleaning up this snapshot.")
 
-  def send_video(self, file_name: str):
+  def send_video(self, file_name: str) -> None:
     """Send a video to Slack, and have motion archive it in S3.
 
     :param file_name: The path of the file to process.
@@ -100,18 +72,3 @@ class SlackClient:
       self.motion_client.archive_video(file_name)
     except motion.MotionException:
       self.send_message("An error occurred archiving this video.")
-
-  def subscribe(self):
-    """Create a RTM subscription."""
-
-    @self.rtm.on("message")
-    def receiver(_, event: dict):
-      """Receive messages on the RTM subscription.
-
-      :param event: An unvalidated Slack RTM event message.
-      """
-
-      self.handle_rtm_message(event)  # pragma: no cover
-
-    self.send_message("I've rebooted!  Now listening for commands...")
-    self.rtm.start()

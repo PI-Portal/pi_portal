@@ -13,5 +13,5 @@ class CommandBaseTestHarness(TestCase):
   test_class: Type[command.SlackCommandBase]
 
   def setUp(self) -> None:
-    self.mock_slack_client = mock.MagicMock()
-    self.instance = self.test_class(self.mock_slack_client)
+    self.mock_slack_bot = mock.MagicMock()
+    self.instance = self.test_class(self.mock_slack_bot)
