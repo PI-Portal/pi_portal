@@ -49,6 +49,6 @@ class TestSnapshotCommand(
     self._mocked_process().status_in.return_value = False
     self.instance.invoke()
     self._mock_motion_client().take_snapshot.assert_not_called()
-    self.mock_slack_client.send_message.assert_called_once_with(
+    self.mock_slack_bot.slack_client.send_message.assert_called_once_with(
         "Please `arm` the camera first ..."
     )

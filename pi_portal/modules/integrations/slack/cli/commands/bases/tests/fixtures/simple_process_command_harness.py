@@ -18,14 +18,14 @@ class SimpleProcessCommandBaseTestHarness(TestCase):
   test_class: Type[process_command.SlackProcessCommandBase]
 
   def setUp(self) -> None:
-    self.mock_slack_client = mock.MagicMock()
+    self.mock_slack_bot = mock.MagicMock()
     with mock.patch(command.__name__ + ".SlackCLINotifier") as mock_notifier:
       self.mock_notifier = mock_notifier()
       with mock.patch(
           process_command.__name__ + ".SupervisorProcess"
       ) as mock_process_class:
         self.mock_process_class = mock_process_class
-        self.instance = self.test_class(self.mock_slack_client)
+        self.instance = self.test_class(self.mock_slack_bot)
 
   def _mocked_process(self) -> mock.Mock:
     return cast(mock.Mock, self.instance.process)

@@ -19,6 +19,6 @@ class TestHelpCommand(command_harness.CommandBaseTestHarness):
   def test_invoke(self, m_get: mock.Mock) -> None:
     m_get.return_value = ['a', 'b', 'c']
     self.instance.invoke()
-    self.mock_slack_client.send_message.assert_called_once_with(
+    self.mock_slack_bot.slack_client.send_message.assert_called_once_with(
         f"Available Commands: {', '.join(m_get.return_value)}"
     )

@@ -10,7 +10,7 @@ from .process_command import SlackProcessCommandBase
 class SlackProcessStatusCommandBase(SlackProcessCommandBase):
   """A base command for the Slack CLI that retrieves process information.
 
-  :param client: The configured slack client to use.
+  :param bot: The configured slack bot in use.
   """
 
   process_name: ProcessList

@@ -19,6 +19,6 @@ class TestIDCommand(command_harness.CommandBaseTestHarness):
   @mock.patch(state.__name__ + ".State")
   def test_invoke(self, m_state: mock.Mock) -> None:
     self.instance.invoke()
-    self.mock_slack_client.send_message.assert_called_once_with(
+    self.mock_slack_bot.slack_client.send_message.assert_called_once_with(
         f"ID: {m_state.return_value.log_uuid}"
     )
