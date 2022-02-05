@@ -8,6 +8,7 @@
 
 import os
 import sys
+import pathlib
 
 os.environ["SPHINX"] = "1"
 
@@ -29,28 +30,40 @@ os.environ['PROJECT_NAME'] = project
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc', 'sphinx.ext.autosummary', 'sphinx.ext.todo',
-    'sphinx.ext.viewcode', 'sphinx_autopackagesummary',
-    'sphinx_autodoc_typehints', 'sphinx-jsonschema', 'sphinx_click'
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
+    'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
+    'sphinx_autopackagesummary',
+    'sphinx_autodoc_typehints',
+    'sphinx-jsonschema',
+    'sphinx_click',
 ]
 
-# Exclude tests from sphinx_autopackagesummary here
-autosummary_mock_imports = [
-    "pi_portal.tests",
-    "pi_portal.modules.configuration.tests",
-    "pi_portal.modules.integrations.tests",
-    "pi_portal.modules.integrations.gpio.tests",
-    "pi_portal.modules.integrations.slack.tests",
-    "pi_portal.modules.integrations.slack.cli.tests",
-    "pi_portal.modules.integrations.slack.cli.commands.tests",
-    "pi_portal.modules.integrations.slack.cli.commands.bases.tests",
-    "pi_portal.modules.system.tests",
-    "pi_portal.modules.mixins.tests",
-]
+
+def detect_tests():
+  """Create a list of import paths with tests."""
+
+  test_paths = []
+  for root, dirs, _ in os.walk('../../pi_portal'):
+    for name in dirs:
+      if name == 'tests':
+        directory = pathlib.Path(os.path.join(root, name).replace('../../', ''))
+        test_paths.append('.'.join(directory.with_suffix('').parts))
+  return test_paths
+
+
+# Exclude tests from sphinx_autopackagesummary heres
+autosummary_mock_imports = detect_tests()
 
 source_suffix = {
     '.rst': 'restructuredtext',
 }
+
+typehints_fully_qualified = False
+always_document_param_types = True
+typehints_defaults = "comma"
+typehints_document_rtype = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

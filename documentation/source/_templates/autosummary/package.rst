@@ -2,6 +2,7 @@
 
 .. automodule:: {{ fullname }}
    :members:
+   :inherited-members: dict
 
    .. autopackagesummary:: {{ fullname }}
       :toctree: .
