@@ -3,6 +3,7 @@
 - name: "build-docs"
   path_method: "project_docs"
   commands:
+    - "rm -rf source/codebase/pi_portal/_autosummary/"
     - "make html"
   success: "Documentation Built"
   failure: "Error Building Documentation"
