@@ -78,6 +78,7 @@
         version = "^1.17.1"
 
     [tool.poetry.dev-dependencies]
+      darglint = "^1.8.1"
       fake-rpi = "^0.7.1"
       freezegun = "^1.1.0"
       pydocstyle = "^6.1.1"
