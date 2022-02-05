@@ -14,7 +14,7 @@ class S3BucketException(Exception):
 class S3Bucket:
   """S3 integration class."""
 
-  def __init__(self):
+  def __init__(self) -> None:
     current_state = state.State()
     self.bucket_name = current_state.user_config['S3_BUCKET_NAME']
     self.boto_client = boto3.client(
@@ -24,10 +24,11 @@ class S3Bucket:
         user_config['AWS_SECRET_ACCESS_KEY'],
     )
 
-  def upload(self, file_name: str):
+  def upload(self, file_name: str) -> None:
     """Upload the specified file to the S3 bucket.
 
     :param file_name: The path of the file to upload.
+    :raises: :class:`S3BucketException`
     """
 
     try:
