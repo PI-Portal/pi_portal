@@ -1,6 +1,5 @@
-"""DoorMonitor Class."""
+"""DoorMonitor class."""
 
-import logging
 import os
 import sys
 import time
@@ -9,6 +8,7 @@ from typing import Dict, Optional, cast
 
 from pi_portal import config
 from pi_portal.modules.integrations.slack import client
+from pi_portal.modules.mixins import log_file
 
 if os.uname()[4][:3] != 'arm':
   import fake_rpi
@@ -27,40 +27,48 @@ class DoorState(Enum):
   CLOSED = False
 
 
-class DoorMonitor:
+class DoorMonitor(log_file.WriteLogFile):
   """Door state monitor and logger."""
 
   hardware: Dict[int, int] = config.GPIO_SWITCHES
-  running = True
   logger_name = "pi_portal"
+  log_file_path = config.DOOR_MONITOR_LOGFILE_PATH
   state: MonitorStateType = cast(MonitorStateType, config.GPIO_INITIAL_STATE)
   interval = 0.5
   GPIO = RPi.GPIO
   GPIO_OPEN = True
 
-  def __init__(self):
-    self.log = logging.getLogger(self.logger_name)
+  def __init__(self) -> None:
+    self.configure_logger()
     self.GPIO.setmode(self.GPIO.BCM)
+    self.slack_client = client.SlackClient()
+    self._setup_gpio()
+
+  def _setup_gpio(self) -> None:
     for _, pin in self.hardware.items():
       self.GPIO.setup(pin, self.GPIO.IN, pull_up_down=self.GPIO.PUD_UP)
-    self.slack_client = client.SlackClient()
 
-  def start(self):
+  def start(self) -> None:
     """Begin the monitoring loop."""
 
-    while self.running:
+    while self.is_running():
       old_state = dict(self.state)
       self.update_state()
       self.log_state_changes(old_state)
       time.sleep(self.interval)
 
-  def update_state(self):
+  def is_running(self) -> bool:
+    """Indicate if the polling loop is active.  Override for testing."""
+
+    return True
+
+  def update_state(self) -> None:
     """Poll GPIO and update the known state for the doors."""
 
     for switch, pin in self.hardware.items():
       self.state[switch] = self.GPIO.input(pin) == self.GPIO_OPEN
 
-  def log_state_changes(self, old_state: MonitorStateType):
+  def log_state_changes(self, old_state: MonitorStateType) -> None:
     """Log any detected differences in state.
 
     :param old_state: A version of the state to diff against.

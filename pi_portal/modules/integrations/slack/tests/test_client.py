@@ -104,21 +104,20 @@ class TestSlackClient(TestCase):
     test_snapshot = "/path/to/mock/snapshot.jpg"
     with mock.patch.object(self.slack_client, "send_file") as m_send:
       with mock.patch.object(self.slack_client, "web") as m_web:
-        self._mock_motion_client().cleanup_snapshot.side_effect = (
-          motion.MotionException("Boom!"),
-        )
+        self._mock_motion_client(
+        ).cleanup_snapshot.side_effect = (motion.MotionException("Boom!"),)
         self.slack_client.send_snapshot(test_snapshot)
 
     m_send.assert_called_once_with(test_snapshot)
     self._mock_motion_client().cleanup_snapshot.assert_called_once_with(
-      test_snapshot,
+        test_snapshot,
     )
     m_web.chat_postMessage.assert_called_once_with(
         channel=self.slack_client.channel,
         text="An error occurred cleaning up this snapshot.",
     )
     self._mock_log().error.assert_called_once_with(
-      'Failed to remove old motion snapshot!',
+        'Failed to remove old motion snapshot!',
     )
 
   def test_send_video(self) -> None:
@@ -144,5 +143,5 @@ class TestSlackClient(TestCase):
         text="An error occurred archiving this video.",
     )
     self._mock_log().error.assert_called_once_with(
-      "Failed to archive motion video capture!",
+        "Failed to archive motion video capture!",
     )
