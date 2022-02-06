@@ -83,7 +83,7 @@
       pydocstyle = "^6.1.1"
       types-boto3 = "^1.0.1"
       types-freezegun = "^1.1.6"
-      types-requests = "^2.27.3"
+      types-requests = "^2.27.8"
 
     [tool.poetry.extras]
       docs = ["pib_cli", "sphinx-autodoc-typehints", "sphinx-click", "sphinx-jsonschema"]
