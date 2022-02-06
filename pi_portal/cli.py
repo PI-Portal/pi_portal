@@ -1,39 +1,23 @@
 """The Pi Portal CLI."""
 
 import click
-from . import config
 from .modules import configuration, integrations, system
 
 
 @click.group()
-@click.pass_context
-def cli(ctx: click.Context) -> None:
-  """Door Monitor CLI.
-
-  :param ctx: The passed click context object.
-  """
+def cli() -> None:
+  """Door Monitor CLI."""
 
   running_state = configuration.state.State()
   running_state.load()
-  ctx.obj = {
-      'running_state': running_state,
-      'logging_config': configuration.LoggingConfiguration()
-  }
 
 
 @cli.command("monitor")
-@click.pass_context
-def monitor(ctx: click.Context) -> None:
-  """Begin monitoring the door.
+def monitor() -> None:
+  """Begin monitoring the door."""
 
-  :param ctx: The passed click context object.
-  """
-
-  door_monitor = integrations.door_monitor.DoorMonitor()
-  door_monitor.log = ctx.obj['logging_config'].configure(
-      door_monitor.log,
-      config.DOOR_MONITOR_LOGFILE_PATH,
-  )
+  factory = integrations.gpio.DoorMonitorFactory()
+  door_monitor = factory.create()
   door_monitor.start()
 
 

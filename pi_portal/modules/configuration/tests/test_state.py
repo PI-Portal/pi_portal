@@ -1,8 +1,9 @@
 """Test RunningConfig monostate."""
 
+from typing import cast
 from unittest import TestCase, mock
 
-from pi_portal.modules.configuration import state
+from pi_portal.modules.configuration import state, user_config
 
 
 class TestRunningConfig(TestCase):
@@ -12,9 +13,9 @@ class TestRunningConfig(TestCase):
     self.state = state.State()
 
   def test_mono_state_user_config(self) -> None:
-    self.state.user_config = {
-        'test': 'value'
-    }
+    self.state.user_config = cast(
+        user_config.TypeUserConfig, {'test': 'value'}
+    )
 
     instance2 = state.State()
     self.assertEqual(self.state.user_config, getattr(instance2, 'user_config'))

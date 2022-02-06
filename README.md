@@ -24,7 +24,7 @@ This is a hobby solution, and no warranty or guarantees of any kind are made.  P
 
 >You'll need a Raspberry PI 3, with Raspberry Pi OS or similar installed and reliable internet.
  
->You'll be able to use this program with other Raspberry PI versions, but you may need to fork the repository and use different GPIO pins, and [compile filebeat](./scripts/arm/filebeat.sh) with different architecture settings.  I have tested it on Raspberry PI 3.)
+>You'll be able to use this program with other Raspberry PI versions, but you may need to [compile filebeat](./scripts/arm/filebeat.sh) with different architecture settings.  I have tested it on Raspberry PI 3.
 
 2. Contact switches.
 > These are available cheaply on ebay, AWS or at your local electronics store. 
@@ -34,12 +34,7 @@ This is a hobby solution, and no warranty or guarantees of any kind are made.  P
 3. Wiring between the switches and the Raspberry Pi.
 > I found female jumper cables made this pretty painless.
 
-```
-Out of the box Pi Portal has been configured to support two contact switches:
-- GPIO pin 13 for the Front Door input
-- GPIO pin 5 for the Back Door input
-- GND pins for the other end of each contact switch
-```
+> Edit the [config.json](./config.json) file to customize your pin outs and integrations.
 
 This configuration can be found [here](pi_portal/config.py).
 
@@ -119,11 +114,19 @@ Create a configuration json file that contains the following:
 
 ```json
 {
-  "SLACK_BOT_TOKEN": "...token from slack...",
-  "SLACK_CHANNEL": "... proper name of slack channel ...",
-  "SLACK_CHANNEL_ID": "... slack's ID for the channel (found by looking at the channel's url in a browser) ...",
-  "LOGZ_IO_CODE": "... logz io's logger code (for filebeat)...",
-  "S3_BUCKET_NAME": "... s3 bucket name (for video archival) ..."
+    "AWS_ACCESS_KEY_ID": "... AWS key with write access to video bucket ...",
+    "AWS_SECRET_ACCESS_KEY": "... AWS secret key with write access to video bucket ...",
+    "LOGZ_IO_CODE": "... logz io's logger code ...",
+    "S3_BUCKET_NAME": "... s3 video bucket name ...",
+    "SLACK_BOT_TOKEN": "...token from slack...",
+    "SLACK_CHANNEL": "... proper name of slack channel ...",
+    "SLACK_CHANNEL_ID": ".. slack's ID for the channel ...",
+    "CONTACT_SWITCHES": [
+        {
+          "NAME": "... name and pin-out of a GPIO switch...",
+          "GPIO": 12
+        }
+    ]
 }
 ```
 
