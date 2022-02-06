@@ -1,9 +1,12 @@
 """Borg monostate of the current running configuration."""
 
 import uuid
-from typing import Any, Dict
+from typing import Any, Dict, cast
 
-from pi_portal.modules.configuration.user_config import UserConfiguration
+from pi_portal.modules.configuration.user_config import (
+    TypeUserConfig,
+    UserConfiguration,
+)
 
 
 class State:
@@ -14,7 +17,7 @@ class State:
   def __init__(self) -> None:
     self.__dict__ = self.__shared_state
     if not self.__shared_state:
-      self.user_config: Dict[str, str] = {}
+      self.user_config: TypeUserConfig = cast(TypeUserConfig, {})
       self.log_uuid = str(uuid.uuid4())
 
   def load(self) -> None:

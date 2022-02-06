@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "description": "Pi Portal v1 Config File Schema",
+    "description": "Pi Portal v2 Config File Schema",
     "type": "object",
     "properties":
         {
@@ -38,8 +38,26 @@
                 {
                     "type": "string",
                     "description": "The ID of the slack channel.  This is not the same as the name, may require using Slack in the browser to find it."
+                },
+            "CONTACT_SWITCHES":
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "NAME": {
+                                "type": "string",
+                                "description": "The name of the switch as it will appear in notifications and logs (ie. Front Door)."
+                            },
+                            "GPIO": {
+                                "type": "number",
+                                "description": "The GPIO number this contact switch connects to."
+                            }
+                        },
+                        "required": ["NAME", "GPIO"]
+                    }
                 }
 
         },
-    "required": ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "LOGZ_IO_CODE", "S3_BUCKET_NAME","SLACK_BOT_TOKEN", "SLACK_CHANNEL", "SLACK_CHANNEL_ID"]
+    "required": ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "LOGZ_IO_CODE", "S3_BUCKET_NAME","SLACK_BOT_TOKEN", "SLACK_CHANNEL", "SLACK_CHANNEL_ID", "CONTACT_SWITCHES"]
 }
