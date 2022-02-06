@@ -1,31 +1,39 @@
 """Test the UserConfiguration class."""
 
 import json
+from typing import cast
 from unittest import TestCase, mock
 
 from pi_portal.modules.configuration import user_config
 from pi_portal.modules.mixins import json_file
 
-MOCK_CONFIG = '{"mock_setting": true}'
-MOCK_JSON = {
-    "mock_setting": "0123"
-}
-MOCK_VALID_JSON = {
-    "AWS_ACCESS_KEY_ID":
-        "... AWS key with write access to video bucket ...",
-    "AWS_SECRET_ACCESS_KEY":
-        "... AWS secret key with write access to video bucket ...",
-    "S3_BUCKET_NAME":
-        "... s3 video bucket name ...",
-    "LOGZ_IO_CODE":
-        "... logz io's logger code ...",
-    "SLACK_BOT_TOKEN":
-        "...token from slack...",
-    "SLACK_CHANNEL":
-        "... proper name of slack channel ...",
-    "SLACK_CHANNEL_ID":
-        ".. slack's ID for the channel ...",
-}
+MOCK_CONFIG = cast(user_config.TypeUserConfig, {"mock_setting": True})
+MOCK_JSON = cast(user_config.TypeUserConfig, {"mock_setting": "0123"})
+MOCK_VALID_JSON = cast(
+    user_config.TypeUserConfig, {
+        "AWS_ACCESS_KEY_ID":
+            "... AWS key with write access to video bucket ...",
+        "AWS_SECRET_ACCESS_KEY":
+            "... AWS secret key with write access to video bucket ...",
+        "S3_BUCKET_NAME":
+            "... s3 video bucket name ...",
+        "LOGZ_IO_CODE":
+            "... logz io's logger code ...",
+        "SLACK_BOT_TOKEN":
+            "...token from slack...",
+        "SLACK_CHANNEL":
+            "... proper name of slack channel ...",
+        "SLACK_CHANNEL_ID":
+            ".. slack's ID for the channel ...",
+        "CONTACT_SWITCHES":
+            [
+                {
+                    "NAME": "... name and pin-out of a GPIO switch...",
+                    "GPIO": 12,
+                },
+            ]
+    }
+)
 
 
 class TestUserConfigurationLoad(TestCase):
@@ -33,10 +41,6 @@ class TestUserConfigurationLoad(TestCase):
 
   def setUp(self) -> None:
     self.configuration = user_config.UserConfiguration()
-
-  def test_initialization(self) -> None:
-    config = user_config.UserConfiguration()
-    self.assertEqual(config.user_config, {})
 
   @mock.patch(
       json_file.__name__ + ".JSONFileReader.load_json_file",
@@ -74,5 +78,6 @@ class TestUserConfigurationValidate(TestCase):
             "'SLACK_BOT_TOKEN' is a required property",
             "'SLACK_CHANNEL' is a required property",
             "'SLACK_CHANNEL_ID' is a required property",
+            "'CONTACT_SWITCHES' is a required property",
         ]
     )
