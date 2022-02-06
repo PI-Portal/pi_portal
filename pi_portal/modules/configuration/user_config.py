@@ -2,11 +2,32 @@
 
 import pathlib
 import pprint
-from typing import Dict
+from typing import List, cast
 
 import pi_portal as root_module
 from jsonschema.validators import validator_for
 from pi_portal.modules.mixins import json_file
+from typing_extensions import TypedDict
+
+
+class TypeUserConfig(TypedDict):
+  """Typed representation of user configuration."""
+
+  AWS_ACCESS_KEY_ID: str
+  AWS_SECRET_ACCESS_KEY: str
+  LOGZ_IO_CODE: str
+  S3_BUCKET_NAME: str
+  SLACK_BOT_TOKEN: str
+  SLACK_CHANNEL: str
+  SLACK_CHANNEL_ID: str
+  CONTACT_SWITCHES: List["TypeUserConfigContactSwitch"]
+
+
+class TypeUserConfigContactSwitch(TypedDict):
+  """Typed representation of a contact switch in user configuration."""
+
+  NAME: str
+  GPIO: int
 
 
 class UserConfigurationException(BaseException):
@@ -20,9 +41,7 @@ class UserConfiguration(json_file.JSONFileReader):
       pathlib.Path(root_module.__file__).parent / "schema" /
       "config_schema.json"
   )
-
-  def __init__(self) -> None:
-    self.user_config: Dict[str, str] = {}
+  user_config: TypeUserConfig
 
   def load(self, file_name: str = "config.json") -> None:
     """Load and validate the end user's configuration file.
@@ -30,7 +49,7 @@ class UserConfiguration(json_file.JSONFileReader):
     :param file_name: The path to the file to load.
     """
 
-    self.user_config = self.load_json_file(file_name)
+    self.user_config = cast(TypeUserConfig, self.load_json_file(file_name))
     self.validate()
 
   def validate(self) -> None:
