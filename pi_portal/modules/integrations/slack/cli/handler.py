@@ -11,6 +11,7 @@ if TYPE_CHECKING:
   from pi_portal.modules.integrations.slack.bot import \
       SlackBot  # pragma: no cover
 
+
 class SlackCLICommandHandler:
   """Slack CLI command handler.
 
