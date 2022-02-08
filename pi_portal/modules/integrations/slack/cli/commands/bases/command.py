@@ -3,6 +3,7 @@
 import abc
 from typing import TYPE_CHECKING
 
+from pi_portal.commands.bases import command
 from pi_portal.modules.integrations.slack.cli.notifier import SlackCLINotifier
 
 if TYPE_CHECKING:
@@ -10,7 +11,7 @@ if TYPE_CHECKING:
       SlackBot  # pragma: no cover
 
 
-class SlackCommandBase(abc.ABC):
+class SlackCommandBase(command.CommandBase, abc.ABC):
   """A base command for the Slack CLI.
 
   :param bot: The configured slack bot in use.
@@ -19,7 +20,3 @@ class SlackCommandBase(abc.ABC):
   def __init__(self, bot: "SlackBot") -> None:
     self.notifier = SlackCLINotifier(bot.slack_client)
     self.slack_bot = bot
-
-  @abc.abstractmethod
-  def invoke(self) -> None:
-    """Invoke the this command."""
