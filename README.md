@@ -52,7 +52,7 @@ sudo apt-get install gcc motion supervisor libffi-dev libssl-dev python3-dev
 
 ### Python
 
-Supports Python [3.7](https://www.python.org/downloads/release/python-370/), [3.8](https://www.python.org/downloads/release/python-380/) or [3.9](https://www.python.org/downloads/release/python-390/)
+Supports Python [3.7](https://www.python.org/downloads/release/python-370/), [3.8](https://www.python.org/downloads/release/python-380/), [3.9](https://www.python.org/downloads/release/python-390/) or [3.10](https://www.python.org/downloads/release/python-3100/)
 
 ### PAAS Accounts
 
