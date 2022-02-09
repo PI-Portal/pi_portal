@@ -4,20 +4,23 @@ import click
 from .commands import (
     door_monitor,
     installer,
+    load_state,
     slack_bot,
     upload_snapshot,
     upload_video,
     version,
 )
-from .modules.configuration import state
 
 
 @click.group()
-def cli() -> None:
+@click.option(
+    '--debug', default=False, is_flag=True, help='Enable debug output.'
+)
+def cli(debug: bool) -> None:
   """Door Monitor CLI."""
 
-  running_state = state.State()
-  running_state.load()
+  command = load_state.LoadStateCommand(debug)
+  command.invoke()
 
 
 @cli.command("monitor")

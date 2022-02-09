@@ -7,15 +7,16 @@ from click.testing import CliRunner
 from .. import cli
 
 
-@patch(cli.__name__ + ".state")
+@patch(cli.__name__ + ".load_state")
 class TestCLI(TestCase):
   """Test the Click CLI."""
 
   def setUp(self) -> None:
     self.runner = CliRunner()
 
-  def check_state(self, m_state: Mock) -> None:
-    m_state.State.return_value.load.assert_called_once_with()
+  def check_state(self, m_state: Mock, debug: bool = False) -> None:
+    m_state.LoadStateCommand.assert_called_once_with(debug)
+    m_state.LoadStateCommand.return_value.invoke.assert_called_once_with()
 
   def check_invoke(self, m_command: Mock) -> None:
     m_command.assert_called_once_with()
@@ -94,4 +95,15 @@ class TestCLI(TestCase):
     command = "version"
     self.runner.invoke(cli.cli, command)
     self.check_state(m_state)
+    self.check_invoke(m_command.VersionCommand)
+
+  @patch(cli.__name__ + ".version")
+  def test_version_with_debug(
+      self,
+      m_command: Mock,
+      m_state: Mock,
+  ) -> None:
+    command = "--debug version"
+    self.runner.invoke(cli.cli, command)
+    self.check_state(m_state, debug=True)
     self.check_invoke(m_command.VersionCommand)
