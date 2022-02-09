@@ -59,7 +59,7 @@
       jsonschema = ">=3.2.0,<4.0.0"
       python = ">=3.7.0,<4.0.0"
       requests = "^2.26.0"
-      slack-sdk = "^3.13.0"
+      slack-sdk = "^3.14.1"
 
       [tool.poetry.dependencies.pib_cli]
         extras = ["docs", "types"]
