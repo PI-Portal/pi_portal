@@ -88,14 +88,14 @@ yaml = ["pyyaml"]
 
 [[package]]
 name = "boto3"
-version = "1.20.46"
+version = "1.20.51"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.6"
 
 [package.dependencies]
-botocore = ">=1.23.46,<1.24.0"
+botocore = ">=1.23.51,<1.24.0"
 jmespath = ">=0.7.1,<1.0.0"
 s3transfer = ">=0.5.0,<0.6.0"
 
@@ -419,7 +419,7 @@ xray = ["mypy-boto3-xray (>=1.20.0)"]
 
 [[package]]
 name = "botocore"
-version = "1.23.46"
+version = "1.23.51"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -1433,8 +1433,8 @@ docs = ["pib_cli", "sphinx-autodoc-typehints", "sphinx-click", "sphinx-jsonschem
 
 [metadata]
 lock-version = "1.1"
-      python-versions = ">=3.7.0,<4.0.0"
-content-hash = "0c40be886821724aeae5fc832f0e9fcd30ebda52a9b0b33bd77a390cacde84ae"
+python-versions = ">=3.7.0,<4.0.0"
+content-hash = "6890ac3d793e82817d0447d26c389c05778209214bb16c402fb88f32646ec04b"
 
 [metadata.files]
 alabaster = [
@@ -1466,16 +1466,16 @@ bandit = [
     {file = "bandit-1.7.2.tar.gz", hash = "sha256:6d11adea0214a43813887bfe71a377b5a9955e4c826c8ffd341b494e3ab25260"},
 ]
 boto3 = [
-    {file = "boto3-1.20.46-py3-none-any.whl", hash = "sha256:a2ffce001160d7e7c72a90c3084700d50eb64ea4a3aae8afe21566971d1fd611"},
-    {file = "boto3-1.20.46.tar.gz", hash = "sha256:d7effba509d7298ef49316ba2da7a2ea115f2a7ff691f875f6354666663cf386"},
+    {file = "boto3-1.20.51-py3-none-any.whl", hash = "sha256:6b1e78ac44956adb3909da2194ad8397da0fde615ba3029648663b18f2b776fd"},
+    {file = "boto3-1.20.51.tar.gz", hash = "sha256:f26f7285780bda16c6ffb8db76c949aeeb45730d3f68626e31b90246ec00fe1a"},
 ]
 boto3-stubs = [
     {file = "boto3-stubs-1.20.46.post1.tar.gz", hash = "sha256:d760c4c1c024df72a2bf047bc35e3fb0050ac7bdb6d43f4d763ae326cb264a21"},
     {file = "boto3_stubs-1.20.46.post1-py3-none-any.whl", hash = "sha256:26afba47cde33b609ba974decd8272e2fd401bc0dc47521fb434210ecbb1914a"},
 ]
 botocore = [
-    {file = "botocore-1.23.46-py3-none-any.whl", hash = "sha256:354bce55e5adc8e2fe106acfd455ce448f9b920d7b697d06faa8cf200fd6566b"},
-    {file = "botocore-1.23.46.tar.gz", hash = "sha256:38dd4564839f531725b667db360ba7df2125ceb3752b0ba12759c3e918015b95"},
+    {file = "botocore-1.23.51-py3-none-any.whl", hash = "sha256:372428fb18ba813431b2301c9306b97c0bc0a888127725b427f227734e370c7e"},
+    {file = "botocore-1.23.51.tar.gz", hash = "sha256:f715fba22d1d2ecf995d3168ddd9adca63979a6cddd35534ccc8550c690f1c88"},
 ]
 botocore-stubs = [
     {file = "botocore-stubs-1.23.46.post1.tar.gz", hash = "sha256:4d1a3a6f6d21e418ff59417b8f9713e8194cbb7b8125ab162300257e715ed6d1"},
