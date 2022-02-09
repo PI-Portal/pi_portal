@@ -88,6 +88,9 @@ RUN poetry install --no-root -E docs
 # Copy the Codebase
 COPY . /app
 
+# Install The App
+RUN poetry install
+
 # Create A Symlink For the Bash Customizations
 RUN ln -sf /app/assets/.bash_customize /home/user/.bash_customize
 
