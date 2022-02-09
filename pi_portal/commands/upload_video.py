@@ -2,9 +2,12 @@
 
 from pi_portal.modules.integrations import slack
 from .bases import file_command
+from .mixins import state
 
 
-class UploadVideoCommand(file_command.FileCommandBase):
+class UploadVideoCommand(
+    file_command.FileCommandBase, state.CommandManagedStateMixin
+):
   """CLI command to send a Motion video to Slack and S3."""
 
   def invoke(self) -> None:

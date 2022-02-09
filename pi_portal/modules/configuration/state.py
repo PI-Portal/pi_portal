@@ -1,5 +1,6 @@
 """Borg monostate of the current running configuration."""
 
+import logging
 import uuid
 from typing import Any, Dict, cast
 
@@ -19,6 +20,25 @@ class State:
     if not self.__shared_state:
       self.user_config: TypeUserConfig = cast(TypeUserConfig, {})
       self.log_uuid = str(uuid.uuid4())
+      self._log_level = logging.INFO
+
+  @property
+  def log_level(self) -> int:
+    """Return the currently configured logging level.
+
+    :returns: The currently configured logging level.
+    """
+
+    return self._log_level
+
+  @log_level.setter
+  def log_level(self, level: int) -> None:
+    """Configure the logging level.
+
+    :param level: The desired logging level.
+    """
+
+    self._log_level = level
 
   def load(self) -> None:
     """Load the end user configuration."""

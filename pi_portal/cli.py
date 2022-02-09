@@ -9,54 +9,63 @@ from .commands import (
     upload_video,
     version,
 )
-from .modules.configuration import state
 
 
 @click.group()
-def cli() -> None:
+@click.option('--debug', default=False, is_flag=True, help='Enable debug logs.')
+@click.pass_context
+def cli(ctx: click.Context, debug: bool) -> None:
   """Door Monitor CLI."""
 
-  running_state = state.State()
-  running_state.load()
+  ctx.ensure_object(dict)
+  ctx.obj['DEBUG'] = debug
 
 
 @cli.command("monitor")
-def monitor_command() -> None:
+@click.pass_context
+def monitor_command(ctx: click.Context) -> None:
   """Begin monitoring the door."""
 
   command = door_monitor.DoorMonitorCommand()
+  command.load_state(debug=ctx.obj['DEBUG'])
   command.invoke()
 
 
 @cli.command("slack_bot")
-def slack_bot_command() -> None:
+@click.pass_context
+def slack_bot_command(ctx: click.Context) -> None:
   """Connect the interactive Slack bot."""
 
   command = slack_bot.SlackBotCommand()
+  command.load_state(debug=ctx.obj['DEBUG'])
   command.invoke()
 
 
 @cli.command("upload_snapshot")
 @click.argument('filename', type=click.Path(exists=True))
-def upload_snapshot_command(filename: str) -> None:
+@click.pass_context
+def upload_snapshot_command(ctx: click.Context, filename: str) -> None:
   """Upload a snapshot image to Slack.
 
   FILENAME: The path to the image file to upload.
   """
 
   command = upload_snapshot.UploadSnapshotCommand(filename)
+  command.load_state(debug=ctx.obj['DEBUG'])
   command.invoke()
 
 
 @cli.command("upload_video")
 @click.argument('filename', type=click.Path(exists=True))
-def upload_video_command(filename: str) -> None:
+@click.pass_context
+def upload_video_command(ctx: click.Context, filename: str) -> None:
   """Upload a video to Slack and S3.
 
   FILENAME: The path to the video file to upload.
   """
 
   command = upload_video.UploadVideoCommand(filename)
+  command.load_state(debug=ctx.obj['DEBUG'])
   command.invoke()
 
 
