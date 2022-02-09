@@ -4,6 +4,7 @@ from unittest import mock
 
 from pi_portal.commands.bases.tests.fixtures import command_harness
 from .. import door_monitor
+from ..mixins import state
 
 
 class TestDoorMonitorCommand(command_harness.CommandBaseTestHarness):
@@ -14,6 +15,9 @@ class TestDoorMonitorCommand(command_harness.CommandBaseTestHarness):
   @classmethod
   def setUpClass(cls) -> None:
     cls.test_class = door_monitor.DoorMonitorCommand
+
+  def test_mixins(self) -> None:
+    self.assertIsInstance(self.instance, state.CommandManagedStateMixin)
 
   @mock.patch(door_monitor.__name__ + ".gpio")
   def test_invoke(self, m_module: mock.Mock) -> None:

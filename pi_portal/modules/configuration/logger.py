@@ -8,10 +8,9 @@ from pi_portal.modules.configuration import state
 class LoggingConfiguration:
   """Pi Portal logging configuration."""
 
-  level = logging.DEBUG
-
   def __init__(self) -> None:
     running_state = state.State()
+    self.level = running_state.log_level
     self.formatter = logging.Formatter(
         "%(asctime)s [ " + running_state.log_uuid +
         " ] [ %(levelname)s ] %(message)s"
