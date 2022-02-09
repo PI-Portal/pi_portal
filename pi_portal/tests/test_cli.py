@@ -84,3 +84,14 @@ class TestCLI(TestCase):
     self.runner.invoke(cli.cli, command)
     self.check_state(m_state)
     self.check_invoke_with_file(m_command.InstallerCommand, mock_config_file)
+
+  @patch(cli.__name__ + ".version")
+  def test_version(
+      self,
+      m_command: Mock,
+      m_state: Mock,
+  ) -> None:
+    command = "version"
+    self.runner.invoke(cli.cli, command)
+    self.check_state(m_state)
+    self.check_invoke(m_command.VersionCommand)

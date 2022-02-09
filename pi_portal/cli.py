@@ -7,6 +7,7 @@ from .commands import (
     slack_bot,
     upload_snapshot,
     upload_video,
+    version,
 )
 from .modules.configuration import state
 
@@ -68,4 +69,12 @@ def installer_command(config_file: str) -> None:
   """
 
   command = installer.InstallerCommand(config_file)
+  command.invoke()
+
+
+@cli.command("version")
+def version_command() -> None:
+  """Display the Pi Portal version."""
+
+  command = version.VersionCommand()
   command.invoke()
