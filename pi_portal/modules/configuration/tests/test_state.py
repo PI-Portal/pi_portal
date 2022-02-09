@@ -1,5 +1,6 @@
 """Test RunningConfig monostate."""
 
+import logging
 from typing import cast
 from unittest import TestCase, mock
 
@@ -10,21 +11,34 @@ class TestRunningConfig(TestCase):
   """Test the RunningConfig monostate."""
 
   def setUp(self) -> None:
-    self.state = state.State()
+    self.instance = state.State()
+
+  def test_instantiate(self) -> None:
+    instance = state.State()
+    self.assertEqual(instance.user_config, {})
+    self.assertEqual(instance.log_level, logging.INFO)
+    self.assertIsInstance(instance.log_uuid, str)
+
+  def test_debug_enabled(self) -> None:
+    self.instance.log_level = logging.DEBUG
+    self.assertEqual(self.instance.log_level, logging.DEBUG)
+    self.instance.log_level = logging.INFO
 
   def test_mono_state_user_config(self) -> None:
-    self.state.user_config = cast(
+    self.instance.user_config = cast(
         user_config.TypeUserConfig, {'test': 'value'}
     )
 
     instance2 = state.State()
-    self.assertEqual(self.state.user_config, getattr(instance2, 'user_config'))
+    self.assertEqual(
+        self.instance.user_config, getattr(instance2, 'user_config')
+    )
 
   def test_mono_state_log_uuid(self) -> None:
-    self.state.log_uuid = "test id"
+    self.instance.log_uuid = "test id"
 
     instance2 = state.State()
-    self.assertEqual(self.state.log_uuid, getattr(instance2, 'log_uuid'))
+    self.assertEqual(self.instance.log_uuid, getattr(instance2, 'log_uuid'))
 
   @mock.patch(state.__name__ + ".UserConfiguration")
   def test_load_config(self, m_user_config: mock.Mock) -> None:
@@ -33,10 +47,10 @@ class TestRunningConfig(TestCase):
     }
     m_user_config.return_value.user_config = mock_config
 
-    self.state.load()
+    self.instance.load()
 
     m_user_config.return_value.load.assert_called_once_with()
-    self.assertEqual(self.state.user_config, mock_config)
+    self.assertEqual(self.instance.user_config, mock_config)
 
     instance2 = state.State()
-    self.assertEqual(self.state.user_config, instance2.user_config)
+    self.assertEqual(self.instance.user_config, instance2.user_config)

@@ -1,5 +1,5 @@
 """Fixtures for mocking required environment variables."""
-
+import logging
 from typing import Any, Callable, TypeVar
 from unittest import mock
 
@@ -13,6 +13,7 @@ MOCK_SLACK_CHANNEL_ID = "CHHH111"
 MOCK_SLACK_TOKEN = "secretValue"
 MOCK_S3_BUCKET_NAME = 'MOCK_S3_BUCKET_NAME'
 MOCK_LOG_UUID = "MOCK_UUID_VALUE"
+MOCK_LOG_LEVEL = logging.DEBUG
 
 TypeReturn = TypeVar("TypeReturn")
 
@@ -23,7 +24,8 @@ def patch(func: Callable[..., TypeReturn]) -> Callable[..., TypeReturn]:
 
     with mock.patch(state.__name__ + ".State") as mock_state:
 
-      mock_state.return_value.user_config = {
+      mock_state_instance = mock_state.return_value
+      mock_state_instance.user_config = {
           "AWS_ACCESS_KEY_ID": MOCK_AWS_ACCESS_KEY_ID,
           "AWS_SECRET_ACCESS_KEY": MOCK_AWS_SECRET_ACCESS_KEY,
           "LOGZ_IO_CODE": MOCK_LOGZ_IO_CODE,
@@ -36,7 +38,8 @@ def patch(func: Callable[..., TypeReturn]) -> Callable[..., TypeReturn]:
               "GPIO": 5,
           }]
       }
-      mock_state.return_value.log_uuid = MOCK_LOG_UUID
+      mock_state_instance.log_uuid = MOCK_LOG_UUID
+      mock_state_instance.log_level = MOCK_LOG_LEVEL
 
       return func(*args, **kwargs)
 
