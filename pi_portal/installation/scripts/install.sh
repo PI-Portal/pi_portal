@@ -70,6 +70,7 @@ main() {
     configure_log_file "/var/log/pi_portal.door.log"
     configure_log_file "/var/log/pi_portal.slack_bot.log"
     configure_log_file "/var/log/pi_portal.slack_client.log"
+    configure_log_file "/var/log/pi_portal.temperature.log"
 
     configure_supervisor
     configure_pi_portal

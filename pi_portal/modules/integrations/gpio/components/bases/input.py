@@ -24,6 +24,7 @@ class GPIOInputBase(abc.ABC):
     self.pin_name = pin_name
     self.last_state = None
     self.current_state = initial_state
+    self.hook_setup_input()
 
   def poll(self) -> None:
     """Update the state of the GPIO input."""
@@ -38,6 +39,14 @@ class GPIOInputBase(abc.ABC):
     """
 
     return bool(self.current_state != self.last_state)
+
+  def hook_setup_input(self) -> None:
+    """Override to initialize the GPIO input.  This is optional.
+
+    :returns: The new GPIO state value.
+    """
+
+    return None  # pragma: no cover
 
   @abc.abstractmethod
   def hook_update_state(self) -> Any:
