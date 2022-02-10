@@ -100,7 +100,7 @@
   [tool.pylint]
 
     [tool.pylint.basic]
-      argument-rgx = "[a-z_][a-z0-9_]{2,30}$|^pk$"
+      argument-rgx = "[a-z_][a-z0-9_]{1,30}$|^pk$"
       attr-rgx = "[a-z_][a-z0-9_]{2,30}$"
       bad-functions = "map,filter,apply,input"
       bad-names = "foo,bar,baz,toto,tutu,tata"
@@ -124,7 +124,6 @@
       valid-metaclass-classmethod-first-arg = "mcs"
 
     [tool.pylint.design]
-      ignored-argument-names = "_.*"
       max-args = 5
       max-attributes = 8
       max-branches = 12
@@ -187,6 +186,7 @@
     [tool.pylint.variables]
       additional-builtins = ""
       dummy-variables-rgx = "_$|dummy"
+      ignored-argument-names = "_.*"
       init-import = "no"
 
   [tool.pytest]
