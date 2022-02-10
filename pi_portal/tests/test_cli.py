@@ -37,11 +37,11 @@ class TestCLI(TestCase):
     return [(command, False), ("--debug " + command, True)]
 
   @patch(cli.__name__ + ".door_monitor")
-  def test_monitor(
+  def test_door_monitor(
       self,
       m_command: Mock,
   ) -> None:
-    for command, debug in self.get_debug_subtests("monitor"):
+    for command, debug in self.get_debug_subtests("door_monitor"):
       self.runner.invoke(cli.cli, command)
       self.check_state(m_command.DoorMonitorCommand, debug)
       self.check_invoke(m_command.DoorMonitorCommand)
@@ -55,6 +55,16 @@ class TestCLI(TestCase):
       self.runner.invoke(cli.cli, command)
       self.check_state(m_command.SlackBotCommand, debug)
       self.check_invoke(m_command.SlackBotCommand)
+
+  @patch(cli.__name__ + ".temperature_monitor")
+  def test_temp_monitor(
+      self,
+      m_command: Mock,
+  ) -> None:
+    for command, debug in self.get_debug_subtests("temp_monitor"):
+      self.runner.invoke(cli.cli, command)
+      self.check_state(m_command.TemperatureMonitorCommand, debug)
+      self.check_invoke(m_command.TemperatureMonitorCommand)
 
   @patch(cli.__name__ + ".upload_snapshot")
   def test_upload_snapshot(

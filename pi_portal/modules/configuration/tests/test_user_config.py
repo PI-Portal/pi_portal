@@ -10,7 +10,8 @@ from pi_portal.modules.mixins import json_file
 MOCK_CONFIG = cast(user_config.TypeUserConfig, {"mock_setting": True})
 MOCK_JSON = cast(user_config.TypeUserConfig, {"mock_setting": "0123"})
 MOCK_VALID_JSON = cast(
-    user_config.TypeUserConfig, {
+    user_config.TypeUserConfig,
+    {
         "AWS_ACCESS_KEY_ID":
             "... AWS key with write access to video bucket ...",
         "AWS_SECRET_ACCESS_KEY":
@@ -31,8 +32,13 @@ MOCK_VALID_JSON = cast(
                     "NAME": "... name and pin-out of a GPIO switch...",
                     "GPIO": 12,
                 },
-            ]
-    }
+            ],
+        "DHT11_SENSORS":
+            [{
+                "NAME": "... name and pin-out of a GPIO switch...",
+                "GPIO": 4,
+            },],
+    },
 )
 
 
@@ -79,5 +85,6 @@ class TestUserConfigurationValidate(TestCase):
             "'SLACK_CHANNEL' is a required property",
             "'SLACK_CHANNEL_ID' is a required property",
             "'CONTACT_SWITCHES' is a required property",
+            "'DHT11_SENSORS' is a required property",
         ]
     )

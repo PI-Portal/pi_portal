@@ -20,10 +20,11 @@ class TypeUserConfig(TypedDict):
   SLACK_BOT_TOKEN: str
   SLACK_CHANNEL: str
   SLACK_CHANNEL_ID: str
-  CONTACT_SWITCHES: List["TypeUserConfigContactSwitch"]
+  CONTACT_SWITCHES: List["TypeUserConfigGPIO"]
+  DHT11_SENSORS: List["TypeUserConfigGPIO"]
 
 
-class TypeUserConfigContactSwitch(TypedDict):
+class TypeUserConfigGPIO(TypedDict):
   """Typed representation of a contact switch in user configuration."""
 
   NAME: str

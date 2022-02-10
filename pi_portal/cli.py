@@ -5,6 +5,7 @@ from .commands import (
     door_monitor,
     installer,
     slack_bot,
+    temperature_monitor,
     upload_snapshot,
     upload_video,
     version,
@@ -21,10 +22,10 @@ def cli(ctx: click.Context, debug: bool) -> None:
   ctx.obj['DEBUG'] = debug
 
 
-@cli.command("monitor")
+@cli.command("door_monitor")
 @click.pass_context
-def monitor_command(ctx: click.Context) -> None:
-  """Begin monitoring the door."""
+def door_monitor_command(ctx: click.Context) -> None:
+  """Start the door monitor."""
 
   command = door_monitor.DoorMonitorCommand()
   command.load_state(debug=ctx.obj['DEBUG'])
@@ -37,6 +38,16 @@ def slack_bot_command(ctx: click.Context) -> None:
   """Connect the interactive Slack bot."""
 
   command = slack_bot.SlackBotCommand()
+  command.load_state(debug=ctx.obj['DEBUG'])
+  command.invoke()
+
+
+@cli.command("temp_monitor")
+@click.pass_context
+def temp_monitor_command(ctx: click.Context) -> None:
+  """Start the temperature monitor."""
+
+  command = temperature_monitor.TemperatureMonitorCommand()
   command.load_state(debug=ctx.obj['DEBUG'])
   command.invoke()
 

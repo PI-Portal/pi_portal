@@ -11,5 +11,11 @@
           "NAME": "... name and pin-out of a GPIO switch...",
           "GPIO": 12
         }
+    ],
+    "DHT11_SENSORS": [
+        {
+          "NAME": "... name and pin-out of a GPIO with a DHT11 connected ...",
+          "GPIO": 4
+        }
     ]
 }
