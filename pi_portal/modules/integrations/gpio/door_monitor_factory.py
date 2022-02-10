@@ -8,10 +8,10 @@ from pi_portal.modules.integrations.gpio.components import (
 )
 from pi_portal.modules.integrations.gpio.components.bases import \
     input as gpio_input
-from .bases import MonitorFactoryBase
+from .bases import factory
 
 
-class DoorMonitorFactory(MonitorFactoryBase):
+class DoorMonitorFactory(factory.MonitorFactoryBase):
   """Factory for DoorMonitor instances."""
 
   def create(self) -> door_monitor.DoorMonitor:

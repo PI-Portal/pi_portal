@@ -31,7 +31,12 @@ This is a hobby solution, and no warranty or guarantees of any kind are made.  P
 
 > Some examples can be found [here](https://www.burglaryalarmsystem.com/category/magnetic-contact.html).
 
-3. Wiring between the switches and the Raspberry Pi.
+3. Temperature monitors.
+> Currently, only the DHT11 is supported, but it's very trivial to add support for the DHT22.
+
+>  You can find out more about these sensors [here](https://learn.adafruit.com/dht).
+
+5. Wiring between the switches, temperature monitor and the Raspberry Pi.
 > I found female jumper cables made this pretty painless.
 
 > Edit the [config.json](./config.json) file to customize your pin outs and integrations.
@@ -47,7 +52,7 @@ This configuration can be found [here](pi_portal/config.py).
 You will need to install the following dependencies:
 
 ```bash
-sudo apt-get install gcc motion supervisor libffi-dev libssl-dev python3-dev
+sudo apt-get install gcc libffi-dev libgpiod2 libssl-dev motion python3-dev supervisor
 ```
 
 ### Python
@@ -125,6 +130,12 @@ Create a configuration json file that contains the following:
         {
           "NAME": "... name and pin-out of a GPIO switch...",
           "GPIO": 12
+        }
+    ], 
+    "DHT11_SENSORS": [
+        {
+          "NAME": "... name and pin-out of a GPIO with a DHT11 connected ...",
+          "GPIO": 4
         }
     ]
 }
