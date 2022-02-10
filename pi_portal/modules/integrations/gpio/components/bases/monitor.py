@@ -2,7 +2,7 @@
 
 import abc
 import time
-from typing import List
+from typing import Sequence
 
 from pi_portal.modules.integrations.gpio.components.bases import \
     input as gpio_input
@@ -22,18 +22,11 @@ class GPIOMonitorBase(abc.ABC, log_file.WriteLogFile):
   logger_name: str
   log_file_path: str
 
-  def __init__(self, gpio_pins: List[gpio_input.GPIOInputBase]) -> None:
+  def __init__(self, gpio_pins: Sequence[gpio_input.GPIOInputBase]) -> None:
     self.configure_logger()
     self.slack_client = client.SlackClient()
     self.gpio_pins = gpio_pins
-    self._setup_gpio()
-
-  def _setup_gpio(self) -> None:
-    RPi.GPIO.setmode(RPi.GPIO.BCM)
-    for gpio_pin in self.gpio_pins:
-      RPi.GPIO.setup(
-          gpio_pin.pin_number, RPi.GPIO.IN, pull_up_down=RPi.GPIO.PUD_UP
-      )
+    self.hook_setup_gpio()
 
   def start(self) -> None:
     """Begin the monitoring loop."""
@@ -60,6 +53,11 @@ class GPIOMonitorBase(abc.ABC, log_file.WriteLogFile):
     for gpio_pin in self.gpio_pins:
       if not self.gpio_log_changes_only or gpio_pin.has_changed():
         self.hook_log_state(gpio_pin)
+
+  def hook_setup_gpio(self) -> None:
+    """Initialize the GPIO mode, specific to the RPi library."""
+
+    RPi.GPIO.setmode(RPi.GPIO.BCM)
 
   @abc.abstractmethod
   def hook_log_state(self, gpio_pin: gpio_input.GPIOInputBase) -> None:
