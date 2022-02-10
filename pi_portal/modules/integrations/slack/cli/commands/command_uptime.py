@@ -27,19 +27,24 @@ class UptimeCommand(SlackCommandBase):
     self.bot_process = supervisor_process.SupervisorProcess(
         supervisor_config.ProcessList.BOT
     )
-    self.monitor_process = supervisor_process.SupervisorProcess(
-        supervisor_config.ProcessList.MONITOR
+    self.door_monitor_process = supervisor_process.SupervisorProcess(
+        supervisor_config.ProcessList.DOOR_MONITOR
+    )
+    self.temp_monitor_process = supervisor_process.SupervisorProcess(
+        supervisor_config.ProcessList.TEMP_MONITOR
     )
 
   def invoke(self) -> None:
     """Report the uptime of the system and Pi Portal processes."""
 
     bot_uptime_command = BotUptimeCommand(self.slack_bot)
-    monitor_uptime_command = DoorMonitorUptimeCommand(self.slack_bot)
+    door_monitor_uptime_command = DoorMonitorUptimeCommand(self.slack_bot)
+    temp_monitor_uptime_command = TempMonitorUptimeCommand(self.slack_bot)
 
     try:
       bot_uptime_command.invoke()
-      monitor_uptime_command.invoke()
+      door_monitor_uptime_command.invoke()
+      temp_monitor_uptime_command.invoke()
     except supervisor.SupervisorException:
       pass
     else:
@@ -47,7 +52,8 @@ class UptimeCommand(SlackCommandBase):
 
       self.slack_bot.slack_client.send_message(
           f"System Uptime > {linux_uptime}\n"
-          f"Door Monitor Uptime > {monitor_uptime_command.result}\n"
+          f"Door Monitor Uptime > {door_monitor_uptime_command.result}\n"
+          f"Temperature Monitor Uptime > {temp_monitor_uptime_command.result}\n"
           f"Bot Uptime > {bot_uptime_command.result}"
       )
 
@@ -59,6 +65,12 @@ class BotUptimeCommand(NestedSlackUptimeCommandBase):
 
 
 class DoorMonitorUptimeCommand(NestedSlackUptimeCommandBase):
-  """Retrieves uptime for the MONITOR process."""
+  """Retrieves uptime for the DOOR_MONITOR process."""
 
-  process_name = supervisor_config.ProcessList.MONITOR
+  process_name = supervisor_config.ProcessList.DOOR_MONITOR
+
+
+class TempMonitorUptimeCommand(NestedSlackUptimeCommandBase):
+  """Retrieves uptime for the TEMP_MONITOR process."""
+
+  process_name = supervisor_config.ProcessList.TEMP_MONITOR
