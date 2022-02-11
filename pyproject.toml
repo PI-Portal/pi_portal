@@ -52,6 +52,7 @@
     version = "0.0.2"
 
     [tool.poetry.dependencies]
+      "RPi.GPIO" = "^0.7.1"
       adafruit-circuitpython-dht = "^3.7.1"
       boto3 = "^1.20.7"
       click = "^8.0.3"
@@ -82,7 +83,6 @@
 
     [tool.poetry.dev-dependencies]
       darglint = "^1.8.1"
-      fake-rpi = "^0.7.1"
       freezegun = "^1.1.0"
       pydocstyle = "^6.1.1"
       types-boto3 = "^1.0.1"
@@ -91,7 +91,7 @@
       types-requests = "^2.26.0"
 
     [tool.poetry.extras]
-      docs = ["pib_cli", "sphinx-autodoc-typehints", "sphinx-click", "sphinx-jsonschema", "fake-rpi"]
+      docs = ["pib_cli", "sphinx-autodoc-typehints", "sphinx-click", "sphinx-jsonschema"]
 
     [[tool.poetry.packages]]
       include = "pi_portal"
