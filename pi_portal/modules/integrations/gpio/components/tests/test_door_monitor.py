@@ -1,5 +1,7 @@
 """Test the DoorMonitor Class."""
 
+from unittest import mock
+
 from pi_portal.modules.integrations.gpio.components import door_monitor
 from ..bases.tests.fixtures import concrete_input, monitor_harness
 
@@ -23,34 +25,38 @@ class TestDoorMonitor(monitor_harness.GPIOMonitorTestHarness):
     self.gpio_input_1.current_state = True
     self.gpio_input_1.pin_name = "Mock Door"
 
-    with self.assertLogs(self.instance.log, level='DEBUG') as logs:
+    with mock.patch.object(self.instance, "log") as m_log:
       self.instance.hook_log_state(self.gpio_input_1)
 
     self._slack_client().send_message.assert_called_once_with(
         f":rotating_light: The {self.gpio_input_1.pin_name} "
         f"door was OPENED!"
     )
-    self.assertListEqual(
-        logs.output, [
-            f"WARNING:{self.instance.logger_name}:"
-            f"{self.gpio_input_1.pin_name}:OPENED"
-        ]
+    m_log.warning.assert_called_once_with(
+        'DOOR:%s',
+        self.gpio_input_1.pin_name,
+        extra={
+            'contact_switch_name': self.gpio_input_1.pin_name,
+            'state': "OPENED",
+        }
     )
 
   def test_hook_log_state_with_close_door(self) -> None:
     self.gpio_input_1.current_state = False
     self.gpio_input_1.pin_name = "Mock Door"
 
-    with self.assertLogs(self.instance.log, level='DEBUG') as logs:
+    with mock.patch.object(self.instance, "log") as m_log:
       self.instance.hook_log_state(self.gpio_input_1)
 
     self._slack_client().send_message.assert_called_once_with(
         f":rotating_light: The {self.gpio_input_1.pin_name} "
         f"door was CLOSED!"
     )
-    self.assertListEqual(
-        logs.output, [
-            f"WARNING:{self.instance.logger_name}:"
-            f"{self.gpio_input_1.pin_name}:CLOSED"
-        ]
+    m_log.warning.assert_called_once_with(
+        'DOOR:%s',
+        self.gpio_input_1.pin_name,
+        extra={
+            'contact_switch_name': self.gpio_input_1.pin_name,
+            'state': "CLOSED",
+        }
     )

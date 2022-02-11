@@ -1,6 +1,7 @@
 """Test the LoggingConfiguration class."""
 
 import datetime
+import json
 import logging
 from io import StringIO
 from typing import cast
@@ -53,10 +54,15 @@ class TestFormatter(logger_harness.LoggingConfigurationTestHarness):
   @freeze_time("2012-01-14")
   def test_logger_formatter(self) -> None:
     self.logger.error(self.test_message)
-    self.assertEqual(
-        self.handler.stream.getvalue(),  # type: ignore[attr-defined]
-        f"{str(datetime.datetime.utcnow()) + ',000'} "
-        f"[ {self.state.log_uuid} ] "
-        "[ ERROR ] "
-        f"{self.test_message}\n"
+    self.assertDictEqual(
+        json.loads(
+            self.handler.stream.getvalue(),  # type: ignore[attr-defined]
+        ),
+        {
+            "message": self.test_message,
+            "levelname": "ERROR",
+            "name": self.logger_name,
+            "asctime": f"{str(datetime.datetime.utcnow()) + ',000'}",
+            "trace_id": self.state.log_uuid,
+        },
     )

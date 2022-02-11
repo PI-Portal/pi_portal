@@ -33,11 +33,19 @@ class DoorMonitor(monitor.GPIOMonitorBase):
     :param gpio_pin: A GPIO pin to log an event for.
     """
 
-    self.log.warning("%s:%s", gpio_pin.pin_name, self._state_name(gpio_pin))
+    self.log.warning(
+        "DOOR:%s",
+        gpio_pin.pin_name,
+        extra={
+            'contact_switch_name': gpio_pin.pin_name,
+            'state': self._state_name(gpio_pin),
+        }
+    )
     slack_message = (
         f":rotating_light: The {gpio_pin.pin_name} "
         f"door was {self._state_name(gpio_pin)}!"
     )
+
     self.slack_client.send_message(slack_message)
 
   def _state_name(self, gpio_pin: gpio_input.GPIOInputBase) -> str:

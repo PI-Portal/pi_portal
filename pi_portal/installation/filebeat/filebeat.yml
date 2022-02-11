@@ -6,9 +6,9 @@ filebeat.inputs:
   paths:
     - /var/log/pi_portal.door.log
   fields:
-    logzio_codec: plain
+    logzio_codec: json
     token: <<LOGZ_IO_CODE>>
-    type: pi_portal
+    type: pi_portal_door_json
   fields_under_root: true
   encoding: utf-8
   ignore_older: 12h
@@ -17,9 +17,9 @@ filebeat.inputs:
   paths:
     - /var/log/pi_portal.temperature.log
   fields:
-    logzio_codec: plain
+    logzio_codec: json
     token: <<LOGZ_IO_CODE>>
-    type: pi_portal_temperature
+    type: pi_portal_temperature_json
   fields_under_root: true
   encoding: utf-8
   ignore_older: 12h
@@ -29,9 +29,9 @@ filebeat.inputs:
     - /var/log/pi_portal.slack_bot.log
     - /var/log/pi_portal.slack_client.log
   fields:
-    logzio_codec: plain
+    logzio_codec: json
     token: <<LOGZ_IO_CODE>>
-    type: pi_portal_slack
+    type: pi_portal_slack_json
   fields_under_root: true
   encoding: utf-8
   ignore_older: 12h
