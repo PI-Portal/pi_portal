@@ -91,7 +91,7 @@
       types-requests = "^2.26.0"
 
     [tool.poetry.extras]
-      docs = ["pib_cli", "sphinx-autodoc-typehints", "sphinx-click", "sphinx-jsonschema"]
+      docs = ["pib_cli", "sphinx-autodoc-typehints", "sphinx-click", "sphinx-jsonschema", "fake-rpi"]
 
     [[tool.poetry.packages]]
       include = "pi_portal"
