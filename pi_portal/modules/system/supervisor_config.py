@@ -8,8 +8,9 @@ class ProcessList(Enum):
 
   BOT = 'bot'
   CAMERA = 'camera'
-  MONITOR = 'monitor'
+  DOOR_MONITOR = 'door_monitor'
   FILEBEAT = 'filebeat'
+  TEMP_MONITOR = 'temp_monitor'
 
 
 class ProcessStatus(Enum):

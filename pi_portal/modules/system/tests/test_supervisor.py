@@ -79,11 +79,11 @@ class TestSupervisorClient(TestCase):
     self._mock_server().supervisor.getProcessInfo.return_value = \
       self.create_mock_process_info()
     result = self.supervisor_client.uptime(
-        supervisor_config.ProcessList.MONITOR
+        supervisor_config.ProcessList.DOOR_MONITOR
     )
     self._mock_server().supervisor.getProcessInfo.\
       assert_called_once_with(
-        supervisor_config.ProcessList.MONITOR.value
+        supervisor_config.ProcessList.DOOR_MONITOR.value
       )
     self.assertEqual(result, self.mock_start)
 
@@ -92,4 +92,4 @@ class TestSupervisorClient(TestCase):
         xmlrpc.client.Fault(1, "MockFaultError")
     )
     with self.assertRaises(supervisor.SupervisorException):
-      self.supervisor_client.uptime(supervisor_config.ProcessList.MONITOR)
+      self.supervisor_client.uptime(supervisor_config.ProcessList.DOOR_MONITOR)
