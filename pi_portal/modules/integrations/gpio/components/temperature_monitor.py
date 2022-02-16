@@ -34,6 +34,11 @@ class TemperatureSensorMonitor(monitor.GPIOMonitorBase):
 
     state = cast(dht11_sensor.TypeTemperatureData, gpio_pin.current_state)
     self.log.info(
-        "%s:%s:%s", gpio_pin.pin_name, "Temperature", state["temperature"]
+        "DHT11:%s",
+        gpio_pin.pin_name,
+        extra={
+            'sensor_name': gpio_pin.pin_name,
+            'temperature': state["temperature"],
+            'humidity': state["humidity"],
+        }
     )
-    self.log.info("%s:%s:%s", gpio_pin.pin_name, "Humidity", state["humidity"])

@@ -1,5 +1,7 @@
 """Test the TemperatureSensorMonitor Class."""
 
+from unittest import mock
+
 from pi_portal.modules.integrations.gpio.components import temperature_monitor
 from .. import dht11_sensor
 from ..bases.tests.fixtures import monitor_harness
@@ -27,16 +29,15 @@ class TestDHTSensorMonitor(monitor_harness.GPIOMonitorTestHarness):
     }
     self.gpio_input_1.pin_name = "Kitchen"
 
-    with self.assertLogs(self.instance.log, level='DEBUG') as logs:
+    with mock.patch.object(self.instance, "log") as m_log:
       self.instance.hook_log_state(self.gpio_input_1)
 
-    self.assertListEqual(
-        logs.output, [
-            f"INFO:{self.instance.logger_name}:"
-            f"{self.instance.gpio_pins[0].pin_name}:"
-            f"Temperature:{self.gpio_input_1.current_state['temperature']}",
-            f"INFO:{self.instance.logger_name}:"
-            f"{self.instance.gpio_pins[0].pin_name}:"
-            f"Humidity:{self.gpio_input_1.current_state['humidity']}"
-        ]
+    m_log.info.assert_called_once_with(
+        'DHT11:%s',
+        self.gpio_input_1.pin_name,
+        extra={
+            'sensor_name': self.gpio_input_1.pin_name,
+            'temperature': self.gpio_input_1.current_state['temperature'],
+            'humidity': self.gpio_input_1.current_state['humidity']
+        }
     )
