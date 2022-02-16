@@ -140,22 +140,22 @@ class TestSupervisorProcess(TestCase):
     self.assertFalse(result)
     self._mocked_client().status.assert_called_once_with(self.mock_process)
 
-  @freeze_time("2021-11-18-22:30:00")
+  @freeze_time("2021-11-21-04:30:00")
   def test_uptime_running(self) -> None:
     self._mocked_client(
     ).status.return_value = supervisor_config.ProcessStatus.RUNNING
-    self._mocked_client().uptime.return_value = "1637288711"
+    self._mocked_client().start_time.return_value = "1637288711"
 
     result = self.instance.uptime()
 
-    self._mocked_client().uptime.assert_called_once_with(self.mock_process)
-    self.assertEqual(result, "3 hours")
+    self._mocked_client().start_time.assert_called_once_with(self.mock_process)
+    self.assertEqual(result, "2 days")
 
-  def test_uptime_stopping(self) -> None:
+  def test_uptime_stopped(self) -> None:
     self._mocked_client(
     ).status.return_value = supervisor_config.ProcessStatus.STOPPED
 
     result = self.instance.uptime()
 
-    self._mocked_client().uptime.assert_not_called()
+    self._mocked_client().start_time.assert_not_called()
     self.assertEqual(result, self.instance.uptime_when_stopped)

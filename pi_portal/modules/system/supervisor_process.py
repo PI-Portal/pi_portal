@@ -79,6 +79,6 @@ class SupervisorProcess:
     if not self.status_in([supervisor_config.ProcessStatus.RUNNING]):
       return self.uptime_when_stopped
     uptime = datetime.now() - datetime.fromtimestamp(
-        int(self.client.uptime(self.process_name))
+        int(self.client.start_time(self.process_name))
     )
     return humanize.naturaldelta(uptime)

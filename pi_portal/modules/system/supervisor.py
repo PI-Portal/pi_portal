@@ -77,8 +77,8 @@ class SupervisorClient:
     except xmlrpc.client.Fault as exc:
       raise SupervisorException from exc
 
-  def uptime(self, process: ProcessList) -> str:
-    """Retrieve the uptime of the specified Supervisor process.
+  def start_time(self, process: ProcessList) -> str:
+    """Retrieve the start time of the specified Supervisor process.
 
     :param process: The process to retrieve the uptime of.
     :returns: The uptime of the queried process.

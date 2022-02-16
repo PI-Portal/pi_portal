@@ -75,10 +75,10 @@ class TestSupervisorClient(TestCase):
     with self.assertRaises(supervisor.SupervisorException):
       self.supervisor_client.status(supervisor_config.ProcessList.CAMERA)
 
-  def test_uptime(self) -> None:
+  def test_start_time(self) -> None:
     self._mock_server().supervisor.getProcessInfo.return_value = \
       self.create_mock_process_info()
-    result = self.supervisor_client.uptime(
+    result = self.supervisor_client.start_time(
         supervisor_config.ProcessList.DOOR_MONITOR
     )
     self._mock_server().supervisor.getProcessInfo.\
@@ -87,9 +87,11 @@ class TestSupervisorClient(TestCase):
       )
     self.assertEqual(result, self.mock_start)
 
-  def test_uptime_error(self) -> None:
+  def test_start_time_error(self) -> None:
     self._mock_server().supervisor.getProcessInfo.side_effect = (
         xmlrpc.client.Fault(1, "MockFaultError")
     )
     with self.assertRaises(supervisor.SupervisorException):
-      self.supervisor_client.uptime(supervisor_config.ProcessList.DOOR_MONITOR)
+      self.supervisor_client.start_time(
+          supervisor_config.ProcessList.DOOR_MONITOR
+      )

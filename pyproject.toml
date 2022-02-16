@@ -56,7 +56,7 @@
       boto3 = "^1.20.7"
       click = "^8.0.3"
       fake-rpi = "^0.7.1"
-      humanize = "^3.12.0"
+      humanize = "^4.0.0"
       jsonschema = ">=3.2.0,<4.0.0"
       python = ">=3.7.0,<4.0.0"
       python-json-logger = "^2.0.2"
