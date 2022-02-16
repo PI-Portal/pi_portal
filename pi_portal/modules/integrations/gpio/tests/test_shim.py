@@ -1,5 +1,7 @@
 """Test the compatibility shim."""
 
+import sys
+from types import ModuleType
 from unittest import TestCase, mock
 
 from .. import shim
@@ -19,7 +21,7 @@ class TestPatchGPIO(TestCase):
   @mock.patch(shim.__name__ + ".os.uname", MOCK_X86)
   def test_patch_gpio_x86(self, m_sys: mock.Mock) -> None:
     m_sys.modules = self.mock_modules
-    with self.assertRaises(Exception) as exc:
+    with self.assertRaises(shim.IncompatiblePlatform) as exc:
       shim.patch_gpio()
     self.assertEqual(
         exc.exception.args,
@@ -31,3 +33,51 @@ class TestPatchGPIO(TestCase):
   def test_patch_gpio_arm(self, m_sys: mock.Mock) -> None:
     m_sys.modules = self.mock_modules
     shim.patch_gpio()
+
+
+class TestImportOrMock(TestCase):
+  """Test the import_or_mock function."""
+
+  def setUp(self) -> None:
+    self.mock_modules = mock.MagicMock()
+    self.mock_modules.__setitem__.side_effect = ModuleNotFoundError("Boom!")
+    self.reset_module("adafruit_dht")
+    self.reset_module("board")
+
+  def tearDown(self) -> None:
+    self.reset_module("adafruit_dht")
+    self.reset_module("board")
+
+  def reset_module(self, name: str) -> None:
+    if name in sys.modules:
+      del sys.modules[name]
+
+  @mock.patch(shim.__name__ + ".os.uname", MOCK_X86)
+  def test_import_or_mock_x86(self) -> None:
+    self.assertIsInstance(
+        shim.import_or_mock("adafruit_dht"),
+        mock.MagicMock,
+    )
+    self.assertEqual(
+        shim.import_or_mock("adafruit_dht"),
+        shim.import_or_mock("adafruit_dht"),
+    )
+
+  @mock.patch(shim.__name__ + ".os.uname", MOCK_ARM)
+  def test_import_or_mock_arm(self) -> None:
+    self.assertIsInstance(shim.import_or_mock("adafruit_dht"), ModuleType)
+    self.assertEqual(
+        shim.import_or_mock("adafruit_dht"),
+        shim.import_or_mock("adafruit_dht"),
+    )
+
+  @mock.patch(shim.__name__ + ".os.uname", MOCK_ARM)
+  def test_import_or_mock_arm_exception(self) -> None:
+    self.assertIsInstance(
+        shim.import_or_mock("board"),
+        mock.MagicMock,
+    )
+    self.assertEqual(
+        shim.import_or_mock("board"),
+        shim.import_or_mock("board"),
+    )

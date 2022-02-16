@@ -12,7 +12,6 @@ from ... import input as gpio_input
 from . import gpio_loop
 
 
-@mock.patch(monitor.__name__ + ".RPi.GPIO")
 class GPIOMonitorTestHarness(TestCase, abc.ABC):
   """Test harness for the GPIOMonitorBase class."""
 
@@ -32,27 +31,26 @@ class GPIOMonitorTestHarness(TestCase, abc.ABC):
     return cast(mock.Mock, self.instance.slack_client)
 
   @mock_state.patch
-  def test_initialize(self, m_rpio: mock.Mock) -> None:
+  def test_initialize(self) -> None:
     instance = self.test_class([self.gpio_input_1, self.gpio_input_2])
     self.assertIsInstance(instance.log, logging.Logger)
     self.assertIsInstance(instance.slack_client, client.SlackClient)
     self.assertEqual(instance.gpio_pins, [self.gpio_input_1, self.gpio_input_2])
-    m_rpio.setmode.assert_called_once_with(m_rpio.BCM)
-    m_rpio.setup.assert_any_call(
-        self.gpio_input_1.pin_number, m_rpio.IN, pull_up_down=m_rpio.PUD_UP
-    )
-    m_rpio.setup.assert_any_call(
-        self.gpio_input_2.pin_number, m_rpio.IN, pull_up_down=m_rpio.PUD_UP
-    )
-    self.assertEqual(m_rpio.setup.call_count, 2)
 
-  def test_is_running(self, _: mock.Mock) -> None:
+  @mock_state.patch
+  def test_initialize_gpio(self) -> None:
+    with mock.patch(monitor.__name__ + ".RPi") as m_rpi:
+      self.test_class([self.gpio_input_1, self.gpio_input_2])
+    m_rpi.GPIO.setmode.assert_called_once_with(m_rpi.GPIO.BCM)
+
+  def test_is_running(self) -> None:
     self.assertTrue(self.instance.is_running())
 
   @gpio_loop.patch_gpio_loop(monitor.__name__ + ".GPIOMonitorBase")
-  def test_pins_are_polled(self, _: mock.Mock) -> None:
-    with mock.patch.object(self.instance.gpio_pins[0], "poll") as m_poll_1:
-      with mock.patch.object(self.instance.gpio_pins[1], "poll") as m_poll_2:
-        self.instance.start()
-        m_poll_1.assert_called_once_with()
-        m_poll_2.assert_called_once_with()
+  def test_pins_are_polled(self) -> None:
+    with mock.patch.object(self.instance, "hook_log_state"):
+      with mock.patch.object(self.instance.gpio_pins[0], "poll") as m_poll_1:
+        with mock.patch.object(self.instance.gpio_pins[1], "poll") as m_poll_2:
+          self.instance.start()
+          m_poll_1.assert_called_once_with()
+          m_poll_2.assert_called_once_with()

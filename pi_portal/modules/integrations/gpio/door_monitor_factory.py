@@ -6,8 +6,6 @@ from pi_portal.modules.integrations.gpio.components import (
     contact_switch,
     door_monitor,
 )
-from pi_portal.modules.integrations.gpio.components.bases import \
-    input as gpio_input
 from .bases import MonitorFactoryBase
 
 
@@ -20,7 +18,7 @@ class DoorMonitorFactory(MonitorFactoryBase):
     :returns: A fully configured DoorMonitor.
     """
 
-    switches: List[gpio_input.GPIOInputBase] = []
+    switches: List[contact_switch.ContactSwitch] = []
     for switch in self.state.user_config["CONTACT_SWITCHES"]:
       switches.append(
           contact_switch.ContactSwitch(

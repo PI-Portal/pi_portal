@@ -17,6 +17,11 @@ class ContactSwitch(gpio_input.GPIOInputBase):
 
   open = 1
 
+  def hook_setup_input(self) -> None:
+    """Initialize the GPIO input."""
+
+    RPi.GPIO.setup(self.pin_number, RPi.GPIO.IN, pull_up_down=RPi.GPIO.PUD_UP)
+
   def hook_update_state(self) -> Any:
     """Retrieve new state for the GPIO input.
 
