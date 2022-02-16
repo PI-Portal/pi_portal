@@ -36,6 +36,10 @@ def patch(func: Callable[..., TypeReturn]) -> Callable[..., TypeReturn]:
           "CONTACT_SWITCHES": [{
               "NAME": "Front",
               "GPIO": 5,
+          }],
+          "DHT11_SENSORS": [{
+              "NAME": "Kitchen",
+              "GPIO": 4,
           }]
       }
       mock_state_instance.log_uuid = MOCK_LOG_UUID
