@@ -608,11 +608,11 @@ numpy = "*"
 
 [[package]]
 name = "freezegun"
-version = "1.1.0"
+version = "1.2.1"
 description = "Let your Python tests travel through time"
 category = "dev"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.6"
 
 [package.dependencies]
 python-dateutil = ">=2.7"
@@ -1520,8 +1520,8 @@ docs = ["pib_cli", "sphinx-autodoc-typehints", "sphinx-click", "sphinx-jsonschem
 
 [metadata]
 lock-version = "1.1"
-      python-versions = ">=3.7.0,<4.0.0"
-content-hash = "b3e531005aaa66e218c5077da7721480dbbb672517ff8911592666ed16eedc14"
+python-versions = ">=3.7.0,<4.0.0"
+content-hash = "9a420cbc455fd5582c71fe2898e7b69b9dcb3a9cf7c1fab74bce66f8b922fe10"
 
 [metadata.files]
 adafruit-blinka = [
@@ -1664,8 +1664,8 @@ fake-rpi = [
     {file = "fake_rpi-0.7.1.tar.gz", hash = "sha256:9194842c49ad17afa5b492c52172d7e15790563e36a01fc5f525b606416e00ee"},
 ]
 freezegun = [
-    {file = "freezegun-1.1.0-py2.py3-none-any.whl", hash = "sha256:2ae695f7eb96c62529f03a038461afe3c692db3465e215355e1bb4b0ab408712"},
-    {file = "freezegun-1.1.0.tar.gz", hash = "sha256:177f9dd59861d871e27a484c3332f35a6e3f5d14626f2bf91be37891f18927f3"},
+    {file = "freezegun-1.2.1-py3-none-any.whl", hash = "sha256:15103a67dfa868ad809a8f508146e396be2995172d25f927e48ce51c0bf5cb09"},
+    {file = "freezegun-1.2.1.tar.gz", hash = "sha256:b4c64efb275e6bc68dc6e771b17ffe0ff0f90b81a2a5189043550b6519926ba4"},
 ]
 gitdb = [
     {file = "gitdb-4.0.9-py3-none-any.whl", hash = "sha256:8033ad4e853066ba6ca92050b9df2f89301b8fc8bf7e9324d412a63f8bf1a8fd"},
