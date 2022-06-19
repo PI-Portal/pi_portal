@@ -1174,7 +1174,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "slack-sdk"
-version = "3.14.1"
+version = "3.17.1"
 description = "The Slack API Platform SDK for Python"
 category = "main"
 optional = false
@@ -1182,7 +1182,7 @@ python-versions = ">=3.6.0"
 
 [package.extras]
 optional = ["aiodns (>1.0)", "aiohttp (>=3.7.3,<4)", "boto3 (<=2)", "SQLAlchemy (>=1,<2)", "websockets (>=10,<11)", "websocket-client (>=1,<2)"]
-testing = ["pytest (>=6.2.5,<7)", "pytest-asyncio (<1)", "Flask-Sockets (>=0.2,<1)", "Flask (>=1,<2)", "Werkzeug (<2)", "pytest-cov (>=2,<3)", "codecov (>=2,<3)", "flake8 (>=4,<5)", "black (==22.1.0)", "psutil (>=5,<6)", "databases (>=0.5)", "boto3 (<=2)", "moto (>=3,<4)"]
+testing = ["pytest (>=6.2.5,<7)", "pytest-asyncio (<1)", "Flask-Sockets (>=0.2,<1)", "Flask (>=1,<2)", "Werkzeug (<2)", "itsdangerous (==1.1.0)", "Jinja2 (==3.0.3)", "pytest-cov (>=2,<3)", "codecov (>=2,<3)", "flake8 (>=4,<5)", "black (==22.3.0)", "click (==8.0.4)", "psutil (>=5,<6)", "databases (>=0.5)", "boto3 (<=2)", "moto (>=3,<4)"]
 
 [[package]]
 name = "smmap"
@@ -1520,8 +1520,8 @@ docs = ["pib_cli", "sphinx-autodoc-typehints", "sphinx-click", "sphinx-jsonschem
 
 [metadata]
 lock-version = "1.1"
-      python-versions = ">=3.7.0,<4.0.0"
-content-hash = "b3e531005aaa66e218c5077da7721480dbbb672517ff8911592666ed16eedc14"
+python-versions = ">=3.7.0,<4.0.0"
+content-hash = "7063c8db9c9a79b955d22c4bb03688b3a64ee113ffdb52341d6c3b2a4c5d9022"
 
 [metadata.files]
 adafruit-blinka = [
@@ -2057,8 +2057,8 @@ six = [
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 slack-sdk = [
-    {file = "slack_sdk-3.14.1-py2.py3-none-any.whl", hash = "sha256:b1a007072d2e98978cf906ff3452641ea4ab185e4eddbc27b087bbd9a8043ff0"},
-    {file = "slack_sdk-3.14.1.tar.gz", hash = "sha256:306d3647509fcfbd4ebe5dba19386ead329e85d297366805dbeac543bbd60904"},
+    {file = "slack_sdk-3.17.1-py2.py3-none-any.whl", hash = "sha256:50fa984d9513226d3f982ba7d596d3d68127f58865f83dcc1825f52012e908ab"},
+    {file = "slack_sdk-3.17.1.tar.gz", hash = "sha256:20a170698fa1affde9c642d78ea1e8947e9dd37920685cb0f2c5a2df7c48abd4"},
 ]
 smmap = [
     {file = "smmap-5.0.0-py3-none-any.whl", hash = "sha256:2aba19d6a040e78d8b09de5c57e96207b09ed71d8e55ce0959eeee6c8e190d94"},
