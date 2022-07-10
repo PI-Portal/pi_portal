@@ -124,17 +124,10 @@ jobs:
         run: |
           source .github/scripts/build_container.sh
 
-      - name: Create Release -- Prepare Content
-        if: contains(github.ref, '/tags/v')
-        run: |
-          echo "{}" > package.json
-
       - name: Create Release -- Generate Changelog
         if: contains(github.ref, '/tags/v')
-        uses: scottbrenner/generate-changelog-action@v1.3.3
-        id: Changelog
-        env:
-          REPO: ${{ github.repository }}
+        run:
+          source ./.github/scripts/changelog.sh
 
       - name: Create Release -- Create Github Release
         if: contains(github.ref, '/tags/v')
@@ -146,7 +139,7 @@ jobs:
           tag_name: ${{ env.BRANCH_OR_TAG }}
           release_name: Release ${{ env.BRANCH_OR_TAG }}
           body: |
-            ${{ steps.Changelog.outputs.changelog }}
+            ${{ env.CHANGE_LOG_CONTENT }}
             ## Deployment Checklist
             - [ ] Ensure readthedocs integration is working
           draft: true
