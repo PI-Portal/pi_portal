@@ -54,15 +54,19 @@
     [tool.poetry.dependencies]
       "RPi.GPIO" = "^0.7.1"
       adafruit-circuitpython-dht = "^3.7.1"
-      boto3 = "^1.20.7"
+      boto3 = "^1.24.26"
       click = "^8.0.3"
       fake-rpi = "^0.7.1"
       humanize = "^4.0.0"
       jsonschema = ">=3.2.0,<4.0.0"
       python = ">=3.7.0,<4.0.0"
-      python-json-logger = "^2.0.2"
+      python-json-logger = "<2.0.3"
       requests = "^2.26.0"
       slack-sdk = "^3.11.2"
+
+      [tool.poetry.dependencies.markupsafe]
+        optional = true
+        version = "<2.1.0"
 
       [tool.poetry.dependencies.pib_cli]
         extras = ["docs", "types"]
@@ -91,7 +95,7 @@
       types-requests = "^2.26.0"
 
     [tool.poetry.extras]
-      docs = ["pib_cli", "sphinx-autodoc-typehints", "sphinx-click", "sphinx-jsonschema"]
+      docs = ["markupsafe", "pib_cli", "sphinx-autodoc-typehints", "sphinx-click", "sphinx-jsonschema"]
 
     [[tool.poetry.packages]]
       include = "pi_portal"
