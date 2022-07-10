@@ -31,7 +31,7 @@ class TypeUserConfigGPIO(TypedDict):
   GPIO: int
 
 
-class UserConfigurationException(BaseException):
+class UserConfigurationException(Exception):
   """Raised during validation of end user configuration."""
 
 

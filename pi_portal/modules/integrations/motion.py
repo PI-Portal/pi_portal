@@ -11,7 +11,7 @@ from requests.adapters import HTTPAdapter
 from urllib3 import Retry
 
 
-class MotionException(BaseException):
+class MotionException(Exception):
   """Exceptions for the Motion integration."""
 
 

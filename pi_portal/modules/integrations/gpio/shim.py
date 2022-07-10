@@ -7,7 +7,7 @@ from types import ModuleType
 from unittest import mock
 
 
-class IncompatiblePlatform(BaseException):
+class IncompatiblePlatform(Exception):
   """Raised when accessing GPIO utilities on a non-compatible device."""
 
 
