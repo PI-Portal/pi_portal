@@ -1117,7 +1117,7 @@ six = ">=1.5"
 
 [[package]]
 name = "python-json-logger"
-version = "2.0.2"
+version = "2.0.4"
 description = "A python library adding a json log formatter"
 category = "main"
 optional = false
@@ -1579,8 +1579,8 @@ docs = ["markupsafe", "pib_cli", "sphinx-autodoc-typehints", "sphinx-click", "sp
 
 [metadata]
 lock-version = "1.1"
-      python-versions = ">=3.7.0,<4.0.0"
-content-hash = "bbf659221b87aa2d00f7912a276b9e3a5f02fcb41e2039a38805d7e68e250cb5"
+python-versions = ">=3.7.0,<4.0.0"
+content-hash = "663213480ef0eb040fc74018ededc4f468fa0853f3bf5cd1e78314adf2259c78"
 
 [metadata.files]
 adafruit-blinka = [
@@ -2052,8 +2052,8 @@ python-dateutil = [
     {file = "python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
 ]
 python-json-logger = [
-    {file = "python-json-logger-2.0.2.tar.gz", hash = "sha256:202a4f29901a4b8002a6d1b958407eeb2dd1d83c18b18b816f5b64476dde9096"},
-    {file = "python_json_logger-2.0.2-py3-none-any.whl", hash = "sha256:99310d148f054e858cd5f4258794ed6777e7ad2c3fd7e1c1b527f1cba4d08420"},
+    {file = "python-json-logger-2.0.4.tar.gz", hash = "sha256:764d762175f99fcc4630bd4853b09632acb60a6224acb27ce08cd70f0b1b81bd"},
+    {file = "python_json_logger-2.0.4-py3-none-any.whl", hash = "sha256:3b03487b14eb9e4f77e4fc2a023358b5394b82fd89cecf5586259baed57d8c6f"},
 ]
 pytz = [
     {file = "pytz-2022.1-py2.py3-none-any.whl", hash = "sha256:e68985985296d9a66a881eb3193b0906246245294a881e7c8afe623866ac6a5c"},
