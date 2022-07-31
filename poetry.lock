@@ -918,9 +918,9 @@ yamllint = ">=1.25.0,<2.0.0"
 yapf = ">=0.31.0,<0.32.0"
 
 [package.extras]
+pib_docs = ["sphinx-jsonschema (>=1.16.8,<2.0.0)", "sphinx-click (>=3.0.0,<4.0.0)", "sphinx-autopackagesummary (>=1.3,<2.0)", "sphinx (>=4.0.2,<5.0.0)"]
+docs = ["sphinx-autopackagesummary (>=1.3,<2.0)", "sphinx (>=4.0.2,<5.0.0)"]
 types = ["mypy (>=0.902,<0.903)"]
-docs = ["sphinx (>=4.0.2,<5.0.0)", "sphinx-autopackagesummary (>=1.3,<2.0)"]
-pib_docs = ["sphinx (>=4.0.2,<5.0.0)", "sphinx-autopackagesummary (>=1.3,<2.0)", "sphinx-click (>=3.0.0,<4.0.0)", "sphinx-jsonschema (>=1.16.8,<2.0.0)"]
 
 [[package]]
 name = "platformdirs"
@@ -946,8 +946,8 @@ python-versions = ">=3.6"
 importlib-metadata = {version = ">=0.12", markers = "python_version < \"3.8\""}
 
 [package.extras]
-dev = ["pre-commit", "tox"]
-testing = ["pytest", "pytest-benchmark"]
+testing = ["pytest-benchmark", "pytest"]
+dev = ["tox", "pre-commit"]
 
 [[package]]
 name = "prompt-toolkit"
@@ -1225,7 +1225,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "slack-sdk"
-version = "3.17.2"
+version = "3.18.1"
 description = "The Slack API Platform SDK for Python"
 category = "main"
 optional = false
@@ -1345,8 +1345,8 @@ optional = true
 python-versions = ">=3.5"
 
 [package.extras]
-lint = ["flake8", "mypy", "docutils-stubs"]
 test = ["pytest"]
+lint = ["docutils-stubs", "mypy", "flake8"]
 
 [[package]]
 name = "sphinxcontrib-devhelp"
@@ -1357,8 +1357,8 @@ optional = true
 python-versions = ">=3.5"
 
 [package.extras]
-lint = ["flake8", "mypy", "docutils-stubs"]
 test = ["pytest"]
+lint = ["docutils-stubs", "mypy", "flake8"]
 
 [[package]]
 name = "sphinxcontrib-htmlhelp"
@@ -1369,8 +1369,8 @@ optional = true
 python-versions = ">=3.6"
 
 [package.extras]
-lint = ["flake8", "mypy", "docutils-stubs"]
-test = ["pytest", "html5lib"]
+test = ["html5lib", "pytest"]
+lint = ["docutils-stubs", "mypy", "flake8"]
 
 [[package]]
 name = "sphinxcontrib-jsmath"
@@ -1381,7 +1381,7 @@ optional = true
 python-versions = ">=3.5"
 
 [package.extras]
-test = ["pytest", "flake8", "mypy"]
+test = ["mypy", "flake8", "pytest"]
 
 [[package]]
 name = "sphinxcontrib-qthelp"
@@ -1392,8 +1392,8 @@ optional = true
 python-versions = ">=3.5"
 
 [package.extras]
-lint = ["flake8", "mypy", "docutils-stubs"]
 test = ["pytest"]
+lint = ["docutils-stubs", "mypy", "flake8"]
 
 [[package]]
 name = "sphinxcontrib-serializinghtml"
@@ -1579,8 +1579,8 @@ docs = ["markupsafe", "pib_cli", "sphinx-autodoc-typehints", "sphinx-click", "sp
 
 [metadata]
 lock-version = "1.1"
-      python-versions = ">=3.7.0,<4.0.0"
-content-hash = "bbf659221b87aa2d00f7912a276b9e3a5f02fcb41e2039a38805d7e68e250cb5"
+python-versions = ">=3.7.0,<4.0.0"
+content-hash = "f16fbe88d3973ef4cfb265dc689f090452edfb35aff09de2d03d04811e647d32"
 
 [metadata.files]
 adafruit-blinka = [
@@ -2125,8 +2125,8 @@ six = [
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 slack-sdk = [
-    {file = "slack_sdk-3.17.2-py2.py3-none-any.whl", hash = "sha256:70d5a55a5d52ba7128d5347ed995425e1f83e729667ab296035bcf6c1b13a049"},
-    {file = "slack_sdk-3.17.2.tar.gz", hash = "sha256:60302e32d48db6b4ea5453d92f23ecf3f7b843f799f61eaf271315264d7cb281"},
+    {file = "slack_sdk-3.18.1-py2.py3-none-any.whl", hash = "sha256:63ce5e6253a31873d6c921c9feaa842a93a2f56e6e009cb7daf406f4bc4df798"},
+    {file = "slack_sdk-3.18.1.tar.gz", hash = "sha256:a25d3d2bf0bf605d54d764d4a463fe7c0659ee24c13d75653e2bec247bd5998b"},
 ]
 smmap = [
     {file = "smmap-5.0.0-py3-none-any.whl", hash = "sha256:2aba19d6a040e78d8b09de5c57e96207b09ed71d8e55ce0959eeee6c8e190d94"},
