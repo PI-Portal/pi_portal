@@ -42,7 +42,7 @@ FROM base AS poetry
 LABEL environment ""
 
 # Install Latest Poetry
-RUN pip install --no-cache-dir poetry
+RUN pip install --no-cache-dir poetry>=1.2.0
 
 # ======================================================
 
@@ -89,7 +89,7 @@ RUN poetry install --no-root -E docs
 COPY . /app
 
 # Install The App
-RUN poetry install
+RUN poetry install -E docs
 
 # Create A Symlink For the Bash Customizations
 RUN ln -sf /app/assets/.bash_customize /home/user/.bash_customize
