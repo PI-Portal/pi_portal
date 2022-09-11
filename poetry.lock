@@ -107,6 +107,7 @@ python-versions = ">=3.6.2"
 
 [package.dependencies]
 lazy-object-proxy = ">=1.4.0"
+setuptools = ">=20.0"
 typed-ast = {version = ">=1.4.0,<2.0", markers = "implementation_name == \"cpython\" and python_version < \"3.8\""}
 typing-extensions = {version = ">=3.10", markers = "python_version < \"3.10\""}
 wrapt = ">=1.11,<2"
@@ -161,18 +162,18 @@ stevedore = ">=1.20.0"
 [package.extras]
 test = ["beautifulsoup4 (>=4.8.0)", "coverage (>=4.5.4)", "fixtures (>=3.0.0)", "flake8 (>=4.0.0)", "pylint (==1.9.4)", "stestr (>=2.5.0)", "testscenarios (>=0.5.0)", "testtools (>=2.3.0)", "toml"]
 toml = ["toml"]
-yaml = ["pyyaml"]
+yaml = ["PyYAML"]
 
 [[package]]
 name = "boto3"
-version = "1.24.57"
+version = "1.24.70"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.27.57,<1.28.0"
+botocore = ">=1.27.70,<1.28.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -512,7 +513,7 @@ xray = ["mypy-boto3-xray (>=1.24.0,<1.25.0)"]
 
 [[package]]
 name = "botocore"
-version = "1.27.57"
+version = "1.27.70"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -816,6 +817,7 @@ python-versions = "*"
 attrs = ">=17.4.0"
 importlib-metadata = {version = "*", markers = "python_version < \"3.8\""}
 pyrsistent = ">=0.14.0"
+setuptools = "*"
 six = ">=1.11.0"
 
 [package.extras]
@@ -932,6 +934,7 @@ PyYAML = ">=5.4.1,<6.0.0"
 safety = ">=1.10.3,<2.0.0"
 sphinx = {version = ">=4.0.2,<5.0.0", optional = true, markers = "extra == \"docs\" or extra == \"pib_docs\""}
 sphinx-autopackagesummary = {version = ">=1.3,<2.0", optional = true, markers = "extra == \"docs\" or extra == \"pib_docs\""}
+wheel = ">=0.36.2,<0.37.0"
 yamllint = ">=1.25.0,<2.0.0"
 yapf = ">=0.31.0,<0.32.0"
 
@@ -1235,6 +1238,20 @@ Click = ">=6.0"
 dparse = ">=0.5.1"
 packaging = "*"
 requests = "*"
+setuptools = "*"
+
+[[package]]
+name = "setuptools"
+version = "65.3.0"
+description = "Easily download, build, install, upgrade, and uninstall Python packages"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.extras]
+docs = ["furo", "jaraco.packaging (>=9)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "rst.linker (>=1.9)", "sphinx", "sphinx-favicon", "sphinx-hoverxref (<2)", "sphinx-inline-tabs", "sphinx-notfound-page (==0.8.3)", "sphinx-reredirects", "sphinxcontrib-towncrier"]
+testing = ["build[virtualenv]", "filelock (>=3.4.0)", "flake8 (<5)", "flake8-2020", "ini2toml[lite] (>=0.9)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "mock", "pip (>=19.1)", "pip-run (>=8.8)", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-flake8", "pytest-mypy (>=0.9.1)", "pytest-perf", "pytest-xdist", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel"]
+testing-integration = ["build[virtualenv]", "filelock (>=3.4.0)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "pytest", "pytest-enabler", "pytest-xdist", "tomli", "virtualenv (>=13.0.0)", "wheel"]
 
 [[package]]
 name = "six"
@@ -1572,6 +1589,17 @@ optional = true
 python-versions = "*"
 
 [[package]]
+name = "wheel"
+version = "0.36.2"
+description = "A built-package format for Python"
+category = "main"
+optional = true
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
+
+[package.extras]
+test = ["pytest (>=3.0.0)", "pytest-cov"]
+
+[[package]]
 name = "wrapt"
 version = "1.14.1"
 description = "Module for decorators, wrappers and monkey patching."
@@ -1590,6 +1618,7 @@ python-versions = ">=3.6"
 [package.dependencies]
 pathspec = ">=0.5.3"
 pyyaml = "*"
+setuptools = "*"
 
 [[package]]
 name = "yapf"
@@ -1616,8 +1645,8 @@ docs = ["markupsafe", "pib_cli", "sphinx-autodoc-typehints", "sphinx-click", "sp
 
 [metadata]
 lock-version = "1.1"
-      python-versions = ">=3.7.0,<4.0.0"
-content-hash = "bbf659221b87aa2d00f7912a276b9e3a5f02fcb41e2039a38805d7e68e250cb5"
+python-versions = ">=3.7.0,<4.0.0"
+content-hash = "a18ce620ab5548416bf9b7b888e040c158ab1c8de0c02d364c44fe56be961a9f"
 
 [metadata.files]
 adafruit-blinka = [
@@ -1673,16 +1702,16 @@ bandit = [
     {file = "bandit-1.7.4.tar.gz", hash = "sha256:2d63a8c573417bae338962d4b9b06fbc6080f74ecd955a092849e1e65c717bd2"},
 ]
 boto3 = [
-    {file = "boto3-1.24.57-py3-none-any.whl", hash = "sha256:74a50c718594a38fa846ce6951ea4704a5836194e2d4055e959baef39299d283"},
-    {file = "boto3-1.24.57.tar.gz", hash = "sha256:1be1aa320ef33d6e10e82adea3caeb0d2c185284457d1e2406339b44f45d7565"},
+    {file = "boto3-1.24.70-py3-none-any.whl", hash = "sha256:bb69ebe7c484305568b1aaed664db3d09716dc93235e41f23538f99ea4f3addc"},
+    {file = "boto3-1.24.70.tar.gz", hash = "sha256:abac9c7e54212ee68c2a311812a498ece2c43f98d1302f099128a9fe45cf37c5"},
 ]
 boto3-stubs = [
     {file = "boto3-stubs-1.24.57.tar.gz", hash = "sha256:3904e3ef61602521b303fdc6c5223005ad0dc68d4f1e717ecab530011cfe8221"},
     {file = "boto3_stubs-1.24.57-py3-none-any.whl", hash = "sha256:658d7e6810fe88ade039affbf0a0c6cff79a2df48ab920ed1c8ff444f92dadf3"},
 ]
 botocore = [
-    {file = "botocore-1.27.57-py3-none-any.whl", hash = "sha256:e55510321dba95065a071909177ab6d4e1621b41f090cefe54252af9b0766855"},
-    {file = "botocore-1.27.57.tar.gz", hash = "sha256:f3dd75a789ac1a3e3f06fe0725ee138522c106c4e6abc917a4915617c4a32662"},
+    {file = "botocore-1.27.70-py3-none-any.whl", hash = "sha256:c0a014b4dfd7ffe739393034aa6e70e73f3a1b22c7667a59858259b341bf5082"},
+    {file = "botocore-1.27.70.tar.gz", hash = "sha256:2ad5be6ca322a549f858d245237358ed300f7347096caacbb29c013e10663d34"},
 ]
 botocore-stubs = [
     {file = "botocore-stubs-1.27.57.tar.gz", hash = "sha256:b2bbbf2634c5d1f40e5bbcb0227b393c40c1fd8f175f8ae589dfda434c952882"},
@@ -2173,6 +2202,10 @@ safety = [
     {file = "safety-1.10.3-py2.py3-none-any.whl", hash = "sha256:5f802ad5df5614f9622d8d71fedec2757099705c2356f862847c58c6dfe13e84"},
     {file = "safety-1.10.3.tar.gz", hash = "sha256:30e394d02a20ac49b7f65292d19d38fa927a8f9582cdfd3ad1adbbc66c641ad5"},
 ]
+setuptools = [
+    {file = "setuptools-65.3.0-py3-none-any.whl", hash = "sha256:2e24e0bec025f035a2e72cdd1961119f557d78ad331bb00ff82efb2ab8da8e82"},
+    {file = "setuptools-65.3.0.tar.gz", hash = "sha256:7732871f4f7fa58fb6bdcaeadb0161b2bd046c85905dbaa066bdcbcc81953b57"},
+]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
@@ -2321,6 +2354,10 @@ urllib3 = [
 wcwidth = [
     {file = "wcwidth-0.2.5-py2.py3-none-any.whl", hash = "sha256:beb4802a9cebb9144e99086eff703a642a13d6a0052920003a230f3294bbe784"},
     {file = "wcwidth-0.2.5.tar.gz", hash = "sha256:c4d647b99872929fdb7bdcaa4fbe7f01413ed3d98077df798530e5b04f116c83"},
+]
+wheel = [
+    {file = "wheel-0.36.2-py2.py3-none-any.whl", hash = "sha256:78b5b185f0e5763c26ca1e324373aadd49182ca90e825f7853f4b2509215dc0e"},
+    {file = "wheel-0.36.2.tar.gz", hash = "sha256:e11eefd162658ea59a60a0f6c7d493a7190ea4b9a85e335b33489d9f17e0245e"},
 ]
 wrapt = [
     {file = "wrapt-1.14.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:1b376b3f4896e7930f1f772ac4b064ac12598d1c38d04907e696cc4d794b43d3"},
