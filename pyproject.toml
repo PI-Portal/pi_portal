@@ -54,7 +54,7 @@
     [tool.poetry.dependencies]
       "RPi.GPIO" = "^0.7.1"
       adafruit-circuitpython-dht = "^3.7.1"
-      boto3 = "^1.24.26"
+      boto3 = "^1.24.80"
       click = "^8.0.3"
       fake-rpi = "^0.7.1"
       humanize = "^4.0.0"
