@@ -1,9 +1,12 @@
-ARG PYTHON_VERSION=3.7
-FROM python:$PYTHON_VERSION-slim AS base
+ARG BUILD_ARG_PYTHON_VERSION=3.7
 
-LABEL maintainer "niall@niallbyrne.ca"
-LABEL project "pi_portal"
-LABEL environment ""
+FROM python:${BUILD_ARG_PYTHON_VERSION}-slim AS base
+
+ARG BUILD_ARG_CONTAINER_GID=1000
+ARG BUILD_ARG_CONTAINER_UID=1000
+
+LABEL maintainer="niall@niallbyrne.ca"
+LABEL project="pi_portal"
 
 ENV PYTHONUNBUFFERED 1
 ENV PROJECT_NAME "pi_portal"
@@ -20,16 +23,18 @@ RUN apt-get update      && \
     bash                   \
     build-essential
 
-# Setup directories
-RUN mkdir -p /home/user /app
-WORKDIR /app
-
 # Create the runtime user, and enforce permissions
-RUN useradd user -d /home/user        \
-                 -s /bin/bash         \
-                 -M                   \
- && chown -R user:user /home/user     \
- && chown -R user:user /app
+RUN groupadd user -g "${BUILD_ARG_CONTAINER_GID}"
+RUN useradd user -d /home/user                    \
+                 -s /bin/bash                     \
+                 -u "${BUILD_ARG_CONTAINER_UID}"  \
+                 -g "${BUILD_ARG_CONTAINER_GID}"  \
+                 -m
+
+# Setup directories
+RUN mkdir -p /app
+RUN chown -R user:user /app
+WORKDIR /app
 
 # Include the local binary folder in PATH
 ENV PATH "/home/user/.local/bin/:${PATH}"
@@ -39,8 +44,6 @@ ENV PATH "/home/user/.local/bin/:${PATH}"
 # Poetry Intermediary
 FROM base AS poetry
 
-LABEL environment ""
-
 # Install Latest Poetry
 RUN pip install --no-cache-dir poetry>=1.2.0
 
@@ -48,7 +51,7 @@ RUN pip install --no-cache-dir poetry>=1.2.0
 
 # Development Environment
 FROM poetry AS development
-LABEL environment DEVELOPMENT
+LABEL environment="DEVELOPMENT"
 ENV ENVIRONMENT DEVELOPMENT
 
 # Install Dev Dependencies
@@ -94,6 +97,11 @@ RUN poetry install -E docs
 # Create A Symlink For the Bash Customizations
 RUN ln -sf /app/assets/.bash_customize /home/user/.bash_customize
 
+# Enforce sane git permissions
+USER root
+RUN chown -R user:user /app
+USER user
+
 # Setup The Dev CLI
 RUN poetry run dev setup-bash
 
@@ -104,7 +112,7 @@ CMD ["./pi_portal/container_init.sh"]
 # Pre Production Environment
 FROM poetry as pre_production
 
-LABEL environment "PRE_PRODUCTION"
+LABEL environment="PRE_PRODUCTION"
 
 ENV ENVIRONMENT "PRE_PRODUCTION"
 
@@ -125,7 +133,7 @@ COPY . /app
 # Production Environment
 FROM base as production
 
-LABEL environment "PRODUCTION"
+LABEL environment="PRODUCTION"
 
 ENV ENVIRONMENT "PRODUCTION"
 
@@ -140,5 +148,10 @@ RUN pip --no-cache-dir install -r requirements.txt
 
 # Copy the codebase
 COPY . /app
+
+# Enforce sane git permissions
+USER root
+RUN chown -R user:user /app
+USER user
 
 CMD ["./pi_portal/container_init.sh"]

@@ -46,10 +46,6 @@ jobs:
           touch ${HOME}/.gitconfig
           touch ${HOME}/.gitconfig_global
 
-      - name: Build -- Ensure File System is Writable by the Container
-        run: |
-          sudo chmod -R o+w .
-
       - name: Build -- Build Container
         run: |
           source .github/scripts/build_container.sh
@@ -113,11 +109,6 @@ jobs:
           echo | ssh-keygen
           touch ${HOME}/.gitconfig
           touch ${HOME}/.gitconfig_global
-
-      - name: Create Release -- Ensure File System is Writable by the Container
-        if: contains(github.ref, '/tags/v')
-        run: |
-          sudo chmod -R o+w .
 
       - name: Create Release -- Build Container
         if: contains(github.ref, '/tags/v')
