@@ -8,7 +8,7 @@ Put a contact switch on a door and generate logs, alarms and notifications with 
 
 This is a hobby solution, and no warranty or guarantees of any kind are made.  Please use at your own risk.
 
-[Project Documentation](https://pi_portal.readthedocs.io/)
+[Project Documentation](https://pi-portal.readthedocs.io/)
 
 ### Master Branch Builds (Staging Environment)
 - [![pi_portal Generic Push](https://github.com/pi-portal/pi_portal/workflows/pi_portal-push-generic/badge.svg?branch=master)](https://github.com/pi-portal/pi_portal/actions)
@@ -98,7 +98,7 @@ You can also configure [lifecycle rules](https://docs.aws.amazon.com/AmazonS3/la
 #### Logz IO Integration
 
 [This service](https://logz.io/) has a generous free tier that will allow you to search your logs, and do long term retention in the S3 bucket you created.
-You will need to know your accounts `log token`, (check the website on how to configure filbeat to find it.)
+You will need to know your accounts `log token`, (check the website on how to configure filebeat to find it.)
 
 Enter your AWS credentials for the logging bucket here, to archive your logs. 
 
