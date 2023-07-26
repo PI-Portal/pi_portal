@@ -10,7 +10,7 @@
     "_GITHUB_HADOLINT_ACTION": "hadolint/hadolint-action@v1.6.0",
     "_GITHUB_PUSH_ACTION": "ad-m/github-push-action@v0.6.0",
     "_GITHUB_YAMLLINT_ACTION": "ibiqlik/action-yamllint@v3",
-    "_pib_cli_version": "0.1.3",
+    "_pib_cli_version": "0.1.4",
     "_template": "https://github.com/pi-portal/python-in-a-box",
     "author": "Niall Byrne",
     "description": "Raspberry PI Door Logger",
