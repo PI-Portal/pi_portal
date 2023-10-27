@@ -5,7 +5,7 @@ from typing import Type
 from unittest import TestCase
 
 from pi_portal.modules.configuration.tests.fixtures import mock_state
-from pi_portal.modules.integrations.gpio.bases import factory
+from pi_portal.modules.integrations.gpio.bases import monitor_factory
 from pi_portal.modules.integrations.gpio.components.bases import monitor
 
 
@@ -13,7 +13,7 @@ class GPIOMonitorFactoryTestHarness(TestCase):
   """Test harness for GPIO monitor factories."""
 
   __test__ = False
-  test_class: Type[factory.MonitorFactoryBase]
+  test_class: Type[monitor_factory.MonitorFactoryBase]
   gpio_input_type: Type[monitor.GPIOMonitorBase]
 
   @mock_state.patch

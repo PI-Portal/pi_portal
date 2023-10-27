@@ -33,9 +33,10 @@ class TestDHTSensorMonitor(monitor_harness.GPIOMonitorTestHarness):
       self.instance.hook_log_state(self.gpio_input_1)
 
     m_log.info.assert_called_once_with(
-        'DHT11:%s',
+        'TemperatureSensor:%s',
         self.gpio_input_1.pin_name,
         extra={
+            'sensor_type': self.gpio_input_1.sensor_type,
             'sensor_name': self.gpio_input_1.pin_name,
             'temperature': self.gpio_input_1.current_state['temperature'],
             'humidity': self.gpio_input_1.current_state['humidity']

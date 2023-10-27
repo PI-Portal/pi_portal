@@ -1,36 +1,19 @@
 """DHT11 class."""
 
-from typing import Any, Optional
+from typing import Any
 
-from pi_portal.modules.integrations.gpio.components.bases import \
-    sensor as gpio_sensor
+from pi_portal.modules.integrations.gpio.components.bases import (
+    temperature_sensor,
+)
 from pi_portal.modules.integrations.gpio.shim import adafruit_dht, board
-from typing_extensions import TypedDict
 
 
-class TypeTemperatureData(TypedDict):
-  """Typed representation of temperature sensor data."""
-
-  temperature: Optional[float]
-  humidity: Optional[float]
-
-
-EMPTY_READING = TypeTemperatureData(temperature=None, humidity=None)
-
-
-class DHT11(gpio_sensor.GPIOSensorBase):
+class DHT11(temperature_sensor.TemperatureSensor):
   """DHT11 Temperature Sensor class.
 
-  :param pin_number: The GPIO input number.
+  :param: pin_number: The GPIO input number.
   :param pin_name: The name of this door in alerts and logs.
   """
-
-  def __init__(
-      self,
-      pin_number: int,
-      pin_name: str,
-  ) -> None:
-    super().__init__(pin_number, pin_name, EMPTY_READING)
 
   def hook_board_pin(self) -> Any:
     """Retrieve the hardware location of the GPIO pin.
@@ -50,20 +33,26 @@ class DHT11(gpio_sensor.GPIOSensorBase):
       use_pulseio=False,
     )
 
-  def hook_update_state(self) -> Any:
+  def hook_update_state(
+      self, retries: int = 3
+  ) -> temperature_sensor.TypeTemperatureData:
     """Retrieve new state for the GPIO input.
+    :param retries: The number of times to retry a failed sensor reading.
 
     :returns: The new GPIO state value.
     :raises: RuntimeError
     """
 
+    if retries < 1:
+      return self.current_state
+
     try:
       temperature = self.hardware.temperature
       humidity = self.hardware.humidity
     except RuntimeError:
-      return self.current_state
+      return self.hook_update_state(retries - 1)
 
-    return TypeTemperatureData(
+    return temperature_sensor.TypeTemperatureData(
         temperature=temperature,
         humidity=humidity,
     )

@@ -29,3 +29,6 @@ class TestGPIOInput(input_harness.GPIOInputTestHarness):
       self.instance.poll()
     m_poll.input.assert_called_once_with(self.instance.pin_number)
     self.assertFalse(self.instance.current_state)
+
+  def test_sensor_type__is_expected(self) -> None:
+    assert self.instance.sensor_type == "ContactSwitch"

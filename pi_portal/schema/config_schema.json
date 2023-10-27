@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "description": "Pi Portal v1.2 Config File Schema",
+    "description": "Pi Portal v1.4 Config File Schema",
     "type": "object",
     "properties":
         {
@@ -57,25 +57,36 @@
                         "required": ["NAME", "GPIO"]
                     }
                 },
-            "DHT11_SENSORS":
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "NAME": {
-                                "type": "string",
-                                "description": "The name of the sensor as it will appear in notifications and logs (ie. Living Room)."
+            "TEMPERATURE_SENSORS": {
+                "description": "Configured temperature sensors",
+                "type": "object",
+                "properties": {
+                    "DHT11_SENSORS": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "NAME": {
+                                    "type": "string",
+                                    "description": "The name of the sensor as it will appear in notifications and logs (ie. Living Room)."
+                                },
+                                "GPIO": {
+                                    "type": "number",
+                                    "description": "The GPIO number this DHT11 sensor connects to."
+                                }
                             },
-                            "GPIO": {
-                                "type": "number",
-                                "description": "The GPIO number this DHT11 sensor connects to."
-                            }
-                        },
-                        "required": ["NAME", "GPIO"]
+                            "required": [
+                                "NAME",
+                                "GPIO"
+                            ]
+                        }
                     }
-                }
+                },
+                "required": [
+                    "DHT11"
+                ]
+            }
 
         },
-    "required": ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "LOGZ_IO_CODE", "S3_BUCKET_NAME","SLACK_BOT_TOKEN", "SLACK_CHANNEL", "SLACK_CHANNEL_ID", "CONTACT_SWITCHES", "DHT11_SENSORS"]
+    "required": ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "CONTACT_SWITCHES", "LOGZ_IO_CODE", "S3_BUCKET_NAME","SLACK_BOT_TOKEN", "SLACK_CHANNEL", "SLACK_CHANNEL_ID", "TEMPERATURE_SENSORS"]
 }

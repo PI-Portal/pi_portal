@@ -2,13 +2,15 @@
 
 from pi_portal.modules.configuration.tests.fixtures import mock_state
 from pi_portal.modules.integrations.gpio.bases.tests.fixtures import (
-    factory_harness,
+    monitor_factory_harness,
 )
 from pi_portal.modules.integrations.gpio.components import door_monitor
 from .. import door_monitor_factory
 
 
-class TestDoorMonitorFactory(factory_harness.GPIOMonitorFactoryTestHarness):
+class TestDoorMonitorFactory(
+    monitor_factory_harness.GPIOMonitorFactoryTestHarness
+):
   """Test the DoorMonitorFactory class."""
 
   __test__ = True

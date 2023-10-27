@@ -6,10 +6,10 @@ from pi_portal.modules.integrations.gpio.components import (
     contact_switch,
     door_monitor,
 )
-from .bases import factory
+from .bases import monitor_factory
 
 
-class DoorMonitorFactory(factory.MonitorFactoryBase):
+class DoorMonitorFactory(monitor_factory.MonitorFactoryBase):
   """Factory for DoorMonitor instances."""
 
   def create(self) -> door_monitor.DoorMonitor:

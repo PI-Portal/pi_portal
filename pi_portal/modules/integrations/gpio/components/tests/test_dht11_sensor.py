@@ -5,6 +5,9 @@ from unittest import mock
 
 from pi_portal.modules.integrations.gpio import shim
 from pi_portal.modules.integrations.gpio.components import dht11_sensor
+from pi_portal.modules.integrations.gpio.components.bases import (
+    temperature_sensor,
+)
 from ..bases.tests.fixtures import sensor_harness
 
 
@@ -12,7 +15,7 @@ class TestGPIOInput(sensor_harness.GPIOSensorTestHarness):
   """Test the DHT11 class."""
 
   __test__ = True
-  gpio_input_1_initial_value = dht11_sensor.EMPTY_READING
+  gpio_input_1_initial_value = temperature_sensor.EMPTY_READING
   test_class: Type[dht11_sensor.DHT11]
 
   @classmethod
@@ -46,10 +49,11 @@ class TestGPIOInput(sensor_harness.GPIOSensorTestHarness):
   def test_poll(self) -> None:
     self.instance.poll()
     self.assertDictEqual(
-        self.instance.current_state, {
+        {**self.instance.current_state},
+        {
             "temperature": self._instance().hardware.temperature,
             "humidity": self._instance().hardware.humidity,
-        }
+        },
     )
 
   def test_poll_with_error(self) -> None:
@@ -60,5 +64,9 @@ class TestGPIOInput(sensor_harness.GPIOSensorTestHarness):
       type(m_hardware).temperature = mock.PropertyMock(side_effect=RuntimeError)
       self.instance.poll()
       self.assertDictEqual(
-          self.instance.current_state, dht11_sensor.EMPTY_READING
+          {**self.instance.current_state},
+          temperature_sensor.EMPTY_READING,
       )
+
+  def test_sensor_type__is_expected(self) -> None:
+    assert self.instance.sensor_type == "DHT11"

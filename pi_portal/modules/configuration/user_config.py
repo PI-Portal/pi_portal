@@ -21,14 +21,20 @@ class TypeUserConfig(TypedDict):
   SLACK_CHANNEL: str
   SLACK_CHANNEL_ID: str
   CONTACT_SWITCHES: List["TypeUserConfigGPIO"]
-  DHT11_SENSORS: List["TypeUserConfigGPIO"]
+  TEMPERATURE_SENSORS: "TypeUserConfigTemperatureSensors"
 
 
 class TypeUserConfigGPIO(TypedDict):
-  """Typed representation of a contact switch in user configuration."""
+  """Typed representation of a GPIO connected device."""
 
   NAME: str
   GPIO: int
+
+
+class TypeUserConfigTemperatureSensors(TypedDict):
+  """Typed representation of GPIO connected temperature sensors."""
+
+  DHT11: List["TypeUserConfigGPIO"]
 
 
 class UserConfigurationException(Exception):

@@ -37,7 +37,8 @@ class DoorMonitor(monitor.GPIOMonitorBase):
         "DOOR:%s",
         gpio_pin.pin_name,
         extra={
-            'contact_switch_name': gpio_pin.pin_name,
+            'sensor_type': gpio_pin.sensor_type,
+            'sensor_name': gpio_pin.pin_name,
             'state': self._state_name(gpio_pin),
         }
     )

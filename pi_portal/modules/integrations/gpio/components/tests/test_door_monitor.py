@@ -36,7 +36,8 @@ class TestDoorMonitor(monitor_harness.GPIOMonitorTestHarness):
         'DOOR:%s',
         self.gpio_input_1.pin_name,
         extra={
-            'contact_switch_name': self.gpio_input_1.pin_name,
+            'sensor_type': self.gpio_input_1.sensor_type,
+            'sensor_name': self.gpio_input_1.pin_name,
             'state': "OPENED",
         }
     )
@@ -56,7 +57,8 @@ class TestDoorMonitor(monitor_harness.GPIOMonitorTestHarness):
         'DOOR:%s',
         self.gpio_input_1.pin_name,
         extra={
-            'contact_switch_name': self.gpio_input_1.pin_name,
+            'sensor_type': self.gpio_input_1.sensor_type,
+            'sensor_name': self.gpio_input_1.pin_name,
             'state': "CLOSED",
         }
     )
