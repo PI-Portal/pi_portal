@@ -2,6 +2,8 @@
 
 from unittest import mock
 
+from pi_portal.modules.integrations.gpio.components.bases import \
+    input as gpio_input
 from pi_portal.modules.integrations.gpio.components.bases import monitor
 from .fixtures import (
     concrete_input,
@@ -12,7 +14,10 @@ from .fixtures import (
 )
 
 
-class TestConcreteGPIOMonitor(monitor_harness.GPIOMonitorTestHarness):
+class TestConcreteGPIOMonitor(
+    monitor_harness.GPIOMonitorTestHarness[gpio_input.GPIOInputBase,
+                                           concrete_monitor.ConcreteGPIOMonitor]
+):
   """Test the GPIOMonitorBase class with a concrete implementation."""
 
   __test__ = True

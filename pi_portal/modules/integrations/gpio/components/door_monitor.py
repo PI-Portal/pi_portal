@@ -3,8 +3,7 @@
 from enum import Enum
 
 from pi_portal import config
-from pi_portal.modules.integrations.gpio.components.bases import \
-    input as gpio_input
+from pi_portal.modules.integrations.gpio.components import contact_switch
 from pi_portal.modules.integrations.gpio.components.bases import monitor
 
 
@@ -15,7 +14,7 @@ class DoorState(Enum):
   CLOSED = False
 
 
-class DoorMonitor(monitor.GPIOMonitorBase):
+class DoorMonitor(monitor.GPIOMonitorBase[contact_switch.ContactSwitch]):
   """Door contact switch monitor and logger.
 
   :param gpio_pins: A list of GPIO Inputs to monitor.
@@ -27,7 +26,7 @@ class DoorMonitor(monitor.GPIOMonitorBase):
   log_file_path = config.DOOR_MONITOR_LOGFILE_PATH
   open = DoorState["OPENED"].value
 
-  def hook_log_state(self, gpio_pin: gpio_input.GPIOInputBase) -> None:
+  def hook_log_state(self, gpio_pin: contact_switch.ContactSwitch) -> None:
     """Log customized messages when a state change is detected.
 
     :param gpio_pin: A GPIO pin to log an event for.
@@ -49,5 +48,5 @@ class DoorMonitor(monitor.GPIOMonitorBase):
 
     self.slack_client.send_message(slack_message)
 
-  def _state_name(self, gpio_pin: gpio_input.GPIOInputBase) -> str:
+  def _state_name(self, gpio_pin: contact_switch.ContactSwitch) -> str:
     return DoorState(gpio_pin.current_state == self.open).name

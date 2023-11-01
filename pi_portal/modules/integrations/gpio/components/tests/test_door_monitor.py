@@ -1,25 +1,36 @@
 """Test the DoorMonitor Class."""
 
+from typing import cast
 from unittest import mock
 
-from pi_portal.modules.integrations.gpio.components import door_monitor
+from pi_portal.modules.integrations.gpio.components import (
+    contact_switch,
+    door_monitor,
+)
 from ..bases.tests.fixtures import concrete_input, monitor_harness
 
 
-class TestDoorMonitor(monitor_harness.GPIOMonitorTestHarness):
+class TestDoorMonitor(
+    monitor_harness.GPIOMonitorTestHarness[contact_switch.ContactSwitch,
+                                           door_monitor.DoorMonitor]
+):
   """Test the DoorMonitor class."""
 
   __test__ = True
-  gpio_input_1 = concrete_input.ConcreteGPIOInput(1, "test1", 0)
-  gpio_input_2 = concrete_input.ConcreteGPIOInput(2, "test2", 0)
+  gpio_input_1 = cast(
+      contact_switch.ContactSwitch,
+      concrete_input.ConcreteGPIOInput(1, "test1", 0)
+  )
+  gpio_input_2 = cast(
+      contact_switch.ContactSwitch,
+      concrete_input.ConcreteGPIOInput(2, "test2", 0)
+  )
 
   @classmethod
   def setUpClass(cls) -> None:
 
-    class TestableDoorMonitor(door_monitor.DoorMonitor):
-      gpio_poll_interval = 0.01
-
-    cls.test_class = TestableDoorMonitor
+    door_monitor.DoorMonitor.gpio_poll_interval = 0.01
+    cls.test_class = door_monitor.DoorMonitor
 
   def test_hook_log_state_with_open_door(self) -> None:
     self.gpio_input_1.current_state = True

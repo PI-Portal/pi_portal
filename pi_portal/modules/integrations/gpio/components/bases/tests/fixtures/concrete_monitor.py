@@ -4,7 +4,7 @@ from ... import input as gpio_input
 from ... import monitor
 
 
-class ConcreteGPIOMonitor(monitor.GPIOMonitorBase):
+class ConcreteGPIOMonitor(monitor.GPIOMonitorBase[gpio_input.GPIOInputBase]):
   """Concrete implementation of the GPIOMonitorBase class."""
 
   gpio_log_changes_only = True

@@ -66,6 +66,10 @@ jobs:
         run: |
           docker-compose exec -T "${PROJECT_NAME}" dev coverage
 
+      - name: Build -- Run Type Validation
+        run: |
+          docker-compose exec -T "${PROJECT_NAME}" dev types
+
       - name: Build -- Run Release Validation
         run: |
           docker-compose exec -T "${PROJECT_NAME}" ./scripts/release.sh

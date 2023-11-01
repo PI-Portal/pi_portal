@@ -2,23 +2,31 @@
 
 import abc
 import logging
-from typing import Type, cast
+from typing import Any, Generic, Type, TypeVar, cast
 from unittest import TestCase, mock
 
 from pi_portal.modules.configuration.tests.fixtures import mock_state
 from pi_portal.modules.integrations.gpio.components.bases import monitor
+from pi_portal.modules.integrations.gpio.components.bases.monitor import (
+    TypeGenericGpio,
+)
 from pi_portal.modules.integrations.slack import client
-from ... import input as gpio_input
 from . import gpio_loop
 
+TypeGPIOMonitorSubClass = TypeVar(
+    'TypeGPIOMonitorSubClass', bound=monitor.GPIOMonitorBase[Any]
+)
 
-class GPIOMonitorTestHarness(TestCase, abc.ABC):
+
+class GPIOMonitorTestHarness(
+    TestCase, abc.ABC, Generic[TypeGenericGpio, TypeGPIOMonitorSubClass]
+):
   """Test harness for the GPIOMonitorBase class."""
 
   __test__ = False
-  gpio_input_1: gpio_input.GPIOInputBase
-  gpio_input_2: gpio_input.GPIOInputBase
-  test_class: Type[monitor.GPIOMonitorBase]
+  gpio_input_1: TypeGenericGpio
+  gpio_input_2: TypeGenericGpio
+  test_class: Type[TypeGPIOMonitorSubClass]
 
   @mock_state.patch
   def setUp(self) -> None:

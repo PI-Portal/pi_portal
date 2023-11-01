@@ -1,20 +1,23 @@
 """Test harness for GPIO monitor factories."""
 
 import abc
-from typing import Type
+from typing import Generic, Type
 from unittest import TestCase
 
 from pi_portal.modules.configuration.tests.fixtures import mock_state
 from pi_portal.modules.integrations.gpio.bases import monitor_factory
 from pi_portal.modules.integrations.gpio.components.bases import monitor
+from pi_portal.modules.integrations.gpio.components.bases.monitor import (
+    TypeGenericGpio,
+)
 
 
-class GPIOMonitorFactoryTestHarness(TestCase):
+class GPIOMonitorFactoryTestHarness(TestCase, Generic[TypeGenericGpio]):
   """Test harness for GPIO monitor factories."""
 
   __test__ = False
-  test_class: Type[monitor_factory.MonitorFactoryBase]
-  gpio_input_type: Type[monitor.GPIOMonitorBase]
+  test_class: Type[monitor_factory.MonitorFactoryBase[TypeGenericGpio]]
+  gpio_input_type: Type[monitor.GPIOMonitorBase[TypeGenericGpio]]
 
   @mock_state.patch
   def setUp(self) -> None:

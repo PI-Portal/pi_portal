@@ -4,11 +4,15 @@ from unittest import TestCase
 
 from pi_portal.modules.configuration import state
 from pi_portal.modules.configuration.tests.fixtures import mock_state
+from pi_portal.modules.integrations.gpio.components.bases import \
+    input as gpio_input
 from ...components.bases.tests.fixtures import concrete_monitor
 from .. import monitor_factory
 
 
-class ConcreteMonitorFactory(monitor_factory.MonitorFactoryBase):
+class ConcreteMonitorFactory(
+    monitor_factory.MonitorFactoryBase[gpio_input.GPIOInputBase]
+):
   """Concrete implementation of the MonitorFactoryBase class."""
 
   def create(self) -> concrete_monitor.ConcreteGPIOMonitor:

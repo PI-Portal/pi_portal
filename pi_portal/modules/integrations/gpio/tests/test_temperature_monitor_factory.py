@@ -5,11 +5,15 @@ from pi_portal.modules.integrations.gpio.bases.tests.fixtures import (
     monitor_factory_harness,
 )
 from pi_portal.modules.integrations.gpio.components import temperature_monitor
+from pi_portal.modules.integrations.gpio.components.bases import (
+    temperature_sensor,
+)
 from .. import temperature_monitor_factory
 
 
 class TestTemperatureMonitorFactory(
-    monitor_factory_harness.GPIOMonitorFactoryTestHarness
+    monitor_factory_harness.GPIOMonitorFactoryTestHarness[
+        temperature_sensor.TemperatureSensor]
 ):
   """Test the TemperatureMonitorFactory class."""
 

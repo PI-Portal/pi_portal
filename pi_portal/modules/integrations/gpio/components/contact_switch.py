@@ -15,6 +15,7 @@ class ContactSwitch(gpio_input.GPIOInputBase):
   :param initial_state: The value to initially set the state to.
   """
 
+  current_state: bool
   open = 1
 
   def hook_setup_input(self) -> None:

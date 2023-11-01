@@ -7,7 +7,6 @@ from unittest import TestCase, mock
 from pi_portal.modules.configuration import user_config
 from pi_portal.modules.mixins import json_file
 
-MOCK_CONFIG = cast(user_config.TypeUserConfig, {"mock_setting": True})
 MOCK_JSON = cast(user_config.TypeUserConfig, {"mock_setting": "0123"})
 MOCK_VALID_JSON = cast(
     user_config.TypeUserConfig,
