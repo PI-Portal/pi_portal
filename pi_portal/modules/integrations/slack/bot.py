@@ -4,7 +4,7 @@ from pi_portal import config
 from pi_portal.modules.configuration import state
 from pi_portal.modules.integrations.slack import cli, client
 from pi_portal.modules.integrations.slack.cli import handler
-from pi_portal.modules.mixins import log_file
+from pi_portal.modules.mixins import write_log_file
 from slack_sdk.rtm_v2 import RTMClient
 from typing_extensions import TypedDict
 
@@ -16,7 +16,7 @@ class TypeEvent(TypedDict):
   text: str
 
 
-class SlackBot(log_file.WriteLogFile):
+class SlackBot(write_log_file.LogFileWriter):
   """Slack RTM bot."""
 
   logger_name = "bot"

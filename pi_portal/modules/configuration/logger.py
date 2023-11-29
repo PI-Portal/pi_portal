@@ -51,7 +51,7 @@ class PiPortalJsonFormatter(jsonlogger.JsonFormatter):
   ) -> None:
     """Add custom fields to the base JsonFormatter.
 
-    :param log_record: The Python object that will converted to JSON.
+    :param log_record: The Python object that will be converted to JSON.
     :param record: The Python LogRecord object generated.
     :param message_dict: The existing message fields configuration.
     """

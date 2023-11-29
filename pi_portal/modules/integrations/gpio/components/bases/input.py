@@ -59,8 +59,8 @@ class GPIOInputBase(abc.ABC):
 
   @property
   def sensor_type(self) -> str:
-    """Returns the name of the input type.  The default behaviour is to return
-    the implementation's class name.
+    """Returns the name of the input type.
+    The default behaviour is to return the implementation's class name.
 
     :returns: The inputs name.
     """

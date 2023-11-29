@@ -1,6 +1,8 @@
 """Fixtures for mocking required environment variables."""
+
 import logging
-from typing import Any, Callable, TypeVar
+from contextlib import contextmanager
+from typing import Any, Callable, Generator, TypeVar
 from unittest import mock
 
 from pi_portal.modules.configuration import state
@@ -22,8 +24,16 @@ def patch(func: Callable[..., TypeReturn]) -> Callable[..., TypeReturn]:
 
   def patched_function(*args: Any, **kwargs: Any) -> TypeReturn:
 
-    with mock.patch(state.__name__ + ".State") as mock_state:
+    with mock_state_creator():
+      return func(*args, **kwargs)
 
+  return patched_function
+
+
+@contextmanager
+def mock_state_creator() -> Generator[mock.Mock, None, None]:
+  with mock.patch(state.__name__ + ".State") as mock_state:
+    try:
       mock_state_instance = mock_state.return_value
       mock_state_instance.user_config = {
           "AWS_ACCESS_KEY_ID": MOCK_AWS_ACCESS_KEY_ID,
@@ -46,7 +56,6 @@ def patch(func: Callable[..., TypeReturn]) -> Callable[..., TypeReturn]:
       }
       mock_state_instance.log_uuid = MOCK_LOG_UUID
       mock_state_instance.log_level = MOCK_LOG_LEVEL
-
-      return func(*args, **kwargs)
-
-  return patched_function
+      yield mock_state_instance
+    finally:
+      pass

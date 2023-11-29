@@ -4,12 +4,12 @@ from pi_portal import config
 from pi_portal.modules.configuration import state
 from pi_portal.modules.integrations import motion
 from pi_portal.modules.integrations.slack import config as slack_config
-from pi_portal.modules.mixins import log_file
+from pi_portal.modules.mixins import write_log_file
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError, SlackRequestError
 
 
-class SlackClient(log_file.WriteLogFile):
+class SlackClient(write_log_file.LogFileWriter):
   """Slack messaging client."""
 
   logger_name = "client"

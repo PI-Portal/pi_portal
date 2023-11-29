@@ -8,12 +8,14 @@ from pi_portal.modules.integrations.gpio.components.bases import \
     input as gpio_input
 from pi_portal.modules.integrations.gpio.shim import RPi
 from pi_portal.modules.integrations.slack import client
-from pi_portal.modules.mixins import log_file
+from pi_portal.modules.mixins import write_log_file
 
 TypeGenericGpio = TypeVar('TypeGenericGpio', bound=gpio_input.GPIOInputBase)
 
 
-class GPIOMonitorBase(abc.ABC, log_file.WriteLogFile, Generic[TypeGenericGpio]):
+class GPIOMonitorBase(
+    abc.ABC, write_log_file.LogFileWriter, Generic[TypeGenericGpio]
+):
   """GPIO input monitor class.
 
   :param gpio_pins: A list of GPIO Inputs to monitor.

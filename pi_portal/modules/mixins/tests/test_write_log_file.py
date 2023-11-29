@@ -1,13 +1,13 @@
-"""Test the WriteLogFile mixin classes."""
+"""Test the WriteLogFile mixin class."""
 
 from unittest import TestCase, mock
 
-from .. import log_file
+from .. import write_log_file
 
-LOG_FILE_MODULE = log_file.__name__
+LOG_FILE_MODULE = write_log_file.__name__
 
 
-class ClassWithLogging(log_file.WriteLogFile):
+class ClassWithLogging(write_log_file.LogFileWriter):
   """A test class using the WriteLogFile mixin."""
 
   logger_name = "test_logger"

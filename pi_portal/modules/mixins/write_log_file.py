@@ -5,7 +5,7 @@ from logging import Logger, getLogger
 from pi_portal.modules.configuration import logger
 
 
-class WriteLogFile:
+class LogFileWriter:
   """Adds logging features to an existing class."""
 
   logger_name: str
