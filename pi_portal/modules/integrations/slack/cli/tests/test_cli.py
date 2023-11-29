@@ -17,6 +17,7 @@ class TestGetAvailableCommands(TestCase):
         'restart',
         'snapshot',
         'status',
+        'temp',
         'uptime',
     ]
     result = cli.get_available_commands()

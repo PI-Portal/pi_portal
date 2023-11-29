@@ -14,6 +14,7 @@ class LogFileReader:
 
   def tail(self, requested_lines: int) -> List[Dict[Any, Any]]:
     """Read the specified number of lines from the end of a log file.
+
     Lines that are not JSON formatted are dropped silently.
 
     :param requested_lines: The number of lines to read.

@@ -62,6 +62,10 @@ class TestSlackCLICommands(TestCase):
     self.cli.command_status()
     self.mock_handle.assert_called_with(commands.StatusCommand)
 
+  def test_temp_command(self) -> None:
+    self.cli.command_temp()
+    self.mock_handle.assert_called_with(commands.TemperatureCommand)
+
   def test_uptime_command(self) -> None:
     self.cli.command_uptime()
     self.mock_handle.assert_called_with(commands.UptimeCommand)

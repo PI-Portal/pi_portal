@@ -41,9 +41,10 @@ class TemperatureMonitorLogFileReader(read_log_file.LogFileReader):
 
   def read_last_values(self) -> Dict[str, TemperatureReadingType]:
     """Parse the log for temperature data, and return the latest record values.
-    If no values are found, return :class:`pi_portal.modules.integrations.gpio.components.bases.temperature_sensor.EMPTY_READING` # pylint: disable=line-too-long
 
-    :returns: A dictionary of :class:`pi_portal.modules.integrations.gpio.components.bases.temperature_sensor.EMPTY_READING` # pylint: disable=line-too-long
+    If no values are found `None` is returned for both humidity and temperature.
+
+    :returns: A temperature readings dictionary keyed by sensor type and name.
     """
 
     log_data = self.tail(self.configured_sensor_count * 2)

@@ -66,6 +66,11 @@ class SlackCLICommandHandler:
 
     self.handle(commands.StatusCommand)
 
+  def command_temp(self) -> None:
+    """Report the current temperature from polling the sensors."""
+
+    self.handle(commands.TemperatureCommand)
+
   def command_uptime(self) -> None:
     """Report the current uptime of this bot."""
 

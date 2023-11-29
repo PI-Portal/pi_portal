@@ -7,4 +7,5 @@ from .command_id import IDCommand
 from .command_restart import RestartCommand
 from .command_snapshot import SnapshotCommand
 from .command_status import StatusCommand
+from .command_temperature import TemperatureCommand
 from .command_uptime import UptimeCommand
