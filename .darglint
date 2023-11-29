@@ -1,4 +1,4 @@
-[darglint]
+[darglint2]
 strictness=long
 docstring_style=sphinx
 ignore=DAR401,DAR402
