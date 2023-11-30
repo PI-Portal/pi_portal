@@ -62,6 +62,7 @@
       python = ">=3.7.0,<4.0.0"
       python-json-logger = "<2.0.3"
       requests = "^2.31.0"
+      slack-bolt = "^1.18.1"
       slack-sdk = "^3.26.0"
 
       [tool.poetry.dependencies."RPi.GPIO"]
@@ -110,7 +111,7 @@
   [tool.pylint]
 
     [tool.pylint.basic]
-      argument-rgx = "[a-z_][a-z0-9_]{1,30}$|^pk$"
+      argument-rgx = "[a-z_][a-z0-9_]{1,30}$|^mocked_[a-z_][a-z0-9_]{1,40}$"
       attr-rgx = "[a-z_][a-z0-9_]{2,30}$"
       bad-functions = "map,filter,apply,input"
       bad-names = "foo,bar,baz,toto,tutu,tata"

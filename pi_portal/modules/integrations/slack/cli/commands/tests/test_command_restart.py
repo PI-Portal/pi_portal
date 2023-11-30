@@ -21,5 +21,5 @@ class TestRestartCommand(command_harness.CommandBaseTestHarness):
     self.mock_slack_bot.slack_client.send_message.assert_called_once_with(
         "Rebooting myself ..."
     )
-    self.mock_slack_bot.rtm.close.assert_called_once_with()
+    self.mock_slack_bot.web_socket.close.assert_called_once_with()
     m_exit.assert_called_once_with(1)

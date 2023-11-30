@@ -26,8 +26,12 @@ MOCK_VALID_JSON = cast(
             "... logz io's logger code ...",
         "S3_BUCKET_NAME":
             "... s3 video bucket name ...",
+        "SLACK_APP_SIGNING_SECRET":
+            "... secret value from slack to validate bot messages ...",
+        "SLACK_APP_TOKEN":
+            "... token from slack to allow app to use websockets ...",
         "SLACK_BOT_TOKEN":
-            "...token from slack...",
+            "... token from slack ...",
         "SLACK_CHANNEL":
             "... proper name of slack channel ...",
         "SLACK_CHANNEL_ID":
@@ -86,6 +90,8 @@ class TestUserConfigurationValidate(TestCase):
             "'CONTACT_SWITCHES' is a required property",
             "'LOGZ_IO_CODE' is a required property",
             "'S3_BUCKET_NAME' is a required property",
+            "'SLACK_APP_SIGNING_SECRET' is a required property",
+            "'SLACK_APP_TOKEN' is a required property",
             "'SLACK_BOT_TOKEN' is a required property",
             "'SLACK_CHANNEL' is a required property",
             "'SLACK_CHANNEL_ID' is a required property",

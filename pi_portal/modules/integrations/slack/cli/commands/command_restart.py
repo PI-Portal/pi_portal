@@ -1,6 +1,7 @@
 """Slack CLI Restart command."""
 
 import os
+from typing import Callable, cast
 
 from .bases.command import SlackCommandBase
 
@@ -15,5 +16,7 @@ class RestartCommand(SlackCommandBase):
     """Restart the Slack CLI bot."""
 
     self.slack_bot.slack_client.send_message("Rebooting myself ...")
-    self.slack_bot.rtm.close()
+    # BaseSocketModeHandler is untyped
+    close = cast(Callable[[], None], self.slack_bot.web_socket.close)
+    close()
     os._exit(1)  # pylint: disable=protected-access

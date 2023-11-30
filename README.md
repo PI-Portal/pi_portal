@@ -10,10 +10,10 @@ This is a hobby solution, and no warranty or guarantees of any kind are made.  P
 
 [Project Documentation](https://pi-portal.readthedocs.io/)
 
-### Master Branch Builds (Staging Environment)
+### Master Branch Builds
 - [![pi_portal Generic Push](https://github.com/pi-portal/pi_portal/workflows/pi_portal-push-generic/badge.svg?branch=master)](https://github.com/pi-portal/pi_portal/actions)
 
-### Production Branch Builds (Tags Created on Production Branch)
+### Production Branch Builds
 - [![pi_portal Generic Push](https://github.com/pi-portal/pi_portal/workflows/pi_portal-push-generic/badge.svg?branch=production)](https://github.com/pi-portal/pi_portal/actions)
 
 ## Requirements
@@ -21,31 +21,19 @@ This is a hobby solution, and no warranty or guarantees of any kind are made.  P
 ### Hardware
 
 1. A Raspberry Pi 3.
-
->You'll need a Raspberry PI 3, with Raspberry Pi OS or similar installed and reliable internet.
- 
->You'll be able to use this program with other Raspberry PI versions, but you may need to [compile filebeat](./scripts/arm/filebeat.sh) with different architecture settings.  I have tested it on Raspberry PI 3.
-
+   - You'll need a Raspberry PI 3, with Raspberry Pi OS or similar installed and reliable internet.
+   - You'll be able to use this program with other Raspberry PI versions, but you may need to [compile filebeat](./scripts/arm/filebeat.sh) with different architecture settings.  I have tested it on Raspberry PI 3.
 2. Contact switches.
-> These are available cheaply on ebay, AWS or at your local electronics store. 
-
-> Some examples can be found [here](https://www.burglaryalarmsystem.com/category/magnetic-contact.html).
-
+   - These are available cheaply on ebay, AWS or at your local electronics store. 
+   - Some examples can be found [here](https://www.burglaryalarmsystem.com/category/magnetic-contact.html).
 3. Temperature monitors.
-> Currently, only the DHT11 is supported, but it's very trivial to add support for the DHT22.
-
->  You can find out more about these sensors [here](https://learn.adafruit.com/dht).
-
+   - Currently, only the DHT11 is supported, but it's very trivial to add support for the DHT22.
+   -  You can find out more about these sensors [here](https://learn.adafruit.com/dht).
 4. Wiring between the switches, temperature monitor and the Raspberry Pi.
-> I found female jumper cables made this pretty painless.
-
-> Edit the [config.json](./config.json) file to customize your pin outs and integrations.
-
-This configuration can be found [here](pi_portal/config.py).
-
+   - I found female jumper cables made this pretty painless.
+   - Edit the [config.json](./config.json) file to customize your pin outs and integrations.
 5. A USB camera or webcam that's compatible with [motion](https://motion-project.github.io/).
-
-> [Many](https://www.lavrsen.dk/foswiki/bin/view/Motion/WorkingDevices) webcams are compatible, and easy to find.
+   - [Many](https://www.lavrsen.dk/foswiki/bin/view/Motion/WorkingDevices) webcams are compatible, and easy to find.
 
 ### OS Dependencies
 
@@ -65,7 +53,7 @@ Supports Python [3.7](https://www.python.org/downloads/release/python-370/), [3.
 - A [logz.io](https://logz.io/) account
 - A [Slack](https://slack.com) account, with bot app credentials
 
-See [this guide](https://ritikjain1272.medium.com/how-to-make-a-slack-bot-in-python-using-slacks-rtm-api-335b393563cd) for setting up a bot account on Slack.
+See [this guide](markdown/SLACK_BOT_SETUP.md) for setting up your bot on Slack.
 
 #### AWS Infrastructure
 
@@ -93,7 +81,7 @@ The policy for each would look similar to:
 
 One set of credentials will be used by PI Portal for video files, the other by [logz.io](https://logz.io/) for log files.
 
-You can also configure [lifecycle rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html) for these buckets to control data retention.  (And it's definately a good idea to ensure they are not publicly accessible!)  
+You can also configure [lifecycle rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html) for these buckets to control data retention.  (And it's definitely a good idea to ensure they are not publicly accessible!)  
 
 #### Logz IO Integration
 
@@ -129,8 +117,9 @@ Create a configuration json file that contains the following:
       ],
     "LOGZ_IO_CODE": "... logz io's logger code ...",
     "S3_BUCKET_NAME": "... s3 video bucket name ...",
-    "SLACK_BOT_TOKEN": "...token from slack...",
-    "SLACK_CHANNEL": "... proper name of slack channel ...",
+    "SLACK_APP_SIGNING_SECRET": "... secret value from slack to validate bot messages ...",
+    "SLACK_APP_TOKEN": "... token from slack to allow app to use websockets ...",
+    "SLACK_BOT_TOKEN": "... token from slack...",
     "SLACK_CHANNEL_ID": ".. slack's ID for the channel ...",
     "TEMPERATURE_SENSORS": {
         "DHT11": [
@@ -151,7 +140,7 @@ You can now run the following command to complete the installation:
 pi_portal installer [configuration json file name]
 ```
 
-Pi Portal will prompt for SUDO, and then run [this](pi_portal/installation/scripts/install.sh) script to complete the install.
+Pi Portal will prompt for SUDO, and then run [this](pi_portal/installation/scripts/install.sh) script to complete the installation.
 
 
 ### Logs and Slack Bot

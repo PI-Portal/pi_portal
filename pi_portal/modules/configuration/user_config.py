@@ -17,6 +17,8 @@ class TypeUserConfig(TypedDict):
   AWS_SECRET_ACCESS_KEY: str
   LOGZ_IO_CODE: str
   S3_BUCKET_NAME: str
+  SLACK_APP_SIGNING_SECRET: str
+  SLACK_APP_TOKEN: str
   SLACK_BOT_TOKEN: str
   SLACK_CHANNEL: str
   SLACK_CHANNEL_ID: str

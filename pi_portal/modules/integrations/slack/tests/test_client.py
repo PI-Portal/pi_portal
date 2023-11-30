@@ -27,8 +27,7 @@ class TestSlackClient(TestCase):
   @mock_state.patch
   def test_initialize(self) -> None:
     slack_client = client.SlackClient()
-    self.assertEqual(slack_client.web.token, mock_state.MOCK_SLACK_TOKEN)
-    self.assertEqual(slack_client.channel, mock_state.MOCK_SLACK_CHANNEL)
+    self.assertEqual(slack_client.web.token, mock_state.MOCK_SLACK_BOT_TOKEN)
     self.assertIsInstance(slack_client.motion_client, motion.Motion)
 
   def test_send_message(self) -> None:
@@ -43,7 +42,7 @@ class TestSlackClient(TestCase):
   def test_send_message_exception(self) -> None:
     test_message = "test message"
     with mock.patch.object(self.slack_client, "web") as m_web:
-      m_web.chat_postMessage.side_effect = (SlackRequestError("Boom!"))
+      m_web.chat_postMessage.side_effect = SlackRequestError("Boom!")
       self.slack_client.send_message(test_message)
 
     self.assertListEqual(
@@ -73,7 +72,7 @@ class TestSlackClient(TestCase):
   def test_send_file_exception(self) -> None:
     test_file = "/path/to/mock/file.txt"
     with mock.patch.object(self.slack_client, "web") as m_web:
-      m_web.files_upload.side_effect = (SlackRequestError("Boom!"))
+      m_web.files_upload.side_effect = SlackRequestError("Boom!")
       self.slack_client.send_file(test_file)
 
     self.assertListEqual(
