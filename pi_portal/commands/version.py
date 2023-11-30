@@ -1,7 +1,7 @@
 """CLI command to report the Pi Portal version."""
 
 import click
-import pkg_resources
+from pi_portal.modules.python.metadata import metadata_version
 from .bases import command
 
 
@@ -10,8 +10,6 @@ class VersionCommand(command.CommandBase):
 
   def invoke(self) -> None:
     """Invoke the command."""
+    version = metadata_version('pi_portal')
 
-    click.echo(
-        "Pi Portal Version: "
-        f"{pkg_resources.get_distribution('pi_portal').version}",
-    )
+    click.echo(f"Pi Portal Version: {version}")

@@ -15,7 +15,7 @@
 
     [tool.coverage.run]
       branch = true
-      omit = ["*/test*", "setup.py"]
+      omit = ["*/test*", "setup.py", "pi_portal/modules/python/*.py"]
       source = ["."]
 
   [tool.isort]
@@ -30,6 +30,7 @@
     skip_glob = "*_pb2.py"
 
   [tool.mypy]
+    exclude = "^pi_portal\\/modules\\/python\\/.+\\.py$"
     ignore_missing_imports = false
     mypy_path = "pi_portal/stubs"
 
