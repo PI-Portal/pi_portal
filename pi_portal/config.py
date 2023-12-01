@@ -1,8 +1,10 @@
 """Core configuration settings."""
 
 DOOR_MONITOR_LOGFILE_PATH = "/var/log/pi_portal.door.log"
+MOTION_FOLDER = "/var/lib/motion"
 SLACK_BOT_LOGFILE_PATH = "/var/log/pi_portal.slack_bot.log"
 SLACK_CLIENT_LOGFILE_PATH = "/var/log/pi_portal.slack_client.log"
-TEMPERATURE_MONITOR_LOGFILE_PATH = "/var/log/pi_portal.temperature.log"
-MOTION_FOLDER = "/var/lib/motion"
 SUPERVISOR_SOCKET_PATH = "/var/run/supervisor.sock"
+TEMPERATURE_MONITOR_LOGFILE_PATH = "/var/log/pi_portal.temperature.log"
+VIDEO_UPLOAD_QUEUE_PATH = "/opt/pi_portal/queue_videos"
+VIDEO_UPLOAD_QUEUE_LOGFILE_PATH = "/var/log/pi_portal.video_queue.log"

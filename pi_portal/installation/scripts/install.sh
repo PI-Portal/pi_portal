@@ -18,7 +18,7 @@ configure_motion() {
 }
 
 configure_pi_portal() {
-  mkdir -p /opt/pi_portal
+  mkdir -p /opt/pi_portal/queue_videos
 
   cp ./installation/scripts/portal.sh /opt/pi_portal/portal.sh
   cp "${CONFIG_FILE}" /opt/pi_portal/config.json

@@ -6,7 +6,7 @@ from . import command
 
 
 class FileCommandBase(command.CommandBase, abc.ABC):
-  """An generic, invokable command.
+  """A generic, invokable command.
 
   :param file_name: The path to a valid filename.
   """
