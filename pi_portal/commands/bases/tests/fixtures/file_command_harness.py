@@ -14,7 +14,7 @@ class FileCommandBaseTestHarness(TestCase, abc.ABC):
   test_class: Type[file_command.FileCommandBase]
 
   def setUp(self) -> None:
-    self.mock_file = "mock_file"
+    self.mock_file = "/path/mock_file"
     self.instance = self.test_class(self.mock_file)
 
   def test_instantiate(self) -> None:

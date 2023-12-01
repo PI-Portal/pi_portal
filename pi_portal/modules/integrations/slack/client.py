@@ -66,16 +66,3 @@ class SlackClient(write_log_file.LogFileWriter):
     except motion.MotionException:
       self.send_message("An error occurred cleaning up this snapshot.")
       self.log.error("Failed to remove old motion snapshot!")
-
-  def send_video(self, file_name: str) -> None:
-    """Send a video to Slack, and have motion archive it in S3.
-
-    :param file_name: The path of the file to process.
-    """
-
-    try:
-      self.send_file(file_name)
-      self.motion_client.archive_video(file_name)
-    except motion.MotionException:
-      self.send_message("An error occurred archiving this video.")
-      self.log.error("Failed to archive motion video capture!")

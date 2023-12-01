@@ -61,25 +61,6 @@ class TestMotion(TestCase):
     self.assertEqual(fname, m_glob.return_value[1])
 
   @mock.patch(motion.__name__ + ".os.remove")
-  def test_archive_video(self, m_remove: mock.Mock) -> None:
-    mock_video_name = "mock_video.mp4"
-    self.motion_client.archive_video(mock_video_name)
-    self._mock_s3_client().upload.assert_called_once_with(mock_video_name)
-    m_remove.assert_called_once_with(mock_video_name)
-
-  @mock.patch(motion.__name__ + ".os.remove")
-  def test_archive_video_exception(self, m_remove: mock.Mock) -> None:
-    mock_video_name = "mock_video.mp4"
-    self._mock_s3_client(
-    ).upload.side_effect = client.S3BucketException("Boom!")
-
-    with self.assertRaises(motion.MotionException):
-      self.motion_client.archive_video(mock_video_name)
-
-    self._mock_s3_client().upload.assert_called_once_with(mock_video_name)
-    m_remove.assert_not_called()
-
-  @mock.patch(motion.__name__ + ".os.remove")
   def test_cleanup_snapshot(self, m_remove: mock.Mock) -> None:
     mock_snapshot_name = "mock_snapshot.jpg"
     self.motion_client.cleanup_snapshot(mock_snapshot_name)

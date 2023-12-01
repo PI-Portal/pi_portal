@@ -36,6 +36,16 @@ class TestCLI(TestCase):
   def get_debug_subtests(self, command: str) -> List[Tuple[str, bool]]:
     return [(command, False), ("--debug " + command, True)]
 
+  @patch(cli.__name__ + ".cron_videos")
+  def test_cron_videos(
+      self,
+      m_command: Mock,
+  ) -> None:
+    for command, debug in self.get_debug_subtests("cron_videos"):
+      self.runner.invoke(cli.cli, command)
+      self.check_state(m_command.CronVideosCommand, debug)
+      self.check_invoke(m_command.CronVideosCommand)
+
   @patch(cli.__name__ + ".door_monitor")
   def test_door_monitor(
       self,
