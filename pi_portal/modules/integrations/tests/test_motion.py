@@ -6,7 +6,8 @@ from unittest import TestCase, mock
 
 from pi_portal import config
 from pi_portal.modules.configuration.tests.fixtures import mock_state
-from pi_portal.modules.integrations import motion, s3
+from pi_portal.modules.integrations import motion
+from pi_portal.modules.integrations.s3 import client
 
 
 class TestMotion(TestCase):
@@ -36,7 +37,7 @@ class TestMotion(TestCase):
         motion_client.video_glob_pattern,
         os.path.join(config.MOTION_FOLDER, '/*.mp4')
     )
-    self.assertIsInstance(motion_client.s3_client, s3.S3Bucket)
+    self.assertIsInstance(motion_client.s3_client, client.S3BucketClient)
 
   @mock.patch(motion.__name__ + ".requests.Session.get")
   def test_take_snapshot_failure(self, m_get: mock.Mock) -> None:
@@ -69,7 +70,8 @@ class TestMotion(TestCase):
   @mock.patch(motion.__name__ + ".os.remove")
   def test_archive_video_exception(self, m_remove: mock.Mock) -> None:
     mock_video_name = "mock_video.mp4"
-    self._mock_s3_client().upload.side_effect = s3.S3BucketException("Boom!")
+    self._mock_s3_client(
+    ).upload.side_effect = client.S3BucketException("Boom!")
 
     with self.assertRaises(motion.MotionException):
       self.motion_client.archive_video(mock_video_name)

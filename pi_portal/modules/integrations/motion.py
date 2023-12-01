@@ -6,7 +6,7 @@ from typing import List
 
 import requests
 from pi_portal import config
-from pi_portal.modules.integrations import s3
+from pi_portal.modules.integrations.s3 import client
 from requests.adapters import HTTPAdapter
 from urllib3 import Retry
 
@@ -25,7 +25,7 @@ class Motion:
   s3_retries = 3
 
   def __init__(self) -> None:
-    self.s3_client = s3.S3Bucket()
+    self.s3_client = client.S3BucketClient()
 
   def archive_video(self, file_name: str) -> None:
     """Copy video to S3 for retention and delete locally.
@@ -36,7 +36,7 @@ class Motion:
     try:
       self.s3_client.upload(file_name)
       os.remove(file_name)
-    except (s3.S3BucketException, OSError) as exc:
+    except (client.S3BucketException, OSError) as exc:
       raise MotionException("Unable to archive video to S3.") from exc
 
   def cleanup_snapshot(self, file_name: str) -> None:

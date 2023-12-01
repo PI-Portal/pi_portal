@@ -1,4 +1,4 @@
-"""S3 Integration class."""
+"""S3BucketClient class."""
 
 import os
 
@@ -11,8 +11,8 @@ class S3BucketException(Exception):
   """Exception for S3 Bucket errors."""
 
 
-class S3Bucket:
-  """S3 integration class."""
+class S3BucketClient:
+  """S3BucketClient class."""
 
   def __init__(self) -> None:
     current_state = state.State()
