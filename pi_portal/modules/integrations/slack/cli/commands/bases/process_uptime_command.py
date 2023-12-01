@@ -5,7 +5,7 @@ from typing_extensions import Literal
 from .process_status_command import SlackProcessStatusCommandBase
 
 
-class NestedSlackUptimeCommandBase(SlackProcessStatusCommandBase):
+class SlackProcessUptimeCommandBase(SlackProcessStatusCommandBase):
   """Retrieves uptime for the process and re-raises supervisor exceptions.
 
   :param bot: The configured slack bot in use.
