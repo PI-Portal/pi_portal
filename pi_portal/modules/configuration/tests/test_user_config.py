@@ -58,9 +58,9 @@ class TestUserConfigurationLoad(TestCase):
 
   @mock.patch(
       json_file.__name__ + ".JSONFileReader.load_json_file",
-      return_value=MOCK_JSON
+      mock.Mock(return_value=MOCK_JSON)
   )
-  def test_load(self, _: mock.Mock) -> None:
+  def test_load(self) -> None:
     with mock.patch.object(self.configuration, 'validate') as m_validate:
       self.configuration.load()
       self.assertEqual(self.configuration.user_config, MOCK_JSON)

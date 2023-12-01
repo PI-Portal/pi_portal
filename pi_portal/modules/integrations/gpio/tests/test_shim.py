@@ -64,16 +64,22 @@ class TestImportOrMock(TestCase):
     self.assertIsInstance(shim.import_or_mock("adafruit_dht"), ModuleType)
 
   @mock.patch(shim.__name__ + ".os.uname", MOCK_ARM)
-  @mock.patch(shim.__name__ + ".import_module", side_effect=NotImplementedError)
-  def test_import_or_mock_arm_exception(self, _: mock.Mock) -> None:
+  @mock.patch(
+      shim.__name__ + ".import_module",
+      mock.Mock(side_effect=NotImplementedError)
+  )
+  def test_import_or_mock_arm_exception(self) -> None:
     self.assertIsInstance(
         shim.import_or_mock("board"),
         mock.MagicMock,
     )
 
   @mock.patch(shim.__name__ + ".os.uname", MOCK_ARM)
-  @mock.patch(shim.__name__ + ".import_module", side_effect=NotImplementedError)
-  def test_import_or_mock_arm_exception_dual_import(self, _: mock.Mock) -> None:
+  @mock.patch(
+      shim.__name__ + ".import_module",
+      mock.Mock(side_effect=NotImplementedError)
+  )
+  def test_import_or_mock_arm_exception_dual_import(self) -> None:
     first_import = shim.import_or_mock("board")
     second_import = shim.import_or_mock("board")
 

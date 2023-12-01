@@ -30,8 +30,8 @@ class TestConcreteGPIOMonitor(
     cls.test_class = concrete_monitor.ConcreteGPIOMonitor
 
   @gpio_loop.patch_gpio_loop(monitor.__name__ + ".GPIOMonitorBase")
-  @mock.patch(monitor.__name__ + ".RPi.GPIO")
-  def test_loop_no_change(self, _: mock.Mock) -> None:
+  @mock.patch(monitor.__name__ + ".RPi.GPIO", mock.Mock())
+  def test_loop_no_change(self) -> None:
 
     with gpio_change.patch_gpio_input_change(self.instance.gpio_pins, False):
       mock_logger_message = "No New Messages"
@@ -46,8 +46,8 @@ class TestConcreteGPIOMonitor(
       )
 
   @gpio_loop.patch_gpio_loop(monitor.__name__ + ".GPIOMonitorBase")
-  @mock.patch(monitor.__name__ + ".RPi.GPIO")
-  def test_loop_when_logging_all_states(self, _: mock.Mock) -> None:
+  @mock.patch(monitor.__name__ + ".RPi.GPIO", mock.Mock())
+  def test_loop_when_logging_all_states(self) -> None:
     self.instance.gpio_log_changes_only = False
     with gpio_change.patch_gpio_input_change(self.instance.gpio_pins, False):
       mock_logger_message = "No New Messages"
@@ -71,8 +71,8 @@ class TestConcreteGPIOMonitor(
       )
 
   @gpio_loop.patch_gpio_loop(monitor.__name__ + ".GPIOMonitorBase")
-  @mock.patch(monitor.__name__ + ".RPi.GPIO")
-  def test_loop_with_change(self, _: mock.Mock) -> None:
+  @mock.patch(monitor.__name__ + ".RPi.GPIO", mock.Mock())
+  def test_loop_with_change(self) -> None:
 
     with gpio_change.patch_gpio_input_change(self.instance.gpio_pins, True):
       mock_logger_message = "No New Messages"
