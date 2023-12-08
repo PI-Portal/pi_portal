@@ -1,0 +1,6 @@
+.mypy_cache
+.pytest_cache
+dist
+htmlcov
+packaging/debian/build_arm64
+packaging/debian/build_armhf

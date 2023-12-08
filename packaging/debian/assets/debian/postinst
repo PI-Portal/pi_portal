@@ -1,0 +1,36 @@
+#!/bin/bash
+
+set -eo pipefail
+
+PACKAGE_USER="pi-portal"
+
+gpio_access() {
+  if grep -q gpio /etc/group; then
+    usermod -a -G gpio "${PACKAGE_USER}"
+  fi
+}
+
+permissions() {
+  chown -R "${PACKAGE_USER}":"${PACKAGE_USER}"                         \
+    /opt/venvs/pi-portal                                               \
+    /usr/bin/portal                                                    \
+    /var/lib/motion
+  chown -R root:root                                                   \
+    /etc/filebeat                                                      \
+    /etc/pki/tls/certs/COMODORSADomainValidationSecureServerCA.crt     \
+    /usr/bin/filebeat
+}
+
+users() {
+  if ! id -u "${PACKAGE_USER}" &>/dev/null; then
+    useradd -r -s /usr/sbin/nologin --no-create-home "${PACKAGE_USER}"
+  fi
+}
+
+main() {
+  users
+  permissions
+  gpio_access
+}
+
+main "$@"

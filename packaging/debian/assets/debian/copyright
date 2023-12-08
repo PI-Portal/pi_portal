@@ -1,0 +1,16 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: pi-portal
+Upstream-Contact: niall@niallbyrne.ca
+Source: https://github.com/PI-Portal/pi_portal
+
+Files: *
+Copyright: 2023 Niall Byrne
+License: MPL-2
+
+License: MPL-2.0
+ This Source Code Form is subject to the terms of the Mozilla Public
+ License, v. 2.0. If a copy of the MPL was not distributed with this
+ file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ .
+ On Debian systems you can find the license in:
+ /usr/share/common-licenses/MPL-2.0

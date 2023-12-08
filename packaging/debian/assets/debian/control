@@ -1,0 +1,29 @@
+Source: pi-portal
+Maintainer: Niall Byrne <niall@niallbyrne.ca>
+Standards-Version: 4.5.0
+Priority: optional
+Section: utils
+X-Python3-Version: >= 3.7
+Build-Depends:
+  debhelper (>= 10.0.0),
+  dh-python,
+  dh-virtualenv,
+  libffi-dev,
+  libssl-dev,
+  python3-all,
+  python3-setuptools
+
+Package: pi-portal
+Architecture: $DEB_BUILD_ARCH
+Depends:
+  bash (>= 4.0.0) [$DEB_BUILD_ARCH],
+  ca-certificates [$DEB_BUILD_ARCH],
+  libgpiod2 (>= 1.0.0) [$DEB_BUILD_ARCH],
+  motion (>= 4.0.0) [$DEB_BUILD_ARCH],
+  python3-minimal (>= 3.11.0) [$DEB_BUILD_ARCH],
+  supervisor (>= 4.0.0) [$DEB_BUILD_ARCH],
+  ${misc:Depends}
+Description:
+    A Raspberry Pi door monitor that uses a magnetic switch to detect when a door
+    is opened or closed. It also uses a camera to take a picture of the person
+    entering the room and sends it to a Slack channel.
