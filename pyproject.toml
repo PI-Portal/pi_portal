@@ -112,7 +112,7 @@
   [tool.pylint]
 
     [tool.pylint.basic]
-      argument-rgx = "[a-z_][a-z0-9_]{1,30}$|^mocked_[a-z_][a-z0-9_]{1,40}$"
+      argument-rgx = "[a-z_][a-z0-9_]{1,40}$"
       attr-rgx = "[a-z_][a-z0-9_]{2,30}$"
       bad-functions = "map,filter,apply,input"
       bad-names = "foo,bar,baz,toto,tutu,tata"

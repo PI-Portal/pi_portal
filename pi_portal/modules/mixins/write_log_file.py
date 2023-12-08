@@ -2,7 +2,7 @@
 
 from logging import Logger, getLogger
 
-from pi_portal.modules.configuration import logger
+from pi_portal.modules.configuration.logging.json import JsonLoggerConfiguration
 
 
 class LogFileWriter:
@@ -16,5 +16,5 @@ class LogFileWriter:
     """Configure a standardized logger for this class."""
 
     self.log = getLogger(self.logger_name)
-    logging_configuration = logger.LoggingConfiguration()
-    logging_configuration.configure(self.log, self.log_file_path)
+    logger_configuration = JsonLoggerConfiguration()
+    logger_configuration.configure(self.log, self.log_file_path)

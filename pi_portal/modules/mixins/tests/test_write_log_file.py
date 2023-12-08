@@ -15,7 +15,7 @@ class ClassWithLogging(write_log_file.LogFileWriter):
 
 
 @mock.patch(LOG_FILE_MODULE + '.getLogger')
-@mock.patch(LOG_FILE_MODULE + '.logger.LoggingConfiguration')
+@mock.patch(LOG_FILE_MODULE + '.JsonLoggerConfiguration')
 class WriteLogFileTest(TestCase):
   """Test the WriteLogFile mixin class."""
 
