@@ -35,7 +35,7 @@ class TestMotion(TestCase):
     self.assertEqual(motion_client.s3_retries, 3)
     self.assertEqual(
         motion_client.video_glob_pattern,
-        os.path.join(config.MOTION_FOLDER, '/*.mp4')
+        os.path.join(config.PATH_MOTION_CONTENT, '/*.mp4')
     )
     self.assertIsInstance(motion_client.s3_client, client.S3BucketClient)
 

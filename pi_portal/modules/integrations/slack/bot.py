@@ -23,7 +23,7 @@ class SlackBot(write_log_file.LogFileWriter):
   """Slack bot."""
 
   logger_name = "bot"
-  log_file_path = config.SLACK_BOT_LOGFILE_PATH
+  log_file_path = config.LOG_FILE_SLACK_BOT
   web_socket: SocketModeHandler
 
   def __init__(self) -> None:

@@ -20,7 +20,7 @@ class TemperatureSensorMonitor(
   gpio_poll_interval = 60.0
   gpio_log_changes_only = False
   logger_name = "pi_portal_temperature"
-  log_file_path = config.TEMPERATURE_MONITOR_LOGFILE_PATH
+  log_file_path = config.LOG_FILE_TEMPERATURE_MONITOR
 
   def __init__(
       self, gpio_pins: Sequence[temperature_sensor.TemperatureSensor]
