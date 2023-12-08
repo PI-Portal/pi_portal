@@ -52,13 +52,13 @@ class UserConfiguration(json_file.JSONFileReader):
   )
   user_config: TypeUserConfig
 
-  def load(self, file_name: str = "config.json") -> None:
+  def load(self, file_path: str = "config.json") -> None:
     """Load and validate the end user's configuration file.
 
-    :param file_name: The path to the file to load.
+    :param file_path: The path to the file to load.
     """
 
-    self.user_config = cast(TypeUserConfig, self.load_json_file(file_name))
+    self.user_config = cast(TypeUserConfig, self.load_json_file(file_path))
     self.validate()
 
   def validate(self) -> None:

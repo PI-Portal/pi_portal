@@ -1,6 +1,10 @@
 """Core configuration settings."""
 
-FILE_BEAT_BINARY = "/usr/bin/filebeat"
+import os
+
+PI_PORTAL_INSTALL_LOCATION = os.getenv("PI_PORTAL_INSTALL_LOCATION", ".")
+
+FILE_BEAT_BINARY = os.getenv("PI_PORTAL_FILEBEAT_LOCATION", "/usr/bin/filebeat")
 FILE_BEAT_CONFIG = "/etc/filebeat/filebeat.yml"
 
 LOG_FILE_DOOR_MONITOR = "/var/log/pi_portal.door.log"
@@ -14,8 +18,14 @@ LOG_PREFIX_SUPERVISOR = "/var/log/supervisor/supervisor"
 
 PATH_MOTION_CONTENT = "/var/lib/motion"
 PATH_SUPERVISOR_SOCKET = "/var/run/supervisor.sock"
-PATH_VIDEO_UPLOAD_QUEUE = "/opt/pi_portal/queue_videos"
-PATH_USER_CONFIG_INSTALL = "/opt/venvs/pi_portal/config.json"
+PATH_USER_CONFIG_INSTALL = os.path.join(
+    PI_PORTAL_INSTALL_LOCATION,
+    "config.json",
+)
+PATH_VIDEO_UPLOAD_QUEUE = os.path.join(
+    PI_PORTAL_INSTALL_LOCATION,
+    "queue_videos",
+)
 
 PID_FILE_MOTION = '/var/run/motion/motion.pid'
 PID_FILE_SUPERVISORD = '/var/run/supervisord.pid'

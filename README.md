@@ -134,14 +134,15 @@ Create a configuration json file that contains the following:
 
 ### Installing the PI Portal system configuration
 
-You can now run the following command to complete the installation:
+To complete the installation, you will need to install the configuration file you created above with pi_portal.
+
+Be advised that existing supervisor and motion configurations will be overwritten, if you have customized these files you should back them up before proceeding.
+
+This command should be run as root, as it will modify system files and protect your configuration file by setting appropriate permissions:
 
 ```bash
-pi_portal installer [configuration json file name]
+sudo pi_portal install_config [configuration json file name]
 ```
-
-Pi Portal will prompt for SUDO, and then run [this](pi_portal/installation/scripts/install.sh) script to complete the installation.
-
 
 ### Logs and Slack Bot
 
