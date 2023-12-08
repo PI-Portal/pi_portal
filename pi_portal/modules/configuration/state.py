@@ -40,9 +40,12 @@ class State:
 
     self._log_level = level
 
-  def load(self) -> None:
-    """Load the end user configuration."""
+  def load(self, file_path: str = "config.json") -> None:
+    """Load the end user configuration.
+
+    :param file_path: The path to the file to load.
+    """
 
     configuration = UserConfiguration()
-    configuration.load()
+    configuration.load(file_path=file_path)
     self.user_config = configuration.user_config

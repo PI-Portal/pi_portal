@@ -43,6 +43,20 @@ def door_monitor_command(ctx: click.Context) -> None:
   command.invoke()
 
 
+@cli.command("install_config")
+@click.argument('config_file', type=click.Path(exists=True))
+@click.pass_context
+def installer_command(ctx: click.Context, config_file: str) -> None:
+  """Install a configuration file. Requires root.
+
+  CONFIG_FILE: The path to the configuration file to use.
+  """
+
+  command = installer.InstallerCommand(config_file)
+  command.load_state(debug=ctx.obj['DEBUG'], file_path=config_file)
+  command.invoke()
+
+
 @cli.command("slack_bot")
 @click.pass_context
 def slack_bot_command(ctx: click.Context) -> None:
@@ -88,18 +102,6 @@ def upload_video_command(ctx: click.Context, filename: str) -> None:
 
   command = upload_video.UploadVideoCommand(filename)
   command.load_state(debug=ctx.obj['DEBUG'])
-  command.invoke()
-
-
-@cli.command("installer")
-@click.argument('config_file', type=click.Path(exists=True))
-def installer_command(config_file: str) -> None:
-  """Run the installation script, (requires root).
-
-  CONFIG_FILE: The path to the configuration file to use.
-  """
-
-  command = installer.InstallerCommand(config_file)
   command.invoke()
 
 
