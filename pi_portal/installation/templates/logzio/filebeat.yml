@@ -1,77 +1,79 @@
+# yamllint disable rule:braces
+---
 filebeat.inputs:
 
-- type: log
-  paths:
-    - {{ LOG_FILE_VIDEO_UPLOAD_CRON }}
-  fields:
-    logzio_codec: json
-    token: {{ LOGZ_IO_CODE }}
-    type: pi_portal_cron_json
-  fields_under_root: true
-  encoding: utf-8
-  ignore_older: 12h
+  - type: log
+    paths:
+      - {{ LOG_FILE_VIDEO_UPLOAD_CRON }}
+    fields:
+      logzio_codec: json
+      token: {{ LOGZ_IO_CODE }}
+      type: pi_portal_cron_json
+    fields_under_root: true
+    encoding: utf-8
+    ignore_older: 12h
 
-- type: log
-  paths:
-    - {{ LOG_FILE_DOOR_MONITOR }}
-  fields:
-    logzio_codec: json
-    token: {{ LOGZ_IO_CODE }}
-    type: pi_portal_door_json
-  fields_under_root: true
-  encoding: utf-8
-  ignore_older: 12h
+  - type: log
+    paths:
+      - {{ LOG_FILE_DOOR_MONITOR }}
+    fields:
+      logzio_codec: json
+      token: {{ LOGZ_IO_CODE }}
+      type: pi_portal_door_json
+    fields_under_root: true
+    encoding: utf-8
+    ignore_older: 12h
 
-- type: log
-  paths:
-    - {{ LOG_FILE_SLACK_BOT }}
-    - {{ LOG_FILE_SLACK_CLIENT }}
-  fields:
-    logzio_codec: json
-    token: {{ LOGZ_IO_CODE }}
-    type: pi_portal_slack_json
-  fields_under_root: true
-  encoding: utf-8
-  ignore_older: 12h
+  - type: log
+    paths:
+      - {{ LOG_FILE_SLACK_BOT }}
+      - {{ LOG_FILE_SLACK_CLIENT }}
+    fields:
+      logzio_codec: json
+      token: {{ LOGZ_IO_CODE }}
+      type: pi_portal_slack_json
+    fields_under_root: true
+    encoding: utf-8
+    ignore_older: 12h
 
-- type: log
-  paths:
-    - {{ LOG_FILE_TEMPERATURE_MONITOR }}
-  fields:
-    logzio_codec: json
-    token: {{ LOGZ_IO_CODE }}
-    type: pi_portal_temperature_json
-  fields_under_root: true
-  encoding: utf-8
-  ignore_older: 12h
+  - type: log
+    paths:
+      - {{ LOG_FILE_TEMPERATURE_MONITOR }}
+    fields:
+      logzio_codec: json
+      token: {{ LOGZ_IO_CODE }}
+      type: pi_portal_temperature_json
+    fields_under_root: true
+    encoding: utf-8
+    ignore_older: 12h
 
-- type: log
-  paths:
-    - /var/log/syslog
-    - /var/log/auth.log
-  fields:
-    logzio_codec: plain
-    token: {{ LOGZ_IO_CODE }}
-    type: pi_portal_system
-  fields_under_root: true
-  encoding: utf-8
-  ignore_older: 12h
+  - type: log
+    paths:
+      - /var/log/syslog
+      - /var/log/auth.log
+    fields:
+      logzio_codec: plain
+      token: {{ LOGZ_IO_CODE }}
+      type: pi_portal_system
+    fields_under_root: true
+    encoding: utf-8
+    ignore_older: 12h
 
-#For version 7 and higher
+# For version 7 and higher
 filebeat.registry.path: /var/lib/filebeat
 
-#The following processors are to ensure compatibility with version 7
+# The following processors are to ensure compatibility with version 7
 processors:
-- rename:
-    fields:
-     - from: "agent"
-       to: "beat_agent"
-    ignore_missing: true
-- rename:
-    fields:
-     - from: "log.file.path"
-       to: "source"
-    ignore_missing: true
+  - rename:
+      fields:
+        - from: "agent"
+          to: "beat_agent"
+      ignore_missing: true
+  - rename:
+      fields:
+        - from: "log.file.path"
+          to: "source"
+      ignore_missing: true
 
 ############################# Output ##########################################
 

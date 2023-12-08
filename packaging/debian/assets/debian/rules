@@ -1,0 +1,75 @@
+#!/usr/bin/make -f
+
+SHELL := /bin/bash
+BUILD_USER=$(shell whoami)
+PACKAGE=$(shell poetry version | cut -d' ' -f1)
+VERSION=$(shell poetry version -s)
+SDIST_DIR=debian/$(PACKAGE)-$(VERSION)
+
+CERT_SOURCE=https://raw.githubusercontent.com/logzio/public-certificates/master/AAACertificateServices.crt
+USER=pi-portal
+
+export PI_PORTAL_INSTALL_LOCATION=/opt/venvs/pi-portal
+export PYBUILD_NAME=pi_portal
+
+
+build:
+	echo "Building $(PACKAGE) $(VERSION)"
+
+binary:
+	git config --global --add safe.directory /app
+	mkdir -p                                                                                \
+	    $(SDIST_DIR)/bin                                                                    \
+	    $(SDIST_DIR)/certs
+	poetry build -f sdist
+	tar -x -C $(SDIST_DIR)                                                                  \
+	    --strip-components=1                                                                \
+	    --exclude '*.egg-info'                                                              \
+	    -f ../../../dist/*.tar.gz
+	cp -v                                                                                   \
+	    /usr/bin/filebeat                                                                   \
+	    $(SDIST_DIR)/bin/filebeat
+	curl "$(CERT_SOURCE)"                                                                   \
+	    -o $(SDIST_DIR)/certs/COMODORSADomainValidationSecureServerCA.crt
+	envsubst < $(SDIST_DIR)/pi_portal/installation/scripts/portal > $(SDIST_DIR)/bin/portal
+	dh binary --with python-virtualenv --sourcedir $(SDIST_DIR)
+
+%:
+	dh $@ --with python-virtualenv --sourcedir $(SDIST_DIR)
+
+override_dh_builddeb:
+	dh_builddeb -- -Zxz
+
+override_dh_fixperms:
+	dh_fixperms
+	find debian/$(PACKAGE)/opt/venvs/pi-portal                                              \
+	    -type d                                                                             \
+	    -exec chmod 750 {} \;
+	chmod 750                                                                               \
+	    debian/$(PACKAGE)/etc/filebeat                                                      \
+	    debian/$(PACKAGE)/usr/bin/filebeat                                                  \
+	    debian/$(PACKAGE)/usr/bin/portal
+	chmod 640                                                                               \
+	    debian/$(PACKAGE)/etc/pki/tls/certs/COMODORSADomainValidationSecureServerCA.crt
+
+override_dh_makeshlibs:
+	dh_makeshlibs                                                                           \
+	--exclude=debian/$(PACKAGE)/opt/venvs/$(PACKAGE)/lib/
+
+override_dh_shlibdeps:
+	dh_shlibdeps                                                                            \
+	--exclude=debian/$(PACKAGE)/opt/venvs/$(PACKAGE)/lib/
+
+override_dh_strip:
+	echo "Disabled"
+
+override_dh_strip_nondeterminism:
+	echo "Disabled"
+
+override_dh_virtualenv:
+	dh_virtualenv                                                                           \
+	--python /usr/bin/python3                                                               \
+	--preinstall "poetry${MIN_POETRY_VERSION}"                                              \
+	--preinstall "dh-poetry>=0.1.1"                                                         \
+	--pip-tool dh-poetry                                                                    \
+	--sourcedir $(SDIST_DIR)

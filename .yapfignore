@@ -1,2 +1,5 @@
 **/*_pb2.py
-venv/**/*.py
+packaging
+dist
+htmlcov
+venv
