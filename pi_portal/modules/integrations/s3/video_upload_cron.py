@@ -10,6 +10,6 @@ class VideoUploadCron(cron.S3UploadCronJobBase):
   :param interval: The interval in seconds to check for new files.
   """
 
-  path = config.VIDEO_UPLOAD_QUEUE_PATH
-  log_file_path = config.VIDEO_UPLOAD_QUEUE_LOGFILE_PATH
+  path = config.PATH_VIDEO_UPLOAD_QUEUE
+  log_file_path = config.LOG_FILE_VIDEO_UPLOAD_CRON
   logger_name = "video_upload_cron"

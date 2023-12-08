@@ -16,7 +16,7 @@ class TemperatureMonitorLogFileReader(read_log_file.LogFileReader):
   """Read access to the Temperature Monitor Log File."""
 
   configured_sensor_count: int
-  log_file_path: str = config.TEMPERATURE_MONITOR_LOGFILE_PATH
+  log_file_path: str = config.LOG_FILE_TEMPERATURE_MONITOR
   temperature_readings: Dict[str, TemperatureReadingType]
 
   def __init__(self) -> None:

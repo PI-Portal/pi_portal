@@ -61,7 +61,7 @@ class TestTemperatureMonitorLogFileReader:
       one_sensor_temp_log_file_reader: TemperatureMonitorLogFileReader,
   ) -> None:
     assert one_sensor_temp_log_file_reader.log_file_path == \
-           config.TEMPERATURE_MONITOR_LOGFILE_PATH
+           config.LOG_FILE_TEMPERATURE_MONITOR
     assert one_sensor_temp_log_file_reader.state.user_config == \
            mocked_state.user_config
     assert one_sensor_temp_log_file_reader.configured_sensor_count == 1
@@ -80,7 +80,7 @@ class TestTemperatureMonitorLogFileReader:
       two_sensor_temp_log_file_reader: TemperatureMonitorLogFileReader,
   ) -> None:
     assert two_sensor_temp_log_file_reader.log_file_path == \
-           config.TEMPERATURE_MONITOR_LOGFILE_PATH
+           config.LOG_FILE_TEMPERATURE_MONITOR
     assert two_sensor_temp_log_file_reader.state.user_config == \
            mocked_state.user_config
     assert two_sensor_temp_log_file_reader.configured_sensor_count == 2

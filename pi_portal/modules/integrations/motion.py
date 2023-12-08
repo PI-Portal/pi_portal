@@ -19,8 +19,8 @@ class Motion:
   """Integration with the Motion application."""
 
   snapshot_url = 'http://localhost:8080/0/action/snapshot'
-  snapshot_fname = os.path.join(config.MOTION_FOLDER, 'lastsnap.jpg')
-  video_glob_pattern = os.path.join(config.MOTION_FOLDER, '/*.mp4')
+  snapshot_fname = os.path.join(config.PATH_MOTION_CONTENT, 'lastsnap.jpg')
+  video_glob_pattern = os.path.join(config.PATH_MOTION_CONTENT, '/*.mp4')
   snapshot_retries = 10
   s3_retries = 3
 

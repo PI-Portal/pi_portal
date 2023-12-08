@@ -22,6 +22,6 @@ class UploadVideoCommand(
     shutil.move(
         self.file_name,
         os.path.join(
-            config.VIDEO_UPLOAD_QUEUE_PATH, os.path.basename(self.file_name)
+            config.PATH_VIDEO_UPLOAD_QUEUE, os.path.basename(self.file_name)
         )
     )

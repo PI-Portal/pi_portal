@@ -37,7 +37,7 @@ class TestUploadVideoCommand(file_command_harness.FileCommandBaseTestHarness):
     m_move.assert_called_once_with(
         self.mock_file,
         os.path.join(
-            config.VIDEO_UPLOAD_QUEUE_PATH,
+            config.PATH_VIDEO_UPLOAD_QUEUE,
             os.path.basename(self.mock_file),
         )
     )

@@ -33,7 +33,7 @@ class SupervisorClient:
   def __init__(self, host: str = 'localhost', port: int = 9001):
     self.server = xmlrpc.client.Server(
         f"http://{host}:{port}",
-        transport=UnixStreamTransport(config.SUPERVISOR_SOCKET_PATH)
+        transport=UnixStreamTransport(config.PATH_SUPERVISOR_SOCKET)
     )
 
   def start(self, process: ProcessList) -> None:

@@ -39,6 +39,6 @@ class TestInstaller(TestCase):
     m_system.assert_called_once_with(
         "sudo bash install.sh "
         f"'{self.mock_config_file_content['LOGZ_IO_CODE']}' "
-        f"'{config.SUPERVISOR_SOCKET_PATH}' "
+        f"'{config.PATH_SUPERVISOR_SOCKET}' "
         f"'{os.path.abspath(mock_config_filename)}'"
     )

@@ -25,6 +25,6 @@ def installer(user_config_file: str) -> None:
   os.system(  # nosec
       "sudo bash install.sh "
       f"'{configuration.user_config['LOGZ_IO_CODE']}' "
-      f"'{config.SUPERVISOR_SOCKET_PATH}' "
+      f"'{config.PATH_SUPERVISOR_SOCKET}' "
       f"'{absolute_path}'"
   )

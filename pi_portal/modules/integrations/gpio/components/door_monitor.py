@@ -23,7 +23,7 @@ class DoorMonitor(monitor.GPIOMonitorBase[contact_switch.ContactSwitch]):
   gpio_poll_interval = 0.5
   gpio_log_changes_only = True
   logger_name = "pi_portal_door"
-  log_file_path = config.DOOR_MONITOR_LOGFILE_PATH
+  log_file_path = config.LOG_FILE_DOOR_MONITOR
   open = DoorState["OPENED"].value
 
   def hook_log_state(self, gpio_pin: contact_switch.ContactSwitch) -> None:
