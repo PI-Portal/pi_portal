@@ -1,0 +1,25 @@
+#!/bin/bash
+
+PACKAGE_USER="pi-portal"
+
+shutdown() {
+  if [[ -f "/var/run/supervisord.pid" ]]; then
+    SUPERVISOR_PID="$(cat /var/run/supervisord.pid)"
+    if kill -0 "${SUPERVISOR_PID}" &>/dev/null ; then
+      service supervisor stop || systemctl stop supervisor.service
+    fi
+  fi
+}
+
+users() {
+  if id -u "${PACKAGE_USER}" &>/dev/null; then
+    userdel "${PACKAGE_USER}"
+  fi
+}
+
+main() {
+  shutdown
+  users
+}
+
+main "$@"

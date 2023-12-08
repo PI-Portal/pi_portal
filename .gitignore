@@ -150,5 +150,10 @@ documentation/source/codebase/pi_portal/_autosummary/
 local.config.json
 
 # Binaries
-pi_portal/bin
+packaging/filebeat/bin
 
+# Debian
+packaging/debian/build_arm64
+packaging/debian/build_armhf
+packaging/debian/dist_arm64
+packaging/debian/dist_armhf
