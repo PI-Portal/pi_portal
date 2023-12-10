@@ -3,11 +3,11 @@
 from typing import Type, cast
 from unittest import mock
 
-from pi_portal.modules.integrations.gpio import shim
 from pi_portal.modules.integrations.gpio.components import dht11_sensor
 from pi_portal.modules.integrations.gpio.components.bases import (
     temperature_sensor,
 )
+from pi_portal.modules.python import rpi
 from ..bases.tests.fixtures import sensor_harness
 
 
@@ -26,7 +26,7 @@ class TestGPIOInput(sensor_harness.GPIOSensorTestHarness):
     return cast(dht11_sensor.DHT11, self.instance)
 
   def _adafruit_module(self) -> mock.Mock:
-    return cast(mock.Mock, shim.adafruit_dht)
+    return cast(mock.Mock, rpi.adafruit_dht)
 
   def setUp(self) -> None:
     self._adafruit_module().reset_mock()
@@ -42,7 +42,7 @@ class TestGPIOInput(sensor_harness.GPIOSensorTestHarness):
         self._adafruit_module().DHT11.return_value,
     )
     self._adafruit_module().DHT11.assert_called_once_with(
-        getattr(shim.board, f"D{self.instance.pin_number}"),
+        getattr(rpi.board, f"D{self.instance.pin_number}"),
         use_pulseio=False,
     )
 

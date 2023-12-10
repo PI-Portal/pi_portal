@@ -5,7 +5,7 @@ from typing import Any
 from pi_portal.modules.integrations.gpio.components.bases import (
     temperature_sensor,
 )
-from pi_portal.modules.integrations.gpio.shim import adafruit_dht, board
+from pi_portal.modules.python.rpi import adafruit_dht, board
 
 
 class DHT11(temperature_sensor.TemperatureSensor):
@@ -28,9 +28,9 @@ class DHT11(temperature_sensor.TemperatureSensor):
     :returns: The hardware sensor interface.
     """
 
-    return adafruit_dht.DHT11(  # type: ignore[attr-defined]
-      self.hook_board_pin(),
-      use_pulseio=False,
+    return adafruit_dht.DHT11(
+        self.hook_board_pin(),
+        use_pulseio=False,
     )
 
   def hook_update_state(
