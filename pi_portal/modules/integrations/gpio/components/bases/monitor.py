@@ -6,9 +6,9 @@ from typing import Generic, Sequence, TypeVar
 
 from pi_portal.modules.integrations.gpio.components.bases import \
     input as gpio_input
-from pi_portal.modules.integrations.gpio.shim import RPi
 from pi_portal.modules.integrations.slack import client
 from pi_portal.modules.mixins import write_log_file
+from pi_portal.modules.python.rpi import RPi
 
 TypeGenericGpio = TypeVar('TypeGenericGpio', bound=gpio_input.GPIOInputBase)
 
