@@ -4,7 +4,7 @@ from typing import Any
 
 from pi_portal.modules.integrations.gpio.components.bases import \
     input as gpio_input
-from pi_portal.modules.integrations.gpio.shim import RPi
+from pi_portal.modules.python.rpi import RPi
 
 
 class ContactSwitch(gpio_input.GPIOInputBase):
