@@ -43,6 +43,7 @@ class LoggerConfigurationBase(abc.ABC):
     """
 
     log.handlers = []
+    handler: Optional[logging.Handler]
 
     if file_name is None:
       handler = logging.StreamHandler()

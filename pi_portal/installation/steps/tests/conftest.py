@@ -1,7 +1,7 @@
 """Fixtures for the steps modules tests."""
 import logging
 from io import StringIO
-from typing import cast
+from typing import TYPE_CHECKING, TextIO, cast
 from unittest import mock
 
 import pytest
@@ -17,6 +17,11 @@ from .. import (
     step_start_supervisor,
 )
 from ..bases import process_step, system_call_step
+
+if TYPE_CHECKING:
+  StreamHandlerType = logging.StreamHandler[TextIO]  # pragma: no cover
+else:
+  StreamHandlerType = logging.StreamHandler
 
 # pylint: disable=redefined-outer-name
 
@@ -60,7 +65,8 @@ def mocked_template_render() -> mock.Mock:
 def installer_logger_stdout(mocked_stream: StringIO) -> logging.Logger:
   logger = logging.getLogger("test")
   installer.InstallerLoggerConfiguration().configure(logger)
-  cast(logging.StreamHandler, logger.handlers[0]).stream = mocked_stream
+  installer_logger_handler = logger.handlers[0]
+  cast(StreamHandlerType, installer_logger_handler).stream = mocked_stream
   return logger
 
 

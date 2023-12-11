@@ -44,7 +44,7 @@ sudo apt-get install gcc libffi-dev libgpiod2 libssl-dev motion python3-dev supe
 
 ### Python
 
-Supports Python [3.7](https://www.python.org/downloads/release/python-370/), [3.8](https://www.python.org/downloads/release/python-380/), [3.9](https://www.python.org/downloads/release/python-390/) or [3.10](https://www.python.org/downloads/release/python-3100/)
+Supports Python [3.8](https://www.python.org/downloads/release/python-380/), [3.9](https://www.python.org/downloads/release/python-390/), [3.10](https://www.python.org/downloads/release/python-3100/) or [3.11](https://www.python.org/downloads/release/python-3110/)
 
 ### PAAS Accounts
 
