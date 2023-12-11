@@ -21,8 +21,7 @@ This is a hobby solution, and no warranty or guarantees of any kind are made.  P
 ### Hardware
 
 1. A Raspberry Pi 3.
-   - You'll need a Raspberry PI 3, with Raspberry Pi OS or similar installed and reliable internet.
-   - You'll be able to use this program with other Raspberry PI versions, but you may need to [compile filebeat](./scripts/arm/filebeat.sh) with different architecture settings.  I have tested it on Raspberry PI 3.
+   - You'll need a Raspberry PI with Raspberry Pi OS or similar installed and reliable internet.
 2. Contact switches.
    - These are available cheaply on ebay, AWS or at your local electronics store. 
    - Some examples can be found [here](https://www.burglaryalarmsystem.com/category/magnetic-contact.html).
