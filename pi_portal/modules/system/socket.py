@@ -2,8 +2,9 @@
 
 import http.client
 import socket
-import xmlrpc.client
 from typing import Dict, Tuple, Union
+
+from pi_portal.modules.python.xmlrpc import patched_client
 
 
 class UnixStreamHTTPConnection(http.client.HTTPConnection):
@@ -16,7 +17,7 @@ class UnixStreamHTTPConnection(http.client.HTTPConnection):
     self.sock.connect(self.host)
 
 
-class UnixStreamTransport(xmlrpc.client.Transport):
+class UnixStreamTransport(patched_client.Transport):
   """An XMLRPC client transport using a unix socket.
 
   :param socket_path: Path to the unix socket to open.
