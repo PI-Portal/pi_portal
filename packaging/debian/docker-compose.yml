@@ -1,5 +1,5 @@
 ---
-version: "3"
+version: "3.8"
 
 services:
 
@@ -12,6 +12,7 @@ services:
         BUILD_ARG_PYTHON_VERSION: "3.9"
       context: ../..
       dockerfile: ./assets/Dockerfile
+      target: pi_portal
     platform: linux/arm/v7
     volumes:
       - ../..:/app
@@ -46,6 +47,7 @@ services:
         BUILD_ARG_PYTHON_VERSION: "3.9"
       context: ../..
       dockerfile: ./assets/Dockerfile
+      target: pi_portal
     platform: linux/arm64
     volumes:
       - ../..:/app
