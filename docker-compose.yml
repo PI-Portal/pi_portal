@@ -7,12 +7,8 @@ services:
       args:
         BUILD_ARG_PIP_INDEX_URL: "https://pypi.org/simple"
         BUILD_ARG_PLATFORM: "amd64"
-<<<<<<< Updated upstream
-        BUILD_ARG_PYTHON_VERSION: "3.9"
-=======
         BUILD_ARG_CONTAINER_UID: "${DOCKER_USER_UID}"
         BUILD_ARG_CONTAINER_GID: "${DOCKER_USER_UID}"
->>>>>>> Stashed changes
       context: .
       dockerfile: assets/Dockerfile
     platform: linux/amd64

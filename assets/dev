@@ -1,0 +1,37 @@
+#!/bin/bash
+
+poetry_shim() {
+
+  set -eo pipefail
+
+  echo "COMMAND: $*"
+
+  if [[ -z "${VIRTUAL_ENV}" ]]; then
+    eval "poetry run bash -c '$*'"
+  else
+    eval "$*"
+  fi
+
+}
+
+main() {
+
+  pushd /app > /dev/null
+
+  MAKE_COMMAND="${1:-help}"
+  shift
+  MAKE_ARGS="$*"
+
+  export MAKE_COMMAND
+  export MAKE_ARGS
+
+  set -eo pipefail
+
+  make -f ./assets/Makefile -s "${MAKE_COMMAND}"
+
+  popd > /dev/null
+
+}
+
+export -f poetry_shim
+main "$@"
