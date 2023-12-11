@@ -3,7 +3,7 @@ Maintainer: Niall Byrne <niall@niallbyrne.ca>
 Standards-Version: 4.5.0
 Priority: optional
 Section: utils
-X-Python3-Version: >= 3.7
+X-Python3-Version: >= 3.8
 Build-Depends:
   debhelper (>= 10.0.0),
   dh-python,

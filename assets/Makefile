@@ -125,5 +125,5 @@ test:
 
 types:
 	@echo "Checking types ..."
-	@$(call p+, "mypy --strict --show-error-codes --implicit-reexport")
+	@$(call p+, "mypy --strict --show-error-codes --implicit-reexport --explicit-package-bases")
 	@echo "Done."
