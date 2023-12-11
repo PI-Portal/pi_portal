@@ -1,9 +1,9 @@
 """A Supervisord client over a unix socket."""
 
-import xmlrpc.client
 from typing import cast
 
 from pi_portal import config
+from pi_portal.modules.python.xmlrpc import patched_client
 from pi_portal.modules.system.socket import UnixStreamTransport
 from pi_portal.modules.system.supervisor_config import (
     ProcessList,
@@ -31,7 +31,7 @@ class SupervisorClient:
   """
 
   def __init__(self, host: str = 'localhost', port: int = 9001):
-    self.server = xmlrpc.client.Server(
+    self.server = patched_client.Server(
         f"http://{host}:{port}",
         transport=UnixStreamTransport(config.PATH_SUPERVISOR_SOCKET)
     )
@@ -45,7 +45,7 @@ class SupervisorClient:
 
     try:
       self.server.supervisor.startProcess(process.value)
-    except xmlrpc.client.Fault as exc:
+    except patched_client.Fault as exc:
       raise SupervisorException from exc
 
   def stop(self, process: ProcessList) -> None:
@@ -57,7 +57,7 @@ class SupervisorClient:
 
     try:
       self.server.supervisor.stopProcess(process.value)
-    except xmlrpc.client.Fault as exc:
+    except patched_client.Fault as exc:
       raise SupervisorException from exc
 
   def status(self, process: ProcessList) -> ProcessStatus:
@@ -74,7 +74,7 @@ class SupervisorClient:
               self.server.supervisor.getProcessInfo(process.value)
           )['statename']
       )
-    except xmlrpc.client.Fault as exc:
+    except patched_client.Fault as exc:
       raise SupervisorException from exc
 
   def start_time(self, process: ProcessList) -> str:
@@ -90,5 +90,5 @@ class SupervisorClient:
           TypeSupervisorProcessInfo,
           self.server.supervisor.getProcessInfo(process.value),
       )['start']
-    except xmlrpc.client.Fault as exc:
+    except patched_client.Fault as exc:
       raise SupervisorException from exc

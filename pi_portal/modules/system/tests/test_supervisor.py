@@ -1,9 +1,9 @@
 """Test Supervisor SlackClient Class."""
 
-import xmlrpc.client
 from typing import cast
 from unittest import TestCase, mock
 
+from pi_portal.modules.python.xmlrpc import patched_client
 from pi_portal.modules.system import supervisor, supervisor_config
 
 
@@ -28,7 +28,7 @@ class TestSupervisorClient(TestCase):
 
   def test_initialize(self) -> None:
     client = supervisor.SupervisorClient()
-    self.assertIsInstance(client.server, xmlrpc.client.Server)
+    self.assertIsInstance(client.server, patched_client.Server)
 
   def test_start(self) -> None:
     self.supervisor_client.start(supervisor_config.ProcessList.CAMERA)
@@ -39,7 +39,7 @@ class TestSupervisorClient(TestCase):
 
   def test_start_error(self) -> None:
     self._mock_server().supervisor.startProcess.side_effect = (
-        xmlrpc.client.Fault(1, "MockFaultError")
+        patched_client.Fault(1, "MockFaultError")
     )
     with self.assertRaises(supervisor.SupervisorException):
       self.supervisor_client.start(supervisor_config.ProcessList.CAMERA)
@@ -53,7 +53,7 @@ class TestSupervisorClient(TestCase):
 
   def test_stop_error(self) -> None:
     self._mock_server().supervisor.stopProcess.side_effect = (
-        xmlrpc.client.Fault(1, "MockFaultError")
+        patched_client.Fault(1, "MockFaultError")
     )
     with self.assertRaises(supervisor.SupervisorException):
       self.supervisor_client.stop(supervisor_config.ProcessList.CAMERA)
@@ -70,7 +70,7 @@ class TestSupervisorClient(TestCase):
 
   def test_status_error(self) -> None:
     self._mock_server().supervisor.getProcessInfo.side_effect = (
-        xmlrpc.client.Fault(1, "MockFaultError")
+        patched_client.Fault(1, "MockFaultError")
     )
     with self.assertRaises(supervisor.SupervisorException):
       self.supervisor_client.status(supervisor_config.ProcessList.CAMERA)
@@ -89,7 +89,7 @@ class TestSupervisorClient(TestCase):
 
   def test_start_time_error(self) -> None:
     self._mock_server().supervisor.getProcessInfo.side_effect = (
-        xmlrpc.client.Fault(1, "MockFaultError")
+        patched_client.Fault(1, "MockFaultError")
     )
     with self.assertRaises(supervisor.SupervisorException):
       self.supervisor_client.start_time(
