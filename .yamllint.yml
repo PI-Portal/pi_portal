@@ -1,9 +1,12 @@
 ---
 
 yaml-files:
-  - '*.yaml'
-  - '*.yml'
+  - '**/*.yaml'
+  - '**/*.yml'
   - '.yamllint'
+
+ignore:
+  - "packaging/debian/build*"
 
 rules:
   braces: enable

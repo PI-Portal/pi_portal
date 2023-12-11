@@ -13,7 +13,6 @@ LABEL project="pi_portal"
 
 ENV PYTHONUNBUFFERED 1
 ENV PROJECT_NAME "pi_portal"
-ENV PIB_CONFIG_FILE_LOCATION "/app/assets/cli.yml"
 
 ENV MINIMUM_POETRY=">=1.2.0"
 
@@ -54,7 +53,7 @@ RUN pip install --no-cache-dir "poetry${MINIMUM_POETRY}"
 
 # ======================================================
 
-FROM poetry as development
+FROM poetry as pi_portal
 
 ARG BUILD_ARG_PLATFORM
 
@@ -79,32 +78,38 @@ RUN curl "https://raw.githubusercontent.com/logzio/public-certificates/master/AA
 # Add user to sudoers, and make the default user
 RUN echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
+COPY assets/dev /usr/local/bin/dev
+RUN chmod +x /usr/local/bin/dev         && \
+    chown user:user /usr/local/bin/dev
+
 # Set the runtime user
+USER user
+
+# ======================================================
+
+FROM pi_portal as development
+
+
 USER user
 
 # Copy the poetry configuration
 COPY poetry.lock pyproject.toml /app/
 
 # Cache Dependencies (amd64)
-RUN if [ "${BUILD_ARG_PLATFORM}" = "amd64" ]; then                        \
-      poetry install --no-root -E docs;                                   \
-    fi
+RUN poetry install --no-root
 
 # Copy the Codebase
 COPY . /app
 
-# Create A Symlink For the Bash Customizations
-RUN ln -sf /app/assets/.bash_customize /home/user/.bash_customize
+# Install bash customizations
+RUN ln -sf /app/assets/bash/.bash* /home/user
 
-# Enforce sane git permissions
+# Setup 'dev' command shim
 USER root
-RUN chown -R user:user /app
+RUN ln -sf /app/assets/dev /usr/local/bin/dev
 USER user
 
-# Install The App
-RUN if [ "${BUILD_ARG_PLATFORM}" = "amd64" ]; then                         \
-      poetry install -E docs                                            && \
-      poetry run dev setup-bash;                                           \
-    fi
+# Install the project
+RUN poetry install
 
 CMD ["./pi_portal/container_init.sh"]

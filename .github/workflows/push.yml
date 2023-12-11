@@ -52,27 +52,28 @@ jobs:
 
       - name: Build -- Run TOML Linter
         run: |
-          docker-compose exec -T "${PROJECT_NAME}" tomll /app/pyproject.toml
+          docker compose exec -T "${PROJECT_NAME}" tomll /app/pyproject.toml
 
       - name: Build -- Run Linter
         run: |
-          docker-compose exec -T "${PROJECT_NAME}" dev lint
+          docker compose exec -T "${PROJECT_NAME}" dev lint
 
       - name: Build -- Run Sec Test
         run: |
-          docker-compose exec -T "${PROJECT_NAME}" dev sectest
+          docker compose exec -T "${PROJECT_NAME}" dev sectest
 
       - name: Build -- Run Unit Tests
         run: |
-          docker-compose exec -T "${PROJECT_NAME}" dev coverage
+          docker compose exec -T "${PROJECT_NAME}" dev coverage
 
       - name: Build -- Run Type Validation
         run: |
-          docker-compose exec -T "${PROJECT_NAME}" dev types
+          docker compose exec -T "${PROJECT_NAME}" dev types
 
       - name: Build -- Run Release Validation
         run: |
-          docker-compose exec -T "${PROJECT_NAME}" ./scripts/release.sh
+          docker compose exec -T "${PROJECT_NAME}" dev fmt
+          git diff --exit-code
 
       - name: Build -- Report Job Status (Success)
         if: ${{ env.VERBOSE_NOTIFICATIONS  == '1' }}
@@ -143,7 +144,7 @@ jobs:
       - name: Create Release -- Build Wheel
         if: contains(github.ref, '/tags/v')
         run: |
-          docker-compose exec -T "${PROJECT_NAME}" dev build-wheel
+          docker compose exec -T "${PROJECT_NAME}" dev build-wheel
 
       - name: Create Release -- Identify Wheel
         if: contains(github.ref, '/tags/v')
