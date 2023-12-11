@@ -32,7 +32,7 @@ class TestSlackCLICommands(TestCase):
     self.slack_client = mock.Mock()
     self.mock_handle = mock.Mock()
     self.cli = handler.SlackCLICommandHandler(bot=self.slack_client)
-    self.cli.handle = self.mock_handle  # type: ignore[assignment]
+    self.cli.handle = self.mock_handle  # type: ignore[method-assign]
 
   def test_id_command(self) -> None:
     self.cli.command_id()
