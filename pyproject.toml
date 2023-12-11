@@ -116,7 +116,6 @@
     [tool.pylint.basic]
       argument-rgx = "[a-z_][a-z0-9_]{1,40}$"
       attr-rgx = "[a-z_][a-z0-9_]{2,30}$"
-      bad-functions = "map,filter,apply,input"
       bad-names = "foo,bar,baz,toto,tutu,tata"
       class-attribute-rgx = "([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$"
       class-rgx = "[A-Z_][a-zA-Z0-9]+$"
@@ -128,12 +127,10 @@
       method-rgx = "^[A-Za-z_][A-Za-z0-9_]{2,40}$|^test_[A-Za-z_][A-Za-z0-9_]{2,70}$"
       module-rgx = "(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$"
       no-docstring-rgx = ".*"
-      required-attributes = []
       variable-rgx = "[a-z_][a-z0-9_]{2,30}$|^pk$"
 
     [tool.pylint.classes]
       defining-attr-methods = "__init__,__new__,setUp"
-      ignore-iface-methods = "isImplementedBy,deferred,extends,names,namesAndDescriptions,queryDescriptionFor,getBases,getDescriptionFor,getDoc,getName,getTaggedValue,getTaggedValueTags,isEqualOrExtendedBy,setTaggedValue,isImplementedByInstancesOf,adaptWith,is_implemented_by"
       valid-classmethod-first-arg = "cls"
       valid-metaclass-classmethod-first-arg = "mcs"
 
@@ -149,14 +146,13 @@
       min-public-methods = 2
 
     [tool.pylint.exceptions]
-      overgeneral-exceptions = "Exception"
+      overgeneral-exceptions = "builtins.Exception"
 
     [tool.pylint.format]
       ignore-long-lines = "^\\s*(# )?<?https?://\\S+>?$"
       indent-string = "  "
       max-line-length = 80
       max-module-lines = 1000
-      no-space-check = "trailing-comma,dict-separator"
       single-line-if-stmt = "no"
 
     [tool.pylint.imports]
@@ -170,18 +166,15 @@
       ignore-patterns = ".*_pb2.py"
       load-plugins = ""
       persistent = "yes"
-      profile = "no"
 
     [tool.pylint.message_control]
-      disable = "locally-disabled,fixme,too-few-public-methods,bad-continuation,C0411,E5901,E1101,R0201"
+      disable = "locally-disabled,fixme,too-few-public-methods,C0411,E1101"
 
     [tool.pylint.miscellaneous]
       notes = "FIXME,XXX,TODO"
 
     [tool.pylint.reports]
-      comment = "no"
       evaluation = "10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)"
-      files-output = "no"
       output-format = "text"
       reports = "no"
 
@@ -195,7 +188,6 @@
       generated-members = "REQUEST,acl_users,aq_parent"
       ignore-mixin-members = "yes"
       ignored-classes = "SQLObject"
-      zope = "no"
 
     [tool.pylint.variables]
       additional-builtins = ""
