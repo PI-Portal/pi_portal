@@ -79,31 +79,39 @@
         platform = "linux"
         version = "^4.0.1"
 
-    [tool.poetry.dev-dependencies]
-      bandit = "^1.7.4"
-      commitizen = "^2.37.0"
-      coverage = "^7.0.0"
-      darglint2 = "^1.8.2"
-      freezegun = "^1.2.0"
-      isort = "^5.10.1"
-      mypy = "^1.7.1"
-      pydocstyle = "^6.3.0"
-      pylint = "^3.0.3"
-      pytest = "^7.2.0"
-      pytest-pylint = "^0.21.0"
-      safety = "^2.3.1"
-      sphinx = "^7.0.0"
-      sphinx-autodoc-typehints = "^1.25.0"
-      sphinx-autopackagesummary = "^1.3"
-      sphinx-click = "^5.1.0"
-      sphinx-jsonschema = "^1.19.1"
-      types-boto3 = "^1.0.2"
-      types-freezegun = "^1.1.10"
-      types-pkg-resources = "^0.1.3"
-      types-requests = "^2.31.0"
-      wheel = "^0.42.0"
-      yamllint = "^1.33.0"
-      yapf = "^0.40.2"
+    [tool.poetry.group]
+
+      [tool.poetry.group.dev]
+
+        [tool.poetry.group.dev.dependencies]
+          bandit = "^1.7.4"
+          commitizen = "^3.0.0"
+          coverage = "^7.0.0"
+          darglint2 = "^1.8.2"
+          freezegun = "^1.2.0"
+          isort = "^5.10.1"
+          mypy = "^1.7.1"
+          pydocstyle = "^6.3.0"
+          pylint = "^3.0.3"
+          pytest = "^7.2.0"
+          pytest-pylint = "^0.21.0"
+          safety = "^2.3.1"
+          types-boto3 = "^1.0.2"
+          types-freezegun = "^1.1.10"
+          types-pkg-resources = "^0.1.3"
+          types-requests = "^2.31.0"
+          wheel = "^0.42.0"
+          yamllint = "^1.33.0"
+          yapf = "^0.40.2"
+
+      [tool.poetry.group.docs]
+
+        [tool.poetry.group.docs.dependencies]
+          sphinx = "^7.0.0"
+          sphinx-autodoc-typehints = "^1.25.0"
+          sphinx-autopackagesummary = "^1.3"
+          sphinx-click = "^5.1.0"
+          sphinx-jsonschema = "^1.19.1"
 
     [[tool.poetry.packages]]
       include = "pi_portal"
