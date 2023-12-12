@@ -1,3 +1,3 @@
-"""Configuration Modules for the pi_portal cli."""
+"""Pi Portal configuration modules."""
 
 from . import state, user_config

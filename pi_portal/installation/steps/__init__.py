@@ -1,4 +1,4 @@
-"""Steps for the installation process."""
+"""Step classes for the installation process."""
 
 from .step_ensure_root import StepEnsureRoot
 from .step_initialize_logging import StepInitializeLogging
