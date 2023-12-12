@@ -1,12 +1,12 @@
-# Quick Start Guide
-
-## pi-portal
+## pi_portal
 
 Raspberry PI Door Logger
 
 Put a contact switch on a door and generate logs, alarms and notifications with your Raspberry PI.  Connect a WebCam and view snapshots and motion activated videos over Slack.  Add DHT11 temperature sensors and track temperature and humidity fluctuations over time.
 
-This is a hobby solution, and no warranty or guarantees of any kind are made.  Please use at your own risk.
+This is a hobby solution, and no warranty or guarantees of any kind are made.  
+
+Please use at your own risk.
 
 [Project Documentation](https://pi-portal.readthedocs.io/)
 

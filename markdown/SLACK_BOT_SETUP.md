@@ -3,7 +3,7 @@
 You'll need to create a Slack App in order to use pi_portal, fortunately it's not that difficult.
 
 Step 1: Initial App Creation
-- Head to: https://api.slack.com/apps/
+- Head to: [https://api.slack.com/apps/](https://api.slack.com/apps/)
 - Click on "Create New App".
 - Choose "From Scratch".
 - Give your app an appropriate name, we're partial to "pi_portal".

@@ -1,4 +1,4 @@
-Configuration
-=============
+Configuration JSON Schema
+=========================
 
 .. jsonschema:: ../../../pi_portal/schema/config_schema.json

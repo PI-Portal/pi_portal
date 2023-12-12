@@ -1,8 +1,6 @@
 #############################
-pi_portal
+Codebase Reference
 #############################
-
- Raspberry PI Door Logger
 
  .. autopackagesummary:: pi_portal
     :toctree: _autosummary

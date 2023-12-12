@@ -107,6 +107,7 @@
       [tool.poetry.group.docs]
 
         [tool.poetry.group.docs.dependencies]
+          myst-parser = "^2.0.0"
           sphinx = "^7.0.0"
           sphinx-autodoc-typehints = "^1.25.0"
           sphinx-autopackagesummary = "^1.3"
