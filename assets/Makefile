@@ -115,7 +115,7 @@ security-bandit:
 
 security-safety:
 	@echo "Checking all dependencies ..."
-	@$(call p, "pip freeze | safety check --stdin -i 44715 -i 44716 -i 44717")
+	@$(call p, "pip freeze | safety check --stdin")
 	@echo "Done."
 
 test:
