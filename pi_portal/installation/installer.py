@@ -1,4 +1,4 @@
-"""Installs the end user's pi_portal configuration."""
+"""Installs the end user's Pi Portal configuration."""
 
 import logging
 from typing import List
