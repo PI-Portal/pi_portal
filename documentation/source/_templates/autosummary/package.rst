@@ -7,3 +7,4 @@
    .. autopackagesummary:: {{ fullname }}
       :toctree: .
       :template: autosummary/package.rst
+

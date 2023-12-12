@@ -2,13 +2,13 @@ pi-portal's documentation
 =============================================
 
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 3
    :caption: Contents:
 .. toctree::
    :glob:
 
    project/*
-   codebase/*
+   codebase/pi_portal/pi_portal
 
 
 Indices and tables
