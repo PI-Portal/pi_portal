@@ -1,4 +1,5 @@
 """Raspberry PI GPIO compatibility shim."""
+
 from .patch import patch_module
 
 patch_module("adafruit_dht")

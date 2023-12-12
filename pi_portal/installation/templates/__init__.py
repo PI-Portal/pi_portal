@@ -1,4 +1,4 @@
-"""Templates for the pi_portal installation process."""
+"""Templates for the Pi Portal installation process."""
 
 from typing import List
 
