@@ -5,6 +5,9 @@
 
 [tool]
 
+  [tool.bandit]
+    skips = ["B101"]
+
   [tool.coverage]
 
     [tool.coverage.report]
