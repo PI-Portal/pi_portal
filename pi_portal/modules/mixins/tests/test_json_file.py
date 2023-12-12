@@ -15,9 +15,7 @@ class JSONFileReaderTest(TestCase):
 
   def setUp(self) -> None:
     self.instance = json_file.JSONFileReader()
-    self.mock_object = {
-        "mock": "object"
-    }
+    self.mock_object = {"mock": "object"}
     self.mock_json = json.dumps(self.mock_object)
     self.mock_context = mock.Mock()
 

@@ -18,7 +18,8 @@ class ProcessCommandBaseTestHarness(SimpleProcessCommandBaseTestHarness):
   expected_process_name: supervisor_config.ProcessList
   test_class: Union[
       Type[process_management_command.SlackProcessManagementCommandBase],
-      Type[process_status_command.SlackProcessStatusCommandBase],]
+      Type[process_status_command.SlackProcessStatusCommandBase],
+  ]
 
   def _mocked_process_command(self) -> Any:
     return getattr(self._mocked_process(), self.test_class.process_command)

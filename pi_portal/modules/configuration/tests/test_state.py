@@ -42,9 +42,7 @@ class TestRunningConfig(TestCase):
 
   @mock.patch(state.__name__ + ".UserConfiguration")
   def test_load_config__default(self, m_user_config: mock.Mock) -> None:
-    mock_config = {
-        "a": "b"
-    }
+    mock_config = {"a": "b"}
     m_user_config.return_value.user_config = mock_config
 
     self.instance.load()
@@ -61,9 +59,7 @@ class TestRunningConfig(TestCase):
   def test_load_config__user_config_file(
       self, m_user_config: mock.Mock
   ) -> None:
-    mock_config = {
-        "a": "b"
-    }
+    mock_config = {"a": "b"}
     m_user_config.return_value.user_config = mock_config
 
     self.instance.load("mock_file_path.json")

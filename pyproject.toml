@@ -97,14 +97,13 @@
       sphinx-autopackagesummary = "^1.3"
       sphinx-click = "^5.1.0"
       sphinx-jsonschema = "^1.19.1"
-      toml = "^0.10.2"
       types-boto3 = "^1.0.2"
       types-freezegun = "^1.1.10"
       types-pkg-resources = "^0.1.3"
       types-requests = "^2.31.0"
       wheel = "^0.42.0"
       yamllint = "^1.33.0"
-      yapf = "^0.32.0"
+      yapf = "^0.40.2"
 
     [[tool.poetry.packages]]
       include = "pi_portal"
@@ -200,3 +199,11 @@
 
     [tool.pytest.ini_options]
       testpaths = ["pi_portal"]
+
+  [tool.yapf]
+    align_closing_bracket_with_visual_indent = false
+    based_on_style = "google"
+    dedent_closing_brackets = true
+    force_multiline_dict = false
+    indent_width = 2
+    split_before_logical_operator = true
