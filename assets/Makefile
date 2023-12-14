@@ -74,43 +74,40 @@ coverage:
 
 format-python:
 	@echo "Formatting all Python files ..."
-	@$(call p+, "yapf -i --recursive --verbose --parallel", "yapf -i --recursive --verbose --parallel .")
-	@$(call p+, "isort")
+	@$(call p+, "pre-commit run yapf --verbose --files", "pre-commit run yapf  --verbose --all-files")
+	@$(call p+, "pre-commit run isort --verbose --files", "pre-commit run isort --verbose --all-files")
 	@echo "Done."
 
 format-toml:
 	@echo "Formatting all TOML files ..."
-	@echo "COMMAND: tomll **/*.toml"
-	@find . -type f -name "*.toml" -exec tomll {} \;
+	@$(call p+, "pre-commit run format-toml --verbose --files", "pre-commit run format-toml --verbose --all-files")
 	@echo "Done."
 
 lint-docstrings:
 	@echo "Checking docstrings ..."
-	@$(call p+, "darglint2")
-	@$(call p+, "pydocstyle")
+	@$(call p+, "pre-commit run darglint2 --verbose --files", "pre-commit run darglint2 --verbose --all-files")
+	@$(call p+, "pre-commit run pydocstyle --verbose --files", "pre-commit run pydocstyle --verbose --all-files")
 	@echo "Done."
 
 lint-shell:
 	@echo "Checking all shell scripts ..."
-	@echo "COMMAND: shellcheck **/*.sh"
-	@shellcheck **/*.sh
-
+	@$(call p+, "pre-commit run lint-shell --verbose --files", "pre-commit run lint-shell --verbose --all-files")
 	@echo "Done."
 
 lint-python:
 	@echo "Checking Python files ..."
-	@$(call p+, "isort --check-only --diff")
-	@$(call p+, "pylint", "pytest --pylint --pylint-jobs=2 ${PROJECT_NAME}")
+	@$(call p+, "pre-commit run isort --verbose --files", "pre-commit run isort --verbose --all-files")
+	@$(call p+, "pylint", "pytest --pylint -m pylint ${PROJECT_NAME}")
 	@echo "Done."
 
 lint-yaml:
 	@echo "Checking all YAML files ..."
-	@$(call p, "yamllint .")
+	@$(call p, "pre-commit run yamllint --verbose --all-files")
 	@echo "Done."
 
 security-bandit:
 	@echo "Checking all security code practices ..."
-	@$(call p, "bandit -c pyproject.toml -r $(PROJECT_NAME) -x tests")
+	@$(call p, "pre-commit run bandit --verbose --all-files")
 	@echo "Done."
 
 security-safety:

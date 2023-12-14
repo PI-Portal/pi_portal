@@ -62,10 +62,8 @@ RUN apt-get install -y              \
     --no-install-recommends         \
     curl                            \
     fish                            \
-    golang-github-pelletier-go-toml \
     jq                              \
     openssh-client                  \
-    shellcheck                      \
     sudo                            \
     tig                             \
     vim

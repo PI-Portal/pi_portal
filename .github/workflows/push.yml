@@ -50,10 +50,6 @@ jobs:
         run: |
           source .github/scripts/build_container.sh
 
-      - name: Build -- Run TOML Linter
-        run: |
-          docker compose exec -T "${PROJECT_NAME}" tomll /app/pyproject.toml
-
       - name: Build -- Run Linter
         run: |
           docker compose exec -T "${PROJECT_NAME}" dev lint

@@ -2,4 +2,8 @@
 
 import datetime
 
-def naturaldelta(timedelta: datetime.timedelta) -> str: ...
+# isort: off
+
+
+def naturaldelta(timedelta: datetime.timedelta) -> str:
+  ...
