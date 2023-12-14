@@ -1,14 +1,14 @@
 ---
-version: "3"
+version: "3.8"
 
 services:
   pi_portal:
     build:
       args:
+        BUILD_ARG_CONTAINER_UID: "${DOCKER_USER_UID:-1000}"
+        BUILD_ARG_CONTAINER_GID: "${DOCKER_USER_UID:-1000}"
         BUILD_ARG_PIP_INDEX_URL: "https://pypi.org/simple"
         BUILD_ARG_PLATFORM: "amd64"
-        BUILD_ARG_CONTAINER_UID: "${DOCKER_USER_UID}"
-        BUILD_ARG_CONTAINER_GID: "${DOCKER_USER_UID}"
       context: .
       dockerfile: assets/Dockerfile
       target: development
@@ -17,6 +17,7 @@ services:
       - assets/local.env
     environment:
       ENVIRONMENT: "DEVELOPMENT"
+      PRE_COMMIT_OVERRIDE_DOCKER_HOST_PATH: "${PWD}"
     volumes:
       - ${HOME}/.ssh:/home/user/.ssh
       - ${HOME}/.gitconfig:/home/user/.gitconfig
