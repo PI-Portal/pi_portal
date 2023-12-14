@@ -82,7 +82,7 @@ One set of credentials will be used by PI Portal for video files, the other by [
 
 You can also configure [lifecycle rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html) for these buckets to control data retention.  (And it's definitely a good idea to ensure they are not publicly accessible!)  
 
-#### Logz IO Integration
+#### Logz.io Integration
 
 [This service](https://logz.io/) has a generous free tier that will allow you to search your logs, and do long term retention in the S3 bucket you created.
 You will need to know your accounts `log token`, (check the website on how to configure filebeat to find it.)

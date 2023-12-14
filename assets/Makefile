@@ -2,7 +2,7 @@
 
 SHELL := /bin/bash
 
-.PHONY: help fmt lint sectest build-docs build-wheel coverage format-python format-toml lint-markdown lint-docstrings lint-python lint-shell lint-workflows lint-yaml security-bandit security-safety test types
+.PHONY: help fmt lint sectest build-docs build-wheel coverage format-python format-toml lint-markdown lint-docstrings lint-python lint-shell lint-workflows lint-yaml security-bandit security-safety spelling-markdown test types
 
 export PROJECT_NAME = pi_portal
 export GIT_ROOT = $(shell git rev-parse --show-toplevel)
@@ -45,6 +45,7 @@ help:
 	@echo "  lint-yaml         to lint YAML files"
 	@echo "  security-bandit   to check security practices"
 	@echo "  security-safety   to check dependencies"
+	@echo "  spelling-markdown to spellcheck markdown files"
 	@echo "  test              to run tests"
 	@echo "  types             to check typing"
 
@@ -113,6 +114,11 @@ security-bandit:
 security-safety:
 	@echo "Checking all dependencies ..."
 	@$(call p, "pip freeze | safety check --stdin")
+	@echo "Done."
+
+spelling-markdown:
+	@echo "Checking markdown spelling ..."
+	@$(call p, "pre-commit run spelling-markdown --verbose --all-files")
 	@echo "Done."
 
 test:
