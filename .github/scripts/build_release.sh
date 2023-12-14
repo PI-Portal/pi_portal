@@ -8,7 +8,7 @@ TESTING_IMAGE="debian:sid-slim"
 build_filebeat() {
  pushd packaging/filebeat > /dev/null
 
- docker-compose up
+ docker compose up
  echo "Filebeat has been built successfully!"
 
  popd > /dev/null
@@ -17,10 +17,10 @@ build_filebeat() {
 build_debian() {
   pushd packaging/debian > /dev/null
 
-  docker-compose build --build-arg BUILD_ARG_PYTHON_VERSION="${PYTHON_VERSION}" arm64-prebuild armv7-prebuild
-  docker-compose build arm64 armv7
+  docker compose build --build-arg BUILD_ARG_PYTHON_VERSION="${PYTHON_VERSION}" arm64-prebuild armv7-prebuild
+  docker compose build arm64 armv7
 
-  docker-compose up arm64 armv7
+  docker compose up arm64 armv7
 
   echo "Debian packages have been built successfully!"
 

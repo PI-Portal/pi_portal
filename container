@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 echo "Entering Development Container ..."
-docker-compose exec pi_portal bash
+docker compose exec pi_portal bash
