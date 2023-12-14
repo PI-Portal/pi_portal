@@ -7,8 +7,8 @@
 # -- Path setup --------------------------------------------------------------
 
 import os
-import sys
 import pathlib
+import sys
 
 os.environ["SPHINX"] = "1"
 
