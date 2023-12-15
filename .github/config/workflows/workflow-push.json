@@ -1,0 +1,13 @@
+{
+  "ci_commit_spelling_rev_range": "HEAD..06796ebbc3bbac11045ec0c6c507bdf5149a1a0c",
+  "ci_commitizen_rev_range": "HEAD",
+  "ci_concurrency_limit": 4,
+  "ci_extra_release_content": [
+    "## Customizable Text.",
+    "This message is appended to the changelog of your GitHub release."
+  ],
+  "ci_python_versions": ["3.8", "3.9", "3.10", "3.11"],
+  "ci_python_default_version": ["3.8"],
+  "ci_trufflehog_extra_scan_args": "--debug",
+  "ci_verbose_notifications": false
+}

@@ -53,7 +53,7 @@ help:
 	@echo "  types             to check typing"
 
 fmt: format-python format-shell format-toml
-lint: lint-docstrings lint-shell lint-yaml lint-python
+lint: lint-docstrings lint-shell lint-python lint-yaml
 md: lint-markdown spelling-markdown
 sectest: security-bandit security-leaks security-safety
 
