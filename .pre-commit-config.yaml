@@ -76,6 +76,8 @@ repos:
         args:
           - "-c"
           - ".markdownlint.yml"
+          - "--ignore"
+          - "documentation/source"
       - id: lint-shell
         args:
           - "--color=always"

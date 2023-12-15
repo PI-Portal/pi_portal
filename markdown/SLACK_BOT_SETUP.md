@@ -11,7 +11,7 @@ Step 1: Initial App Creation
 - Press the "Create App" button.
 
 Step 2: The "Signing Secret"
-- You'll be redirected to your app's "Basic Configuration" screen. 
+- You'll be redirected to your app's "Basic Configuration" screen.
 - Scroll down and find the "Signing Secret".
 - Copy and paste it into your pi_portal configuration for the key marked "SLACK_APP_SIGNING_SECRET".
 
@@ -42,7 +42,7 @@ Step 6: Install the App to your Workspace
 - Press the button marked "Install to Workspace".
 - Confirm the permissions, and then press the "Allow" button.
 - You'll receive a "Bot User OAuth Token" if successful.
-- Copy and paste it into your pi_portal configuration for the key marked "SLACK_BOT_TOKEN". 
+- Copy and paste it into your pi_portal configuration for the key marked "SLACK_BOT_TOKEN".
 
 Step 7: Invite Your Bot to the Channel you wish to use
 - Go to the Slack app proper, and select "View Channel Details" on the channel you wish to add the bot too.

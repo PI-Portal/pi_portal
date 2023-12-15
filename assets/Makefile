@@ -2,7 +2,7 @@
 
 SHELL := /bin/bash
 
-.PHONY: help fmt lint sectest build-docs build-wheel coverage format-python format-toml lint-markdown lint-docstrings lint-python lint-shell lint-workflows lint-yaml security-bandit security-safety spelling-markdown test types
+.PHONY: help fmt lint md sectest build-docs build-wheel coverage format-python format-toml lint-markdown lint-docstrings lint-python lint-shell lint-workflows lint-yaml security-bandit security-safety spelling-markdown test types
 
 export PROJECT_NAME = pi_portal
 export GIT_ROOT = $(shell git rev-parse --show-toplevel)
@@ -40,6 +40,7 @@ help:
 	@echo "  format-toml       to format TOML files"
 	@echo "  lint-docstrings   to lint docstrings"
 	@echo "  lint-shell        to lint shell scripts"
+	@echo "  lint-markdown     to lint markdown files"
 	@echo "  lint-python       to lint Python files"
 	@echo "  lint-workflows    to lint all files"
 	@echo "  lint-yaml         to lint YAML files"
@@ -51,6 +52,7 @@ help:
 
 fmt: format-python format-toml
 lint: lint-docstrings lint-shell lint-yaml lint-python
+md: lint-markdown spelling-markdown
 sectest: security-bandit security-safety
 
 command:
@@ -88,6 +90,11 @@ lint-docstrings:
 	@echo "Checking docstrings ..."
 	@$(call p+, "pre-commit run darglint2 --verbose --files", "pre-commit run darglint2 --verbose --all-files")
 	@$(call p+, "pre-commit run pydocstyle --verbose --files", "pre-commit run pydocstyle --verbose --all-files")
+	@echo "Done."
+
+lint-markdown:
+	@echo "Checking markdown files ..."
+	@$(call p+, "pre-commit run lint-markdown --verbose --files", "pre-commit run lint-markdown --verbose --all-files")
 	@echo "Done."
 
 lint-shell:
