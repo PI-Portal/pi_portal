@@ -62,7 +62,7 @@ repos:
         files: "^pi_portal/.*test.*\\.py$"
         stages: [pre-commit]
   - repo: https://github.com/cicd-tools-org/pre-commit.git
-    rev: 0.3.0
+    rev: 0.4.0
     hooks:
       - id: format-shell
         args:
@@ -71,6 +71,7 @@ repos:
           - "-ci"
           - "-sr"
       - id: format-toml
+      - id: lint-dockerfile
       - id: lint-github-workflow-header
       - id: lint-github-workflow
       - id: lint-markdown

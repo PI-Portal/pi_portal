@@ -90,6 +90,18 @@ jobs:
       PRE_COMMAND: bash .github/scripts/job-40-prebuild.sh "${{ matrix.python-version }}"
       VERBOSE_NOTIFICATIONS: ${{ fromJSON(needs.configuration.outputs.JSON_FILE_DATA).ci_verbose_notifications }}
 
+  dockerfile_lint:
+    needs: [configuration]
+    secrets:
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    uses: cicd-tools-org/cicd-tools/.github/workflows/job-80-poetry-precommit_commit_stage_hook.yml@master
+    with:
+      CONCURRENCY: ${{ fromJSON(needs.configuration.outputs.JSON_FILE_DATA).ci_concurrency_limit }}
+      PRECOMMIT_HOOK_ID: "lint-dockerfile"
+      PRECOMMIT_HOOK_NAME: "Dockerfile Linting"
+      PYTHON_VERSIONS: ${{ toJSON(fromJSON(needs.configuration.outputs.JSON_FILE_DATA).ci_python_default_version) }}
+      VERBOSE_NOTIFICATIONS: ${{ fromJSON(needs.configuration.outputs.JSON_FILE_DATA).ci_verbose_notifications }}
+
   json_schema_lint:
     needs: [configuration]
     secrets:
@@ -160,7 +172,7 @@ jobs:
   create_release:
     permissions:
       contents: write
-    needs: [commit_lint, commit_spell_check, configuration, container, json_schema_lint, markdown_links, markdown_lint, markdown_spelling, pre-commit_hooks, security, start]
+    needs: [commit_lint, commit_spell_check, configuration, container, dockerfile_lint, json_schema_lint, markdown_links, markdown_lint, markdown_spelling, pre-commit_hooks, security, start]
     secrets:
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
     uses: cicd-tools-org/cicd-tools/.github/workflows/job-99-poetry-create_release.yml@master
