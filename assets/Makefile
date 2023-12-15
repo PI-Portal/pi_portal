@@ -2,7 +2,7 @@
 
 SHELL := /bin/bash
 
-.PHONY: help fmt lint md sectest build-docs build-wheel coverage format-python format-toml lint-markdown lint-docstrings lint-python lint-shell lint-workflows lint-yaml security-bandit security-safety spelling-markdown test types
+.PHONY: help fmt lint md sectest build-docs build-wheel coverage format-python format-shell format-toml lint-markdown lint-docstrings lint-python lint-shell lint-workflows lint-yaml security-bandit security-safety spelling-markdown test types
 
 export PROJECT_NAME = pi_portal
 export GIT_ROOT = $(shell git rev-parse --show-toplevel)
@@ -37,6 +37,7 @@ help:
 	@echo "  build-wheel       to build the wheel"
 	@echo "  coverage          to run coverage"
 	@echo "  format-python     to format Python files"
+	@echo "  format-shell      to format shell scripts"
 	@echo "  format-toml       to format TOML files"
 	@echo "  lint-docstrings   to lint docstrings"
 	@echo "  lint-shell        to lint shell scripts"
@@ -50,7 +51,7 @@ help:
 	@echo "  test              to run tests"
 	@echo "  types             to check typing"
 
-fmt: format-python format-toml
+fmt: format-python format-shell format-toml
 lint: lint-docstrings lint-shell lint-python lint-yaml
 md: lint-markdown spelling-markdown
 sectest: security-bandit security-safety
@@ -79,6 +80,11 @@ format-python:
 	@echo "Formatting all Python files ..."
 	@$(call p+, "pre-commit run yapf --verbose --files", "pre-commit run yapf  --verbose --all-files")
 	@$(call p+, "pre-commit run isort --verbose --files", "pre-commit run isort --verbose --all-files")
+	@echo "Done."
+
+format-shell:
+	@echo "Formatting all shell scripts ..."
+	@$(call p+, "pre-commit run format-shell --verbose --files", "pre-commit run format-shell --verbose --all-files")
 	@echo "Done."
 
 format-toml:

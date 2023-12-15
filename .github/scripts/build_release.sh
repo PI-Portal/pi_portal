@@ -6,12 +6,12 @@ PYTHON_VERSION="3.9"
 TESTING_IMAGE="debian:sid-slim"
 
 build_filebeat() {
- pushd packaging/filebeat > /dev/null
+  pushd packaging/filebeat > /dev/null
 
- docker compose up
- echo "Filebeat has been built successfully!"
+  docker compose up
+  echo "Filebeat has been built successfully!"
 
- popd > /dev/null
+  popd > /dev/null
 }
 
 build_debian() {
@@ -31,11 +31,11 @@ test_debian_32() {
 
   docker rmi -f "${TESTING_IMAGE}" || true
 
-  docker run                                      \
-    --platform linux/arm/v7                       \
-    --rm                                          \
-    -it                                           \
-    -e PI_PORTAL_MOCK_GPIO=1                      \
+  docker run \
+    --platform linux/arm/v7 \
+    --rm \
+    -it \
+    -e PI_PORTAL_MOCK_GPIO=1 \
     -v "$(pwd)/packaging/debian/dist_armhf:/dist" \
     "${TESTING_IMAGE}" bash -c "
       cd /dist &&
@@ -51,11 +51,11 @@ test_debian_64() {
 
   docker rmi -f "${TESTING_IMAGE}" || true
 
-  docker run                                      \
-    --platform linux/arm64                        \
-    --rm                                          \
-    -it                                           \
-    -e PI_PORTAL_MOCK_GPIO=1                      \
+  docker run \
+    --platform linux/arm64 \
+    --rm \
+    -it \
+    -e PI_PORTAL_MOCK_GPIO=1 \
     -v "$(pwd)/packaging/debian/dist_arm64:/dist" \
     "${TESTING_IMAGE}" bash -c "
       cd /dist &&
@@ -78,4 +78,3 @@ main() {
 }
 
 main "$@"
-

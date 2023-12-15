@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 DEVELOPMENT() {
   # Support Docker-in-Docker
   sudo chmod g+rw /var/run/docker.sock
