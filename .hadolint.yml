@@ -1,9 +1,14 @@
 ---
-ignored: []
+ignored:
+  - DL3008
+  - DL3009
 trustedRegistries:
   - docker.io
+  - ghcr.io
 label-schema:
   maintainer: text
   environment: text
   project: text
+  org.opencontainers.image.source: text
+  org.opencontainers.image.description: text
 strict-labels: true
