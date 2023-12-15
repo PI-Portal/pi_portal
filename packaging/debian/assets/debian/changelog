@@ -1,4 +1,4 @@
-pi-portal (0.1-1) bookworm; urgency=low
+pi-portal ($PACKAGING_VERSION) $PACKAGING_DEBIAN_VERSION; urgency=low
 
   * Initial release.
 

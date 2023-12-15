@@ -149,16 +149,16 @@ documentation/source/codebase/pi_portal/_autosummary/
 # User Config Files
 local.config.json
 
-# Binaries
+# Filebeat
 packaging/filebeat/bin
+packaging/filebeat/dist
 
 # Debian
-packaging/debian/build_arm64
-packaging/debian/build_armhf
-packaging/debian/dist_arm64
-packaging/debian/dist_armhf
+packaging/debian/build_*
+packaging/debian/dist_*
+packaging/debian/result_*
 
-# Pre-Commit
+# Pre-Commit Cache
 .pre-commit/
 
 # CICD Tools

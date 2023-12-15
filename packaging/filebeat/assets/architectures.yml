@@ -1,0 +1,16 @@
+---
+armv6:
+  GOARCH: "arm"
+  GOARM: "6"
+  GOOS: "linux"
+  PLATFORM: "linux/arm/v6"
+armv7:
+  GOARCH: "arm"
+  GOARM: "7"
+  GOOS: "linux"
+  PLATFORM: "linux/arm/v7"
+arm64:
+  GOARCH: "arm64"
+  GOARM: ""
+  GOOS: "linux"
+  PLATFORM: "linux/arm64"

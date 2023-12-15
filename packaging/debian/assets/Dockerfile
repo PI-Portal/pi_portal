@@ -1,9 +1,10 @@
 ARG BUILD_ARG_PLATFORM
 
 # hadolint ignore=DL3006
-FROM ${BUILD_ARG_PLATFORM}-prebuild as development
+# Workaround for docker compose not using local images
+FROM debian-packaging:${BUILD_ARG_PLATFORM} as development
 
-ARG BUILD_ARG_PLATFORM
+ARG BUILD_ARG_FILEBEAT_PLATFORM
 
 LABEL environment="debian-packaging"
 LABEL maintainer="niall@niallbyrne.ca"
@@ -19,6 +20,10 @@ RUN apt-get install -y      \
     debhelper               \
     dh-python               \
     dh-virtualenv           \
+    fakeroot                \
+    libffi-dev              \
+    libgpiod2               \
+    libssl-dev              \
     pkg-config              \
     python3-all             \
     python3-dev             \
@@ -32,4 +37,4 @@ RUN useradd pi-portal       \
 
 USER user
 
-COPY packaging/filebeat/bin/filebeat-${BUILD_ARG_PLATFORM} /usr/bin/filebeat
+COPY packaging/filebeat/bin/filebeat-${BUILD_ARG_FILEBEAT_PLATFORM} /usr/bin/filebeat

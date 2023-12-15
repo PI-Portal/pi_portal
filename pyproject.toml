@@ -9,7 +9,7 @@ skips = ['B101']
 [tool.commitizen]
 bump_message = 'bump(RELEASE): $current_version → $new_version'
 pre_bump_hooks = ['.cicd-tools/boxes/bootstrap/commitizen/pre_bump.sh']
-version = '0.0.5'
+version = '1.0.0'
 version_files = ['pyproject.toml:version']
 version_provider = 'poetry'
 
@@ -58,7 +58,7 @@ license = 'MPL-2.0'
 name = 'pi_portal'
 readme = 'README.md'
 repository = 'https://github.com/pi-portal/pi_portal'
-version = '0.0.5'
+version = '1.0.0'
 
 [tool.poetry.dependencies]
 Cython = '<3'
@@ -96,6 +96,7 @@ pytest-pylint = '<0.19.0'
 safety = '^2.3.1'
 types-boto3 = '^1.0.2'
 types-freezegun = '^1.1.10'
+types-pyyaml = '^6.0.12.20240311'
 types-requests = '^2.31.0'
 types-setuptools = '^69.0.0.0'
 wheel = '^0.42.0'

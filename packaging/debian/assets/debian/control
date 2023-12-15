@@ -8,20 +8,23 @@ Build-Depends:
   debhelper (>= 10.0.0),
   dh-python,
   dh-virtualenv,
+  fakeroot,
   libffi-dev,
   libssl-dev,
+  pkg-config,
   python3-all,
+  python3-dev,
   python3-setuptools
 
 Package: pi-portal
-Architecture: $DEB_BUILD_ARCH
+Architecture: $DEB_ARCH
 Depends:
-  bash (>= 4.0.0) [$DEB_BUILD_ARCH],
-  ca-certificates [$DEB_BUILD_ARCH],
-  libgpiod2 (>= 1.0.0) [$DEB_BUILD_ARCH],
-  motion (>= 4.0.0) [$DEB_BUILD_ARCH],
-  python3-minimal (>= 3.11.0) [$DEB_BUILD_ARCH],
-  supervisor (>= 4.0.0) [$DEB_BUILD_ARCH],
+  bash (>= 4.0.0) [$DEB_ARCH],
+  ca-certificates [$DEB_ARCH],
+  libgpiod2 (>= 1.0.0) [$DEB_ARCH],
+  motion (>= 4.0.0) [$DEB_ARCH],
+  python$PACKAGING_PYTHON_VERSION-minimal [$DEB_ARCH],
+  supervisor (>= 4.0.0) [$DEB_ARCH],
   ${misc:Depends}
 Description:
     A Raspberry Pi door monitor that uses a magnetic switch to detect when a door

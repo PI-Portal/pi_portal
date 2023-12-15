@@ -1,6 +1,7 @@
 FROM --platform=${BUILDPLATFORM} debian:bookworm-slim AS filebeat-source
 
-ENV FILEBEAT_VERSION="8.11.0"
+ARG BUILD_ARG_FILEBEAT_VERSION
+
 ENV GOLANG_VERSION="1.21.5"
 ENV GO111MODULE="on"
 ENV GOPATH="/root/go"
@@ -15,6 +16,7 @@ LABEL org.opencontainers.image.description="Filebeat binary builder for pi_porta
 RUN apt-get update          && \
     apt-get install -y         \
     --no-install-recommends    \
+    ca-certificates            \
     curl                       \
     git
 
@@ -25,7 +27,7 @@ RUN curl -L "https://go.dev/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz" -o "go.ta
     tar -C /usr/local -xzf "go.tar.gz"                                                 && \
     rm go.tar.gz
 
-RUN git clone --depth 1 --branch "v${FILEBEAT_VERSION}" https://github.com/elastic/beats
+RUN git clone --depth 1 --branch "v${BUILD_ARG_FILEBEAT_VERSION}" https://github.com/elastic/beats
 WORKDIR /root/go/beats/filebeat
 
 RUN /usr/local/go/bin/go mod tidy

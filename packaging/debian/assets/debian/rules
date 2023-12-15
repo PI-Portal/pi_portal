@@ -21,7 +21,6 @@ binary:
 	mkdir -p                                                                                \
 	    $(SDIST_DIR)/bin                                                                    \
 	    $(SDIST_DIR)/certs
-	poetry build -f sdist
 	tar -x -C $(SDIST_DIR)                                                                  \
 	    --strip-components=1                                                                \
 	    --exclude '*.egg-info'                                                              \

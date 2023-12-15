@@ -1,0 +1,59 @@
+---
+version: "3.8"
+
+services:
+{% for name, keys in services.items() %}
+  {{ name }}-prebuild:
+    image: debian-packaging:{{ name }}
+    build:
+      args:
+        BUILD_ARG_CONTAINER_GID: "${DOCKER_USER_UID:-1000}"
+        BUILD_ARG_CONTAINER_UID: "${DOCKER_USER_UID:-1000}"
+        BUILD_ARG_DEBIAN_VERSION: "{{ keys['PACKAGING_DEBIAN_VERSION'] }}"
+        BUILD_ARG_PIP_INDEX_URL: "{{ keys['PIP_INDEX_URL'] }}"
+        BUILD_ARG_PYTHON_VERSION: "${BUILD_PYTHON_VERSION}"
+      context: ../..
+      dockerfile: ./assets/Dockerfile
+      target: pi_portal
+    platform: {{ keys['PLATFORM'] }}
+    volumes:
+      - ../..:/app
+{% endfor %}
+
+{%- for name, keys in services.items() %}
+  {{ name }}-package:
+    build:
+      args:
+        BUILD_ARG_FILEBEAT_PLATFORM: "{{ name }}"
+        BUILD_ARG_PIP_INDEX_URL: "{{ keys['PIP_INDEX_URL'] }}"
+        BUILD_ARG_PLATFORM: "{{ name }}"
+        BUILD_ARG_PYTHON_VERSION: "${BUILD_PYTHON_VERSION}"
+      context: ../..
+      dockerfile: ./packaging/debian/assets/Dockerfile
+    command: ./packaging/debian/assets/container_init.sh
+    platform: {{ keys['PLATFORM'] }}
+    env_file:
+      - ../../assets/local.env
+    environment:
+      DEB_ARCH: "{{ keys['DEB_ARCH'] }}"
+      ENVIRONMENT: "PACKAGE"
+      PACKAGING_ARCH: "{{ name }}"
+      PACKAGING_DEBIAN_VERSION: "{{ keys['PACKAGING_DEBIAN_VERSION'] }}"
+      PACKAGING_PYTHON_VERSION: "{{ keys['PACKAGING_PYTHON_VERSION'] }}"
+      PIP_INDEX_URL: "{{ keys['PIP_INDEX_URL'] }}"
+    volumes:
+      - ../..:/app
+{% endfor %}
+
+{%- for name, keys in services.items() %}
+  {{ name }}-install-test:
+    image: test:{{ keys['PACKAGING_DEBIAN_VERSION'] }}-{{ name }}
+    platform: {{ keys['PLATFORM'] }}
+    command: /mnt/assets/container_test.sh
+    environment:
+      PACKAGING_ARCH: "{{ name }}"
+      PACKAGING_DEBIAN_VERSION: "{{ keys['PACKAGING_DEBIAN_VERSION'] }}"
+      PI_PORTAL_MOCK_GPIO: "1"
+    volumes:
+      - .:/mnt
+{% endfor %}
