@@ -5,9 +5,17 @@ ENV GOLANG_VERSION="1.21.5"
 ENV GO111MODULE="on"
 ENV GOPATH="/root/go"
 
-RUN apt-get update      && \
-    apt-get install -y     \
-    curl                   \
+LABEL environment="filebeat-builder"
+LABEL maintainer="niall@niallbyrne.ca"
+LABEL project="pi_portal"
+
+LABEL org.opencontainers.image.source="https://github.com/pi-portal/pi_portal"
+LABEL org.opencontainers.image.description="Filebeat binary builder for pi_portal."
+
+RUN apt-get update          && \
+    apt-get install -y         \
+    --no-install-recommends    \
+    curl                       \
     git
 
 RUN mkdir -p /root/go
@@ -35,5 +43,12 @@ RUN env GOARCH="${BUILD_ARG_GOARCH}" GOARM="${BUILD_ARG_GOARM}" GOOS="${BUILD_AR
 # ======================================================
 
 from --platform=${BUILDPLATFORM} debian:bookworm-slim as filebeat-binary
+
+LABEL environment="filebeat"
+LABEL maintainer="niall@niallbyrne.ca"
+LABEL project="pi_portal"
+
+LABEL org.opencontainers.image.source="https://github.com/pi-portal/pi_portal"
+LABEL org.opencontainers.image.description="Distributable filebeat binary for pi_portal."
 
 COPY --from=filebeat-builder /root/go/beats/filebeat/filebeat /usr/bin/filebeat

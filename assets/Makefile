@@ -2,7 +2,7 @@
 
 SHELL := /bin/bash
 
-.PHONY: help fmt lint md sectest build-docs build-wheel coverage format-python format-shell format-toml lint-markdown lint-docstrings lint-python lint-shell lint-workflows lint-yaml security-bandit security-leaks security-safety spelling-markdown test types
+.PHONY: help fmt lint md sectest build-docs build-wheel coverage format-python format-shell format-toml lint-markdown lint-dockerfile lint-docstrings lint-python lint-shell lint-workflows lint-yaml security-bandit security-leaks security-safety spelling-markdown test types
 
 export PROJECT_NAME = pi_portal
 export GIT_ROOT = $(shell git rev-parse --show-toplevel)
@@ -39,6 +39,7 @@ help:
 	@echo "  format-python     to format Python files"
 	@echo "  format-shell      to format shell scripts"
 	@echo "  format-toml       to format TOML files"
+	@echo "  lint-dockerfile   to lint Dockerfiles"
 	@echo "  lint-docstrings   to lint docstrings"
 	@echo "  lint-shell        to lint shell scripts"
 	@echo "  lint-markdown     to lint markdown files"
@@ -52,6 +53,7 @@ help:
 	@echo "  test              to run tests"
 	@echo "  types             to check typing"
 
+docker: lint-dockerfile
 fmt: format-python format-shell format-toml
 lint: lint-docstrings lint-shell lint-python lint-yaml
 md: lint-markdown spelling-markdown
@@ -91,6 +93,11 @@ format-shell:
 format-toml:
 	@echo "Formatting all TOML files ..."
 	@$(call p+, "pre-commit run format-toml --verbose --files", "pre-commit run format-toml --verbose --all-files")
+	@echo "Done."
+
+lint-dockerfile:
+	@echo "Checking Dockerfiles ..."
+	@$(call p+, "pre-commit run lint-dockerfile --verbose --files", "pre-commit run lint-dockerfile --verbose --all-files")
 	@echo "Done."
 
 lint-docstrings:

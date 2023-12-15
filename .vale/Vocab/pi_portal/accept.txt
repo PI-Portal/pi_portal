@@ -17,6 +17,7 @@ docstrings
 ebay
 filebeat
 gpio
+hadolint
 ivars
 json|JSON
 logz.io
