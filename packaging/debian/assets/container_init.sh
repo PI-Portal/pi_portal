@@ -13,8 +13,8 @@ PACKAGE() {
     mkdir -p "${DEBPATH}"
     cp -vr "assets/debian" "${DEBPATH}"
     envsubst < assets/debian/control > "${DEBPATH}/debian/control"
-    pushd  "${DEBPATH}" || exit 127
-      dpkg-buildpackage --build=binary
+    pushd "${DEBPATH}" || exit 127
+    dpkg-buildpackage --build=binary
     popd || exit 127
 
     mkdir -p "${DISTPATH}"
