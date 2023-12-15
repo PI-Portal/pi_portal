@@ -179,7 +179,77 @@ jobs:
     with:
       JSON_APPENDED_CONTENT: ${{ toJSON(fromJSON(needs.configuration.outputs.JSON_FILE_DATA).ci_extra_release_content) }}
 
+  build_filebeat:
+    if: ${{ needs.create_release.outputs.RELEASE_CANDIDATE == 'true' }}
+    needs: [configuration, create_release]
+    secrets:
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    uses: cicd-tools-org/cicd-tools/.github/workflows/job-95-generic-build_artifact.yml@master
+    with:
+      ARTIFACT_NAME: build-stage-1-filebeat
+      ARTIFACT_FOLDERS: packaging/filebeat/dist
+      BUILD_COMMAND: bash .github/scripts/job-95-package-filebeat.sh
+      REQUIRES_BUILDX: true
+      REQUIRES_QEMU: true
+      WORKFLOW_NAME: "release"
+
+  build_pi_portal:
+    if: ${{ needs.create_release.outputs.RELEASE_CANDIDATE == 'true' }}
+    needs: [configuration, create_release]
+    secrets:
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    uses: cicd-tools-org/cicd-tools/.github/workflows/job-95-generic-build_artifact.yml@master
+    with:
+      ARTIFACT_NAME: build-stage-1-pi_portal
+      ARTIFACT_FOLDERS: dist
+      BUILD_COMMAND: poetry build
+      REQUIRES_POETRY: true
+      WORKFLOW_NAME: "release"
+
+  build_packages_for_debian:
+    if: ${{ needs.create_release.outputs.RELEASE_CANDIDATE == 'true' }}
+    needs: [build_filebeat, build_pi_portal, configuration, create_release]
+    secrets:
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    strategy:
+      fail-fast: true
+      matrix:
+        debian: ${{ fromJSON(needs.configuration.outputs.JSON_FILE_DATA).ci_debian_distributions }}
+      max-parallel: ${{ fromJSON(needs.configuration.outputs.JSON_FILE_DATA).ci_concurrency_limit }}
+    uses: cicd-tools-org/cicd-tools/.github/workflows/job-95-generic-build_artifact.yml@master
+    with:
+      ARTIFACT_NAME: build-stage-2-debian-${{ matrix.debian.name }}
+      ARTIFACT_FOLDERS: |
+        packaging/debian/dist
+      DEPENDENT_ARTIFACT_NAME_PATTERN: build-stage-1-*
+      BUILD_COMMAND: |
+        export PACKAGING_DEBIAN_VERSION="${{ matrix.debian.name }}"
+        export PACKAGING_PYTHON_VERSION="${{ matrix.debian.python_version }}"
+        bash .github/scripts/job-95-package-debian.sh
+      REQUIRES_BUILDX: true
+      REQUIRES_POETRY: true
+      REQUIRES_QEMU: true
+      VERBOSE_NOTIFICATIONS: true
+      WORKFLOW_NAME: "release"
+
+  attach_artifacts:
+    if: ${{ needs.create_release.outputs.RELEASE_CANDIDATE == 'true' }}
+    needs: [build_packages_for_debian, configuration, create_release]
+    secrets:
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    uses: cicd-tools-org/cicd-tools/.github/workflows/job-99-generic-attach_artifact_to_release.yml@master
+    with:
+      ARTIFACT_NAME_PATTERN: build-stage-*
+      RELEASE_CONTEXT: ${{ needs.create_release.outputs.RELEASE_CONTEXT }}
+      UPLOAD_FOLDERS: |
+        dist
+        packaging/filebeat/dist
+        packaging/debian/dist
+      VERBOSE_NOTIFICATIONS: true
+      WORKFLOW_NAME: "release"
+
   success:
+    if: ${{ needs.create_release.outputs.RELEASE_CANDIDATE != 'true' }}
     needs: [configuration, create_release]
     secrets:
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
@@ -187,3 +257,13 @@ jobs:
     with:
       NOTIFICATION_EMOJI: ":checkered_flag:"
       NOTIFICATION_MESSAGE: "Workflow has completed successfully!"
+
+  success_release:
+    needs: [configuration, attach_artifacts]
+    secrets:
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    uses: cicd-tools-org/cicd-tools/.github/workflows/job-00-generic-notification.yml@master
+    with:
+      NOTIFICATION_EMOJI: ":checkered_flag:"
+      NOTIFICATION_MESSAGE: "Release workflow has completed successfully!"
+      WORKFLOW_NAME: "release"

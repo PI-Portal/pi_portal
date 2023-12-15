@@ -7,8 +7,8 @@ services:
       args:
         BUILD_ARG_CONTAINER_UID: "${DOCKER_USER_UID:-1000}"
         BUILD_ARG_CONTAINER_GID: "${DOCKER_USER_UID:-1000}"
+        BUILD_ARG_DEBIAN_VERSION: "${DEBIAN_VERSION:-bookworm}"
         BUILD_ARG_PIP_INDEX_URL: "https://pypi.org/simple"
-        BUILD_ARG_PLATFORM: "amd64"
         BUILD_ARG_PYTHON_VERSION: "${BUILD_ARG_PYTHON_VERSION:-3.8}"
       context: .
       dockerfile: assets/Dockerfile

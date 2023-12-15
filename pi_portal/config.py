@@ -2,7 +2,10 @@
 
 import os
 
-PI_PORTAL_INSTALL_LOCATION = os.getenv("PI_PORTAL_INSTALL_LOCATION", ".")
+PI_PORTAL_INSTALL_LOCATION = os.getenv(
+    "PI_PORTAL_INSTALL_LOCATION",
+    "/opt/venvs/pi-portal",
+)
 
 FILE_BEAT_BINARY = os.getenv("PI_PORTAL_FILEBEAT_LOCATION", "/usr/bin/filebeat")
 FILE_BEAT_CONFIG = "/etc/filebeat/filebeat.yml"

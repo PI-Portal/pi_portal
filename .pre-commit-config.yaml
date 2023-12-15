@@ -117,13 +117,8 @@ repos:
         entry: poetry
         args:
           - "run"
-          - "pytest"
-          - "-m"
           - "pylint"
-          - "--pylint"
         files: "^.+\\.py$"
-        pass_filenames: false
-        require_serial: true
         stages: [pre-commit]
       - id: types
         name: "types"
