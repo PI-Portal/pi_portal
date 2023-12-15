@@ -109,13 +109,17 @@ repos:
         args:
           - "-i"
           - "--parallel"
+        types: [python]
         stages: [pre-commit]
+        require_serial: true
       - id: yapf
         name: "yapf"
         args:
           - "-i"
           - "--parallel"
+        types: [python]
         stages: [manual]
+        require_serial: true
   - repo: local
     hooks:
       - id: lint-python
@@ -124,13 +128,8 @@ repos:
         entry: poetry
         args:
           - "run"
-          - "pytest"
-          - "-m"
           - "pylint"
-          - "--pylint"
         files: "^.+\\.py$"
-        pass_filenames: false
-        require_serial: true
         stages: [pre-commit]
       - id: types
         name: "types"

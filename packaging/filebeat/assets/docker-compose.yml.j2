@@ -1,0 +1,20 @@
+---
+version: "3.8"
+
+services:
+{% for name, keys in services.items() %}
+  {{ name }}-filebeat:
+    image: debian-packaging:{{ name }}
+    build:
+      args:
+        BUILD_ARG_FILEBEAT_VERSION: "${FILEBEAT_VERSION}"
+        BUILD_ARG_GOARCH: "{{ keys['GOARCH'] }}"
+        BUILD_ARG_GOARM: "{{ keys['GOARM'] }}"
+        BUILD_ARG_GOOS: "{{ keys['GOOS'] }}"
+      context: .
+      dockerfile: ./assets/Dockerfile
+    command: cp /usr/bin/filebeat /mnt/bin/filebeat-{{ name }}
+    platform: {{ keys['PLATFORM'] }}
+    volumes:
+      - ./bin:/mnt/bin
+{% endfor %}

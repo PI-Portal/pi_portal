@@ -2,7 +2,7 @@
 
 SHELL := /bin/bash
 
-.PHONY: help fmt lint md sectest build-docs build-wheel coverage format-python format-shell format-toml lint-markdown lint-dockerfile lint-docstrings lint-python lint-shell lint-workflows lint-yaml security-bandit security-leaks security-safety spelling-markdown test types
+.PHONY: help fmt lint md sectest build-docs build-wheel coverage format-python format-shell format-toml lint-markdown lint-dockerfile lint-docstrings lint-python lint-shell lint-workflows lint-yaml release security-bandit security-leaks security-safety spelling-markdown test types
 
 export PROJECT_NAME = pi_portal
 export GIT_ROOT = $(shell git rev-parse --show-toplevel)
@@ -46,6 +46,7 @@ help:
 	@echo "  lint-python       to lint Python files"
 	@echo "  lint-workflows    to lint all files"
 	@echo "  lint-yaml         to lint YAML files"
+	@echo "  release           to cut a new release"
 	@echo "  security-bandit   to check security practices"
 	@echo "  security-leaks    to check for credential leaks"
 	@echo "  security-safety   to check dependencies"
@@ -125,6 +126,11 @@ lint-python:
 lint-yaml:
 	@echo "Checking all YAML files ..."
 	@$(call p, "pre-commit run yamllint --verbose --all-files")
+	@echo "Done."
+
+release:
+	@echo "Creating Release ..."
+	@$(call p, "cz bump -s")
 	@echo "Done."
 
 security-bandit:

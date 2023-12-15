@@ -7,6 +7,7 @@
     "ci_commit_spelling_rev_range",
     "ci_commitizen_rev_range",
     "ci_concurrency_limit",
+    "ci_debian_distributions",
     "ci_extra_release_content",
     "ci_python_versions",
     "ci_trufflehog_extra_scan_args",
@@ -27,6 +28,32 @@
       "description": "This controls the concurrency of each matrix instance in GitHub Actions.",
       "type": "number"
     },
+    "ci_debian_distributions": {
+      "description": "This array contains the list of Debian distributions that packages will be created for.",
+      "type": "array",
+      "uniqueItems": true,
+      "contains": {
+        "type": "object",
+        "description": "Debian distribution details.",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "python_version"
+        ],
+        "uniqueItems": true,
+        "properties": {
+          "name": {
+            "description": "The name of the Debian distribution.",
+            "type": "string"
+          },
+          "python_version": {
+            "description": "The version of Python shipped by this distribution.",
+            "pattern": "^3\\.[0-9]{1,2}$",
+            "type": "string"
+          }
+        }
+      }
+    },
     "ci_extra_release_content": {
       "description": "This controls the concurrency of each matrix instance in GitHub Actions.",
       "type": "array",
@@ -38,7 +65,7 @@
       "description": "This array contains the list of Python versions the workflow steps will execute on.",
       "type": "array",
       "contains": {
-        "pattern": "^3\\.[0-9]$",
+        "pattern": "^3\\.[0-9]{1,2}$",
         "type": "string"
       }
     },
@@ -46,7 +73,7 @@
       "description": "This array contains the list of Python versions the workflow steps will execute on.",
       "type": "array",
       "contains": {
-        "pattern": "^3\\.[0-9]$",
+        "pattern": "^3\\.[0-9]{1,2}$",
         "type": "string"
       },
       "maxItems": 1

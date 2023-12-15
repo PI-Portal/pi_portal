@@ -1,9 +1,9 @@
-ARG BUILD_ARG_PLATFORM="x86"
 ARG BUILD_ARG_PYTHON_VERSION=3.8
+ARG BUILD_ARG_DEBIAN_VERSION="bookworm"
 
 # Main build environment
 
-FROM python:${BUILD_ARG_PYTHON_VERSION}-slim AS base
+FROM python:${BUILD_ARG_PYTHON_VERSION}-${BUILD_ARG_DEBIAN_VERSION} AS base
 
 ARG BUILD_ARG_CONTAINER_GID=1000
 ARG BUILD_ARG_CONTAINER_UID=1000
@@ -18,7 +18,7 @@ LABEL org.opencontainers.image.description="Development environment for the pi_p
 ENV PYTHONUNBUFFERED 1
 ENV PROJECT_NAME "pi_portal"
 
-ENV MINIMUM_POETRY=">=1.2.0"
+ENV MINIMUM_POETRY=">=1.1.0"
 
 # Mark Container
 RUN echo "pi_portal" > /etc/container_release
@@ -62,8 +62,6 @@ RUN pip install --no-cache-dir "poetry${MINIMUM_POETRY}"
 # ======================================================
 
 FROM poetry as pi_portal
-
-ARG BUILD_ARG_PLATFORM
 
 # Install Dev Dependencies
 RUN apt-get install -y              \
