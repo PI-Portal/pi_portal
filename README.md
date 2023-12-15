@@ -1,4 +1,4 @@
-## pi_portal
+# pi_portal
 
 Raspberry PI Door Logger
 
@@ -10,10 +10,10 @@ Please use at your own risk.
 
 [Project Documentation](https://pi-portal.readthedocs.io/)
 
-### Master Branch Builds
+## Master Branch Builds
 - [![pi_portal Generic Push](https://github.com/pi-portal/pi_portal/workflows/pi_portal-push-generic/badge.svg?branch=master)](https://github.com/pi-portal/pi_portal/actions)
 
-### Production Branch Builds
+## Production Branch Builds
 - [![pi_portal Generic Push](https://github.com/pi-portal/pi_portal/workflows/pi_portal-push-generic/badge.svg?branch=production)](https://github.com/pi-portal/pi_portal/actions)
 
 ## Requirements
@@ -23,11 +23,11 @@ Please use at your own risk.
 1. A Raspberry Pi 3.
    - You'll need a Raspberry PI with Raspberry Pi OS or similar installed and reliable internet.
 2. Contact switches.
-   - These are available cheaply on ebay, AWS or at your local electronics store. 
+   - These are available cheaply on ebay, AWS or at your local electronics store.
    - Some examples can be found [here](https://www.burglaryalarmsystem.com/category/magnetic-contact.html).
 3. Temperature monitors.
    - Currently, only the DHT11 is supported, but it's very trivial to add support for the DHT22.
-   -  You can find out more about these sensors [here](https://learn.adafruit.com/dht).
+   - You can find out more about these sensors [here](https://learn.adafruit.com/dht).
 4. Wiring between the switches, temperature monitor and the Raspberry Pi.
    - I found female jumper cables made this pretty painless.
    - Edit the [config.json](./config.json) file to customize your pin outs and integrations.
@@ -87,7 +87,7 @@ You can also configure [lifecycle rules](https://docs.aws.amazon.com/AmazonS3/la
 [This service](https://logz.io/) has a generous free tier that will allow you to search your logs, and do long term retention in the S3 bucket you created.
 You will need to know your accounts `log token`, (check the website on how to configure filebeat to find it.)
 
-Enter your AWS credentials for the logging bucket here, to archive your logs. 
+Enter your AWS credentials for the logging bucket here, to archive your logs.
 
 PI Portal ships with a binary for [filebeat](https://www.elastic.co/beats/filebeat) that has compiled for the Raspberry PI 3.  This binary is responsible for streaming your logs to [logz.io](https://logz.io/).  
 
