@@ -2,7 +2,7 @@
 
 SHELL := /bin/bash
 
-.PHONY: help fmt lint md sectest build-docs build-wheel coverage format-python format-shell format-toml lint-markdown lint-docstrings lint-python lint-shell lint-workflows lint-yaml security-bandit security-safety spelling-markdown test types
+.PHONY: help fmt lint md sectest build-docs build-wheel coverage format-python format-shell format-toml lint-markdown lint-docstrings lint-python lint-shell lint-workflows lint-yaml security-bandit security-leaks security-safety spelling-markdown test types
 
 export PROJECT_NAME = pi_portal
 export GIT_ROOT = $(shell git rev-parse --show-toplevel)
@@ -46,6 +46,7 @@ help:
 	@echo "  lint-workflows    to lint all files"
 	@echo "  lint-yaml         to lint YAML files"
 	@echo "  security-bandit   to check security practices"
+	@echo "  security-leaks    to check for credential leaks"
 	@echo "  security-safety   to check dependencies"
 	@echo "  spelling-markdown to spellcheck markdown files"
 	@echo "  test              to run tests"
@@ -54,7 +55,7 @@ help:
 fmt: format-python format-shell format-toml
 lint: lint-docstrings lint-shell lint-python lint-yaml
 md: lint-markdown spelling-markdown
-sectest: security-bandit security-safety
+sectest: security-bandit security-leaks security-safety
 
 command:
 	@make $(MAKE_COMMAND)
@@ -122,6 +123,11 @@ lint-yaml:
 security-bandit:
 	@echo "Checking all security code practices ..."
 	@$(call p, "pre-commit run bandit --verbose --all-files")
+	@echo "Done."
+
+security-leaks:
+	@echo "Checking all security leaks ..."
+	@$(call p, "pre-commit run security-credentials --verbose --all-files")
 	@echo "Done."
 
 security-safety:
