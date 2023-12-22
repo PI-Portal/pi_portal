@@ -232,9 +232,30 @@ jobs:
       VERBOSE_NOTIFICATIONS: true
       WORKFLOW_NAME: "release"
 
-  attach_artifacts:
+  build_docker_images:
     if: ${{ needs.create_release.outputs.RELEASE_CANDIDATE == 'true' }}
     needs: [build_packages_for_debian, configuration, create_release]
+    secrets:
+      ENV_SECRET_1: ${{ secrets.GITHUB_TOKEN }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    uses: cicd-tools-org/cicd-tools/.github/workflows/job-95-generic-build_artifact.yml@master
+    with:
+      ARTIFACT_NAME: build-stage-3-docker-manifest
+      ARTIFACT_FOLDERS: |
+        packaging/docker/dist
+      DEPENDENT_ARTIFACT_NAME_PATTERN: build-stage-2-debian-bookworm
+      BUILD_COMMAND: |
+        export PACKAGING_IMAGE_NAME="pi-portal/pi-portal"
+        export PACKAGING_REGISTRY_NAME="ghcr.io"
+        bash .github/scripts/job-95-package-docker.sh
+      REQUIRES_BUILDX: true
+      REQUIRES_QEMU: true
+      VERBOSE_NOTIFICATIONS: true
+      WORKFLOW_NAME: "release"
+
+  attach_artifacts:
+    if: ${{ needs.create_release.outputs.RELEASE_CANDIDATE == 'true' }}
+    needs: [build_docker_images, configuration, create_release]
     secrets:
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
     uses: cicd-tools-org/cicd-tools/.github/workflows/job-99-generic-attach_artifact_to_release.yml@master
@@ -245,6 +266,7 @@ jobs:
         dist
         packaging/filebeat/dist
         packaging/debian/dist
+        packaging/docker/dist
       VERBOSE_NOTIFICATIONS: true
       WORKFLOW_NAME: "release"
 

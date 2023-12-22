@@ -1,0 +1,17 @@
+---
+version: "3.8"
+
+services:
+{% for name, keys in services.items() %}
+  {{ name }}:
+    image: ${PACKAGING_REGISTRY_NAME}/${PACKAGING_IMAGE_NAME}:{{ name }}
+    build:
+      args:
+        BUILD_ARG_DEBIAN_VERSION: "{{ keys['PACKAGING_DEBIAN_VERSION'] }}"
+        BUILD_ARG_PACKAGING_ARCH: "{{ name }}"
+        BUILD_ARG_SOURCE_IMAGE: "{{ keys['SOURCE_IMAGE'] }}"
+      context: ../..
+      dockerfile: packaging/docker/assets/Dockerfile
+      target: production
+    platform: {{ keys['PLATFORM'] }}
+{% endfor %}
