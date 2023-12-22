@@ -158,6 +158,9 @@ packaging/debian/build_*
 packaging/debian/dist_*
 packaging/debian/result_*
 
+# Docker
+packaging/docker/dist
+
 # Pre-Commit Cache
 .pre-commit/
 
