@@ -1,0 +1,13 @@
+---
+armv6:
+  PACKAGING_DEBIAN_VERSION: "bookworm"
+  PLATFORM: "linux/arm/v6"
+  SOURCE_IMAGE: "balenalib/raspberry-pi-debian:bookworm-run"
+armv7:
+  PACKAGING_DEBIAN_VERSION: "bookworm"
+  PLATFORM: "linux/arm/v7"
+  SOURCE_IMAGE: "debian:bookworm"
+arm64:
+  PACKAGING_DEBIAN_VERSION: "bookworm"
+  PLATFORM: "linux/arm64"
+  SOURCE_IMAGE: "debian:bookworm"

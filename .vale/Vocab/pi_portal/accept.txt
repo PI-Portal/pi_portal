@@ -24,6 +24,7 @@ logz.io
 makefile
 mixin
 monostate
+multiarch
 numpy
 pi_portal
 pib_cli
