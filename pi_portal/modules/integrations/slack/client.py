@@ -21,6 +21,7 @@ class SlackClient(write_log_file.LogFileWriter):
     self.configure_logger()
     self.web = WebClient(token=current_state.user_config['SLACK_BOT_TOKEN'])
     self.channel = current_state.user_config['SLACK_CHANNEL']
+    self.channel_id = current_state.user_config['SLACK_CHANNEL_ID']
     self.motion_client = motion.Motion()
     self.config = slack_config.SlackClientConfiguration()
 
@@ -45,8 +46,8 @@ class SlackClient(write_log_file.LogFileWriter):
 
     for _ in range(0, self.retries):
       try:
-        self.web.files_upload(
-            channels=self.channel,
+        self.web.files_upload_v2(
+            channel=self.channel_id,
             file=file_name,
             title=self.config.upload_file_title,
         )
