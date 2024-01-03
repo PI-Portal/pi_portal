@@ -1,120 +1,184 @@
 """Test the SlackClient class."""
 
-from typing import cast
-from unittest import TestCase, mock
+from unittest import mock
 
 from pi_portal.modules.configuration.tests.fixtures import mock_state
 from pi_portal.modules.integrations import motion
 from pi_portal.modules.integrations.slack import client
+from pi_portal.modules.integrations.slack import config as slack_config
 from slack_sdk.errors import SlackRequestError
 
 
-class TestSlackClient(TestCase):
+class TestSlackClient:
   """Test the SlackClient class."""
 
-  @mock_state.patch
-  def setUp(self) -> None:
-    self.slack_client = client.SlackClient()
-    self.slack_client.motion_client = mock.MagicMock()
-    self.slack_client.log = mock.Mock()
+  def test_initialize__attributes(
+      self,
+      client_instance: client.SlackClient,
+  ) -> None:
+    assert isinstance(client_instance.web, mock.Mock)
+    assert client_instance.channel == mock_state.MOCK_SLACK_CHANNEL
+    assert client_instance.channel_id == mock_state.MOCK_SLACK_CHANNEL_ID
+    assert isinstance(client_instance.motion_client, mock.Mock)
+    assert isinstance(
+        client_instance.config,
+        slack_config.SlackClientConfiguration,
+    )
 
-  def _mock_motion_client(self) -> mock.Mock:
-    return cast(mock.Mock, self.slack_client.motion_client)
+  def test_initialize__web(
+      self,
+      client_instance: client.SlackClient,
+      mocked_state: mock.Mock,
+      mocked_slack_web_client: mock.Mock,
+  ) -> None:
+    assert client_instance.web == mocked_slack_web_client.return_value
+    mocked_slack_web_client.assert_called_once_with(
+        token=mocked_state.user_config['SLACK_BOT_TOKEN']
+    )
 
-  def _mock_log(self) -> mock.Mock:
-    return cast(mock.Mock, self.slack_client.log)
+  def test_initialize__motion(
+      self,
+      client_instance: client.SlackClient,
+      mocked_motion_client: mock.Mock,
+  ) -> None:
+    assert client_instance.motion_client == mocked_motion_client.return_value
+    mocked_motion_client.assert_called_once_with()
 
-  @mock_state.patch
-  def test_initialize(self) -> None:
-    slack_client = client.SlackClient()
-    self.assertEqual(slack_client.web.token, mock_state.MOCK_SLACK_BOT_TOKEN)
-    self.assertIsInstance(slack_client.motion_client, motion.Motion)
-
-  def test_send_message(self) -> None:
+  def test_send_message__success(
+      self,
+      client_instance: client.SlackClient,
+      mocked_slack_web_client: mock.Mock,
+  ) -> None:
     test_message = "test message"
-    self.slack_client.web = mock.MagicMock()
 
-    self.slack_client.send_message(test_message)
-    self.slack_client.web.chat_postMessage.assert_called_once_with(
-        channel=self.slack_client.channel, text=test_message
-    )
+    client_instance.send_message(test_message)
 
-  def test_send_message_exception(self) -> None:
+    mocked_slack_web_client.return_value.chat_postMessage.\
+        assert_called_once_with(
+          channel=client_instance.channel,
+          text=test_message,
+        )
+
+  def test_send_message__exception(
+      self,
+      client_instance: client.SlackClient,
+      mocked_logger: mock.Mock,
+      mocked_slack_web_client: mock.Mock,
+  ) -> None:
     test_message = "test message"
-    with mock.patch.object(self.slack_client, "web") as m_web:
-      m_web.chat_postMessage.side_effect = SlackRequestError("Boom!")
-      self.slack_client.send_message(test_message)
+    mocked_slack_web_client.return_value.chat_postMessage.side_effect = \
+        SlackRequestError("Boom!")
 
-    self.assertListEqual(
-        m_web.chat_postMessage.mock_calls,
-        [mock.call(
-            channel=self.slack_client.channel,
-            text=test_message,
-        )] * self.slack_client.retries
-    )
-    self.assertListEqual(
-        self._mock_log().error.mock_calls,
-        [mock.call("Failed to send message: '%s'", test_message)] *
-        self.slack_client.retries
-    )
+    client_instance.send_message(test_message)
 
-  def test_send_file(self) -> None:
+    assert mocked_slack_web_client.return_value.chat_postMessage.\
+        mock_calls == \
+        [
+             mock.call(
+               channel=client_instance.channel,
+               text=test_message,
+             ),
+        ] * client_instance.retries
+    assert mocked_logger.mock_calls == \
+        [mock.call()] + \
+        [
+            mock.call().error("Failed to send message: '%s'", test_message),
+        ] * client_instance.retries
+
+  def test_send_file__success(
+      self,
+      client_instance: client.SlackClient,
+      mocked_slack_web_client: mock.Mock,
+  ) -> None:
     test_file = "/path/to/mock/file.txt"
-    with mock.patch.object(self.slack_client, "web") as m_web:
-      self.slack_client.send_file(test_file)
 
-    m_web.files_upload.assert_called_once_with(
-        channels=self.slack_client.channel,
-        file=test_file,
-        title=self.slack_client.config.upload_file_title
-    )
+    client_instance.send_file(test_file)
 
-  def test_send_file_exception(self) -> None:
+    mocked_slack_web_client.return_value.files_upload_v2.\
+        assert_called_once_with(
+            channel=client_instance.channel_id,
+            file=test_file,
+            title=client_instance.config.upload_file_title
+        )
+
+  def test_send_file__exception(
+      self,
+      client_instance: client.SlackClient,
+      mocked_logger: mock.Mock,
+      mocked_slack_web_client: mock.Mock,
+  ) -> None:
     test_file = "/path/to/mock/file.txt"
-    with mock.patch.object(self.slack_client, "web") as m_web:
-      m_web.files_upload.side_effect = SlackRequestError("Boom!")
-      self.slack_client.send_file(test_file)
+    mocked_slack_web_client.return_value.files_upload_v2.side_effect = \
+        SlackRequestError("Boom!")
 
-    self.assertListEqual(
-        m_web.files_upload.mock_calls, [
-            mock.call(
-                channels=self.slack_client.channel,
-                file=test_file,
-                title=self.slack_client.config.upload_file_title
-            )
-        ] * self.slack_client.retries
-    )
-    self.assertListEqual(
-        self._mock_log().error.mock_calls,
-        [mock.call("Failed to send file: '%s'", test_file)] *
-        self.slack_client.retries
-    )
+    client_instance.send_file(test_file)
 
-  def test_send_snapshot(self) -> None:
+    assert mocked_slack_web_client.return_value.files_upload_v2.\
+        mock_calls == \
+        [
+             mock.call(
+               channel=client_instance.channel_id,
+               file=test_file,
+               title=client_instance.config.upload_file_title
+             )
+        ] * client_instance.retries
+    assert mocked_logger.mock_calls == \
+        [mock.call()] + \
+        [
+            mock.call().error("Failed to send file: '%s'", test_file),
+        ] * client_instance.retries
+
+  def test_send_snapshot__success(
+      self,
+      client_instance: client.SlackClient,
+      mocked_motion_client: mock.Mock,
+      mocked_slack_web_client: mock.Mock,
+  ) -> None:
     test_snapshot = "/path/to/mock/snapshot.jpg"
-    with mock.patch.object(self.slack_client, "send_file") as m_send:
-      self.slack_client.send_snapshot(test_snapshot)
-    m_send.assert_called_once_with(test_snapshot)
-    self._mock_motion_client().cleanup_snapshot.assert_called_once_with(
-        test_snapshot,
-    )
 
-  def test_send_snapshot_exception(self) -> None:
+    client_instance.send_snapshot(test_snapshot)
+
+    mocked_slack_web_client.return_value.files_upload_v2.\
+        assert_called_once_with(
+          channel=client_instance.channel_id,
+          file=test_snapshot,
+          title=client_instance.config.upload_file_title
+        )
+    mocked_motion_client.return_value.cleanup_snapshot.\
+        assert_called_once_with(
+          test_snapshot
+        )
+
+  def test_send_snapshot__exception(
+      self,
+      client_instance: client.SlackClient,
+      mocked_logger: mock.Mock,
+      mocked_motion_client: mock.Mock,
+      mocked_slack_web_client: mock.Mock,
+  ) -> None:
     test_snapshot = "/path/to/mock/snapshot.jpg"
-    with mock.patch.object(self.slack_client, "send_file") as m_send:
-      with mock.patch.object(self.slack_client, "web") as m_web:
-        self._mock_motion_client(
-        ).cleanup_snapshot.side_effect = (motion.MotionException("Boom!"),)
-        self.slack_client.send_snapshot(test_snapshot)
+    mocked_motion_client.return_value.cleanup_snapshot.side_effect = \
+        motion.MotionException("Boom!")
 
-    m_send.assert_called_once_with(test_snapshot)
-    self._mock_motion_client().cleanup_snapshot.assert_called_once_with(
-        test_snapshot,
-    )
-    m_web.chat_postMessage.assert_called_once_with(
-        channel=self.slack_client.channel,
-        text="An error occurred cleaning up this snapshot.",
-    )
-    self._mock_log().error.assert_called_once_with(
-        'Failed to remove old motion snapshot!',
-    )
+    client_instance.send_snapshot(test_snapshot)
+
+    mocked_slack_web_client.return_value.files_upload_v2.\
+        assert_called_once_with(
+          channel=client_instance.channel_id,
+          file=test_snapshot,
+          title=client_instance.config.upload_file_title
+        )
+    mocked_slack_web_client.return_value.chat_postMessage.\
+        assert_called_once_with(
+          channel=client_instance.channel,
+          text="An error occurred cleaning up this snapshot.",
+        )
+    mocked_motion_client.return_value.cleanup_snapshot.\
+        assert_called_once_with(
+          test_snapshot
+        )
+    assert mocked_logger.mock_calls == \
+           [mock.call()] + \
+           [
+             mock.call().error("Failed to remove old motion snapshot!"),
+           ]
