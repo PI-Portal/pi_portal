@@ -1,25 +1,51 @@
 #!/bin/bash
 
 PACKAGE_USER="pi-portal"
+PI_PORTAL_INSTALL_LOCATION="/opt/venvs/pi-portal"
 
-shutdown() {
-  if [[ -f "/var/run/supervisord.pid" ]]; then
-    SUPERVISOR_PID="$(cat /var/run/supervisord.pid)"
-    if kill -0 "${SUPERVISOR_PID}" &>/dev/null ; then
-      service supervisor stop || systemctl stop supervisor.service
-    fi
-  fi
-}
 
-users() {
+cleanup_users() {
   if id -u "${PACKAGE_USER}" &>/dev/null; then
     userdel "${PACKAGE_USER}"
   fi
 }
 
+
+cleanup_venv() {
+  local TARGET
+
+  KNOWN_TARGETS=("config.json" "queue_videos")
+
+  for TARGET in "${KNOWN_TARGETS[@]}"; do
+    if [[ -e "${PI_PORTAL_INSTALL_LOCATION}/${TARGET}" ]]; then
+      rm -rf "${PI_PORTAL_INSTALL_LOCATION:?}/${TARGET}"
+    fi
+  done
+
+  if [[ -e "${PI_PORTAL_INSTALL_LOCATION}" ]]; then
+    if [[ -z "$(ls "${PI_PORTAL_INSTALL_LOCATION}")" ]]; then
+      rm -rf "${PI_PORTAL_INSTALL_LOCATION:?}"
+    fi
+  fi
+}
+
+
+shutdown() {
+  if [[ -f "/var/run/supervisord.pid" ]]; then
+    SUPERVISOR_PID="$(cat /var/run/supervisord.pid)"
+    if kill -0 "${SUPERVISOR_PID}" &>/dev/null ; then
+      service supervisor stop || true
+      systemctl stop supervisor.service || true
+    fi
+  fi
+}
+
+
 main() {
   shutdown
-  users
+  cleanup_users
+  cleanup_venv
 }
+
 
 main "$@"

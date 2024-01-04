@@ -16,21 +16,19 @@ step_sequence = [
     steps.StepEnsureRoot,
     steps.StepKillMotion,
     steps.StepKillSupervisor,
+    steps.StepInitializeDataPaths,
+    steps.StepInitializeEtc,
     steps.StepInitializeLogging,
-    steps.StepRenderTemplates,
+    steps.StepRenderConfiguration,
     steps.StepInstallConfigFile,
+    steps.StepConfigureLogzIo,
     steps.StepStartSupervisor,
 ]
 
 
 @pytest.fixture
-def config_file_path() -> str:
+def mocked_config_file_path() -> str:
   return "/home/pi/config.json"
-
-
-@pytest.fixture
-def mocked_stream() -> StringIO:
-  return StringIO()
 
 
 @pytest.fixture
@@ -43,7 +41,15 @@ def mocked_steps() -> List[mock.Mock]:
       mock.Mock(),
       mock.Mock(),
       mock.Mock(),
+      mock.Mock(),
+      mock.Mock(),
+      mock.Mock(),
   ]
+
+
+@pytest.fixture
+def mocked_stream() -> StringIO:
+  return StringIO()
 
 
 @pytest.fixture
@@ -51,7 +57,7 @@ def installer_instance(
     mocked_steps: List[mock.Mock],
     mocked_stream: StringIO,
     monkeypatch: pytest.MonkeyPatch,
-    config_file_path: str,
+    mocked_config_file_path: str,
 ) -> installer.Installer:
   mock_index = 0
   for step in step_sequence:
@@ -59,6 +65,6 @@ def installer_instance(
         INSTALLER_MODULE + "." + step.__name__, mocked_steps[mock_index]
     )
     mock_index += 1
-  instance = installer.Installer(config_file_path)
+  instance = installer.Installer(mocked_config_file_path)
   monkeypatch.setattr(instance.log.handlers[0], "stream", mocked_stream)
   return instance

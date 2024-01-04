@@ -1,3 +1,2 @@
 bin/filebeat /usr/bin
-certs/COMODORSADomainValidationSecureServerCA.crt /etc/pki/tls/certs
 bin/portal /usr/bin

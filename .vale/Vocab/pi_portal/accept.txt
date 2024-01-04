@@ -20,6 +20,7 @@ gpio
 hadolint
 ivars
 json|JSON
+linux
 logz.io
 makefile
 mixin

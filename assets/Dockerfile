@@ -74,12 +74,6 @@ RUN apt-get install -y              \
     tig                             \
     vim
 
-# Install LOGZ IO Certificate
-# hadolint ignore=DL3059
-RUN curl "https://raw.githubusercontent.com/logzio/public-certificates/master/AAACertificateServices.crt" \
-    --create-dirs \
-    -o /etc/pki/tls/certs/COMODORSADomainValidationSecureServerCA.crt
-
 # Add user to sudoers, and make the default user
 # hadolint ignore=DL3059
 RUN echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers

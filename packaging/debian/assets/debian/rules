@@ -5,8 +5,6 @@ BUILD_USER=$(shell whoami)
 PACKAGE=$(shell poetry version | cut -d' ' -f1)
 VERSION=$(shell poetry version -s)
 SDIST_DIR=debian/$(PACKAGE)-$(VERSION)
-
-CERT_SOURCE=https://raw.githubusercontent.com/logzio/public-certificates/master/AAACertificateServices.crt
 USER=pi-portal
 
 export PI_PORTAL_INSTALL_LOCATION=/opt/venvs/pi-portal
@@ -28,9 +26,9 @@ binary:
 	cp -v                                                                                   \
 	    /usr/bin/filebeat                                                                   \
 	    $(SDIST_DIR)/bin/filebeat
-	curl "$(CERT_SOURCE)"                                                                   \
-	    -o $(SDIST_DIR)/certs/COMODORSADomainValidationSecureServerCA.crt
-	envsubst < $(SDIST_DIR)/pi_portal/installation/scripts/portal > $(SDIST_DIR)/bin/portal
+	sed "s,{{ PI_PORTAL_INSTALL_LOCATION }},${PI_PORTAL_INSTALL_LOCATION},g"		     	\
+		$(SDIST_DIR)/pi_portal/installation/templates/shim/portal > 						\
+		$(SDIST_DIR)/bin/portal
 	dh binary --with python-virtualenv --sourcedir $(SDIST_DIR)
 
 %:
@@ -45,11 +43,8 @@ override_dh_fixperms:
 	    -type d                                                                             \
 	    -exec chmod 750 {} \;
 	chmod 750                                                                               \
-	    debian/$(PACKAGE)/etc/filebeat                                                      \
 	    debian/$(PACKAGE)/usr/bin/filebeat                                                  \
 	    debian/$(PACKAGE)/usr/bin/portal
-	chmod 640                                                                               \
-	    debian/$(PACKAGE)/etc/pki/tls/certs/COMODORSADomainValidationSecureServerCA.crt
 
 override_dh_makeshlibs:
 	dh_makeshlibs                                                                           \
