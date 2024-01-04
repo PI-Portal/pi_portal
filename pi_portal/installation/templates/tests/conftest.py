@@ -9,21 +9,22 @@ CONFIG_FILE_MODULE = config_file.__name__
 
 
 @pytest.fixture
-def source_file() -> str:
+def mocked_source_file() -> str:
   return "/path/a/config_file.yml"
 
 
 @pytest.fixture
-def destination_file() -> str:
+def mocked_destination_file() -> str:
   return "/path/b/config_file.yml"
 
 
 @pytest.fixture
 def config_file_template(
-    source_file: str,
-    destination_file: str,
+    mocked_source_file: str,
+    mocked_destination_file: str,
 ) -> config_file.ConfileFileTemplate:
   with mock_state.mock_state_creator():
     return config_file.ConfileFileTemplate(
-        source=source_file, destination=destination_file
+        source=mocked_source_file,
+        destination=mocked_destination_file,
     )

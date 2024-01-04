@@ -1,4 +1,4 @@
-"""StepBase class."""
+"""SystemCallBase class."""
 
 import abc
 import os
@@ -11,7 +11,7 @@ class SystemCallError(Exception):
 
 
 class SystemCallBase(base_step.StepBase, abc.ABC):
-  """System call installer step."""
+  """Installer step that supports system calls."""
 
   def _system_call(self, command: str) -> None:
     self.log.info("Executing: '%s' ...", command)

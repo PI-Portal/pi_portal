@@ -5,7 +5,10 @@ import logging
 
 
 class StepBase(abc.ABC):
-  """Generic installer step."""
+  """Generic installer step.
+
+  :param log: The logging instance for this step.
+  """
 
   log: logging.Logger
 

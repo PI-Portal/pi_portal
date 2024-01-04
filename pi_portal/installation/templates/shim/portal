@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e
+
+main() {
+  source "{{ PI_PORTAL_INSTALL_LOCATION }}/bin/activate"
+  exec pi_portal "$@"
+}
+
+main "$@"

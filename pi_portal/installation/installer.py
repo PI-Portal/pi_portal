@@ -3,15 +3,17 @@
 import logging
 from typing import List
 
-from pi_portal import config
 from pi_portal.modules.configuration.logging import installer
 from .steps import (
+    StepConfigureLogzIo,
     StepEnsureRoot,
+    StepInitializeDataPaths,
+    StepInitializeEtc,
     StepInitializeLogging,
     StepInstallConfigFile,
     StepKillMotion,
     StepKillSupervisor,
-    StepRenderTemplates,
+    StepRenderConfiguration,
     StepStartSupervisor,
 )
 from .steps.bases import base_step
@@ -36,11 +38,14 @@ class Installer:
   def _configure_steps(self) -> List[base_step.StepBase]:
     return [
         StepEnsureRoot(self.log),
-        StepKillMotion(self.log, config.PID_FILE_MOTION),
-        StepKillSupervisor(self.log, config.PID_FILE_SUPERVISORD),
+        StepKillMotion(self.log),
+        StepKillSupervisor(self.log),
+        StepInitializeDataPaths(self.log),
+        StepInitializeEtc(self.log),
         StepInitializeLogging(self.log),
-        StepRenderTemplates(self.log),
+        StepRenderConfiguration(self.log),
         StepInstallConfigFile(self.log, self.config_file_path),
+        StepConfigureLogzIo(self.log),
         StepStartSupervisor(self.log),
     ]
 
