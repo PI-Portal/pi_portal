@@ -8,7 +8,11 @@ from .bases import system_call_step
 
 
 class StepInstallConfigFile(system_call_step.SystemCallBase):
-  """Install the user's configuration file."""
+  """Install the user's configuration file.
+
+  :param config_file_path: The path to the configuration file to install.
+  :param log: The logging instance for this step.
+  """
 
   config_file_path: str
 

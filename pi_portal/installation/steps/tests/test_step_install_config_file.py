@@ -95,6 +95,6 @@ class TestStepInstallConfigFile:
              f"{config.PATH_USER_CONFIG_INSTALL}' failed!\n"
            )
     assert str(exc.value) == (
-        "Command: 'chown pi-portal:pi-portal "
+        f"Command: 'chown {config.PI_PORTAL_USER}:{config.PI_PORTAL_USER} "
         f"{config.PATH_USER_CONFIG_INSTALL}' failed!"
     )

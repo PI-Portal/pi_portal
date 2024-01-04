@@ -13,13 +13,23 @@ class ConfileFileTemplate:
 
   :param source: The path to the template file.
   :param destination: The path to render the template to.
+  :param permissions: The permissions to set on the rendered file.
+  :param user: The linux user to set as owner and group of the rendered file.
   """
 
-  def __init__(self, source: str, destination: str) -> None:
+  def __init__(
+      self,
+      source: str,
+      destination: str,
+      permissions: str = "600",
+      user: str = "root",
+  ) -> None:
     """Initialize a Template instance."""
 
     self.source = os.path.join(os.path.dirname(__file__), source)
     self.destination = destination
+    self.permissions = permissions
+    self.user = user
     self.state = state.State()
 
   def create_context(self) -> Dict[str, Any]:

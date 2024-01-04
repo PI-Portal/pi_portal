@@ -17,12 +17,12 @@ class TestConfigFileTemplate:
   def test__initialize__attrs(
       self,
       config_file_template: config_file.ConfileFileTemplate,
-      source_file: str,
-      destination_file: str,
+      mocked_source_file: str,
+      mocked_destination_file: str,
   ) -> None:
 
-    assert config_file_template.source == source_file
-    assert config_file_template.destination == destination_file
+    assert config_file_template.source == mocked_source_file
+    assert config_file_template.destination == mocked_destination_file
 
   def test__create_context__returns_dict(
       self,

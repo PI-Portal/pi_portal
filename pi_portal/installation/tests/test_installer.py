@@ -5,7 +5,6 @@ from io import StringIO
 from typing import List
 from unittest import mock
 
-from pi_portal import config
 from pi_portal.installation.templates import config_file
 from .. import installer
 
@@ -18,10 +17,10 @@ class TestInstaller:
 
   def test_instantiate__attrs(
       self,
-      config_file_path: str,
       installer_instance: installer.Installer,
+      mocked_config_file_path: str,
   ) -> None:
-    assert installer_instance.config_file_path == config_file_path
+    assert installer_instance.config_file_path == mocked_config_file_path
     assert installer_instance.logger_name == "Installer"
     assert installer_instance.logger_level == logging.INFO
     assert isinstance(installer_instance.log, logging.Logger)
@@ -34,21 +33,18 @@ class TestInstaller:
     installer_instance.install()
 
     mocked_steps[0].assert_called_once_with(installer_instance.log)
-    mocked_steps[1].assert_called_once_with(
-        installer_instance.log,
-        config.PID_FILE_MOTION,
-    )
-    mocked_steps[2].assert_called_once_with(
-        installer_instance.log,
-        config.PID_FILE_SUPERVISORD,
-    )
+    mocked_steps[1].assert_called_once_with(installer_instance.log)
+    mocked_steps[2].assert_called_once_with(installer_instance.log)
     mocked_steps[3].assert_called_once_with(installer_instance.log)
     mocked_steps[4].assert_called_once_with(installer_instance.log)
-    mocked_steps[5].assert_called_once_with(
+    mocked_steps[5].assert_called_once_with(installer_instance.log)
+    mocked_steps[6].assert_called_once_with(installer_instance.log)
+    mocked_steps[7].assert_called_once_with(
         installer_instance.log,
         installer_instance.config_file_path,
     )
-    mocked_steps[6].assert_called_once_with(installer_instance.log)
+    mocked_steps[8].assert_called_once_with(installer_instance.log)
+    mocked_steps[9].assert_called_once_with(installer_instance.log)
 
   def test_install__invokes_all_steps(
       self,

@@ -1,4 +1,0 @@
-/etc/filebeat
-/etc/pki/tls/certs
-/opt/venvs/pi-portal/queue_videos
-/usr/bin

@@ -1,12 +1,10 @@
 """Test the StepKillSupervisor class."""
 
 import logging
-from io import StringIO
 from unittest import mock
 
-from pi_portal import config
-from pi_portal.modules.system import process
 from .. import step_kill_supervisor
+from ..bases import service_step
 
 
 class TestStepKillSupervisor:
@@ -17,44 +15,36 @@ class TestStepKillSupervisor:
       step_kill_supervisor_instance: step_kill_supervisor.StepKillSupervisor,
   ) -> None:
     assert isinstance(step_kill_supervisor_instance.log, logging.Logger)
-    assert isinstance(step_kill_supervisor_instance.process, process.Process)
-    assert step_kill_supervisor_instance.pid_file_path == config.PID_FILE_MOTION
+    assert isinstance(
+        step_kill_supervisor_instance.service,
+        service_step.ServiceDefinition,
+    )
 
-  @mock.patch(
-      step_kill_supervisor.__name__ + ".os.path.exists",
-      mock.Mock(return_value=False),
-  )
-  def test__invoke__no_pid_file(
+  def test__initialize__inheritance(
       self,
       step_kill_supervisor_instance: step_kill_supervisor.StepKillSupervisor,
-      mocked_process_kill: mock.Mock,
-      mocked_stream: StringIO,
   ) -> None:
-    step_kill_supervisor_instance.invoke()
+    assert isinstance(
+        step_kill_supervisor_instance,
+        service_step.ServiceStepBase,
+    )
 
-    assert mocked_stream.getvalue() == \
-         (
-            "test - INFO - Killing the supervisor process ...\n"
-            "test - INFO - No supervisor process to kill.\n"
-            "test - INFO - Done killing the supervisor process.\n"
-        )
-    mocked_process_kill.assert_not_called()
-
-  @mock.patch(
-      step_kill_supervisor.__name__ + ".os.path.exists",
-      mock.Mock(return_value=True),
-  )
-  def test__invoke__pid_file(
+  def test__initialize__service(
       self,
       step_kill_supervisor_instance: step_kill_supervisor.StepKillSupervisor,
-      mocked_process_kill: mock.Mock,
-      mocked_stream: StringIO,
   ) -> None:
+    assert step_kill_supervisor_instance.service.service_name == "supervisor"
+    assert step_kill_supervisor_instance.service.system_v_service_name == \
+        "supervisor"
+    assert step_kill_supervisor_instance.service.systemd_unit_name == \
+        "supervisor.service"
+
+  def test__invoke__stop_method(
+      self,
+      step_kill_supervisor_instance: step_kill_supervisor.StepKillSupervisor,
+      mocked_service_step_base_stop: mock.Mock,
+  ) -> None:
+
     step_kill_supervisor_instance.invoke()
 
-    assert mocked_stream.getvalue() == \
-        (
-            "test - INFO - Killing the supervisor process ...\n"
-            "test - INFO - Done killing the supervisor process.\n"
-        )
-    mocked_process_kill.assert_called_once_with()
+    mocked_service_step_base_stop.assert_called_once_with()

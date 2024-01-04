@@ -1,19 +1,18 @@
 """StepKillSupervisor class."""
 
-import os
-
-from .bases import process_step
+from .bases import service_step
 
 
-class StepKillSupervisor(process_step.ProcessStepBase):
+class StepKillSupervisor(service_step.ServiceStepBase):
   """Kill the supervisor process."""
+
+  service = service_step.ServiceDefinition(
+      service_name="supervisor",
+      system_v_service_name="supervisor",
+      systemd_unit_name="supervisor.service",
+  )
 
   def invoke(self) -> None:
     """Kill the supervisor process."""
 
-    self.log.info("Killing the supervisor process ...")
-    if os.path.exists(self.pid_file_path):
-      self.process.kill()
-    else:
-      self.log.info("No supervisor process to kill.")
-    self.log.info("Done killing the supervisor process.")
+    self.stop()

@@ -1,12 +1,10 @@
 """Test the StepStartSupervisor class."""
 
 import logging
-from io import StringIO
 from unittest import mock
 
-import pytest
 from .. import step_start_supervisor
-from ..bases import system_call_step
+from ..bases import service_step
 
 
 class TestStepStartSupervisor:
@@ -17,41 +15,46 @@ class TestStepStartSupervisor:
       step_start_supervisor_instance: step_start_supervisor.StepStartSupervisor,
   ) -> None:
     assert isinstance(step_start_supervisor_instance.log, logging.Logger)
+    assert isinstance(
+        step_start_supervisor_instance.service,
+        service_step.ServiceDefinition,
+    )
 
-  def test__invoke__success(
+  def test__initialize__inheritance(
       self,
       step_start_supervisor_instance: step_start_supervisor.StepStartSupervisor,
-      mocked_stream: StringIO,
-      mocked_system: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 0
+    assert isinstance(
+        step_start_supervisor_instance,
+        service_step.ServiceStepBase,
+    )
+
+  def test__initialize__service(
+      self,
+      step_start_supervisor_instance: step_start_supervisor.StepStartSupervisor,
+  ) -> None:
+    assert step_start_supervisor_instance.service.service_name == "supervisor"
+    assert step_start_supervisor_instance.service.system_v_service_name == \
+        "supervisor"
+    assert step_start_supervisor_instance.service.systemd_unit_name == \
+        "supervisor.service"
+
+  def test__invoke__enable_method(
+      self,
+      step_start_supervisor_instance: step_start_supervisor.StepStartSupervisor,
+      mocked_service_step_base_enable: mock.Mock,
+  ) -> None:
 
     step_start_supervisor_instance.invoke()
 
-    assert mocked_stream.getvalue() == \
-           (
-              "test - INFO - Starting the supervisor process ...\n"
-              "test - INFO - Executing: 'service supervisor start' ...\n"
-              "test - INFO - Done starting the supervisor process.\n"
-           )
-    mocked_system.assert_called_once_with("service supervisor start")
+    mocked_service_step_base_enable.assert_called_once_with()
 
-  def test__invoke__failure(
+  def test__invoke__start_method(
       self,
       step_start_supervisor_instance: step_start_supervisor.StepStartSupervisor,
-      mocked_stream: StringIO,
-      mocked_system: mock.Mock,
+      mocked_service_step_base_start: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 127
 
-    with pytest.raises(system_call_step.SystemCallError) as exc:
-      step_start_supervisor_instance.invoke()
+    step_start_supervisor_instance.invoke()
 
-    assert mocked_stream.getvalue() == \
-        (
-          "test - INFO - Starting the supervisor process ...\n"
-          "test - INFO - Executing: 'service supervisor start' ...\n"
-          "test - ERROR - Command: 'service supervisor start' failed!\n"
-        )
-    mocked_system.assert_called_once_with("service supervisor start")
-    assert str(exc.value) == "Command: 'service supervisor start' failed!"
+    mocked_service_step_base_start.assert_called_once_with()

@@ -1,14 +1,19 @@
 """StepStartSupervisor class."""
 
-from .bases import system_call_step
+from .bases import service_step
 
 
-class StepStartSupervisor(system_call_step.SystemCallBase):
-  """Start the supervisor process."""
+class StepStartSupervisor(service_step.ServiceStepBase):
+  """Start the supervisor process and add it to startup."""
+
+  service = service_step.ServiceDefinition(
+      service_name="supervisor",
+      system_v_service_name="supervisor",
+      systemd_unit_name="supervisor.service",
+  )
 
   def invoke(self) -> None:
-    """Start the supervisor process."""
+    """Start the supervisor process and add it to startup."""
 
-    self.log.info("Starting the supervisor process ...")
-    self._system_call("service supervisor start")
-    self.log.info("Done starting the supervisor process.")
+    self.enable()
+    self.start()

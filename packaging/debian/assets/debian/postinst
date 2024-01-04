@@ -14,8 +14,6 @@ permissions() {
     /usr/bin/portal                                                    \
     /var/lib/motion
   chown -R root:root                                                   \
-    /etc/filebeat                                                      \
-    /etc/pki/tls/certs/COMODORSADomainValidationSecureServerCA.crt     \
     /usr/bin/filebeat
 }
 
