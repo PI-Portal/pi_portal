@@ -12,6 +12,14 @@ class InstallerCommand(
 ):
   """CLI command to start the Installer."""
 
+  def __init__(
+      self,
+      file_name: str,
+      override: bool,
+  ) -> None:
+    super().__init__(file_name)
+    self.override = override
+
   def invoke(self) -> None:
     """Invoke the command."""
 
@@ -25,6 +33,6 @@ class InstallerCommand(
         "This will affect existing configuration for the 'supervisord' "
         "and 'motion' services."
     )
-    if click.confirm('Are you sure you want to proceed?'):
+    if self.override or click.confirm('Are you sure you want to proceed?'):
       installer = pi_portal_installer.Installer(self.file_name)
       installer.install()
