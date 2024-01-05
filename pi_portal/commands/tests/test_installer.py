@@ -2,24 +2,18 @@
 
 from unittest import mock
 
-from pi_portal.commands.bases.tests.fixtures import file_command_harness
 from .. import installer
+from ..bases import file_command
+from ..mixins import state
 
 
-@mock.patch(installer.__name__ + ".click", mock.Mock())
-class TestInstallerCommand(file_command_harness.FileCommandBaseTestHarness):
-  """Test the InstallerCommand class.
+class TestInstallerCommand:
+  """Test the InstallerCommand class."""
 
-  :param file_name: The path to a valid configuration file.
-  """
-
-  __test__ = True
-
-  @classmethod
-  def setUpClass(cls) -> None:
-    cls.test_class = installer.InstallerCommand
-
-  def check_click_mock(self, m_click: mock.Mock) -> None:
+  def check_click_mock(
+      self,
+      m_click: mock.Mock,
+  ) -> None:
     m_click.confirm.assert_called_once_with("Are you sure you want to proceed?")
     m_click.style.assert_called_once_with(
         "WARNING: This will overwrite existing configuration!",
@@ -34,25 +28,46 @@ class TestInstallerCommand(file_command_harness.FileCommandBaseTestHarness):
             ),
         ]
 
-  @mock.patch(installer.__name__ + ".pi_portal_installer")
-  def test_invoke(self, m_module: mock.Mock) -> None:
+  def test_initialize__attributes(
+      self,
+      mocked_file_name: str,
+      installer_command_instance: installer.InstallerCommand,
+  ) -> None:
+    assert installer_command_instance.file_name == mocked_file_name
 
-    with mock.patch(installer.__name__ + ".click") as m_click:
-      m_click.confirm.return_value = True
+  def test_initialize__inheritance(
+      self,
+      installer_command_instance: installer.InstallerCommand,
+  ) -> None:
+    assert isinstance(installer_command_instance, file_command.FileCommandBase)
+    assert isinstance(
+        installer_command_instance, state.CommandManagedStateMixin
+    )
 
-      self.instance.invoke()
+  def test_invoke__confirmed__calls(
+      self,
+      installer_command_instance: installer.InstallerCommand,
+      mocked_click: mock.Mock,
+      mocked_file_name: str,
+      mocked_installer: mock.Mock,
+  ) -> None:
+    mocked_click.confirm.return_value = True
 
-    m_module.Installer.assert_called_once_with(self.mock_file)
-    m_module.Installer.return_value.install.assert_called_once_with()
-    self.check_click_mock(m_click)
+    installer_command_instance.invoke()
 
-  @mock.patch(installer.__name__ + ".pi_portal_installer")
-  def test_invoke__declined(self, m_module: mock.Mock) -> None:
+    mocked_installer.assert_called_once_with(mocked_file_name)
+    mocked_installer.return_value.install.assert_called_once_with()
+    self.check_click_mock(mocked_click)
 
-    with mock.patch(installer.__name__ + ".click") as m_click:
-      m_click.confirm.return_value = False
+  def test_invoke__declined__calls(
+      self,
+      installer_command_instance: installer.InstallerCommand,
+      mocked_installer: mock.Mock,
+      mocked_click: mock.Mock,
+  ) -> None:
+    mocked_click.confirm.return_value = False
 
-      self.instance.invoke()
+    installer_command_instance.invoke()
 
-    m_module.Installer.assert_not_called()
-    self.check_click_mock(m_click)
+    mocked_installer.assert_not_called()
+    self.check_click_mock(mocked_click)

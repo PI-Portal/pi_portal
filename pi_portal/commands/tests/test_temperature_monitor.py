@@ -2,31 +2,35 @@
 
 from unittest import mock
 
-from pi_portal.commands.bases.tests.fixtures import command_harness
 from .. import temperature_monitor
+from ..bases import command
 from ..mixins import state
 
 
-class TestTemperatureMonitorCommand(command_harness.CommandBaseTestHarness):
+class TestTemperatureMonitorCommand:
   """Test the TemperatureMonitorCommand class."""
 
-  __test__ = True
+  def test_initialize__inheritance(
+      self,
+      temperature_monitor_command_instance: temperature_monitor.
+      TemperatureMonitorCommand,
+  ) -> None:
+    assert isinstance(temperature_monitor_command_instance, command.CommandBase)
+    assert isinstance(
+        temperature_monitor_command_instance, state.CommandManagedStateMixin
+    )
 
-  @classmethod
-  def setUpClass(cls) -> None:
-    cls.test_class = temperature_monitor.TemperatureMonitorCommand
+  def test_invoke__calls(
+      self,
+      temperature_monitor_command_instance: temperature_monitor.
+      TemperatureMonitorCommand,
+      mocked_temperature_monitor_factory: mock.Mock,
+  ) -> None:
+    temperature_monitor_command_instance.invoke()
 
-  def test_mixins(self) -> None:
-    self.assertIsInstance(self.instance, state.CommandManagedStateMixin)
-
-  @mock.patch(temperature_monitor.__name__ + ".gpio")
-  def test_invoke(self, m_module: mock.Mock) -> None:
-
-    self.instance.invoke()
-
-    m_factory_instance = m_module.TemperatureMonitorFactory.return_value
+    m_factory_instance = mocked_temperature_monitor_factory.return_value
     m_monitor_instance = m_factory_instance.create.return_value
 
-    m_module.TemperatureMonitorFactory.assert_called_once_with()
+    mocked_temperature_monitor_factory.assert_called_once_with()
     m_factory_instance.create.assert_called_once_with()
     m_monitor_instance.start.assert_called_once_with()

@@ -2,32 +2,37 @@
 
 from unittest import mock
 
-from pi_portal.commands.bases.tests.fixtures import command_harness
 from .. import cron_videos
+from ..bases import command
 from ..mixins import state
 
-CRON_VIDEOS_MODULE = cron_videos.__name__
 
-
-class TestCronVideosCommand(command_harness.CommandBaseTestHarness):
+class TestCronVideosCommand:
   """Test the CronVideosCommand class."""
 
-  __test__ = True
+  def test_initialize__attributes(
+      self,
+      cron_videos_command_instance: cron_videos.CronVideosCommand,
+  ) -> None:
+    assert cron_videos_command_instance.interval == 30
 
-  @classmethod
-  def setUpClass(cls) -> None:
-    cls.test_class = cron_videos.CronVideosCommand
+  def test_initialize__inheritance(
+      self,
+      cron_videos_command_instance: cron_videos.CronVideosCommand,
+  ) -> None:
+    assert isinstance(cron_videos_command_instance, command.CommandBase)
+    assert isinstance(
+        cron_videos_command_instance, state.CommandManagedStateMixin
+    )
 
-  def test_attr(self) -> None:
-    self.assertEqual(cron_videos.CronVideosCommand.interval, 30)
+  def test_invoke__calls(
+      self,
+      cron_videos_command_instance: cron_videos.CronVideosCommand,
+      mocked_video_upload_cron: mock.Mock,
+  ) -> None:
+    cron_videos_command_instance.invoke()
 
-  def test_mixins(self) -> None:
-    self.assertIsInstance(self.instance, state.CommandManagedStateMixin)
-
-  @mock.patch(CRON_VIDEOS_MODULE + ".video_upload_cron.VideoUploadCron")
-  def test_invoke(self, m_module: mock.Mock) -> None:
-
-    self.instance.invoke()
-
-    m_module.assert_called_once_with(cron_videos.CronVideosCommand.interval)
-    m_module.return_value.start.assert_called_once_with()
+    mocked_video_upload_cron.assert_called_once_with(
+        cron_videos_command_instance.interval
+    )
+    mocked_video_upload_cron.return_value.start.assert_called_once_with()

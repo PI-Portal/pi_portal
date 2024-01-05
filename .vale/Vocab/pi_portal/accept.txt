@@ -28,6 +28,7 @@ numpy
 pi_portal
 pib_cli
 pkg_resources
+pytest
 readthedocs
 rtd
 rtm

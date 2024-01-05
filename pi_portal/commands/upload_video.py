@@ -10,7 +10,8 @@ from .mixins import state
 
 
 class UploadVideoCommand(
-    file_command.FileCommandBase, state.CommandManagedStateMixin
+    file_command.FileCommandBase,
+    state.CommandManagedStateMixin,
 ):
   """CLI command to send a Motion video to Slack."""
 

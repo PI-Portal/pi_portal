@@ -6,7 +6,8 @@ from .mixins import state
 
 
 class TemperatureMonitorCommand(
-    command.CommandBase, state.CommandManagedStateMixin
+    command.CommandBase,
+    state.CommandManagedStateMixin,
 ):
   """CLI command to start the Temperature Monitor."""
 
