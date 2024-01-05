@@ -1,6 +1,6 @@
 """Tests for the Click CLI."""
 
-from typing import List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
@@ -38,8 +38,8 @@ class TestCLI(TestCase):
     m_command.return_value.invoke.reset_mock()
     m_command.reset_mock()
 
-  def check_invoke_with_file(self, m_command: Mock, file: str) -> None:
-    m_command.assert_called_once_with(file)
+  def check_invoke_variable(self, m_command: Mock, args: List[Any]) -> None:
+    m_command.assert_called_once_with(*args)
     m_command.return_value.invoke.assert_called_once_with()
     m_command.return_value.invoke.reset_mock()
     m_command.reset_mock()
@@ -75,15 +75,19 @@ class TestCLI(TestCase):
       m_command: Mock,
   ) -> None:
     mock_config_file = __file__
-    for command, debug in self.get_debug_subtests(
-        f"install_config {mock_config_file}"
-    ):
-      self.runner.invoke(cli.cli, command)
+    for flag, confirmation in [("", False), ("-y", True)]:
+      for command, debug in self.get_debug_subtests(
+          f"install_config {flag} {mock_config_file}"
+      ):
+        self.runner.invoke(cli.cli, command)
 
-      self.check_state(
-          m_command.InstallerCommand, debug, file_path=mock_config_file
-      )
-      self.check_invoke_with_file(m_command.InstallerCommand, mock_config_file)
+        self.check_state(
+            m_command.InstallerCommand, debug, file_path=mock_config_file
+        )
+        self.check_invoke_variable(
+            m_command.InstallerCommand,
+            [mock_config_file, confirmation],
+        )
 
   @patch(cli.__name__ + ".slack_bot")
   def test_slack_bot__invoke(
@@ -119,8 +123,9 @@ class TestCLI(TestCase):
       self.runner.invoke(cli.cli, command)
 
       self.check_state(m_command.UploadSnapshotCommand, debug)
-      self.check_invoke_with_file(
-          m_command.UploadSnapshotCommand, mock_snapshot_name
+      self.check_invoke_variable(
+          m_command.UploadSnapshotCommand,
+          [mock_snapshot_name],
       )
 
   @patch(cli.__name__ + ".upload_video")
@@ -135,7 +140,10 @@ class TestCLI(TestCase):
       self.runner.invoke(cli.cli, command)
 
       self.check_state(m_command.UploadVideoCommand, debug)
-      self.check_invoke_with_file(m_command.UploadVideoCommand, mock_video_name)
+      self.check_invoke_variable(
+          m_command.UploadVideoCommand,
+          [mock_video_name],
+      )
 
   @patch(cli.__name__ + ".version")
   def test_version__invoke(

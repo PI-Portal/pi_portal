@@ -10,11 +10,10 @@ from ..mixins import state
 class TestInstallerCommand:
   """Test the InstallerCommand class."""
 
-  def check_click_mock(
+  def check_click_echo(
       self,
       m_click: mock.Mock,
   ) -> None:
-    m_click.confirm.assert_called_once_with("Are you sure you want to proceed?")
     m_click.style.assert_called_once_with(
         "WARNING: This will overwrite existing configuration!",
         fg='yellow',
@@ -34,6 +33,7 @@ class TestInstallerCommand:
       installer_command_instance: installer.InstallerCommand,
   ) -> None:
     assert installer_command_instance.file_name == mocked_file_name
+    assert installer_command_instance.override is False
 
   def test_initialize__inheritance(
       self,
@@ -44,7 +44,7 @@ class TestInstallerCommand:
         installer_command_instance, state.CommandManagedStateMixin
     )
 
-  def test_invoke__confirmed__calls(
+  def test_invoke__no_override__confirmed__calls(
       self,
       installer_command_instance: installer.InstallerCommand,
       mocked_click: mock.Mock,
@@ -57,9 +57,12 @@ class TestInstallerCommand:
 
     mocked_installer.assert_called_once_with(mocked_file_name)
     mocked_installer.return_value.install.assert_called_once_with()
-    self.check_click_mock(mocked_click)
+    self.check_click_echo(mocked_click)
+    mocked_click.confirm.assert_called_once_with(
+        "Are you sure you want to proceed?"
+    )
 
-  def test_invoke__declined__calls(
+  def test_invoke____no_override__declined__calls(
       self,
       installer_command_instance: installer.InstallerCommand,
       mocked_installer: mock.Mock,
@@ -70,4 +73,24 @@ class TestInstallerCommand:
     installer_command_instance.invoke()
 
     mocked_installer.assert_not_called()
-    self.check_click_mock(mocked_click)
+    self.check_click_echo(mocked_click)
+    mocked_click.confirm.assert_called_once_with(
+        "Are you sure you want to proceed?"
+    )
+
+  def test_invoke__override__calls(
+      self,
+      installer_command_instance: installer.InstallerCommand,
+      mocked_click: mock.Mock,
+      mocked_file_name: str,
+      mocked_installer: mock.Mock,
+  ) -> None:
+    installer_command_instance.override = True
+    mocked_click.confirm.return_value = True
+
+    installer_command_instance.invoke()
+
+    mocked_installer.assert_called_once_with(mocked_file_name)
+    mocked_installer.return_value.install.assert_called_once_with()
+    self.check_click_echo(mocked_click)
+    mocked_click.confirm.assert_not_called()

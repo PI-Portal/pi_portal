@@ -100,7 +100,7 @@ def installer_command_instance(
       installer.__name__ + ".pi_portal_installer.Installer",
       mocked_installer,
   )
-  return installer.InstallerCommand(mocked_file_name)
+  return installer.InstallerCommand(mocked_file_name, False)
 
 
 @pytest.fixture

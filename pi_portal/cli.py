@@ -44,15 +44,25 @@ def door_monitor_command(ctx: click.Context) -> None:
 
 
 @cli.command("install_config")
+@click.option(
+    '-y',
+    '--yes',
+    'confirmation',
+    default=False,
+    is_flag=True,
+    help='Answer "yes" to installation confirmation.',
+)
 @click.argument('config_file', type=click.Path(exists=True))
 @click.pass_context
-def installer_command(ctx: click.Context, config_file: str) -> None:
+def installer_command(
+    ctx: click.Context, confirmation: bool, config_file: str
+) -> None:
   """Install a configuration file. Requires root.
 
   CONFIG_FILE: The path to the configuration file to use.
   """
 
-  command = installer.InstallerCommand(config_file)
+  command = installer.InstallerCommand(config_file, confirmation)
   command.load_state(debug=ctx.obj['DEBUG'], file_path=config_file)
   command.invoke()
 
