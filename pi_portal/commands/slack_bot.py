@@ -5,7 +5,10 @@ from .bases import command
 from .mixins import state
 
 
-class SlackBotCommand(command.CommandBase, state.CommandManagedStateMixin):
+class SlackBotCommand(
+    command.CommandBase,
+    state.CommandManagedStateMixin,
+):
   """CLI command to start the Slack bot."""
 
   def invoke(self) -> None:

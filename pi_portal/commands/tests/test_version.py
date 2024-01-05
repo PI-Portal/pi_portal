@@ -2,26 +2,29 @@
 
 from unittest import mock
 
-from pi_portal.commands.bases.tests.fixtures import command_harness
 from pi_portal.modules.python.metadata import metadata_version
 from .. import version
+from ..bases import command
 
 
-class TestVersionCommand(command_harness.CommandBaseTestHarness):
+class TestVersionCommand:
   """Test the VersionCommand class."""
 
-  __test__ = True
+  def test_initialize__inheritance(
+      self,
+      version_command_instance: version.VersionCommand,
+  ) -> None:
+    assert isinstance(version_command_instance, command.CommandBase)
 
-  @classmethod
-  def setUpClass(cls) -> None:
-    cls.test_class = version.VersionCommand
-
-  @mock.patch(version.__name__ + ".click")
-  def test_invoke(self, m_module: mock.Mock) -> None:
+  def test_invoke__calls(
+      self,
+      version_command_instance: version.VersionCommand,
+      mocked_click: mock.Mock,
+  ) -> None:
     expected_version = metadata_version('pi_portal')
 
-    self.instance.invoke()
+    version_command_instance.invoke()
 
-    m_module.echo.assert_called_once_with(
+    mocked_click.echo.assert_called_once_with(
         f"Pi Portal Version: {expected_version}"
     )

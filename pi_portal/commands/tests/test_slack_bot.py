@@ -2,26 +2,29 @@
 
 from unittest import mock
 
-from pi_portal.commands.bases.tests.fixtures import command_harness
 from .. import slack_bot
+from ..bases import command
 from ..mixins import state
 
 
-class TestSlackBotCommand(command_harness.CommandBaseTestHarness):
+class TestSlackBotCommand:
   """Test the SlackBotCommand class."""
 
-  __test__ = True
+  def test_initialize__inheritance(
+      self,
+      slack_bot_command_instance: slack_bot.SlackBotCommand,
+  ) -> None:
+    assert isinstance(slack_bot_command_instance, command.CommandBase)
+    assert isinstance(
+        slack_bot_command_instance, state.CommandManagedStateMixin
+    )
 
-  @classmethod
-  def setUpClass(cls) -> None:
-    cls.test_class = slack_bot.SlackBotCommand
+  def test_invoke__calls(
+      self,
+      slack_bot_command_instance: slack_bot.SlackBotCommand,
+      mocked_slack_bot: mock.Mock,
+  ) -> None:
+    slack_bot_command_instance.invoke()
 
-  def test_mixins(self) -> None:
-    self.assertIsInstance(self.instance, state.CommandManagedStateMixin)
-
-  @mock.patch(slack_bot.__name__ + ".slack")
-  def test_invoke(self, m_module: mock.Mock) -> None:
-
-    self.instance.invoke()
-    m_module.SlackBot.assert_called_once_with()
-    m_module.SlackBot.return_value.connect.assert_called_once_with()
+    mocked_slack_bot.assert_called_once_with()
+    mocked_slack_bot.return_value.connect.assert_called_once_with()

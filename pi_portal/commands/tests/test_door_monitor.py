@@ -2,31 +2,33 @@
 
 from unittest import mock
 
-from pi_portal.commands.bases.tests.fixtures import command_harness
 from .. import door_monitor
+from ..bases import command
 from ..mixins import state
 
 
-class TestDoorMonitorCommand(command_harness.CommandBaseTestHarness):
+class TestDoorMonitorCommand:
   """Test the DoorMonitorCommand class."""
 
-  __test__ = True
+  def test_initialize__inheritance(
+      self,
+      door_monitor_command_instance: door_monitor.DoorMonitorCommand,
+  ) -> None:
+    assert isinstance(door_monitor_command_instance, command.CommandBase)
+    assert isinstance(
+        door_monitor_command_instance, state.CommandManagedStateMixin
+    )
 
-  @classmethod
-  def setUpClass(cls) -> None:
-    cls.test_class = door_monitor.DoorMonitorCommand
+  def test_invoke__calls(
+      self,
+      door_monitor_command_instance: door_monitor.DoorMonitorCommand,
+      mocked_door_monitor_factory: mock.Mock,
+  ) -> None:
+    door_monitor_command_instance.invoke()
 
-  def test_mixins(self) -> None:
-    self.assertIsInstance(self.instance, state.CommandManagedStateMixin)
-
-  @mock.patch(door_monitor.__name__ + ".gpio")
-  def test_invoke(self, m_module: mock.Mock) -> None:
-
-    self.instance.invoke()
-
-    m_factory_instance = m_module.DoorMonitorFactory.return_value
+    m_factory_instance = mocked_door_monitor_factory.return_value
     m_monitor_instance = m_factory_instance.create.return_value
 
-    m_module.DoorMonitorFactory.assert_called_once_with()
+    mocked_door_monitor_factory.assert_called_once_with()
     m_factory_instance.create.assert_called_once_with()
     m_monitor_instance.start.assert_called_once_with()
