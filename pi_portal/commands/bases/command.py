@@ -4,7 +4,7 @@ import abc
 
 
 class CommandBase(abc.ABC):
-  """An generic, invokable command."""
+  """A generic, invokable command."""
 
   @abc.abstractmethod
   def invoke(self) -> None:

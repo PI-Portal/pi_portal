@@ -2,32 +2,41 @@
 
 from unittest import mock
 
-from pi_portal.commands.bases.tests.fixtures import file_command_harness
 from .. import upload_snapshot
+from ..bases import file_command
 from ..mixins import state
 
 
-class TestUploadSnapshotCommand(
-    file_command_harness.FileCommandBaseTestHarness
-):
-  """Test the UploadSnapshotCommand class.
+class TestUploadSnapshotCommand:
+  """Test the UploadSnapshotCommand class."""
 
-  :param file_name: The path to a valid snapshot file.
-  """
+  def test_initialize__attributes(
+      self,
+      mocked_file_name: str,
+      upload_snapshot_command_instance: upload_snapshot.UploadSnapshotCommand,
+  ) -> None:
+    assert upload_snapshot_command_instance.file_name == mocked_file_name
 
-  __test__ = True
+  def test_initialize__inheritance(
+      self,
+      upload_snapshot_command_instance: upload_snapshot.UploadSnapshotCommand,
+  ) -> None:
+    assert isinstance(
+        upload_snapshot_command_instance, file_command.FileCommandBase
+    )
+    assert isinstance(
+        upload_snapshot_command_instance, state.CommandManagedStateMixin
+    )
 
-  @classmethod
-  def setUpClass(cls) -> None:
-    cls.test_class = upload_snapshot.UploadSnapshotCommand
+  def test_invoke__calls(
+      self,
+      mocked_file_name: str,
+      mocked_slack_client: mock.Mock,
+      upload_snapshot_command_instance: upload_snapshot.UploadSnapshotCommand,
+  ) -> None:
+    upload_snapshot_command_instance.invoke()
 
-  def test_mixins(self) -> None:
-    self.assertIsInstance(self.instance, state.CommandManagedStateMixin)
-
-  @mock.patch(upload_snapshot.__name__ + ".slack")
-  def test_invoke(self, m_module: mock.Mock) -> None:
-    self.instance.invoke()
-    m_module.SlackClient.assert_called_once_with()
-    m_module.SlackClient.return_value.send_snapshot.assert_called_once_with(
-        self.mock_file
+    mocked_slack_client.assert_called_once_with()
+    mocked_slack_client.return_value.send_snapshot.assert_called_once_with(
+        mocked_file_name
     )

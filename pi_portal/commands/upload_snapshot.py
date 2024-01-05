@@ -6,7 +6,8 @@ from .mixins import state
 
 
 class UploadSnapshotCommand(
-    file_command.FileCommandBase, state.CommandManagedStateMixin
+    file_command.FileCommandBase,
+    state.CommandManagedStateMixin,
 ):
   """CLI command to send a Motion snapshot to Slack."""
 

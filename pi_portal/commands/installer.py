@@ -7,7 +7,8 @@ from .mixins import state
 
 
 class InstallerCommand(
-    file_command.FileCommandBase, state.CommandManagedStateMixin
+    file_command.FileCommandBase,
+    state.CommandManagedStateMixin,
 ):
   """CLI command to start the Installer."""
 
