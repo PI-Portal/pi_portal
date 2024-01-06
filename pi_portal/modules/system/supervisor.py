@@ -4,7 +4,9 @@ from typing import cast
 
 from pi_portal import config
 from pi_portal.modules.python.xmlrpc import patched_client
-from pi_portal.modules.system.socket import UnixStreamTransport
+from pi_portal.modules.system.socket.unix_stream_transport import (
+    UnixStreamTransport,
+)
 from pi_portal.modules.system.supervisor_config import (
     ProcessList,
     ProcessStatus,
