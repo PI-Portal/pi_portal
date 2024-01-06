@@ -12,14 +12,13 @@ class CommandManagedStateMixin:
   def load_state(
       self,
       debug: bool,
-      file_path: str = config.PATH_USER_CONFIG_INSTALL
+      file_path: str = config.PATH_USER_CONFIG_INSTALL,
   ) -> None:
     """Load and configure state.
 
     :param debug: Enable or disable debug logs.
     :param file_path: The path to the file to load.
     """
-
     running_state = state.State()
     running_state.load(file_path=file_path)
     if debug:
