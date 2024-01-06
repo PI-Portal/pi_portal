@@ -1,13 +1,16 @@
 """Test the UserConfiguration class."""
 
 import json
+import pathlib
 from typing import cast
-from unittest import TestCase, mock
+from unittest import mock
 
+import pi_portal
+import pytest
 from pi_portal.modules.configuration import user_config
 from pi_portal.modules.mixins import json_file
 
-MOCK_JSON = cast(user_config.TypeUserConfig, {"mock_setting": "0123"})
+MOCK_INVALID_JSON = cast(user_config.TypeUserConfig, {"mock_setting": "0123"})
 MOCK_VALID_JSON = cast(
     user_config.TypeUserConfig,
     {
@@ -50,51 +53,73 @@ MOCK_VALID_JSON = cast(
 )
 
 
-class TestUserConfigurationLoad(TestCase):
-  """Test the UserConfiguration class load method."""
+class TestUserConfiguration:
+  """Test the UserConfiguration class."""
 
-  def setUp(self) -> None:
-    self.configuration = user_config.UserConfiguration()
-
-  @mock.patch(
-      json_file.__name__ + ".JSONFileReader.load_json_file",
-      mock.Mock(return_value=MOCK_JSON)
-  )
-  def test_load(self) -> None:
-    with mock.patch.object(self.configuration, 'validate') as m_validate:
-      self.configuration.load()
-      self.assertEqual(self.configuration.user_config, MOCK_JSON)
-      m_validate.assert_called_once_with()
-
-
-class TestUserConfigurationValidate(TestCase):
-  """Test the UserConfiguration class validate method."""
-
-  def setUp(self) -> None:
-    self.configuration = user_config.UserConfiguration()
-
-  def test_valid(self) -> None:
-    self.configuration.user_config = MOCK_VALID_JSON
-    self.configuration.validate()
-
-  def test_invalid(self) -> None:
-    self.configuration.user_config = MOCK_JSON
-
-    with self.assertRaises(user_config.UserConfigurationException) as exc:
-      self.configuration.validate()
-
-    self.assertListEqual(
-        json.loads(exc.exception.args[0]), [
-            "'AWS_ACCESS_KEY_ID' is a required property",
-            "'AWS_SECRET_ACCESS_KEY' is a required property",
-            "'CONTACT_SWITCHES' is a required property",
-            "'LOGZ_IO_CODE' is a required property",
-            "'S3_BUCKET_NAME' is a required property",
-            "'SLACK_APP_SIGNING_SECRET' is a required property",
-            "'SLACK_APP_TOKEN' is a required property",
-            "'SLACK_BOT_TOKEN' is a required property",
-            "'SLACK_CHANNEL' is a required property",
-            "'SLACK_CHANNEL_ID' is a required property",
-            "'TEMPERATURE_SENSORS' is a required property",
-        ]
+  def test_initialize__attributes(
+      self,
+      user_configuration_instance: user_config.UserConfiguration,
+  ) -> None:
+    assert user_configuration_instance.validation_schema_path == (
+        pathlib.Path(pi_portal.__file__).parent / "schema" /
+        "config_schema.json"
     )
+
+  def test_initialize__inheritance(
+      self,
+      user_configuration_instance: user_config.UserConfiguration,
+  ) -> None:
+    assert isinstance(
+        user_configuration_instance,
+        json_file.JSONFileReader,
+    )
+
+  def test_load__calls_validate_and_sets_user_config(
+      self,
+      user_configuration_instance: user_config.UserConfiguration,
+  ) -> None:
+    with mock.patch(
+        user_config.__name__ + ".json_file.JSONFileReader.load_json_file",
+        mock.Mock(return_value=MOCK_VALID_JSON)
+    ):
+      with mock.patch.object(
+          user_configuration_instance,
+          'validate',
+      ) as m_validate:
+
+        user_configuration_instance.load()
+
+    assert user_configuration_instance.user_config == \
+           MOCK_VALID_JSON
+    m_validate.assert_called_once_with()
+
+  def test_validate__valid_configuration(
+      self,
+      user_configuration_instance: user_config.UserConfiguration,
+  ) -> None:
+    user_configuration_instance.user_config = MOCK_VALID_JSON
+
+    user_configuration_instance.validate()
+
+  def test_validate__invalid_configuration(
+      self,
+      user_configuration_instance: user_config.UserConfiguration,
+  ) -> None:
+    user_configuration_instance.user_config = MOCK_INVALID_JSON
+    with pytest.raises(user_config.UserConfigurationException) as exc:
+
+      user_configuration_instance.validate()
+
+    assert json.loads(str(exc.value)) == [
+        "'AWS_ACCESS_KEY_ID' is a required property",
+        "'AWS_SECRET_ACCESS_KEY' is a required property",
+        "'CONTACT_SWITCHES' is a required property",
+        "'LOGZ_IO_CODE' is a required property",
+        "'S3_BUCKET_NAME' is a required property",
+        "'SLACK_APP_SIGNING_SECRET' is a required property",
+        "'SLACK_APP_TOKEN' is a required property",
+        "'SLACK_BOT_TOKEN' is a required property",
+        "'SLACK_CHANNEL' is a required property",
+        "'SLACK_CHANNEL_ID' is a required property",
+        "'TEMPERATURE_SENSORS' is a required property",
+    ]
