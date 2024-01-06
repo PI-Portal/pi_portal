@@ -5,11 +5,16 @@ import time
 from unittest import mock
 
 import pytest
-from .. import process
+from .. import process, supervisor
 
 
 @pytest.fixture
 def mocked_sleep() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
+def mocked_supervisor_server() -> mock.Mock:
   return mock.Mock()
 
 
@@ -26,3 +31,15 @@ def process_instance(
 ) -> process.Process:
   monkeypatch.setattr(time, 'sleep', mocked_sleep)
   return process.Process(pid_file_path)
+
+
+@pytest.fixture
+def supervisor_instance(
+    mocked_supervisor_server: mock.Mock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> supervisor.SupervisorClient:
+  monkeypatch.setattr(
+      supervisor.__name__ + ".patched_client.Server",
+      mocked_supervisor_server,
+  )
+  return supervisor.SupervisorClient()
