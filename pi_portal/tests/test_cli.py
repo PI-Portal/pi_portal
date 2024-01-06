@@ -1,18 +1,14 @@
 """Tests for the Click CLI."""
 
 from typing import Any, List, Optional, Tuple
-from unittest import TestCase
 from unittest.mock import Mock, patch
 
 from click.testing import CliRunner
 from .. import cli
 
 
-class TestCLI(TestCase):
+class TestCLI:
   """Test the Click CLI."""
-
-  def setUp(self) -> None:
-    self.runner = CliRunner()
 
   def check_state(
       self,
@@ -51,9 +47,11 @@ class TestCLI(TestCase):
   def test_cron_videos__invoke(
       self,
       m_command: Mock,
+      cli_runner: CliRunner,
   ) -> None:
     for command, debug in self.get_debug_subtests("cron_videos"):
-      self.runner.invoke(cli.cli, command)
+
+      cli_runner.invoke(cli.cli, command)
 
       self.check_state(m_command.CronVideosCommand, debug)
       self.check_invoke(m_command.CronVideosCommand)
@@ -62,9 +60,11 @@ class TestCLI(TestCase):
   def test_door_monitor__invoke(
       self,
       m_command: Mock,
+      cli_runner: CliRunner,
   ) -> None:
     for command, debug in self.get_debug_subtests("door_monitor"):
-      self.runner.invoke(cli.cli, command)
+
+      cli_runner.invoke(cli.cli, command)
 
       self.check_state(m_command.DoorMonitorCommand, debug)
       self.check_invoke(m_command.DoorMonitorCommand)
@@ -73,13 +73,15 @@ class TestCLI(TestCase):
   def test_installer__invoke(
       self,
       m_command: Mock,
+      cli_runner: CliRunner,
   ) -> None:
     mock_config_file = __file__
     for flag, confirmation in [("", False), ("-y", True)]:
       for command, debug in self.get_debug_subtests(
           f"install_config {flag} {mock_config_file}"
       ):
-        self.runner.invoke(cli.cli, command)
+
+        cli_runner.invoke(cli.cli, command)
 
         self.check_state(
             m_command.InstallerCommand, debug, file_path=mock_config_file
@@ -93,9 +95,11 @@ class TestCLI(TestCase):
   def test_slack_bot__invoke(
       self,
       m_command: Mock,
+      cli_runner: CliRunner,
   ) -> None:
     for command, debug in self.get_debug_subtests("slack_bot"):
-      self.runner.invoke(cli.cli, command)
+
+      cli_runner.invoke(cli.cli, command)
 
       self.check_state(m_command.SlackBotCommand, debug)
       self.check_invoke(m_command.SlackBotCommand)
@@ -104,9 +108,11 @@ class TestCLI(TestCase):
   def test_temp_monitor__invoke(
       self,
       m_command: Mock,
+      cli_runner: CliRunner,
   ) -> None:
     for command, debug in self.get_debug_subtests("temp_monitor"):
-      self.runner.invoke(cli.cli, command)
+
+      cli_runner.invoke(cli.cli, command)
 
       self.check_state(m_command.TemperatureMonitorCommand, debug)
       self.check_invoke(m_command.TemperatureMonitorCommand)
@@ -115,12 +121,14 @@ class TestCLI(TestCase):
   def test_upload_snapshot__invoke(
       self,
       m_command: Mock,
+      cli_runner: CliRunner,
   ) -> None:
     mock_snapshot_name = __file__
     for command, debug in self.get_debug_subtests(
         f"upload_snapshot {mock_snapshot_name}"
     ):
-      self.runner.invoke(cli.cli, command)
+
+      cli_runner.invoke(cli.cli, command)
 
       self.check_state(m_command.UploadSnapshotCommand, debug)
       self.check_invoke_variable(
@@ -132,12 +140,14 @@ class TestCLI(TestCase):
   def test_upload_video__invoke(
       self,
       m_command: Mock,
+      cli_runner: CliRunner,
   ) -> None:
     mock_video_name = __file__
     for command, debug in self.get_debug_subtests(
         f"upload_video {mock_video_name}"
     ):
-      self.runner.invoke(cli.cli, command)
+
+      cli_runner.invoke(cli.cli, command)
 
       self.check_state(m_command.UploadVideoCommand, debug)
       self.check_invoke_variable(
@@ -149,8 +159,11 @@ class TestCLI(TestCase):
   def test_version__invoke(
       self,
       m_command: Mock,
+      cli_runner: CliRunner,
   ) -> None:
     command = "version"
-    self.runner.invoke(cli.cli, command)
+
+    cli_runner.invoke(cli.cli, command)
+
     self.check_no_state(m_command.VersionCommand)
     self.check_invoke(m_command.VersionCommand)
