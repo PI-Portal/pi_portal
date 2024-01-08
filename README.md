@@ -2,9 +2,11 @@
 
 Raspberry PI Door Logger
 
-Put a contact switch on a door and generate logs, alarms and notifications with your Raspberry PI.  Connect a WebCam and view snapshots and motion activated videos over Slack.  Add DHT11 temperature sensors and track temperature and humidity fluctuations over time.
+- Put a contact switch on a door and generate logs, alarms and notifications with your Raspberry PI.  
+- Connect a WebCam and view snapshots and motion activated videos over Slack.
+- Add DHT11 temperature sensors and track temperature and humidity fluctuations over time.
 
-This is a hobby solution, and no warranty or guarantees of any kind are made.  
+This is a hobby solution, no warranty or guarantee of any kind is made.  
 
 Please use at your own risk.
 
@@ -20,27 +22,21 @@ Please use at your own risk.
 
 ### Hardware
 
-1. A Raspberry Pi 3.
+1. A Raspberry Pi.
    - You'll need a Raspberry PI with Raspberry Pi OS or similar installed and reliable internet.
+   - I developed and tested this project on a Pi 1Bv2 and a Pi 3.
 2. Contact switches.
-   - These are available cheaply on ebay, AWS or at your local electronics store.
+   - These are available cheaply on ebay, Amazon or at your local electronics store.
    - Some examples can be found [here](https://www.burglaryalarmsystem.com/category/magnetic-contact.html).
 3. Temperature monitors.
    - Currently, only the DHT11 is supported, but it's very trivial to add support for the DHT22.
    - You can find out more about these sensors [here](https://learn.adafruit.com/dht).
-4. Wiring between the switches, temperature monitor and the Raspberry Pi.
-   - I found female jumper cables made this pretty painless.
+4. Wiring between the switches, temperature monitors and the Raspberry Pi's GPIO connectors.
+   - Find out more about the Pi's GPIO [here](https://projects.raspberrypi.org/en/projects/physical-computing).
+   - Female [jump wires](https://en.wikipedia.org/wiki/Jump_wire) make installing the connections pretty painless. I spliced them to the ends of modular cables (i.e. phone cables) for longer runs.
    - Edit the [config.json](./config.json) file to customize your pin outs and integrations.
 5. A USB camera or webcam that's compatible with [motion](https://motion-project.github.io/).
    - [Many](https://www.lavrsen.dk/foswiki/bin/view/Motion/WorkingDevices) webcams are compatible, and easy to find.
-
-### OS Dependencies
-
-You will need to install the following dependencies:
-
-```bash
-sudo apt-get install gcc libffi-dev libgpiod2 libssl-dev motion python3-dev supervisor
-```
 
 ### Python
 
@@ -91,16 +87,7 @@ Enter your AWS credentials for the logging bucket here, to archive your logs.
 
 PI Portal ships with a binary for [filebeat](https://www.elastic.co/beats/filebeat) that has compiled for the Raspberry PI 3.  This binary is responsible for streaming your logs to [logz.io](https://logz.io/).  
 
-### Installing The PI Portal Software
-
-Download the Python Wheel, and copy to your Raspberry PI.
-Install with:
-
-```bash
-sudo pip3 install [wheel file name]
-```
-
-### Creating a configuration file
+## Creating a configuration file
 
 Create a configuration json file that contains the following:
 
@@ -131,21 +118,18 @@ Create a configuration json file that contains the following:
 }
 ```
 
-### Installing the PI Portal system configuration
+## Installing The PI Portal Software
 
-To complete the installation, you will need to install the configuration file you created above with pi_portal.
+There are 3 primary delivery mechanisms for Pi Portal:
+- a multiarch (armv6, armv7 and arm64) [docker](https://www.docker.com/) image
+- a set of Raspberry Pi OS compatible [deb](https://en.wikipedia.org/wiki/Deb_(file_format)) packages
+- a Python [wheel](https://packaging.python.org/en/latest/specifications/binary-distribution-format/) and [source distribution](https://packaging.python.org/en/latest/specifications/source-distribution-format/)
 
-Be advised that existing supervisor and motion configurations will be overwritten, if you have customized these files you should back them up before proceeding.
+Please see the [installation guide](markdown/INSTALLATION.md) for further details.
 
-This command should be run as root, as it will modify system files and protect your configuration file by setting appropriate permissions:
+### Up and Running with Logs and Slack Bot
 
-```bash
-sudo pi_portal install_config [configuration json file name]
-```
-
-### Logs and Slack Bot
-
-You should now be streaming your logs to [logz.io](https://logz.io/), where you can create custom notifications and integrate with other services.
+Once configured and installed you should be streaming your logs to [logz.io](https://logz.io/), where you can create custom notifications and integrate with other services.
 You will also be receiving notifications on the configured Slack channel whenever a door is opened or closed.
 
 You can also interact with the bot service on the Slack channel, try the command `help` to get started.
