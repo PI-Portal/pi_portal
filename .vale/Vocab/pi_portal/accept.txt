@@ -1,3 +1,6 @@
+(D|d)ebian
+(L|l)inux
+(S|s)upervisord
 OAuth
 basename
 boto
@@ -9,19 +12,17 @@ cron
 cve
 cython
 darglint
-debian
 defusedxml
 dependabot
 dind
 docstrings
 ebay
 filebeat
-gpio
+gpio|GPIO
 hadolint
 http|HTTP
 ivars
 json|JSON
-linux
 logz.io
 makefile
 mixin
@@ -37,6 +38,7 @@ rtd
 rtm
 sdk
 syslog
+systemd
 testcase
 typecheck
 uid
