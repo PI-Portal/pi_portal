@@ -1,4 +1,4 @@
-"""Test fixtures for the slack.cli modules tests."""
+"""Test fixtures for the slack modules tests."""
 # pylint: disable=redefined-outer-name,duplicate-code
 
 from unittest import mock
