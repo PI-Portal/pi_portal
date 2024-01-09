@@ -37,6 +37,7 @@ rtd
 rtm
 sdk
 syslog
+testcase
 typecheck
 uid
 url
