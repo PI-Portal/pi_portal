@@ -1,31 +1,29 @@
 """Motion integration module."""
 
 import glob
+import logging
 import os
 from typing import List
 
-import requests
 from pi_portal import config
-from pi_portal.modules.integrations.s3 import client
-from requests.adapters import HTTPAdapter
-from urllib3 import Retry
+from pi_portal.modules.integrations.network import http
+from pi_portal.modules.integrations.s3 import client as s3_client
 
 
 class MotionException(Exception):
   """Exceptions for the Motion integration."""
 
 
-class Motion:
+class MotionClient:
   """Integration with the Motion application."""
 
   snapshot_url = 'http://localhost:8080/0/action/snapshot'
-  snapshot_fname = os.path.join(config.PATH_MOTION_CONTENT, 'lastsnap.jpg')
+  snapshot_file_name = os.path.join(config.PATH_MOTION_CONTENT, 'lastsnap.jpg')
   video_glob_pattern = os.path.join(config.PATH_MOTION_CONTENT, '/*.mp4')
-  snapshot_retries = 10
-  s3_retries = 3
 
-  def __init__(self) -> None:
-    self.s3_client = client.S3BucketClient()
+  def __init__(self, log: logging.Logger) -> None:
+    self.s3_client = s3_client.S3BucketClient()
+    self.http_client = http.HttpClient(log)
 
   def cleanup_snapshot(self, file_name: str) -> None:
     """Delete snapshot locally.
@@ -55,11 +53,7 @@ class Motion:
     :raises: :class:`MotionException`
     """
 
-    retry_strategy = Retry(total=self.snapshot_retries)
-    adapter = HTTPAdapter(max_retries=retry_strategy)
-    http = requests.Session()
-    http.mount("https://", adapter)
-    http.mount("http://", adapter)
-    response = http.get(self.snapshot_url)
-    if response.status_code != requests.status_codes.codes.ok:
-      raise MotionException("Unable to take snapshot.")
+    try:
+      self.http_client.get(self.snapshot_url)
+    except http.HttpClientError as exc:
+      raise MotionException("Unable to take snapshot.") from exc
