@@ -1,24 +1,24 @@
 """Test Slack CLI utility methods."""
 
-from unittest import TestCase
-
 from pi_portal.modules.integrations.slack import cli
 
 
-class TestGetAvailableCommands(TestCase):
+class TestGetAvailableCommands:
   """Test the get_available_commands function."""
 
+  expected_commands = [
+      'arm',
+      'disarm',
+      'help',
+      'id',
+      'restart',
+      'snapshot',
+      'status',
+      'temp',
+      'uptime',
+  ]
+
   def test_call(self) -> None:
-    registered_commands = [
-        'arm',
-        'disarm',
-        'help',
-        'id',
-        'restart',
-        'snapshot',
-        'status',
-        'temp',
-        'uptime',
-    ]
     result = cli.get_available_commands()
-    self.assertEqual(result, registered_commands)
+
+    assert result == self.expected_commands
