@@ -2,7 +2,7 @@
 
 from pi_portal import config
 from pi_portal.modules.configuration import state
-from pi_portal.modules.integrations import motion
+from pi_portal.modules.integrations.motion import client as motion_client
 from pi_portal.modules.integrations.slack import config as slack_config
 from pi_portal.modules.mixins import write_log_file
 from slack_sdk import WebClient
@@ -22,7 +22,7 @@ class SlackClient(write_log_file.LogFileWriter):
     self.web = WebClient(token=current_state.user_config['SLACK_BOT_TOKEN'])
     self.channel = current_state.user_config['SLACK_CHANNEL']
     self.channel_id = current_state.user_config['SLACK_CHANNEL_ID']
-    self.motion_client = motion.Motion()
+    self.motion_client = motion_client.MotionClient(self.log)
     self.config = slack_config.SlackClientConfiguration()
 
   def send_message(self, message: str) -> None:
@@ -64,6 +64,6 @@ class SlackClient(write_log_file.LogFileWriter):
     try:
       self.send_file(file_name)
       self.motion_client.cleanup_snapshot(file_name)
-    except motion.MotionException:
+    except motion_client.MotionException:
       self.send_message("An error occurred cleaning up this snapshot.")
       self.log.error("Failed to remove old motion snapshot!")

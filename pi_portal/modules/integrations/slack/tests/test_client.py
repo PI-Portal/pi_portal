@@ -3,8 +3,8 @@
 from unittest import mock
 
 from pi_portal.modules.configuration.tests.fixtures import mock_state
-from pi_portal.modules.integrations import motion
-from pi_portal.modules.integrations.slack import client
+from pi_portal.modules.integrations.motion import client as motion_client
+from pi_portal.modules.integrations.slack import client as slack_client
 from pi_portal.modules.integrations.slack import config as slack_config
 from slack_sdk.errors import SlackRequestError
 
@@ -14,7 +14,7 @@ class TestSlackClient:
 
   def test_initialize__attributes(
       self,
-      client_instance: client.SlackClient,
+      client_instance: slack_client.SlackClient,
   ) -> None:
     assert isinstance(client_instance.web, mock.Mock)
     assert client_instance.channel == mock_state.MOCK_SLACK_CHANNEL
@@ -27,7 +27,7 @@ class TestSlackClient:
 
   def test_initialize__web(
       self,
-      client_instance: client.SlackClient,
+      client_instance: slack_client.SlackClient,
       mocked_state: mock.Mock,
       mocked_slack_web_client: mock.Mock,
   ) -> None:
@@ -38,7 +38,7 @@ class TestSlackClient:
 
   def test_initialize__motion(
       self,
-      client_instance: client.SlackClient,
+      client_instance: slack_client.SlackClient,
       mocked_motion_client: mock.Mock,
   ) -> None:
     assert client_instance.motion_client == mocked_motion_client.return_value
@@ -46,7 +46,7 @@ class TestSlackClient:
 
   def test_send_message__success(
       self,
-      client_instance: client.SlackClient,
+      client_instance: slack_client.SlackClient,
       mocked_slack_web_client: mock.Mock,
   ) -> None:
     test_message = "test message"
@@ -61,7 +61,7 @@ class TestSlackClient:
 
   def test_send_message__exception(
       self,
-      client_instance: client.SlackClient,
+      client_instance: slack_client.SlackClient,
       mocked_logger: mock.Mock,
       mocked_slack_web_client: mock.Mock,
   ) -> None:
@@ -87,7 +87,7 @@ class TestSlackClient:
 
   def test_send_file__success(
       self,
-      client_instance: client.SlackClient,
+      client_instance: slack_client.SlackClient,
       mocked_slack_web_client: mock.Mock,
   ) -> None:
     test_file = "/path/to/mock/file.txt"
@@ -103,7 +103,7 @@ class TestSlackClient:
 
   def test_send_file__exception(
       self,
-      client_instance: client.SlackClient,
+      client_instance: slack_client.SlackClient,
       mocked_logger: mock.Mock,
       mocked_slack_web_client: mock.Mock,
   ) -> None:
@@ -130,7 +130,7 @@ class TestSlackClient:
 
   def test_send_snapshot__success(
       self,
-      client_instance: client.SlackClient,
+      client_instance: slack_client.SlackClient,
       mocked_motion_client: mock.Mock,
       mocked_slack_web_client: mock.Mock,
   ) -> None:
@@ -151,14 +151,14 @@ class TestSlackClient:
 
   def test_send_snapshot__exception(
       self,
-      client_instance: client.SlackClient,
+      client_instance: slack_client.SlackClient,
       mocked_logger: mock.Mock,
       mocked_motion_client: mock.Mock,
       mocked_slack_web_client: mock.Mock,
   ) -> None:
     test_snapshot = "/path/to/mock/snapshot.jpg"
     mocked_motion_client.return_value.cleanup_snapshot.side_effect = \
-        motion.MotionException("Boom!")
+        motion_client.MotionException("Boom!")
 
     client_instance.send_snapshot(test_snapshot)
 

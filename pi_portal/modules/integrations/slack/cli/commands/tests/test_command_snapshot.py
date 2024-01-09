@@ -3,7 +3,7 @@
 from typing import cast
 from unittest import mock
 
-from pi_portal.modules.integrations import motion
+from pi_portal.modules.integrations.motion import client as motion_client
 from pi_portal.modules.system.supervisor_config import ProcessList
 from typing_extensions import Literal
 from .. import command_snapshot
@@ -28,7 +28,7 @@ class TestSnapshotCommand(
 
   def setUp(self) -> None:
     with mock.patch(
-        command_snapshot.__name__ + ".motion.Motion"
+        command_snapshot.__name__ + ".motion_client.MotionClient"
     ) as mock_motion_client:
       self.mock_motion_client = mock_motion_client
       super().setUp()
@@ -41,7 +41,7 @@ class TestSnapshotCommand(
   def test_invoke_motion_error(self) -> None:
     self._mocked_process().status_in.return_value = True
     self._mock_motion_client().take_snapshot.side_effect = \
-      motion.MotionException("Boom!")
+        motion_client.MotionException("Boom!")
     self.instance.invoke()
     self.mock_notifier.notify_error.assert_called_once_with()
 

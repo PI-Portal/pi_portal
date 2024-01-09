@@ -18,6 +18,7 @@ ebay
 filebeat
 gpio
 hadolint
+http|HTTP
 ivars
 json|JSON
 linux
