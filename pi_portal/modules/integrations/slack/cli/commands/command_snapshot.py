@@ -2,7 +2,7 @@
 
 from typing import TYPE_CHECKING
 
-from pi_portal.modules.integrations import motion
+from pi_portal.modules.integrations.motion import client as motion_client
 from pi_portal.modules.system.supervisor_config import (
     ProcessList,
     ProcessStatus,
@@ -24,7 +24,7 @@ class SnapshotCommand(SlackProcessCommandBase):
 
   def __init__(self, bot: "SlackBot"):
     super().__init__(bot)
-    self.motion_client = motion.Motion()
+    self.motion_client = motion_client.MotionClient(bot.log)
 
   def hook_invoker(self) -> None:
     """Check if the camera is available, and then take a snapshot."""
@@ -42,5 +42,5 @@ class SnapshotCommand(SlackProcessCommandBase):
   def _do_snapshot(self) -> None:
     try:
       self.motion_client.take_snapshot()
-    except motion.MotionException:
+    except motion_client.MotionException:
       self.notifier.notify_error()
