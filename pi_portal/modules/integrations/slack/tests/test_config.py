@@ -1,14 +1,13 @@
 """Test the SlackClientConfiguration class."""
 
-from unittest import TestCase
-
 from pi_portal.modules.integrations.slack import config
 
 
-class TestSlackClient(TestCase):
+class TestSlackClient:
   """Test the SlackClientConfiguration class."""
 
   def test_initialize(self) -> None:
     configuration = config.SlackClientConfiguration()
-    self.assertEqual(configuration.interval, 1)
-    self.assertEqual(configuration.upload_file_title, "Motion Upload")
+
+    assert configuration.interval == 1
+    assert configuration.upload_file_title == "Motion Upload"
