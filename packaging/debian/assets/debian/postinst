@@ -13,8 +13,6 @@ permissions() {
     /opt/venvs/pi-portal                                               \
     /usr/bin/portal                                                    \
     /var/lib/motion
-  chown -R root:root                                                   \
-    /usr/bin/filebeat
 }
 
 users() {
