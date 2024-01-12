@@ -6,7 +6,6 @@
 
 set -eo pipefail
 
-BUILD_USER="$(whoami)"
 FILEBEAT_VERSION="8.11.0"
 
 read -r -d' ' -a ARCHITECTURES < <(yq -r 'to_entries | sort_by(.keys) | .[].key' packaging/filebeat/assets/architectures.yml) || true
@@ -41,7 +40,7 @@ filebeat_package() {
 
   mkdir -p ../dist
 
-  sudo chown "${BUILD_USER}":"${BUILD_USER}" ./*
+  sudo chown root:root ./*
   for ARCHITECTURE in "${ARCHITECTURES[@]}"; do
     tar --transform "s|filebeat-${ARCHITECTURE}|filebeat|" -cvzf ../dist/"filebeat-linux-${FILEBEAT_VERSION}-${ARCHITECTURE}.tar.gz" "filebeat-${ARCHITECTURE}"
   done
