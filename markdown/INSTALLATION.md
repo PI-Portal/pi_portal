@@ -116,20 +116,20 @@ Steps:
    - [supervisor](https://packages.debian.org/bookworm/supervisor)
 7. It would be prudent to stop any services launched for motion or supervisor at this point.  
    - The installer will attempt this as well, but your distribution may have an unknown init system.
-8. Create the pi-portal user:
+8. Create the pi_portal user:
 
    ```shell
    # as root
-   useradd pi-portal --no-create-home -s /bin/false -l
+   useradd pi_portal --no-create-home -s /bin/false -l
    ```
 
 9. Take a minute and determine what the `gpio` group is on your system:
    - This a linux group that is added to `/dev/gpiomem` or similar to allow non-root access to the hardware.
-   - The user `pi-portal` needs to be a member of this group.
+   - The user `pi_portal` needs to be a member of this group.
 
    ```shell
    # as root
-   usermod -a -G gpio pi-portal
+   usermod -a -G gpio pi_portal
    ```
 
    This group may be named differently, or may not even exist at all (requiring you to also create it manually).
@@ -140,10 +140,10 @@ Steps:
     ```shell
     # as root
     mkdir -p /opt/venvs
-    python3 -m venv /opt/venvs/pi-portal 
-    source /opt/venvs/pi-portal/bin/activate
+    python3 -m venv /opt/venvs/pi_portal 
+    source /opt/venvs/pi_portal/bin/activate
     pip install ./pi_portal-x.x.x-py3-none-any.whl
-    chown -R pi-portal:pi-portal /opt/venvs/pi-portal
+    chown -R pi_portal:pi_portal /opt/venvs/pi_portal
     ```
 
     - You can customize the location by setting an [environment variable](../pi_portal/config.py).

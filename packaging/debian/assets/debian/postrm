@@ -1,7 +1,7 @@
 #!/bin/bash
 
-PACKAGE_USER="pi-portal"
-PI_PORTAL_INSTALL_LOCATION="/opt/venvs/pi-portal"
+PACKAGE_USER="pi_portal"
+PI_PORTAL_INSTALL_LOCATION="/opt/venvs/pi_portal"
 
 
 cleanup_users() {
