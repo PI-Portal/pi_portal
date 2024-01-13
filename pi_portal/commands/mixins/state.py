@@ -12,7 +12,7 @@ class CommandManagedStateMixin:
   def load_state(
       self,
       debug: bool,
-      file_path: str = config.PATH_USER_CONFIG_INSTALL,
+      file_path: str = config.PATH_USER_CONFIG,
   ) -> None:
     """Load and configure state.
 

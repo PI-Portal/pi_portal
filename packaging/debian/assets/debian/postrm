@@ -14,7 +14,7 @@ cleanup_users() {
 cleanup_venv() {
   local TARGET
 
-  KNOWN_TARGETS=("config.json" "queue_videos")
+  KNOWN_TARGETS=("queue_videos")
 
   for TARGET in "${KNOWN_TARGETS[@]}"; do
     if [[ -e "${PI_PORTAL_INSTALL_LOCATION}/${TARGET}" ]]; then
