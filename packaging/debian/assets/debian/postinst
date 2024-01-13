@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PACKAGE_USER="pi-portal"
+PACKAGE_USER="pi_portal"
 
 gpio_access() {
   if grep -q gpio /etc/group; then
@@ -10,7 +10,7 @@ gpio_access() {
 
 permissions() {
   chown -R "${PACKAGE_USER}":"${PACKAGE_USER}"                         \
-    /opt/venvs/pi-portal                                               \
+    /opt/venvs/pi_portal                                               \
     /usr/bin/portal                                                    \
     /var/lib/motion
 }

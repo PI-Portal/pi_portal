@@ -16,7 +16,7 @@ PRODUCTION() {
 
   if ! grep -q gpio /etc/group; then
     groupadd -g "$(stat -c '%g' /dev/gpiomem)" gpio
-    usermod -a -G gpio pi-portal
+    usermod -a -G gpio pi_portal
   fi
 
   portal install_config -y /config.json
