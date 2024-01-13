@@ -64,6 +64,7 @@ class TestStepInitializeEtc:
     assert step_initialize_etc_instance.etc_paths == [
         "/etc/filebeat",
         "/etc/motion",
+        "/etc/pi_portal",
         "/etc/pki/tls/certs",
     ]
 

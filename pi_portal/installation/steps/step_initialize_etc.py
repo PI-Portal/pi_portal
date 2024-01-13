@@ -6,16 +6,17 @@ from .bases import system_call_step
 
 
 class StepInitializeEtc(system_call_step.SystemCallBase):
-  """Initialize etc paths for system dependencies."""
+  """Initialize etc paths for configuration."""
 
   etc_paths = [
       "/etc/filebeat",
       "/etc/motion",
+      "/etc/pi_portal",
       "/etc/pki/tls/certs",
   ]
 
   def invoke(self) -> None:
-    """Initialize etc paths for system dependencies."""
+    """Initialize etc paths for configuration."""
 
     self.log.info("Initializing etc paths ...")
 
