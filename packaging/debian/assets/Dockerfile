@@ -30,7 +30,7 @@ RUN apt-get install -y      \
     python3-setuptools
 
 # hadolint ignore=DL3059
-RUN useradd pi-portal       \
+RUN useradd pi_portal       \
     --no-create-home        \
     -s /bin/false           \
     -l

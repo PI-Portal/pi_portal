@@ -2,13 +2,14 @@
 
 SHELL := /bin/bash
 BUILD_USER=$(shell whoami)
-PACKAGE=$(shell poetry version | cut -d' ' -f1)
+PACKAGE=$(shell poetry version | cut -d' ' -f1 | tr '_' '-')
+PACKAGE_NAME_SLUG=$(shell poetry version | cut -d' ' -f1 | tr '-' '_')
 VERSION=$(shell poetry version -s)
 SDIST_DIR=debian/$(PACKAGE)-$(VERSION)
-USER=pi-portal
+USER=pi_portal
 
-export PI_PORTAL_INSTALL_LOCATION=/opt/venvs/pi-portal
-export PYBUILD_NAME=pi_portal
+export PI_PORTAL_INSTALL_LOCATION=/opt/venvs/${PACKAGE_NAME_SLUG}
+export PYBUILD_NAME=${PACKAGE_NAME_SLUG}
 
 
 build:
@@ -39,7 +40,7 @@ override_dh_builddeb:
 
 override_dh_fixperms:
 	dh_fixperms
-	find debian/$(PACKAGE)/opt/venvs/pi-portal                                              \
+	find debian/$(PACKAGE)${PI_PORTAL_INSTALL_LOCATION}                                     \
 	    -type d                                                                             \
 	    -exec chmod 750 {} \;
 	chmod 750                                                                               \
@@ -48,11 +49,11 @@ override_dh_fixperms:
 
 override_dh_makeshlibs:
 	dh_makeshlibs                                                                           \
-	--exclude=debian/$(PACKAGE)/opt/venvs/$(PACKAGE)/lib/
+	--exclude=debian/$(PACKAGE)${PI_PORTAL_INSTALL_LOCATION}/lib/
 
 override_dh_shlibdeps:
 	dh_shlibdeps                                                                            \
-	--exclude=debian/$(PACKAGE)/opt/venvs/$(PACKAGE)/lib/
+	--exclude=debian/$(PACKAGE)${PI_PORTAL_INSTALL_LOCATION}/lib/
 
 override_dh_strip:
 	echo "Disabled"
@@ -62,8 +63,9 @@ override_dh_strip_nondeterminism:
 
 override_dh_virtualenv:
 	dh_virtualenv                                                                           \
+	--install-suffix $(PACKAGE_NAME_SLUG)  												    \
+	--pip-tool dh-poetry                                                                    \
 	--python /usr/bin/python3                                                               \
 	--preinstall "poetry${MIN_POETRY_VERSION}"                                              \
 	--preinstall "dh-poetry>=0.1.1"                                                         \
-	--pip-tool dh-poetry                                                                    \
 	--sourcedir $(SDIST_DIR)
