@@ -4,7 +4,7 @@ import os
 
 PI_PORTAL_INSTALL_LOCATION = os.getenv(
     "PI_PORTAL_INSTALL_LOCATION",
-    "/opt/venvs/pi-portal",
+    "/opt/venvs/pi_portal",
 )
 
 FILE_BEAT_BINARY = os.getenv("PI_PORTAL_FILEBEAT_LOCATION", "/usr/bin/filebeat")
@@ -31,4 +31,4 @@ PID_FILE_MOTION = '/var/run/motion/motion.pid'
 PID_FILE_SUPERVISORD = '/var/run/supervisord.pid'
 
 PI_PORTAL_SHIM = "/usr/bin/portal"
-PI_PORTAL_USER = "pi-portal"
+PI_PORTAL_USER = "pi_portal"
