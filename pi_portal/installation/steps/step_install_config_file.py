@@ -28,13 +28,13 @@ class StepInstallConfigFile(system_call_step.SystemCallBase):
     """Install the user's configuration file."""
 
     self.log.info("Installing the user's configuration file ...")
-    shutil.copy(self.config_file_path, config.PATH_USER_CONFIG_INSTALL)
+    shutil.copy(self.config_file_path, config.PATH_USER_CONFIG)
     self.log.info("Done writing the user's configuration file.")
 
     self.log.info("Setting permissions on the user's configuration file ...")
     self._system_call(
         f"chown {config.PI_PORTAL_USER}:{config.PI_PORTAL_USER} "
-        f"{config.PATH_USER_CONFIG_INSTALL}"
+        f"{config.PATH_USER_CONFIG}"
     )
-    self._system_call(f"chmod 600 {config.PATH_USER_CONFIG_INSTALL}")
+    self._system_call(f"chmod 600 {config.PATH_USER_CONFIG}")
     self.log.info("Done setting permissions on the user's configuration file.")

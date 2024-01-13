@@ -21,10 +21,7 @@ LOG_PREFIX_SUPERVISOR = "/var/log/supervisor/supervisor"
 
 PATH_MOTION_CONTENT = "/var/lib/motion"
 PATH_SUPERVISOR_SOCKET = "/var/run/supervisor.sock"
-PATH_USER_CONFIG_INSTALL = os.path.join(
-    PI_PORTAL_INSTALL_LOCATION,
-    "config.json",
-)
+PATH_USER_CONFIG = "/etc/pi_portal/config.json"
 PATH_VIDEO_UPLOAD_QUEUE = os.path.join(
     PI_PORTAL_INSTALL_LOCATION,
     "queue_videos",

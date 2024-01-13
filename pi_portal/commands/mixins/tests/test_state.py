@@ -35,7 +35,7 @@ class TestCommandManagedStateMixin:
 
       mocked_state.assert_called_once_with()
       mocked_state.return_value.load.assert_called_once_with(
-          file_path=config.PATH_USER_CONFIG_INSTALL
+          file_path=config.PATH_USER_CONFIG
       )
       self.check_logging_level(debug_value, mocked_state)
 
@@ -69,7 +69,7 @@ class TestCommandManagedStateMixin:
 
       mocked_state.assert_called_once_with()
       mocked_state.return_value.load.assert_called_once_with(
-          file_path=config.PATH_USER_CONFIG_INSTALL
+          file_path=config.PATH_USER_CONFIG
       )
       self.check_logging_level(debug_value, mocked_state)
 

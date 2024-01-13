@@ -103,6 +103,9 @@ RUN install -m 0755 -d /etc/apt/keyrings                                        
     apt-get update                                                                                                                   && \
     apt-get install -y --no-install-recommends docker-ce-cli
 
+# Create the configuration folder
+RUN mkdir /etc/pi_portal
+
 USER user
 
 # Copy the poetry configuration
