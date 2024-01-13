@@ -13,10 +13,10 @@ Please use at your own risk.
 [Project Documentation](https://pi-portal.readthedocs.io/)
 
 ## Master Branch Builds
-- [![pi_portal Generic Push](https://github.com/pi-portal/pi_portal/workflows/pi_portal-push-generic/badge.svg?branch=master)](https://github.com/pi-portal/pi_portal/actions)
+- [![pi_portal-github-workflow-push](https://github.com/PI-Portal/pi_portal/actions/workflows/workflow-push.yml/badge.svg?branch=master)](https://github.com/PI-Portal/pi_portal/actions/workflows/workflow-push.yml)
 
 ## Production Branch Builds
-- [![pi_portal Generic Push](https://github.com/pi-portal/pi_portal/workflows/pi_portal-push-generic/badge.svg?branch=production)](https://github.com/pi-portal/pi_portal/actions)
+- [![pi_portal-github-workflow-push](https://github.com/PI-Portal/pi_portal/actions/workflows/workflow-push.yml/badge.svg?branch=production)](https://github.com/PI-Portal/pi_portal/actions/workflows/workflow-push.yml)
 
 ## Requirements
 
