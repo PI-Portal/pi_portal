@@ -48,22 +48,6 @@ class TestRunningConfig:
 
     assert state_instance.log_uuid == state_instance_clone.log_uuid
 
-  def test_load_config__with_default_config__is_shared(
-      self,
-      mocked_user_configuration: mock.Mock,
-      state_instance: state.State,
-      state_instance_clone: state.State,
-  ) -> None:
-    mocked_user_configuration.return_value.user_config = self.mock_config
-
-    state_instance.load()
-
-    mocked_user_configuration.return_value.load.assert_called_once_with(
-        file_path="config.json"
-    )
-    assert state_instance.user_config == self.mock_config
-    assert state_instance.user_config == state_instance_clone.user_config
-
   def test_load_config__with_user_config_file__is_shared(
       self,
       mocked_user_configuration: mock.Mock,

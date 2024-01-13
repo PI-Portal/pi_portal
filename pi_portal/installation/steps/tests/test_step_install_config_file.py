@@ -35,15 +35,15 @@ class TestStepInstallConfigFile:
 
     mocked_copy.assert_called_once_with(
         mocked_config_file,
-        config.PATH_USER_CONFIG_INSTALL,
+        config.PATH_USER_CONFIG,
     )
     assert mocked_system.mock_calls == \
            [
              mock.call(
                f"chown {config.PI_PORTAL_USER}:{config.PI_PORTAL_USER} "
-               f"{config.PATH_USER_CONFIG_INSTALL}"
+               f"{config.PATH_USER_CONFIG}"
              ),
-             mock.call(f"chmod 600 {config.PATH_USER_CONFIG_INSTALL}"),
+             mock.call(f"chmod 600 {config.PATH_USER_CONFIG}"),
            ]
     assert mocked_stream.getvalue() == \
         (
@@ -53,9 +53,9 @@ class TestStepInstallConfigFile:
           "configuration file ...\n"
           "test - INFO - Executing: 'chown "
           f"{config.PI_PORTAL_USER}:{config.PI_PORTAL_USER} "
-          f"{config.PATH_USER_CONFIG_INSTALL}' ...\n"
+          f"{config.PATH_USER_CONFIG}' ...\n"
           "test - INFO - Executing: "
-          f"'chmod 600 {config.PATH_USER_CONFIG_INSTALL}' ...\n"
+          f"'chmod 600 {config.PATH_USER_CONFIG}' ...\n"
           "test - INFO - Done setting permissions on the user's "
           "configuration file.\n"
         )
@@ -75,11 +75,11 @@ class TestStepInstallConfigFile:
 
     mocked_copy.assert_called_once_with(
         mocked_config_file,
-        config.PATH_USER_CONFIG_INSTALL,
+        config.PATH_USER_CONFIG,
     )
     mocked_system.assert_called_once_with(
         f"chown {config.PI_PORTAL_USER}:{config.PI_PORTAL_USER} "
-        f"{config.PATH_USER_CONFIG_INSTALL}"
+        f"{config.PATH_USER_CONFIG}"
     )
     assert mocked_stream.getvalue() == \
            (
@@ -89,12 +89,12 @@ class TestStepInstallConfigFile:
              "configuration file ...\n"
              "test - INFO - Executing: 'chown "
              f"{config.PI_PORTAL_USER}:{config.PI_PORTAL_USER} "
-             f"{config.PATH_USER_CONFIG_INSTALL}' ...\n"
+             f"{config.PATH_USER_CONFIG}' ...\n"
              "test - ERROR - Command: 'chown "
              f"{config.PI_PORTAL_USER}:{config.PI_PORTAL_USER} "
-             f"{config.PATH_USER_CONFIG_INSTALL}' failed!\n"
+             f"{config.PATH_USER_CONFIG}' failed!\n"
            )
     assert str(exc.value) == (
         f"Command: 'chown {config.PI_PORTAL_USER}:{config.PI_PORTAL_USER} "
-        f"{config.PATH_USER_CONFIG_INSTALL}' failed!"
+        f"{config.PATH_USER_CONFIG}' failed!"
     )
