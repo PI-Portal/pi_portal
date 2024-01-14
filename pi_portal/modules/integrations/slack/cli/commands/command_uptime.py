@@ -2,7 +2,9 @@
 
 from pi_portal.modules.system import linux, supervisor
 from .bases.command import SlackCommandBase
-from .process_uptime_commands.cron_videos_uptime import CronVideosUptimeCommand
+from .process_uptime_commands.cron_scheduler_uptime import (
+    CronSchedulerUptimeCommand,
+)
 from .process_uptime_commands.door_monitor_uptime import (
     DoorMonitorUptimeCommand,
 )
@@ -22,13 +24,13 @@ class UptimeCommand(SlackCommandBase):
     """Report the uptime of the system and Pi Portal processes."""
 
     bot_uptime_command = BotUptimeCommand(self.slack_bot)
-    cron_video_command = CronVideosUptimeCommand(self.slack_bot)
+    cron_uptime_command = CronSchedulerUptimeCommand(self.slack_bot)
     door_monitor_uptime_command = DoorMonitorUptimeCommand(self.slack_bot)
     temp_monitor_uptime_command = TempMonitorUptimeCommand(self.slack_bot)
 
     try:
       bot_uptime_command.invoke()
-      cron_video_command.invoke()
+      cron_uptime_command.invoke()
       door_monitor_uptime_command.invoke()
       temp_monitor_uptime_command.invoke()
     except supervisor.SupervisorException:
@@ -39,7 +41,7 @@ class UptimeCommand(SlackCommandBase):
       self.slack_bot.slack_client.send_message(
           f"System Uptime > {linux_uptime}\n"
           f"Bot Uptime > {bot_uptime_command.result}\n"
-          f"Cron (Video Archival) Uptime > {cron_video_command.result}\n"
+          f"Cron Scheduler Uptime > {cron_uptime_command.result}\n"
           f"Door Monitor Uptime > {door_monitor_uptime_command.result}\n"
           f"Temperature Monitor Uptime > {temp_monitor_uptime_command.result}"
       )

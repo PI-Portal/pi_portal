@@ -5,7 +5,7 @@ from unittest import mock
 
 import pytest
 from pi_portal.modules.configuration.tests.fixtures import mock_state
-from pi_portal.modules.integrations.s3 import client, video_upload_cron
+from pi_portal.modules.integrations.s3 import client
 
 CLIENT_MODULE = client.__name__
 
@@ -24,10 +24,3 @@ def s3_client_instance(
     monkeypatch.setattr(CLIENT_MODULE + ".boto3", mocked_boto)
     s3_client = client.S3BucketClient()
   return s3_client
-
-
-@pytest.fixture
-def video_upload_queue_instance() -> video_upload_cron.VideoUploadCron:
-  with mock_state.mock_state_creator():
-    instance = video_upload_cron.VideoUploadCron(1)
-  return instance
