@@ -11,7 +11,7 @@ ERROR() {
 
 PRODUCTION() {
   [[ ! -e "/dev/gpiomem" ]] && ERROR "The gpiomem device is not mounted!"
-  [[ ! -e "/dev/video0" ]] && ERROR "The video device is not mounted!"
+  [[ -z "$(ls /dev/video*)" ]] && ERROR "No video device has been mounted!"
   [[ ! -f "/config.json" ]] && ERROR "No pi_portal configuration has been mounted!"
 
   if ! grep -q gpio /etc/group; then
