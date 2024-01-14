@@ -62,12 +62,12 @@ class TestStepInitializeLogging:
   ) -> None:
     assert isinstance(step_initialize_logging_instance.log, logging.Logger)
     assert step_initialize_logging_instance.log_files == [
-        config.LOG_FILE_DOOR_MONITOR,  # pylint: disable=duplicate-code
+        config.LOG_FILE_CRON_SCHEDULER,  # pylint: disable=duplicate-code
+        config.LOG_FILE_DOOR_MONITOR,
         config.LOG_FILE_MOTION,
         config.LOG_FILE_SLACK_BOT,
         config.LOG_FILE_SLACK_CLIENT,
         config.LOG_FILE_TEMPERATURE_MONITOR,
-        config.LOG_FILE_VIDEO_UPLOAD_CRON,
     ]
 
   @mock.patch(
@@ -114,19 +114,19 @@ class TestStepInitializeLogging:
       step_initialize_logging_instance.invoke()
 
     assert mocked_system.mock_calls == list(
-        self.build_no_existing_system_calls("/var/log/pi_portal.door.log")
+        self.build_no_existing_system_calls("/var/log/pi_portal.cron.log")
     )
     assert mocked_stream.getvalue() == "".join(
         [
             "test - INFO - Initializing logging ...\n",
-            self.build_no_existing_log_arguments("/var/log/pi_portal.door.log"),
+            self.build_no_existing_log_arguments("/var/log/pi_portal.cron.log"),
             "test - ERROR - Command: 'chmod 600 "
-            "/var/log/pi_portal.door.log' failed!\n",
+            "/var/log/pi_portal.cron.log' failed!\n",
         ]
     )
     assert str(
         exc.value
-    ) == "Command: 'chmod 600 /var/log/pi_portal.door.log' failed!"
+    ) == "Command: 'chmod 600 /var/log/pi_portal.cron.log' failed!"
 
   @mock.patch(
       step_initialize_logging.__name__ + '.os.path.exists',
