@@ -4,7 +4,7 @@ filebeat.inputs:
 
   - type: log
     paths:
-      - {{ LOG_FILE_VIDEO_UPLOAD_CRON }}
+      - {{ LOG_FILE_CRON_SCHEDULER }}
     fields:
       logzio_codec: json
       token: {{ LOGZ_IO_CODE }}

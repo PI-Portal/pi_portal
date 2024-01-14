@@ -10,12 +10,12 @@ class StepInitializeLogging(system_call_step.SystemCallBase):
   """Initialize logging files for supervisor."""
 
   log_files = [
+      config.LOG_FILE_CRON_SCHEDULER,
       config.LOG_FILE_DOOR_MONITOR,
       config.LOG_FILE_MOTION,
       config.LOG_FILE_SLACK_BOT,
       config.LOG_FILE_SLACK_CLIENT,
       config.LOG_FILE_TEMPERATURE_MONITOR,
-      config.LOG_FILE_VIDEO_UPLOAD_CRON,
   ]
 
   def invoke(self) -> None:
