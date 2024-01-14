@@ -2,7 +2,7 @@
 
 import click
 from .commands import (
-    cron_videos,
+    cron_scheduler,
     door_monitor,
     installer,
     slack_bot,
@@ -23,12 +23,12 @@ def cli(ctx: click.Context, debug: bool) -> None:
   ctx.obj['DEBUG'] = debug
 
 
-@cli.command("cron_videos")
+@cli.command("cron_scheduler")
 @click.pass_context
-def cron_videos_command(ctx: click.Context) -> None:
-  """Start the video archival cron."""
+def cron_scheduler_command(ctx: click.Context) -> None:
+  """Start the cron job scheduler."""
 
-  command = cron_videos.CronVideosCommand()
+  command = cron_scheduler.CronSchedulerCommand()
   command.load_state(debug=ctx.obj['DEBUG'])
   command.invoke()
 

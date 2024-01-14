@@ -5,7 +5,7 @@ from unittest import mock
 
 import pytest
 from .. import (
-    cron_videos,
+    cron_scheduler,
     door_monitor,
     installer,
     slack_bot,
@@ -18,6 +18,11 @@ from .. import (
 
 @pytest.fixture
 def mocked_click() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
+def mocked_cron_scheduler() -> mock.Mock:
   return mock.Mock()
 
 
@@ -57,20 +62,15 @@ def mocked_temperature_monitor_factory() -> mock.Mock:
 
 
 @pytest.fixture
-def mocked_video_upload_cron() -> mock.Mock:
-  return mock.Mock()
-
-
-@pytest.fixture
-def cron_videos_command_instance(
-    mocked_video_upload_cron: mock.Mock,
+def cron_instance(
+    mocked_cron_scheduler: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
-) -> cron_videos.CronVideosCommand:
+) -> cron_scheduler.CronSchedulerCommand:
   monkeypatch.setattr(
-      cron_videos.__name__ + ".video_upload_cron.VideoUploadCron",
-      mocked_video_upload_cron,
+      cron_scheduler.__name__ + ".scheduler.CronScheduler",
+      mocked_cron_scheduler,
   )
-  return cron_videos.CronVideosCommand()
+  return cron_scheduler.CronSchedulerCommand()
 
 
 @pytest.fixture
