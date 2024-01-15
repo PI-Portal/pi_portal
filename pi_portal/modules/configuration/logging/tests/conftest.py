@@ -21,12 +21,12 @@ def installer_logger_stdout_instance(
     monkeypatch: pytest.MonkeyPatch,
     installer_logger_configuration_instance: InstallerLoggerConfiguration,
     mocked_logger_name: str,
-    mocked_stream: StringIO,
+    mocked_logger_stream: StringIO,
 ) -> logging.Logger:
   log = logging.getLogger(mocked_logger_name)
   installer_logger = installer_logger_configuration_instance
   installer_logger.configure(log)
-  monkeypatch.setattr(log.handlers[0], "stream", mocked_stream)
+  monkeypatch.setattr(log.handlers[0], "stream", mocked_logger_stream)
   return log
 
 
@@ -41,10 +41,10 @@ def json_logger_stdout_instance(
     monkeypatch: pytest.MonkeyPatch,
     json_logger_configuration_instance: JsonLoggerConfiguration,
     mocked_logger_name: str,
-    mocked_stream: StringIO,
+    mocked_logger_stream: StringIO,
 ) -> logging.Logger:
   log = logging.getLogger(mocked_logger_name)
   json_logger = json_logger_configuration_instance
   json_logger.configure(log)
-  monkeypatch.setattr(log.handlers[0], "stream", mocked_stream)
+  monkeypatch.setattr(log.handlers[0], "stream", mocked_logger_stream)
   return log

@@ -74,14 +74,14 @@ class TestJsonLoggerConfiguration:
       json_logger_stdout_instance: logging.Logger,
       mocked_logger_name: str,
       mocked_state: state.State,
-      mocked_stream: StringIO,
+      mocked_logger_stream: StringIO,
   ) -> None:
     test_message = "test logging message"
 
     json_logger_stdout_instance.error(test_message)
 
     expected_timestamp = self.timestamp.astimezone().replace(tzinfo=None)
-    assert json.loads(mocked_stream.getvalue()) == {
+    assert json.loads(mocked_logger_stream.getvalue()) == {
         "message": test_message,
         "levelname": "ERROR",
         "name": mocked_logger_name,
