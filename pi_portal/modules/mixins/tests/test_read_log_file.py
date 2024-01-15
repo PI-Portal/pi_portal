@@ -1,115 +1,122 @@
-"""Test the ReadLogFile mixin class."""
+"""Test the LogFileReader mixin class."""
 
 import json
-from contextlib import closing
 from io import BytesIO
-from typing import Any, Dict, List, cast
+from typing import Any, Dict, List
 from unittest import mock
 
+import pytest
 from .. import read_log_file
 
-LOG_FILE_MODULE = read_log_file.__name__
 
+class TestLogFileReader:
+  """Test the LogFileReader mixin class."""
 
-class TestReadLogFile:
-  """Test the WriteLogFile mixin class."""
-
-  def create_file_handle(self, source: List[str]) -> mock.MagicMock:
-    """Test double for a Pi Portal log file."""
-    mock_read_data = "\n".join(source)
-    return mock.MagicMock(
-        return_value=closing(BytesIO(mock_read_data.encode("utf-8")))
-    )
-
-  def create_valid_json_log_data(self) -> List[str]:
+  def build_valid_json_log_data(
+      self,
+      mocked_file_handle_binary: BytesIO,
+  ) -> List[str]:
     data = []
     for i in range(0, 10):
-      data.append(json.dumps({str(i): "test data"}))
+      json_data = json.dumps({str(i): "test data"})
+      data.append(json_data)
+    self.populate_file_handle(
+        mocked_file_handle_binary,
+        data,
+    )
     return data
 
-  def create_invalid_json_log_data(self) -> List[str]:
+  def build_invalid_json_log_data(
+      self,
+      mocked_file_handle_binary: BytesIO,
+  ) -> List[str]:
     data = ["Not Valid JSON"]
     for i in range(0, 4):
-      data.append(json.dumps({str(i): "test data"}))
+      json_data = json.dumps({str(i): "test data"})
+      data.append(json_data)
+    self.populate_file_handle(
+        mocked_file_handle_binary,
+        data,
+    )
     return data
 
-  def parse_json_log_data(self, data: List[str]) -> List[Dict[Any, Any]]:
+  def populate_file_handle(
+      self,
+      mocked_file_handle_binary: BytesIO,
+      log_content: List[str],
+  ) -> None:
+    for line in log_content:
+      mocked_file_handle_binary.write(
+          line.encode(read_log_file.LogFileReader.log_file_encoding,) +
+          read_log_file.LogFileReader.new_line_byte
+      )
+
+  def decode_json_log(self, data: List[str]) -> List[Dict[Any, Any]]:
     decoded_data = []
     for row in data:
       decoded_data.append(json.loads(row))
     return decoded_data
 
-  def test_tail__1_line__seek_error(
+  def test__initialize__attributes(
       self,
-      instance: read_log_file.LogFileReader,
+      log_file_reader_instance: read_log_file.LogFileReader,
   ) -> None:
-    with mock.patch("io.BytesIO") as log_file_content:
-      log_file_content.seek.side_effect = [OSError, None]
-    with mock.patch(
-        LOG_FILE_MODULE + '.open',
-        mock.Mock(return_value=closing(cast(BytesIO, log_file_content)))
-    ):
+    assert log_file_reader_instance.log_file_encoding == "utf-8"
+    assert log_file_reader_instance.new_line_byte == b'\n'
 
-      log_data = instance.tail(1)
+  def test__tail__1_line__seek_error(
+      self, log_file_reader_instance: read_log_file.LogFileReader,
+      mocked_file_handle_binary: BytesIO, monkeypatch: pytest.MonkeyPatch
+  ) -> None:
+    monkeypatch.setattr(
+        mocked_file_handle_binary, "seek",
+        mock.Mock(side_effect=[OSError, None])
+    )
+
+    log_data = log_file_reader_instance.tail(1)
 
     assert log_data == []
 
-  def test_tail__1_line__valid_json(
+  def test__tail__1_line__valid_json(
       self,
-      instance: read_log_file.LogFileReader,
+      log_file_reader_instance: read_log_file.LogFileReader,
+      mocked_file_handle_binary: BytesIO,
   ) -> None:
-    with mock.patch(
-        LOG_FILE_MODULE + '.open',
-        self.create_file_handle(self.create_valid_json_log_data())
-    ):
+    mock_data = self.build_valid_json_log_data(mocked_file_handle_binary,)
 
-      log_data = instance.tail(1)
+    log_data = log_file_reader_instance.tail(1)
 
-    assert log_data == self.parse_json_log_data(
-        self.create_valid_json_log_data()[9:],
-    )
+    assert log_data == self.decode_json_log(mock_data[9:])
 
-  def test_tail__4_lines__valid_json(
+  def test__tail__4_lines__valid_json(
       self,
-      instance: read_log_file.LogFileReader,
+      log_file_reader_instance: read_log_file.LogFileReader,
+      mocked_file_handle_binary: BytesIO,
   ) -> None:
-    with mock.patch(
-        LOG_FILE_MODULE + '.open',
-        self.create_file_handle(self.create_valid_json_log_data())
-    ):
+    mock_data = self.build_valid_json_log_data(mocked_file_handle_binary,)
 
-      log_data = instance.tail(4)
+    log_data = log_file_reader_instance.tail(4)
 
-    assert log_data == self.parse_json_log_data(
-        self.create_valid_json_log_data()[6:],
-    )
+    assert log_data == self.decode_json_log(mock_data[6:])
 
-  def test_tail__too_many_lines__valid_json(
+  def test__tail__too_many_lines__valid_json(
       self,
-      instance: read_log_file.LogFileReader,
+      log_file_reader_instance: read_log_file.LogFileReader,
+      mocked_file_handle_binary: BytesIO,
   ) -> None:
-    with mock.patch(
-        LOG_FILE_MODULE + '.open',
-        self.create_file_handle(self.create_valid_json_log_data())
-    ):
+    mock_data = self.build_valid_json_log_data(mocked_file_handle_binary,)
 
-      log_data = instance.tail(20)
+    log_data = log_file_reader_instance.tail(20)
 
-    assert log_data == self.parse_json_log_data(
-        self.create_valid_json_log_data(),
-    )
+    assert log_data == self.decode_json_log(mock_data)
 
-  def test_tail__1_line__invalid_json(
+  def test__tail__1_line__invalid_json(
       self,
-      instance: read_log_file.LogFileReader,
+      log_file_reader_instance: read_log_file.LogFileReader,
+      mocked_file_handle_binary: BytesIO,
   ) -> None:
-    with mock.patch(
-        LOG_FILE_MODULE + '.open',
-        self.create_file_handle(self.create_invalid_json_log_data())
-    ):
+    mock_data = self.build_invalid_json_log_data(mocked_file_handle_binary,)
 
-      log_data = instance.tail(5)
+    log_data = log_file_reader_instance.tail(5)
 
-    assert log_data == self.parse_json_log_data(
-        self.create_invalid_json_log_data()[1:],
-    )
+    assert log_data == self.decode_json_log(mock_data[1:])
