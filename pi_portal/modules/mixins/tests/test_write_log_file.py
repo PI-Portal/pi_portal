@@ -1,39 +1,35 @@
-"""Test the WriteLogFile mixin class."""
+"""Test the LogFileWriter mixin class."""
 
-from unittest import TestCase, mock
+from unittest import mock
 
 from .. import write_log_file
 
-LOG_FILE_MODULE = write_log_file.__name__
 
+class TestLogFileWriter:
+  """Test the LogFileWriter mixin class."""
 
-class ClassWithLogging(write_log_file.LogFileWriter):
-  """A test class using the WriteLogFile mixin."""
-
-  logger_name = "test_logger"
-  log_file_path = "/var/run/some.log"
-
-
-@mock.patch(LOG_FILE_MODULE + '.getLogger')
-@mock.patch(LOG_FILE_MODULE + '.JsonLoggerConfiguration')
-class WriteLogFileTest(TestCase):
-  """Test the WriteLogFile mixin class."""
-
-  def setUp(self) -> None:
-    self.instance = ClassWithLogging()
-
-  def test_configure_logger(
+  def test__configure_logger__json_logger(
       self,
-      m_config: mock.Mock,
-      m_get: mock.Mock,
+      log_file_writer_instance: write_log_file.LogFileWriter,
+      mocked_get_logger: mock.Mock,
+      mocked_json_logger: mock.Mock,
   ) -> None:
+    log_file_writer_instance.configure_logger()
 
-    self.instance.configure_logger()
-
-    m_get.assert_called_once_with(self.instance.logger_name)
-    m_config.assert_called_once_with()
-    m_config.return_value.configure.assert_called_once_with(
-        m_get.return_value, self.instance.log_file_path
+    mocked_json_logger.assert_called_once_with()
+    mocked_json_logger.return_value.configure.assert_called_once_with(
+        mocked_get_logger.return_value,
+        log_file_writer_instance.log_file_path,
     )
 
-    self.assertEqual(self.instance.log, m_get.return_value)
+  def test__configure_logger__logger(
+      self,
+      log_file_writer_instance: write_log_file.LogFileWriter,
+      mocked_get_logger: mock.Mock,
+  ) -> None:
+    log_file_writer_instance.configure_logger()
+
+    mocked_get_logger.assert_called_once_with(
+        log_file_writer_instance.logger_name
+    )
+    assert log_file_writer_instance.log == mocked_get_logger.return_value

@@ -8,7 +8,7 @@ from unittest import mock
 import pi_portal
 import pytest
 from pi_portal.modules.configuration import user_config
-from pi_portal.modules.mixins import json_file
+from pi_portal.modules.mixins import read_json_file
 
 MOCK_INVALID_JSON = cast(user_config.TypeUserConfig, {"mock_setting": "0123"})
 MOCK_VALID_JSON = cast(
@@ -71,7 +71,7 @@ class TestUserConfiguration:
   ) -> None:
     assert isinstance(
         user_configuration_instance,
-        json_file.JSONFileReader,
+        read_json_file.JSONFileReader,
     )
 
   def test_load__calls_validate_and_sets_user_config(
@@ -79,7 +79,7 @@ class TestUserConfiguration:
       user_configuration_instance: user_config.UserConfiguration,
   ) -> None:
     with mock.patch(
-        user_config.__name__ + ".json_file.JSONFileReader.load_json_file",
+        user_config.__name__ + ".read_json_file.JSONFileReader.load_json_file",
         mock.Mock(return_value=MOCK_VALID_JSON)
     ):
       with mock.patch.object(
