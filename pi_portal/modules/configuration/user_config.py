@@ -6,7 +6,7 @@ from typing import List, cast
 
 import pi_portal as root_module
 from jsonschema.validators import validator_for
-from pi_portal.modules.mixins import json_file
+from pi_portal.modules.mixins import read_json_file
 from typing_extensions import TypedDict
 
 
@@ -43,7 +43,7 @@ class UserConfigurationException(Exception):
   """Raised during validation of end user configuration."""
 
 
-class UserConfiguration(json_file.JSONFileReader):
+class UserConfiguration(read_json_file.JSONFileReader):
   """User configuration."""
 
   validation_schema_path = (

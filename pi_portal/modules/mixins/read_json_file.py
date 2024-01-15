@@ -1,4 +1,4 @@
-"""JSONFile mixin classes."""
+"""JSONFileReader mixin class."""
 
 import json
 from pathlib import Path
@@ -17,6 +17,6 @@ class JSONFileReader:
     :returns: The loaded JSON object.
     """
 
-    with open(json_file_location, encoding=self.encoding) as fhandle:
-      json_file_content = json.load(fhandle)
+    with open(json_file_location, encoding=self.encoding) as f_handle:
+      json_file_content = json.load(f_handle)
     return json_file_content
