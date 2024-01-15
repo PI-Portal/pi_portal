@@ -1,45 +1,30 @@
 """Test the JSONFile mixin classes."""
 
 import json
-from unittest import TestCase, mock
+from io import StringIO
 
-from .. import json_file
-
-JSON_FILE_MODULE = json_file.__name__
+from .. import read_json_file
 
 
-@mock.patch(JSON_FILE_MODULE + '.json')
-@mock.patch('builtins.open')
-class JSONFileReaderTest(TestCase):
+class TestJSONFileReader:
   """Test the JSONFileReader mixin class."""
 
-  def setUp(self) -> None:
-    self.instance = json_file.JSONFileReader()
-    self.mock_object = {"mock": "object"}
-    self.mock_json = json.dumps(self.mock_object)
-    self.mock_context = mock.Mock()
-
-  def test_load_json_file_return_value(
+  def test__initialize__attributes(
       self,
-      m_open: mock.Mock,
-      m_json: mock.Mock,
+      json_file_reader_instance: read_json_file.JSONFileReader,
+  ) -> None:
+    assert json_file_reader_instance.encoding == "utf-8"
+
+  def test__load_json_file__return_value(
+      self,
+      json_file_reader_instance: read_json_file.JSONFileReader,
+      mocked_file_handle_string: StringIO,
   ) -> None:
     mock_path = "/mock/path"
-    self.mock_context.return_value = self.mock_json
-    m_open.return_value.__enter__.return_value = self.mock_context
-    m_json.load.return_value = self.mock_object
+    mock_object = {"mock": "object"}
+    mocked_file_handle_string.write(json.dumps(mock_object))
+    mocked_file_handle_string.seek(0)
 
-    result = self.instance.load_json_file(mock_path)
-    self.assertEqual(result, self.mock_object)
+    result = json_file_reader_instance.load_json_file(mock_path)
 
-  def test_load_json_file_call(
-      self,
-      m_open: mock.Mock,
-      m_json: mock.Mock,
-  ) -> None:
-    mock_path = "/mock/path"
-    m_open.return_value.__enter__.return_value = self.mock_context
-
-    self.instance.load_json_file(mock_path)
-
-    m_json.load.assert_called_once_with(self.mock_context)
+    assert result == mock_object
