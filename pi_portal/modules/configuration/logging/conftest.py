@@ -13,6 +13,6 @@ def mocked_logger_name() -> str:
 
 
 @pytest.fixture
-def mocked_stream() -> StringIO:
-  """Return a mock logging stream."""
+def mocked_logger_stream() -> StringIO:
+  """Return a mock logger stream."""
   return StringIO()

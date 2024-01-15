@@ -57,11 +57,11 @@ class TestInstallerLoggingConfiguration:
       self,
       installer_logger_stdout_instance: logging.Logger,
       mocked_logger_name: str,
-      mocked_stream: StringIO,
+      mocked_logger_stream: StringIO,
   ) -> None:
     test_message = "test logging message"
 
     installer_logger_stdout_instance.error(test_message)
 
-    assert mocked_stream.getvalue() == \
+    assert mocked_logger_stream.getvalue() == \
         f"{mocked_logger_name} - ERROR - {test_message}\n"

@@ -16,11 +16,11 @@ def mocked_trace_id() -> str:
 @pytest.fixture
 def json_formatted_logger_instance(
     mocked_logger_name: str,
-    mocked_stream: StringIO,
+    mocked_logger_stream: StringIO,
     mocked_trace_id: str,
 ) -> logging.Logger:
   log = logging.getLogger(mocked_logger_name)
-  handler = logging.StreamHandler(stream=mocked_stream)
+  handler = logging.StreamHandler(stream=mocked_logger_stream)
   handler.setFormatter(
       JsonFormatter(mocked_trace_id, '%(message)%(levelname)%(name)'),
   )

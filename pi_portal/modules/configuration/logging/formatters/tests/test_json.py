@@ -13,13 +13,13 @@ class TestJsonFormatter:
       json_formatted_logger_instance: logging.Logger,
       mocked_logger_name: str,
       mocked_trace_id: str,
-      mocked_stream: StringIO,
+      mocked_logger_stream: StringIO,
   ) -> None:
     test_message = "test logging message"
 
     json_formatted_logger_instance.error(test_message)
 
-    assert json.loads(mocked_stream.getvalue()) == {
+    assert json.loads(mocked_logger_stream.getvalue()) == {
         "message": test_message,
         "levelname": "ERROR",
         "name": mocked_logger_name,
@@ -31,13 +31,13 @@ class TestJsonFormatter:
       json_formatted_logger_instance: logging.Logger,
       mocked_logger_name: str,
       mocked_trace_id: str,
-      mocked_stream: StringIO,
+      mocked_logger_stream: StringIO,
   ) -> None:
     test_message = "test logging message"
 
     json_formatted_logger_instance.error(test_message, extra={"foo": "bar"})
 
-    assert json.loads(mocked_stream.getvalue()) == {
+    assert json.loads(mocked_logger_stream.getvalue()) == {
         "message": test_message,
         "foo": "bar",
         "levelname": "ERROR",
