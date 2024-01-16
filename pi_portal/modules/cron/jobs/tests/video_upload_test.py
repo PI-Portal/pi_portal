@@ -23,7 +23,7 @@ class TestVideoUploadCron:
     assert video_upload_cron_job_instance.name == \
            "Video Upload"
     assert video_upload_cron_job_instance.path == \
-           config.PATH_VIDEO_UPLOAD_QUEUE
+           config.PATH_QUEUE_VIDEO_UPLOAD
 
   def test__initialization__inheritance(
       self,

@@ -4,7 +4,7 @@ filebeat.inputs:
 
   - type: log
     paths:
-      - {{ LOG_FILE_CRON_SCHEDULER }}
+      - "{{ LOG_FILE_CRON_SCHEDULER }}*"
     fields:
       logzio_codec: json
       token: {{ LOGZ_IO_CODE }}
@@ -15,7 +15,7 @@ filebeat.inputs:
 
   - type: log
     paths:
-      - {{ LOG_FILE_DOOR_MONITOR }}
+      - "{{ LOG_FILE_DOOR_MONITOR }}*"
     fields:
       logzio_codec: json
       token: {{ LOGZ_IO_CODE }}
@@ -26,8 +26,8 @@ filebeat.inputs:
 
   - type: log
     paths:
-      - {{ LOG_FILE_SLACK_BOT }}
-      - {{ LOG_FILE_SLACK_CLIENT }}
+      - "{{ LOG_FILE_SLACK_BOT }}*"
+      - "{{ LOG_FILE_SLACK_CLIENT }}*"
     fields:
       logzio_codec: json
       token: {{ LOGZ_IO_CODE }}
@@ -38,23 +38,11 @@ filebeat.inputs:
 
   - type: log
     paths:
-      - {{ LOG_FILE_TEMPERATURE_MONITOR }}
+      - "{{ LOG_FILE_TEMPERATURE_MONITOR }}*"
     fields:
       logzio_codec: json
       token: {{ LOGZ_IO_CODE }}
       type: pi_portal_temperature_json
-    fields_under_root: true
-    encoding: utf-8
-    ignore_older: 12h
-
-  - type: log
-    paths:
-      - /var/log/syslog
-      - /var/log/auth.log
-    fields:
-      logzio_codec: plain
-      token: {{ LOGZ_IO_CODE }}
-      type: pi_portal_system
     fields_under_root: true
     encoding: utf-8
     ignore_older: 12h

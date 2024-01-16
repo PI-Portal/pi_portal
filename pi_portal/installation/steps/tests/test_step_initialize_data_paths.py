@@ -62,7 +62,8 @@ class TestStepInitializeDataPaths:
   ) -> None:
     assert isinstance(step_initialize_data_paths_instance.log, logging.Logger)
     assert step_initialize_data_paths_instance.data_paths == [
-        config.PATH_VIDEO_UPLOAD_QUEUE,
+        config.PATH_QUEUE_LOG_UPLOAD,
+        config.PATH_QUEUE_VIDEO_UPLOAD,
     ]
 
   def test__initialize__inheritance(
@@ -112,7 +113,7 @@ class TestStepInitializeDataPaths:
       mocked_stream: StringIO,
   ) -> None:
     mocked_file_system.return_value.permissions.side_effect = [OSError]
-    failed_file = config.PATH_VIDEO_UPLOAD_QUEUE
+    failed_file = config.PATH_QUEUE_LOG_UPLOAD
 
     with pytest.raises(OSError):
       step_initialize_data_paths_instance.invoke()

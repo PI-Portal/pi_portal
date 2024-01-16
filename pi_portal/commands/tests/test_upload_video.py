@@ -46,7 +46,7 @@ class TestUploadVideoCommand:
     mocked_shutil.move.assert_called_once_with(
         mocked_file_name,
         os.path.join(
-            config.PATH_VIDEO_UPLOAD_QUEUE,
+            config.PATH_QUEUE_VIDEO_UPLOAD,
             os.path.basename(mocked_file_name),
         )
     )
