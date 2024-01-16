@@ -25,12 +25,16 @@ LOG_FILE_TEMPERATURE_MONITOR = \
 LOG_PREFIX_SUPERVISOR = "/var/log/supervisor/supervisor"
 
 PATH_MOTION_CONTENT = "/var/lib/motion"
-PATH_SUPERVISOR_SOCKET = "/var/run/supervisor.sock"
-PATH_USER_CONFIG = "/etc/pi_portal/config.json"
-PATH_VIDEO_UPLOAD_QUEUE = os.path.join(
+PATH_QUEUE_LOG_UPLOAD = os.path.join(
+    PI_PORTAL_INSTALL_LOCATION,
+    "queue_logs",
+)
+PATH_QUEUE_VIDEO_UPLOAD = os.path.join(
     PI_PORTAL_INSTALL_LOCATION,
     "queue_videos",
 )
+PATH_SUPERVISOR_SOCKET = "/var/run/supervisor.sock"
+PATH_USER_CONFIG = "/etc/pi_portal/config.json"
 
 PID_FILE_MOTION = '/var/run/motion/motion.pid'
 PID_FILE_SUPERVISORD = '/var/run/supervisord.pid'
