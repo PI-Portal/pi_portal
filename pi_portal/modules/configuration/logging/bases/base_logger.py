@@ -5,6 +5,7 @@ import logging
 from typing import Optional
 
 from pi_portal.modules.configuration import state
+from ..handlers import rotation
 
 
 class LoggerConfigurationBase(abc.ABC):
@@ -48,7 +49,7 @@ class LoggerConfigurationBase(abc.ABC):
     if file_name is None:
       handler = logging.StreamHandler()
     else:
-      handler = logging.FileHandler(file_name, delay=True)
+      handler = rotation.RotatingFileHandlerWithEnqueue(file_name)
 
     handler.setFormatter(self.formatter)
     log.addHandler(handler)

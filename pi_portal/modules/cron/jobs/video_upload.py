@@ -12,4 +12,4 @@ class VideoUploadCronJob(s3_upload_job.S3UploadCronJobBase):
 
   interval = config.CRON_INTERVAL_VIDEO_UPLOAD
   name = "Video Upload"
-  path = config.PATH_VIDEO_UPLOAD_QUEUE
+  path = config.PATH_QUEUE_VIDEO_UPLOAD

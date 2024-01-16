@@ -17,6 +17,7 @@ dependabot
 dind
 docstrings
 ebay
+enqueued
 filebeat
 gpio|GPIO
 hadolint

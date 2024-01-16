@@ -10,7 +10,10 @@ from .bases import base_step
 class StepInitializeDataPaths(base_step.StepBase):
   """Initialize data storage directories."""
 
-  data_paths = [config.PATH_VIDEO_UPLOAD_QUEUE]
+  data_paths = [
+      config.PATH_QUEUE_LOG_UPLOAD,
+      config.PATH_QUEUE_VIDEO_UPLOAD,
+  ]
 
   def invoke(self) -> None:
     """Initialize data storage directories."""
