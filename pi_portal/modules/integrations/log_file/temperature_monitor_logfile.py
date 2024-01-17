@@ -3,7 +3,8 @@
 from typing import Any, Dict, List, cast
 
 from pi_portal import config
-from pi_portal.modules.configuration import state, user_config
+from pi_portal.modules.configuration import state
+from pi_portal.modules.configuration.types import gpio_config_type
 from pi_portal.modules.integrations.gpio.components.bases import (
     temperature_sensor,
 )
@@ -27,7 +28,7 @@ class TemperatureMonitorLogFileReader(read_log_file.LogFileReader):
     self.temperature_readings: Dict[str, TemperatureReadingType] = {}
     self.configured_sensor_count = 0
     generic_sensor_config = cast(
-        Dict[str, List[user_config.TypeUserConfigGPIO]],
+        Dict[str, List[gpio_config_type.TypeUserConfigGPIO]],
         self.state.user_config["TEMPERATURE_SENSORS"],
     )
 

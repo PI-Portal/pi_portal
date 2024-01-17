@@ -2,48 +2,29 @@
 
 import pathlib
 import pprint
-from typing import List, cast
+from typing import cast
 
 import pi_portal as root_module
 from jsonschema.validators import validator_for
 from pi_portal.modules.mixins import read_json_file
 from typing_extensions import TypedDict
+from .types.archival_config_type import TypeUserConfigArchival
+from .types.chat_config_type import TypeUserConfigChat
+from .types.gpio_config_type import (
+    TypeUserConfigSwitches,
+    TypeUserConfigTemperatureSensors,
+)
+from .types.logs_config_type import TypeUserConfigLogs
 
 
 class TypeUserConfig(TypedDict):
   """Typed representation of user configuration."""
 
-  AWS_ACCESS_KEY_ID: str
-  AWS_SECRET_ACCESS_KEY: str
-  AWS_S3_BUCKETS: "TypeUserConfigS3Buckets"
-  LOGZ_IO_CODE: str
-  SLACK_APP_SIGNING_SECRET: str
-  SLACK_APP_TOKEN: str
-  SLACK_BOT_TOKEN: str
-  SLACK_CHANNEL: str
-  SLACK_CHANNEL_ID: str
-  CONTACT_SWITCHES: List["TypeUserConfigGPIO"]
+  ARCHIVAL: "TypeUserConfigArchival"
+  CHAT: "TypeUserConfigChat"
+  LOGS: "TypeUserConfigLogs"
+  SWITCHES: "TypeUserConfigSwitches"
   TEMPERATURE_SENSORS: "TypeUserConfigTemperatureSensors"
-
-
-class TypeUserConfigS3Buckets(TypedDict):
-  """Typed representation of the required S3 bucket names."""
-
-  LOGS: str
-  VIDEOS: str
-
-
-class TypeUserConfigGPIO(TypedDict):
-  """Typed representation of a GPIO connected device."""
-
-  NAME: str
-  GPIO: int
-
-
-class TypeUserConfigTemperatureSensors(TypedDict):
-  """Typed representation of GPIO connected temperature sensors."""
-
-  DHT11: List["TypeUserConfigGPIO"]
 
 
 class UserConfigurationException(Exception):
