@@ -7,7 +7,7 @@ from pi_portal.installation.templates import common_templates
 from ..step_render_configuration import StepRenderConfiguration
 
 
-class TestStepRenderTemplates:
+class TestStepRenderConfiguration:
   """Test the StepRenderConfiguration class."""
 
   def test__initialize__attrs(

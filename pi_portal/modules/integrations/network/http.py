@@ -2,7 +2,7 @@
 
 import logging
 import shutil
-from typing import Optional
+from typing import Optional, Tuple
 
 import requests
 import urllib3
@@ -21,9 +21,19 @@ class HttpClient:
   """
 
   retry_config = urllib3.Retry(5, redirect=5)
+  basic_auth: Optional[Tuple[str, str]]
 
   def __init__(self, log: logging.Logger) -> None:
     self.log = log
+    self.basic_auth = None
+
+  def set_basic_auth(self, username: str, password: str) -> None:
+    """Set basic authentication on the HTTP request.
+
+    :param username: The username to use for authentication.
+    :param password: The password to use for authentication.
+    """
+    self.basic_auth = (username, password)
 
   def get(self, url: str, target: Optional[str] = None) -> requests.Response:
     """Fetch a remote URL and save to a local file system target.
@@ -36,10 +46,14 @@ class HttpClient:
     self.log.info(f"HTTP GET: '{url}' ...")
 
     session = self._create_request_session()
+
+    if self.basic_auth:
+      session.auth = self.basic_auth
+
     response = session.get(url, stream=True)
 
     if response.ok:
-      self.log.info(f"HTTP GET: Connected to '{url}' ...")
+      self.log.info("HTTP GET: Connected to '%s' ...", url)
       if target:
         self._save_response(response, target)
       return response

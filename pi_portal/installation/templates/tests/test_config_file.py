@@ -20,11 +20,11 @@ class TestConfigFileTemplate:
       mocked_source_file: str,
       mocked_destination_file: str,
   ) -> None:
-
+    assert config_file_template.context == {}
     assert config_file_template.source == mocked_source_file
     assert config_file_template.destination == mocked_destination_file
 
-  def test__create_context__returns_dict(
+  def test__update_context__stores_updated_context(
       self,
       mocked_state: state.State,
       config_file_template: config_file.ConfileFileTemplate,
@@ -36,9 +36,9 @@ class TestConfigFileTemplate:
       if not setting.startswith("__"):
         expected_values[setting] = getattr(config, setting)
 
-    result = config_file_template.create_context()
+    config_file_template.update_context()
 
-    assert result == expected_values
+    assert config_file_template.context == expected_values
 
   @mock.patch(CONFIG_FILE_MODULE + ".JinjaTemplate")
   @mock.patch(CONFIG_FILE_MODULE + ".open")
@@ -74,5 +74,5 @@ class TestConfigFileTemplate:
     config_file_template.render()
 
     m_template.return_value.render.assert_called_once_with(
-        config_file_template.create_context()
+        config_file_template.context
     )

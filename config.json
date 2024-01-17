@@ -9,6 +9,37 @@
       }
     }
   },
+  "MOTION": {
+    "AUTHENTICATION": {
+      "USERNAME": "username",
+      "PASSWORD": "password"
+    },
+    "CAMERAS": [
+      {
+        "DEVICE": "/dev/video0",
+        "IMAGE": {
+          "FRAME_RATE": 5,
+          "WIDTH": 320,
+          "HEIGHT": 240,
+          "AUTO_BRIGHTNESS": "off",
+          "BRIGHTNESS": 0,
+          "CONTRAST": 0,
+          "SATURATION": 0,
+          "HUE": 0
+        }
+      }
+    ],
+    "DETECTION": {
+      "THRESHOLD": 1500,
+      "EVENT_GAP": 60
+    },
+    "MOVIES": {
+      "LOCATE_MOTION_MODE": "on"
+    },
+    "SNAPSHOTS": {
+      "QUALITY": 100
+    }
+  },
   "CHAT": {
     "SLACK": {
       "SLACK_APP_SIGNING_SECRET": "... secret value from slack to validate bot messages ...",

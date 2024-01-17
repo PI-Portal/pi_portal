@@ -15,6 +15,7 @@ from .types.gpio_config_type import (
     TypeUserConfigTemperatureSensors,
 )
 from .types.logs_config_type import TypeUserConfigLogs
+from .types.motion_config_types import TypeUserConfigMotion
 
 
 class TypeUserConfig(TypedDict):
@@ -23,6 +24,7 @@ class TypeUserConfig(TypedDict):
   ARCHIVAL: "TypeUserConfigArchival"
   CHAT: "TypeUserConfigChat"
   LOGS: "TypeUserConfigLogs"
+  MOTION: "TypeUserConfigMotion"
   SWITCHES: "TypeUserConfigSwitches"
   TEMPERATURE_SENSORS: "TypeUserConfigTemperatureSensors"
 
