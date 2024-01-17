@@ -13,19 +13,16 @@ class TestS3Bucket:
   """Test the S3BucketClient class."""
 
   def test__initialization__attrs(
-      self,
-      s3_client_instance: client.S3BucketClient,
-      mocked_boto: mock.Mock,
+      self, s3_client_instance: client.S3BucketClient, mocked_bucket_name: str
   ) -> None:
-    assert s3_client_instance.bucket_name == mock_state.MOCK_S3_BUCKET_NAME
-    assert s3_client_instance.boto_client == mocked_boto.client.return_value
+    assert s3_client_instance.bucket_name == mocked_bucket_name
 
   def test__initialization__boto_client(
       self,
-      # pylint: disable=unused-argument
       s3_client_instance: client.S3BucketClient,
       mocked_boto: mock.Mock,
   ) -> None:
+    assert s3_client_instance.boto_client == mocked_boto.client.return_value
     mocked_boto.client.assert_called_once_with(
         's3',
         aws_access_key_id=mock_state.MOCK_AWS_ACCESS_KEY_ID,
@@ -37,13 +34,14 @@ class TestS3Bucket:
       s3_client_instance: client.S3BucketClient,
   ) -> None:
     mock_file_name = "/dir/mock_file_name.mp4"
+    mock_object_name = os.path.basename(mock_file_name)
 
-    s3_client_instance.upload(mock_file_name)
+    s3_client_instance.upload(mock_file_name, mock_object_name)
 
     s3_client_instance.boto_client.upload_file.assert_called_once_with(
         mock_file_name,
         s3_client_instance.bucket_name,
-        os.path.basename(mock_file_name),
+        mock_object_name,
     )
 
   def test__upload__exception(
@@ -55,12 +53,13 @@ class TestS3Bucket:
         operation_name="BOOM!",
     )
     mock_file_name = "/dir/mock_file_name.mp4"
+    mock_object_name = os.path.basename(mock_file_name)
 
     with pytest.raises(client.S3BucketException):
-      s3_client_instance.upload(mock_file_name)
+      s3_client_instance.upload(mock_file_name, mock_object_name)
 
     s3_client_instance.boto_client.upload_file.assert_called_once_with(
         mock_file_name,
         s3_client_instance.bucket_name,
-        os.path.basename(mock_file_name),
+        mock_object_name,
     )

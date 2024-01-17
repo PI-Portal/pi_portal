@@ -56,9 +56,9 @@ You'll need to create two S3 buckets:
 - one to archive logs
 - one to archive motion detection videos
 
-Create two separate sets of credentials with write permissions to each bucket.
+Create a set AWS cli credentials with write permissions to both of these buckets.
 
-The policy for each would look similar to:
+Use the following template to design your write access policy:
 
 ```json
 {
@@ -67,20 +67,18 @@ The policy for each would look similar to:
     {
       "Sid": "AllPutObjectActions",
       "Effect": "Allow",
-      "Action": ["s3:PutObject","s3:PutObjectAcl", "s3:PutObjectVersionAcl"],
-      "Resource": ["arn of a bucket"]
+      "Action": ["s3:PutObject", "s3:PutObjectAcl", "s3:PutObjectVersionAcl"],
+      "Resource": ["arn of a bucket1", "arn of a bucket2"]
     }
   ]
 }
 ```
 
-One set of credentials will be used by PI Portal for video files, the other by [logz.io](https://logz.io/) for log files.
-
 You can also configure [lifecycle rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html) for these buckets to control data retention.  (And it's definitely a good idea to ensure they are not publicly accessible!)  
 
 #### Logz.io Integration
 
-[This service](https://logz.io/) has a generous free tier that will allow you to search your logs, and do long term retention in the S3 bucket you created.
+[This service](https://logz.io/) has a generous free tier that will allow you to search your logs and create useful reports and graphs.
 You will need to know your accounts `log token`, (check the website on how to configure filebeat to find it.)
 
 Enter your AWS credentials for the logging bucket here, to archive your logs.
@@ -93,26 +91,30 @@ Create a configuration json file that contains the following:
 
 ```json
 {
-    "AWS_ACCESS_KEY_ID": "... AWS key with write access to video bucket ...",
-    "AWS_SECRET_ACCESS_KEY": "... AWS secret key with write access to video bucket ...",
+    "AWS_ACCESS_KEY_ID": "... AWS key with write access to buckets ...",
+    "AWS_SECRET_ACCESS_KEY": "... AWS secret key with write access buckets ...",
+    "AWS_S3_BUCKETS": {
+        "LOGS": "... s3 logs bucket name ...",
+        "VIDEOS": "... s3 video bucket name ..."
+    },
     "CONTACT_SWITCHES": [
-          {
+        {
             "NAME": "... name and pin-out of a GPIO switch...",
             "GPIO": 12
-          }
-      ],
+        }
+    ],
     "LOGZ_IO_CODE": "... logz io's logger code ...",
-    "S3_BUCKET_NAME": "... s3 video bucket name ...",
     "SLACK_APP_SIGNING_SECRET": "... secret value from slack to validate bot messages ...",
     "SLACK_APP_TOKEN": "... token from slack to allow app to use websockets ...",
     "SLACK_BOT_TOKEN": "... token from slack...",
+    "SLACK_CHANNEL": "... proper name of slack channel ...",
     "SLACK_CHANNEL_ID": ".. slack's ID for the channel ...",
     "TEMPERATURE_SENSORS": {
         "DHT11": [
-          {
-            "NAME": "... name and pin-out of a GPIO with a DHT11 connected ...",
-            "GPIO": 4
-          }
+            {
+                "NAME": "... name and pin-out of a GPIO with a DHT11 connected ...",
+                "GPIO": 4
+            }
         ]
     }
 }

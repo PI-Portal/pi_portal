@@ -7,7 +7,6 @@ from typing import List
 
 from pi_portal import config
 from pi_portal.modules.integrations.network import http
-from pi_portal.modules.integrations.s3 import client as s3_client
 
 
 class MotionException(Exception):
@@ -22,7 +21,6 @@ class MotionClient:
   video_glob_pattern = os.path.join(config.PATH_MOTION_CONTENT, '/*.mp4')
 
   def __init__(self, log: logging.Logger) -> None:
-    self.s3_client = s3_client.S3BucketClient()
     self.http_client = http.HttpClient(log)
 
   def cleanup_snapshot(self, file_name: str) -> None:

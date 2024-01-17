@@ -1,14 +1,17 @@
 {
-    "AWS_ACCESS_KEY_ID": "... AWS key with write access to video bucket ...",
-    "AWS_SECRET_ACCESS_KEY": "... AWS secret key with write access to video bucket ...",
+    "AWS_ACCESS_KEY_ID": "... AWS key with write access to buckets ...",
+    "AWS_SECRET_ACCESS_KEY": "... AWS secret key with write access buckets ...",
+    "AWS_S3_BUCKETS": {
+        "LOGS": "... s3 logs bucket name ...",
+        "VIDEOS": "... s3 video bucket name ..."
+    },
     "CONTACT_SWITCHES": [
-          {
+        {
             "NAME": "... name and pin-out of a GPIO switch...",
             "GPIO": 12
-          }
-      ],
+        }
+    ],
     "LOGZ_IO_CODE": "... logz io's logger code ...",
-    "S3_BUCKET_NAME": "... s3 video bucket name ...",
     "SLACK_APP_SIGNING_SECRET": "... secret value from slack to validate bot messages ...",
     "SLACK_APP_TOKEN": "... token from slack to allow app to use websockets ...",
     "SLACK_BOT_TOKEN": "... token from slack...",
@@ -16,10 +19,10 @@
     "SLACK_CHANNEL_ID": ".. slack's ID for the channel ...",
     "TEMPERATURE_SENSORS": {
         "DHT11": [
-          {
-            "NAME": "... name and pin-out of a GPIO with a DHT11 connected ...",
-            "GPIO": 4
-          }
+            {
+                "NAME": "... name and pin-out of a GPIO with a DHT11 connected ...",
+                "GPIO": 4
+            }
         ]
     }
 }
