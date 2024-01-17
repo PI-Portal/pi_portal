@@ -6,6 +6,7 @@ from typing import List
 from pi_portal.modules.configuration.logging import installer
 from .steps import (
     StepConfigureLogzIo,
+    StepConfigureMotion,
     StepEnsureRoot,
     StepInitializeDataPaths,
     StepInitializeEtc,
@@ -43,6 +44,7 @@ class Installer:
         StepInitializeDataPaths(self.log),
         StepInitializeEtc(self.log),
         StepInitializeLogging(self.log),
+        StepConfigureMotion(self.log),
         StepRenderConfiguration(self.log),
         StepInstallConfigFile(self.log, self.config_file_path),
         StepConfigureLogzIo(self.log),

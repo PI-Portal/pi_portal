@@ -6,6 +6,7 @@ import os
 from typing import List
 
 from pi_portal import config
+from pi_portal.modules.configuration import state
 from pi_portal.modules.integrations.network import http
 
 
@@ -21,7 +22,12 @@ class MotionClient:
   video_glob_pattern = os.path.join(config.PATH_MOTION_CONTENT, '/*.mp4')
 
   def __init__(self, log: logging.Logger) -> None:
+    user_config = state.State().user_config
     self.http_client = http.HttpClient(log)
+    self.http_client.set_basic_auth(
+        user_config["MOTION"]["AUTHENTICATION"]["USERNAME"],
+        user_config["MOTION"]["AUTHENTICATION"]["PASSWORD"],
+    )
 
   def cleanup_snapshot(self, file_name: str) -> None:
     """Delete snapshot locally.
