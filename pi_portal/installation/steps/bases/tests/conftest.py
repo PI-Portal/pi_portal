@@ -28,6 +28,11 @@ def mocked_file_security() -> mock.Mock:
 
 
 @pytest.fixture
+def mocked_file_system() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
 def mocked_http_client() -> mock.Mock:
   return mock.Mock()
 
@@ -120,7 +125,7 @@ def concrete_remote_file_step_instance(
     installer_logger_stdout: logging.Logger,
     mocked_file_security: mock.Mock,
     mocked_http_client: mock.Mock,
-    mocked_system: mock.Mock,
+    mocked_file_system: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> remote_file_step.RemoteFileStepBase:
   monkeypatch.setattr(
@@ -128,12 +133,12 @@ def concrete_remote_file_step_instance(
       mocked_file_security,
   )
   monkeypatch.setattr(
-      remote_file_step.__name__ + ".http.HttpClient",
-      mocked_http_client,
+      remote_file_step.__name__ + ".file_system.FileSystem",
+      mocked_file_system,
   )
   monkeypatch.setattr(
-      system_call_step.__name__ + ".os.system",
-      mocked_system,
+      remote_file_step.__name__ + ".http.HttpClient",
+      mocked_http_client,
   )
   instance = ConcreteRemoteFileStep(installer_logger_stdout)
   instance.fail_fast = False  # Serially during testing
@@ -143,11 +148,14 @@ def concrete_remote_file_step_instance(
 @pytest.fixture
 def concrete_render_templates_step_instance(
     installer_logger_stdout: logging.Logger,
-    mocked_system: mock.Mock,
+    mocked_file_system: mock.Mock,
     mocked_template_render: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> render_templates_step.RenderTemplateStepBase:
-  monkeypatch.setattr(system_call_step.__name__ + ".os.system", mocked_system)
+  monkeypatch.setattr(
+      render_templates_step.__name__ + ".file_system.FileSystem",
+      mocked_file_system,
+  )
   monkeypatch.setattr(
       config_file.__name__ + ".ConfileFileTemplate.render",
       mocked_template_render

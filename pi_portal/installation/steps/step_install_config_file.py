@@ -4,10 +4,11 @@ import logging
 import shutil
 
 from pi_portal import config
-from .bases import system_call_step
+from pi_portal.modules.system.file_system import FileSystem
+from .bases import base_step
 
 
-class StepInstallConfigFile(system_call_step.SystemCallBase):
+class StepInstallConfigFile(base_step.StepBase):
   """Install the user's configuration file.
 
   :param config_file_path: The path to the configuration file to install.
@@ -32,9 +33,7 @@ class StepInstallConfigFile(system_call_step.SystemCallBase):
     self.log.info("Done writing the user's configuration file.")
 
     self.log.info("Setting permissions on the user's configuration file ...")
-    self._system_call(
-        f"chown {config.PI_PORTAL_USER}:{config.PI_PORTAL_USER} "
-        f"{config.PATH_USER_CONFIG}"
-    )
-    self._system_call(f"chmod 600 {config.PATH_USER_CONFIG}")
+    fs = FileSystem(config.PATH_USER_CONFIG)
+    fs.ownership(config.PI_PORTAL_USER, config.PI_PORTAL_USER)
+    fs.permissions("600")
     self.log.info("Done setting permissions on the user's configuration file.")
