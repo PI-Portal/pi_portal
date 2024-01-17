@@ -30,17 +30,11 @@ def mocked_os() -> mock.Mock:
 
 
 @pytest.fixture
-def mocked_s3_client() -> mock.Mock:
-  return mock.Mock()
-
-
-@pytest.fixture
 def motion_client_instance(
     mocked_glob: mock.Mock,
     mocked_http_client: mock.Mock,
     mocked_logger: logging.Logger,
     mocked_os: mock.Mock,
-    mocked_s3_client: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> motion_client.MotionClient:
   monkeypatch.setattr(
@@ -54,9 +48,5 @@ def motion_client_instance(
   monkeypatch.setattr(
       motion_client.__name__ + ".os",
       mocked_os,
-  )
-  monkeypatch.setattr(
-      motion_client.__name__ + ".s3_client.S3BucketClient",
-      mocked_s3_client,
   )
   return motion_client.MotionClient(mocked_logger)

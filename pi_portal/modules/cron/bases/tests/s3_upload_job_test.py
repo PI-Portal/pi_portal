@@ -26,12 +26,15 @@ class TestS3UploadCronJobBase:
   def test__initialization__attributes(
       self,
       concrete_s3_upload_cron_instance: s3_upload_job.S3UploadCronJobBase,
+      mocked_bucket_name: str,
       mocked_disk_queue: mock.Mock,
       mocked_interval: int,
       mocked_cron_logger: logging.Logger,
   ) -> None:
+    assert concrete_s3_upload_cron_instance.bucket_name == \
+        mocked_bucket_name
     assert concrete_s3_upload_cron_instance.disk_queue == \
-           mocked_disk_queue.return_value
+        mocked_disk_queue.return_value
     assert concrete_s3_upload_cron_instance.interval == mocked_interval
     assert concrete_s3_upload_cron_instance.log == mocked_cron_logger
     assert concrete_s3_upload_cron_instance.name == "mock_cron_job"
@@ -49,11 +52,12 @@ class TestS3UploadCronJobBase:
   def test__initialization__s3_client(
       self,
       concrete_s3_upload_cron_instance: s3_upload_job.S3UploadCronJobBase,
+      mocked_bucket_name: str,
       mocked_s3_client: mock.Mock,
   ) -> None:
     assert concrete_s3_upload_cron_instance.s3_client == \
            mocked_s3_client.return_value
-    mocked_s3_client.assert_called_once_with()
+    mocked_s3_client.assert_called_once_with(mocked_bucket_name)
 
   def test__initialization__inheritance(
       self,
@@ -98,26 +102,30 @@ class TestS3UploadCronJobBase:
       mocked_s3_client: mock.Mock,
       mocked_os_remove: mock.Mock,
   ) -> None:
-    self.set_disk_queue(concrete_s3_upload_cron_instance, ["mock-file1"])
+    self.set_disk_queue(concrete_s3_upload_cron_instance, ["/path/mock-file1"])
 
     concrete_s3_upload_cron_instance.cron()
 
-    mocked_s3_client.return_value.upload.assert_called_once_with("mock-file1")
-    mocked_os_remove.assert_called_once_with("mock-file1")
+    mocked_s3_client.return_value.upload.assert_called_once_with(
+        "/path/mock-file1",
+        "mock-file1",
+    )
+    mocked_os_remove.assert_called_once_with("/path/mock-file1")
 
   def test__cron__single_file__logging(
       self,
       concrete_s3_upload_cron_instance: s3_upload_job.S3UploadCronJobBase,
       mocked_cron_logger_stream: StringIO,
   ) -> None:
-    self.set_disk_queue(concrete_s3_upload_cron_instance, ["mock-file1"])
+    self.set_disk_queue(concrete_s3_upload_cron_instance, ["/path/mock-file1"])
     cron_job_name = concrete_s3_upload_cron_instance.name
 
     concrete_s3_upload_cron_instance.cron()
 
     assert mocked_cron_logger_stream.getvalue() == (
-        f"INFO - {cron_job_name} - Uploading 'mock-file1' ...\n"
-        f"INFO - {cron_job_name} - Removing 'mock-file1' ...\n"
+        f"INFO - {cron_job_name} - "
+        f"Uploading '/path/mock-file1' -> 'mock-file1' ...\n"
+        f"INFO - {cron_job_name} - Removing '/path/mock-file1' ...\n"
     )
 
   def test__cron__two_files__calls(
@@ -127,18 +135,19 @@ class TestS3UploadCronJobBase:
       mocked_s3_client: mock.Mock,
   ) -> None:
     self.set_disk_queue(
-        concrete_s3_upload_cron_instance, ["mock-file1", "mock-file2"]
+        concrete_s3_upload_cron_instance,
+        ["/path/mock-file1", "/path/mock-file2"],
     )
 
     concrete_s3_upload_cron_instance.cron()
 
     assert mocked_s3_client.return_value.upload.mock_calls == [
-        mock.call("mock-file1"),
-        mock.call("mock-file2"),
+        mock.call("/path/mock-file1", "mock-file1"),
+        mock.call("/path/mock-file2", "mock-file2"),
     ]
     assert mocked_os_remove.mock_calls == [
-        mock.call("mock-file1"),
-        mock.call("mock-file2"),
+        mock.call("/path/mock-file1"),
+        mock.call("/path/mock-file2"),
     ]
 
   def test__cron__two_files__logging(
@@ -147,17 +156,20 @@ class TestS3UploadCronJobBase:
       mocked_cron_logger_stream: StringIO,
   ) -> None:
     self.set_disk_queue(
-        concrete_s3_upload_cron_instance, ["mock-file1", "mock-file2"]
+        concrete_s3_upload_cron_instance,
+        ["/path/mock-file1", "/path/mock-file2"],
     )
     cron_job_name = concrete_s3_upload_cron_instance.name
 
     concrete_s3_upload_cron_instance.cron()
 
     assert mocked_cron_logger_stream.getvalue() == (
-        f"INFO - {cron_job_name} - Uploading 'mock-file1' ...\n"
-        f"INFO - {cron_job_name} - Removing 'mock-file1' ...\n"
-        f"INFO - {cron_job_name} - Uploading 'mock-file2' ...\n"
-        f"INFO - {cron_job_name} - Removing 'mock-file2' ...\n"
+        f"INFO - {cron_job_name} - "
+        f"Uploading '/path/mock-file1' -> 'mock-file1' ...\n"
+        f"INFO - {cron_job_name} - Removing '/path/mock-file1' ...\n"
+        f"INFO - {cron_job_name} - "
+        f"Uploading '/path/mock-file2' -> 'mock-file2' ...\n"
+        f"INFO - {cron_job_name} - Removing '/path/mock-file2' ...\n"
     )
 
   def test__cron__two_files__upload_errors__calls(
@@ -167,7 +179,8 @@ class TestS3UploadCronJobBase:
       mocked_os_remove: mock.Mock,
   ) -> None:
     self.set_disk_queue(
-        concrete_s3_upload_cron_instance, ["mock-file1", "mock-file2"]
+        concrete_s3_upload_cron_instance,
+        ["/path/mock-file1", "/path/mock-file2"],
     )
     mocked_s3_client.return_value.upload.side_effect = \
         s3_client.S3BucketException
@@ -175,8 +188,8 @@ class TestS3UploadCronJobBase:
     concrete_s3_upload_cron_instance.cron()
 
     assert mocked_s3_client.return_value.upload.mock_calls == [
-        mock.call("mock-file1"),
-        mock.call("mock-file2"),
+        mock.call("/path/mock-file1", "mock-file1"),
+        mock.call("/path/mock-file2", "mock-file2"),
     ]
     mocked_os_remove.assert_not_called()
 
@@ -187,7 +200,8 @@ class TestS3UploadCronJobBase:
       mocked_cron_logger_stream: StringIO,
   ) -> None:
     self.set_disk_queue(
-        concrete_s3_upload_cron_instance, ["mock-file1", "mock-file2"]
+        concrete_s3_upload_cron_instance,
+        ["/path/mock-file1", "/path/mock-file2"],
     )
     mocked_s3_client.return_value.upload.side_effect = \
         s3_client.S3BucketException
@@ -196,10 +210,12 @@ class TestS3UploadCronJobBase:
     concrete_s3_upload_cron_instance.cron()
 
     assert mocked_cron_logger_stream.getvalue() == (
-        f"INFO - {cron_job_name} - Uploading 'mock-file1' ...\n"
-        f"ERROR - {cron_job_name} - Failed to upload 'mock-file1' ...\n"
-        f"INFO - {cron_job_name} - Uploading 'mock-file2' ...\n"
-        f"ERROR - {cron_job_name} - Failed to upload 'mock-file2' ...\n"
+        f"INFO - {cron_job_name} - "
+        f"Uploading '/path/mock-file1' -> 'mock-file1' ...\n"
+        f"ERROR - {cron_job_name} - Failed to upload '/path/mock-file1' ...\n"
+        f"INFO - {cron_job_name} - "
+        f"Uploading '/path/mock-file2' -> 'mock-file2' ...\n"
+        f"ERROR - {cron_job_name} - Failed to upload '/path/mock-file2' ...\n"
     )
 
   def test__cron__two_files__remove_errors__calls(
@@ -209,19 +225,20 @@ class TestS3UploadCronJobBase:
       mocked_os_remove: mock.Mock,
   ) -> None:
     self.set_disk_queue(
-        concrete_s3_upload_cron_instance, ["mock-file1", "mock-file2"]
+        concrete_s3_upload_cron_instance,
+        ["/path/mock-file1", "/path/mock-file2"],
     )
     mocked_os_remove.side_effect = OSError
 
     concrete_s3_upload_cron_instance.cron()
 
     assert mocked_s3_client.return_value.upload.mock_calls == [
-        mock.call("mock-file1"),
-        mock.call("mock-file2"),
+        mock.call("/path/mock-file1", "mock-file1"),
+        mock.call("/path/mock-file2", "mock-file2"),
     ]
     assert mocked_os_remove.mock_calls == [
-        mock.call("mock-file1"),
-        mock.call("mock-file2"),
+        mock.call("/path/mock-file1"),
+        mock.call("/path/mock-file2"),
     ]
 
   def test__cron__two_files__remove_errors__logging(
@@ -231,7 +248,8 @@ class TestS3UploadCronJobBase:
       mocked_cron_logger_stream: StringIO,
   ) -> None:
     self.set_disk_queue(
-        concrete_s3_upload_cron_instance, ["mock-file1", "mock-file2"]
+        concrete_s3_upload_cron_instance,
+        ["/path/mock-file1", "/path/mock-file2"],
     )
     mocked_os_remove.side_effect = OSError
     cron_job_name = concrete_s3_upload_cron_instance.name
@@ -239,10 +257,12 @@ class TestS3UploadCronJobBase:
     concrete_s3_upload_cron_instance.cron()
 
     assert mocked_cron_logger_stream.getvalue() == (
-        f"INFO - {cron_job_name} - Uploading 'mock-file1' ...\n"
-        f"INFO - {cron_job_name} - Removing 'mock-file1' ...\n"
-        f"ERROR - {cron_job_name} - Failed to remove 'mock-file1' ...\n"
-        f"INFO - {cron_job_name} - Uploading 'mock-file2' ...\n"
-        f"INFO - {cron_job_name} - Removing 'mock-file2' ...\n"
-        f"ERROR - {cron_job_name} - Failed to remove 'mock-file2' ...\n"
+        f"INFO - {cron_job_name} - "
+        f"Uploading '/path/mock-file1' -> 'mock-file1' ...\n"
+        f"INFO - {cron_job_name} - Removing '/path/mock-file1' ...\n"
+        f"ERROR - {cron_job_name} - Failed to remove '/path/mock-file1' ...\n"
+        f"INFO - {cron_job_name} - "
+        f"Uploading '/path/mock-file2' -> 'mock-file2' ...\n"
+        f"INFO - {cron_job_name} - Removing '/path/mock-file2' ...\n"
+        f"ERROR - {cron_job_name} - Failed to remove '/path/mock-file2' ...\n"
     )

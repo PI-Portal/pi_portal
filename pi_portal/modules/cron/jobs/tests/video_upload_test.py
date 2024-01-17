@@ -13,9 +13,13 @@ class TestVideoUploadCron:
   """Test the VideoUploadCronJob class."""
 
   def test__initialization__attrs(
-      self, video_upload_cron_job_instance: video_upload.VideoUploadCronJob,
-      mocked_cron_logger: logging.Logger
+      self,
+      video_upload_cron_job_instance: video_upload.VideoUploadCronJob,
+      mocked_cron_logger: logging.Logger,
+      mocked_state: state.State,
   ) -> None:
+    assert video_upload_cron_job_instance.bucket_name == \
+           mocked_state.user_config["AWS_S3_BUCKETS"]["VIDEOS"]
     assert video_upload_cron_job_instance.interval == \
            config.CRON_INTERVAL_VIDEO_UPLOAD
     assert video_upload_cron_job_instance.log == \
@@ -59,4 +63,4 @@ class TestVideoUploadCron:
         s3_client.S3BucketClient,
     )
     assert video_upload_cron_job_instance.s3_client.bucket_name == \
-        mocked_state.user_config["S3_BUCKET_NAME"]
+        mocked_state.user_config["AWS_S3_BUCKETS"]["VIDEOS"]

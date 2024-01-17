@@ -1,10 +1,16 @@
 """Test fixtures for the cron job baseclass tests."""
 # pylint: disable=redefined-outer-name
 
+from typing import Type
 from unittest import mock
 
 import pytest
 from .. import job, s3_upload_job
+
+
+@pytest.fixture
+def mocked_bucket_name() -> str:
+  return "mocked_bucket_name"
 
 
 @pytest.fixture
@@ -58,20 +64,29 @@ def concrete_cron_instance(
 
 
 @pytest.fixture
-def concrete_s3_upload_cron_instance(
-    mocked_disk_queue: mock.Mock,
+def concrete_s3_upload_cron_class(
+    mocked_bucket_name: str,
     mocked_interval: int,
+) -> Type[s3_upload_job.S3UploadCronJobBase]:
+
+  class ConcreteS3UploadCronJob(s3_upload_job.S3UploadCronJobBase):
+    bucket_name = mocked_bucket_name
+    interval = mocked_interval
+    name = "mock_cron_job"
+    path = "mock_path"
+
+  return ConcreteS3UploadCronJob
+
+
+@pytest.fixture
+def concrete_s3_upload_cron_instance(
+    concrete_s3_upload_cron_class: Type[s3_upload_job.S3UploadCronJobBase],
     mocked_cron_logger: mock.Mock,
+    mocked_disk_queue: mock.Mock,
     mocked_os_remove: mock.Mock,
     mocked_s3_client: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> s3_upload_job.S3UploadCronJobBase:
-
-  class ConcreteS3UploadCronJob(s3_upload_job.S3UploadCronJobBase):
-    name = "mock_cron_job"
-    interval = mocked_interval
-    path = "mock_path"
-
   monkeypatch.setattr(
       s3_upload_job.__name__ + ".client.S3BucketClient",
       mocked_s3_client,
@@ -84,5 +99,5 @@ def concrete_s3_upload_cron_instance(
       s3_upload_job.__name__ + ".os.remove",
       mocked_os_remove,
   )
-  s3_client = ConcreteS3UploadCronJob(mocked_cron_logger)
+  s3_client = concrete_s3_upload_cron_class(mocked_cron_logger)
   return s3_client
