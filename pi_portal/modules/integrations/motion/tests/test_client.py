@@ -34,15 +34,6 @@ class TestMotion:
         mocked_http_client.return_value
     mocked_http_client.assert_called_once_with(mocked_logger)
 
-  def test_initialization__s3_client(
-      self,
-      motion_client_instance: motion_client.MotionClient,
-      mocked_s3_client: mock.Mock,
-  ) -> None:
-    assert motion_client_instance.s3_client == \
-        mocked_s3_client.return_value
-    mocked_s3_client.assert_called_once_with()
-
   def test_take_snapshot__success(
       self,
       motion_client_instance: motion_client.MotionClient,

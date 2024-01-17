@@ -15,9 +15,14 @@ MOCK_VALID_JSON = cast(
     user_config.TypeUserConfig,
     {
         "AWS_ACCESS_KEY_ID":
-            "... AWS key with write access to video bucket ...",
+            "... AWS key with write access to buckets ...",
         "AWS_SECRET_ACCESS_KEY":
-            "... AWS secret key with write access to video bucket ...",
+            "... AWS secret key with write access buckets ...",
+        "AWS_S3_BUCKETS":
+            {
+                "LOGS": "... s3 logs bucket name ...",
+                "VIDEOS": "... s3 video bucket name ..."
+            },
         "CONTACT_SWITCHES":
             [
                 {
@@ -27,8 +32,6 @@ MOCK_VALID_JSON = cast(
             ],
         "LOGZ_IO_CODE":
             "... logz io's logger code ...",
-        "S3_BUCKET_NAME":
-            "... s3 video bucket name ...",
         "SLACK_APP_SIGNING_SECRET":
             "... secret value from slack to validate bot messages ...",
         "SLACK_APP_TOKEN":
@@ -113,9 +116,9 @@ class TestUserConfiguration:
     assert json.loads(str(exc.value)) == [
         "'AWS_ACCESS_KEY_ID' is a required property",
         "'AWS_SECRET_ACCESS_KEY' is a required property",
+        "'AWS_S3_BUCKETS' is a required property",
         "'CONTACT_SWITCHES' is a required property",
         "'LOGZ_IO_CODE' is a required property",
-        "'S3_BUCKET_NAME' is a required property",
         "'SLACK_APP_SIGNING_SECRET' is a required property",
         "'SLACK_APP_TOKEN' is a required property",
         "'SLACK_BOT_TOKEN' is a required property",

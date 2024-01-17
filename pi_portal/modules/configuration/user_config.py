@@ -15,8 +15,8 @@ class TypeUserConfig(TypedDict):
 
   AWS_ACCESS_KEY_ID: str
   AWS_SECRET_ACCESS_KEY: str
+  AWS_S3_BUCKETS: "TypeUserConfigS3Buckets"
   LOGZ_IO_CODE: str
-  S3_BUCKET_NAME: str
   SLACK_APP_SIGNING_SECRET: str
   SLACK_APP_TOKEN: str
   SLACK_BOT_TOKEN: str
@@ -24,6 +24,13 @@ class TypeUserConfig(TypedDict):
   SLACK_CHANNEL_ID: str
   CONTACT_SWITCHES: List["TypeUserConfigGPIO"]
   TEMPERATURE_SENSORS: "TypeUserConfigTemperatureSensors"
+
+
+class TypeUserConfigS3Buckets(TypedDict):
+  """Typed representation of the required S3 bucket names."""
+
+  LOGS: str
+  VIDEOS: str
 
 
 class TypeUserConfigGPIO(TypedDict):
