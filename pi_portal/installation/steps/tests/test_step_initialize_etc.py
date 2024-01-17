@@ -1,13 +1,13 @@
 """Test the StepInitializeEtc class."""
 import logging
 from io import StringIO
-from typing import Iterable, List
+from typing import List
 from unittest import mock
 
 import pytest
 from pi_portal.modules.python.mock import CallType
 from .. import step_initialize_etc
-from ..bases import system_call_step
+from ..bases import base_step
 from ..step_initialize_etc import StepInitializeEtc
 
 
@@ -20,41 +20,34 @@ class TestStepInitializeEtc:
             f"test - INFO - Creating '{etc_path}' ...",
             f"test - INFO - Found existing '{etc_path}' ...",
             f"test - INFO - Setting permissions on '{etc_path}' ...",
-            f"test - INFO - Executing: 'chown root:root {etc_path}' ...",
-            f"test - INFO - Executing: 'chmod 755 {etc_path}' ...",
         ]
     ) + "\n"
 
-  def build_existing_system_calls(self, etc_path: str) -> Iterable[CallType]:
-    return map(
-        mock.call, [
-            f"chown root:root {etc_path}",
-            f"chmod 755 {etc_path}",
-        ]
-    )
+  def build_existing_system_calls(self, etc_path: str) -> List[CallType]:
+    return [
+        mock.call(etc_path),
+        mock.call().ownership("root", "root"),
+        mock.call().permissions("755"),
+    ]
 
   def build_no_existing_log_arguments(self, etc_path: str) -> str:
     return "\n".join(
         [
             f"test - INFO - Creating '{etc_path}' ...",
-            f"test - INFO - Executing: 'mkdir -p {etc_path}' ...",
             f"test - INFO - Setting permissions on '{etc_path}' ...",
-            f"test - INFO - Executing: 'chown root:root {etc_path}' ...",
-            f"test - INFO - Executing: 'chmod 755 {etc_path}' ...",
         ]
     ) + "\n"
 
   def build_no_existing_system_calls(
       self,
-      etc_folder: str,
-  ) -> Iterable[CallType]:
-    return map(
-        mock.call, [
-            f"mkdir -p {etc_folder}",
-            f"chown root:root {etc_folder}",
-            f"chmod 755 {etc_folder}",
-        ]
-    )
+      etc_path: str,
+  ) -> List[CallType]:
+    return [
+        mock.call(etc_path),
+        mock.call().create(directory=True),
+        mock.call().ownership("root", "root"),
+        mock.call().permissions("755"),
+    ]
 
   def test__initialize__attrs(
       self,
@@ -68,6 +61,15 @@ class TestStepInitializeEtc:
         "/etc/pki/tls/certs",
     ]
 
+  def test__initialize__inheritance(
+      self,
+      step_initialize_etc_instance: StepInitializeEtc,
+  ) -> None:
+    assert isinstance(
+        step_initialize_etc_instance,
+        base_step.StepBase,
+    )
+
   @mock.patch(
       step_initialize_etc.__name__ + '.os.path.exists',
       mock.Mock(return_value=False),
@@ -75,19 +77,18 @@ class TestStepInitializeEtc:
   def test__invoke__no_existing_log_files__success(
       self,
       step_initialize_etc_instance: StepInitializeEtc,
+      mocked_file_system: mock.Mock,
       mocked_stream: StringIO,
-      mocked_system: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 0
     expected_log_messages = ""
-    expected_system_calls: List[CallType] = []
+    expected_fs_calls: List[CallType] = []
     for log_file in step_initialize_etc_instance.etc_paths:
-      expected_system_calls += self.build_no_existing_system_calls(log_file)
+      expected_fs_calls += self.build_no_existing_system_calls(log_file)
       expected_log_messages += self.build_no_existing_log_arguments(log_file)
 
     step_initialize_etc_instance.invoke()
 
-    assert mocked_system.mock_calls == expected_system_calls
+    assert mocked_file_system.mock_calls == expected_fs_calls
     assert mocked_stream.getvalue() == "".join(
         [
             "test - INFO - Initializing etc paths ...\n",
@@ -103,25 +104,22 @@ class TestStepInitializeEtc:
   def test__invoke__no_existing_log_files__failure(
       self,
       step_initialize_etc_instance: StepInitializeEtc,
+      mocked_file_system: mock.Mock,
       mocked_stream: StringIO,
-      mocked_system: mock.Mock,
   ) -> None:
-    mocked_system.side_effect = [0, 0, 127]
+    mocked_file_system.return_value.permissions.side_effect = [OSError]
 
-    with pytest.raises(system_call_step.SystemCallError) as exc:
+    with pytest.raises(OSError):
       step_initialize_etc_instance.invoke()
 
-    assert mocked_system.mock_calls == list(
+    assert mocked_file_system.mock_calls == \
         self.build_no_existing_system_calls("/etc/filebeat")
-    )
     assert mocked_stream.getvalue() == "".join(
         [
             "test - INFO - Initializing etc paths ...\n",
             self.build_no_existing_log_arguments("/etc/filebeat"),
-            "test - ERROR - Command: 'chmod 755 /etc/filebeat' failed!\n",
         ]
     )
-    assert str(exc.value) == "Command: 'chmod 755 /etc/filebeat' failed!"
 
   @mock.patch(
       step_initialize_etc.__name__ + '.os.path.exists',
@@ -130,19 +128,18 @@ class TestStepInitializeEtc:
   def test__invoke__existing_log_files__success(
       self,
       step_initialize_etc_instance: StepInitializeEtc,
+      mocked_file_system: mock.Mock,
       mocked_stream: StringIO,
-      mocked_system: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 0
     expected_log_messages = ""
-    expected_system_calls: List[CallType] = []
+    expected_fs_calls: List[CallType] = []
     for log_file in step_initialize_etc_instance.etc_paths:
-      expected_system_calls += self.build_existing_system_calls(log_file)
+      expected_fs_calls += self.build_existing_system_calls(log_file)
       expected_log_messages += self.build_existing_log_arguments(log_file)
 
     step_initialize_etc_instance.invoke()
 
-    assert mocked_system.mock_calls == expected_system_calls
+    assert mocked_file_system.mock_calls == expected_fs_calls
     assert mocked_stream.getvalue() == "".join(
         [
             "test - INFO - Initializing etc paths ...\n",

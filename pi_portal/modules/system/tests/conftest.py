@@ -1,19 +1,19 @@
 """Test fixtures for the system modules tests."""
-# pylint: disable=redefined-outer-name
+# pylint: disable=redefined-outer-name,duplicate-code
 
 from contextlib import closing
 from io import BytesIO
 from unittest import mock
 
 import pytest
-from .. import file_security, supervisor
+from .. import file_security, file_system, supervisor
 
 
 @pytest.fixture
 def file_security_instance(
+    mocked_file_path: str,
     mocked_hashlib_sha256: mock.Mock,
     mocked_open_read_binary: mock.Mock,
-    mocked_file_path: str,
     monkeypatch: pytest.MonkeyPatch,
 ) -> file_security.FileSecurity:
   monkeypatch.setattr(
@@ -25,6 +25,24 @@ def file_security_instance(
       mocked_open_read_binary,
   )
   return file_security.FileSecurity(mocked_file_path)
+
+
+@pytest.fixture
+def file_system_instance(
+    mocked_file_path: str,
+    mocked_os: mock.Mock,
+    mocked_shutil: mock.Mock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> file_system.FileSystem:
+  monkeypatch.setattr(
+      file_system.__name__ + ".os",
+      mocked_os,
+  )
+  monkeypatch.setattr(
+      file_system.__name__ + ".shutil",
+      mocked_shutil,
+  )
+  return file_system.FileSystem(mocked_file_path)
 
 
 @pytest.fixture
@@ -52,6 +70,16 @@ def mocked_open_read_binary(mocked_file_handle_binary: BytesIO) -> mock.Mock:
   open_mock = mock.Mock()
   open_mock.return_value = closing(mocked_file_handle_binary)
   return open_mock
+
+
+@pytest.fixture
+def mocked_os() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
+def mocked_shutil() -> mock.Mock:
+  return mock.Mock()
 
 
 @pytest.fixture

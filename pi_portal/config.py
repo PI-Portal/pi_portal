@@ -13,12 +13,14 @@ CRON_INTERVAL_VIDEO_UPLOAD = 10
 FILE_BEAT_BINARY = os.getenv("PI_PORTAL_FILEBEAT_LOCATION", "/usr/bin/filebeat")
 FILE_BEAT_CONFIG = "/etc/filebeat/filebeat.yml"
 
-LOG_FILE_CRON_SCHEDULER = "/var/log/pi_portal.cron.log"
-LOG_FILE_DOOR_MONITOR = "/var/log/pi_portal.door.log"
-LOG_FILE_MOTION = "/var/log/pi_portal.motion.log"
-LOG_FILE_SLACK_BOT = "/var/log/pi_portal.slack_bot.log"
-LOG_FILE_SLACK_CLIENT = "/var/log/pi_portal.slack_client.log"
-LOG_FILE_TEMPERATURE_MONITOR = "/var/log/pi_portal.temperature.log"
+LOG_FILE_BASE_FOLDER = "/var/log/pi_portal"
+LOG_FILE_CRON_SCHEDULER = f"{LOG_FILE_BASE_FOLDER}/pi_portal.cron.log"
+LOG_FILE_DOOR_MONITOR = f"{LOG_FILE_BASE_FOLDER}/pi_portal.door.log"
+LOG_FILE_MOTION = f"{LOG_FILE_BASE_FOLDER}/pi_portal.motion.log"
+LOG_FILE_SLACK_BOT = f"{LOG_FILE_BASE_FOLDER}/pi_portal.slack_bot.log"
+LOG_FILE_SLACK_CLIENT = f"{LOG_FILE_BASE_FOLDER}/pi_portal.slack_client.log"
+LOG_FILE_TEMPERATURE_MONITOR = \
+    f"{LOG_FILE_BASE_FOLDER}/pi_portal.temperature.log"
 
 LOG_PREFIX_SUPERVISOR = "/var/log/supervisor/supervisor"
 
