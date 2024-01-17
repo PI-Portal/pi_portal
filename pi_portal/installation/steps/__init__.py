@@ -1,6 +1,7 @@
 """Step classes for the installation process."""
 
 from .step_configure_logz_io import StepConfigureLogzIo
+from .step_configure_motion import StepConfigureMotion
 from .step_ensure_root import StepEnsureRoot
 from .step_initialize_data_paths import StepInitializeDataPaths
 from .step_initialize_etc import StepInitializeEtc
