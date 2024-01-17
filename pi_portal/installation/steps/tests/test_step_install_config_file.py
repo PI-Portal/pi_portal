@@ -1,5 +1,6 @@
 """Test the StepInstallConfigFile class."""
 import logging
+import shutil
 from io import StringIO
 from unittest import mock
 
@@ -30,7 +31,7 @@ class TestStepInstallConfigFile:
         base_step.StepBase,
     )
 
-  def test__invoke__success(
+  def test__invoke__success__no_exception(
       self,
       step_install_config_files_instance: StepInstallConfigFile,
       mocked_config_file: str,
@@ -62,7 +63,41 @@ class TestStepInstallConfigFile:
           "configuration file.\n"
         )
 
-  def test__invoke__failure(
+  def test__invoke__success__same_file_error(
+      self,
+      step_install_config_files_instance: StepInstallConfigFile,
+      mocked_config_file: str,
+      mocked_copy: mock.Mock,
+      mocked_file_system: mock.Mock,
+      mocked_stream: StringIO,
+  ) -> None:
+    mocked_copy.side_effect = shutil.SameFileError
+
+    step_install_config_files_instance.invoke()
+
+    mocked_copy.assert_called_once_with(
+        mocked_config_file,
+        config.PATH_USER_CONFIG,
+    )
+    assert mocked_file_system.mock_calls == [
+        mock.call(config.PATH_USER_CONFIG),
+        mock.call().ownership(
+            config.PI_PORTAL_USER,
+            config.PI_PORTAL_USER,
+        ),
+        mock.call().permissions("600"),
+    ]
+    assert mocked_stream.getvalue() == \
+        (
+          "test - INFO - Installing the user's configuration file ...\n"
+          "test - INFO - Done writing the user's configuration file.\n"
+          "test - INFO - Setting permissions on the user's "
+          "configuration file ...\n"
+          "test - INFO - Done setting permissions on the user's "
+          "configuration file.\n"
+        )
+
+  def test__invoke__failure__os_error(
       self,
       step_install_config_files_instance: StepInstallConfigFile,
       mocked_config_file: str,
