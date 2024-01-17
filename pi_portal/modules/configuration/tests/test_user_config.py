@@ -11,37 +11,54 @@ from pi_portal.modules.configuration import user_config
 from pi_portal.modules.mixins import read_json_file
 
 MOCK_INVALID_JSON = cast(user_config.TypeUserConfig, {"mock_setting": "0123"})
-MOCK_VALID_JSON = cast(
-    user_config.TypeUserConfig,
-    {
-        "AWS_ACCESS_KEY_ID":
-            "... AWS key with write access to buckets ...",
-        "AWS_SECRET_ACCESS_KEY":
-            "... AWS secret key with write access buckets ...",
-        "AWS_S3_BUCKETS":
+MOCK_VALID_JSON = user_config.TypeUserConfig(
+    **{
+        "ARCHIVAL":
             {
-                "LOGS": "... s3 logs bucket name ...",
-                "VIDEOS": "... s3 video bucket name ..."
+                "AWS":
+                    {
+                        "AWS_ACCESS_KEY_ID":
+                            "... AWS key with write access ...",
+                        "AWS_SECRET_ACCESS_KEY":
+                            "... AWS secret key with write access ...",
+                        "AWS_S3_BUCKETS":
+                            {
+                                "LOGS": "... s3 logs bucket name ...",
+                                "VIDEOS": "... s3 video bucket name ..."
+                            },
+                    }
             },
-        "CONTACT_SWITCHES":
-            [
-                {
-                    "NAME": "... name and pin-out of a GPIO switch...",
-                    "GPIO": 12,
-                },
-            ],
-        "LOGZ_IO_CODE":
-            "... logz io's logger code ...",
-        "SLACK_APP_SIGNING_SECRET":
-            "... secret value from slack to validate bot messages ...",
-        "SLACK_APP_TOKEN":
-            "... token from slack to allow app to use websockets ...",
-        "SLACK_BOT_TOKEN":
-            "... token from slack ...",
-        "SLACK_CHANNEL":
-            "... proper name of slack channel ...",
-        "SLACK_CHANNEL_ID":
-            ".. slack's ID for the channel ...",
+        "CHAT":
+            {
+                "SLACK":
+                    {
+                        "SLACK_APP_SIGNING_SECRET":
+                            "... secret value from slack ...",
+                        "SLACK_APP_TOKEN":
+                            "... token from slack ...",
+                        "SLACK_BOT_TOKEN":
+                            "... token from slack ...",
+                        "SLACK_CHANNEL":
+                            "... proper name of slack channel ...",
+                        "SLACK_CHANNEL_ID":
+                            ".. slack's ID for the channel ...",
+                    },
+            },
+        "LOGS": {
+            "LOGZ_IO": {
+                "LOGZ_IO_TOKEN": "... logz io's logger token ..."
+            }
+        },
+        "SWITCHES":
+            {
+                "CONTACT_SWITCHES":
+                    [
+                        {
+                            "NAME": "... name and pin-out of a GPIO switch...",
+                            "GPIO": 12,
+                        },
+                    ],
+            },
         "TEMPERATURE_SENSORS":
             {
                 "DHT11":
@@ -114,15 +131,9 @@ class TestUserConfiguration:
       user_configuration_instance.validate()
 
     assert json.loads(str(exc.value)) == [
-        "'AWS_ACCESS_KEY_ID' is a required property",
-        "'AWS_SECRET_ACCESS_KEY' is a required property",
-        "'AWS_S3_BUCKETS' is a required property",
-        "'CONTACT_SWITCHES' is a required property",
-        "'LOGZ_IO_CODE' is a required property",
-        "'SLACK_APP_SIGNING_SECRET' is a required property",
-        "'SLACK_APP_TOKEN' is a required property",
-        "'SLACK_BOT_TOKEN' is a required property",
-        "'SLACK_CHANNEL' is a required property",
-        "'SLACK_CHANNEL_ID' is a required property",
+        "'ARCHIVAL' is a required property",
+        "'CHAT' is a required property",
+        "'LOGS' is a required property",
+        "'SWITCHES' is a required property",
         "'TEMPERATURE_SENSORS' is a required property",
     ]

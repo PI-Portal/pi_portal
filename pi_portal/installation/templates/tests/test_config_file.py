@@ -30,7 +30,7 @@ class TestConfigFileTemplate:
       config_file_template: config_file.ConfileFileTemplate,
   ) -> None:
     expected_values = {
-        "LOGZ_IO_CODE": mocked_state.user_config["LOGZ_IO_CODE"],
+        "USER_CONFIG": mocked_state.user_config,
     }
     for setting in dir(config):
       if not setting.startswith("__"):

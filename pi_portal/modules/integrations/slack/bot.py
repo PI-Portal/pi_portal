@@ -28,17 +28,18 @@ class SlackBot(write_log_file.LogFileWriter):
 
   def __init__(self) -> None:
     current_state = state.State()
+    slack_integration_config = current_state.user_config["CHAT"]["SLACK"]
     self.app = App(
-        signing_secret=current_state.user_config['SLACK_APP_SIGNING_SECRET'],
-        token=current_state.user_config['SLACK_BOT_TOKEN'],
+        signing_secret=slack_integration_config['SLACK_APP_SIGNING_SECRET'],
+        token=slack_integration_config['SLACK_BOT_TOKEN'],
     )
     self.configure_logger()
-    self.channel_id = current_state.user_config['SLACK_CHANNEL_ID']
+    self.channel_id = slack_integration_config['SLACK_CHANNEL_ID']
     self.command_list = cli.get_available_commands()
     self.slack_client = client.SlackClient()
     self.web_socket = SocketModeHandler(
         self.app,
-        current_state.user_config['SLACK_APP_TOKEN'],
+        slack_integration_config['SLACK_APP_TOKEN'],
     )
 
   def connect(self) -> None:

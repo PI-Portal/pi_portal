@@ -33,7 +33,7 @@ class TestSlackClient:
   ) -> None:
     assert client_instance.web == mocked_slack_web_client.return_value
     mocked_slack_web_client.assert_called_once_with(
-        token=mocked_state.user_config['SLACK_BOT_TOKEN']
+        token=mocked_state.user_config["CHAT"]["SLACK"]['SLACK_BOT_TOKEN']
     )
 
   def test_initialize__motion(

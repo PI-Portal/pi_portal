@@ -18,10 +18,11 @@ class SlackClient(write_log_file.LogFileWriter):
 
   def __init__(self) -> None:
     current_state = state.State()
+    slack_integration_config = current_state.user_config["CHAT"]["SLACK"]
     self.configure_logger()
-    self.web = WebClient(token=current_state.user_config['SLACK_BOT_TOKEN'])
-    self.channel = current_state.user_config['SLACK_CHANNEL']
-    self.channel_id = current_state.user_config['SLACK_CHANNEL_ID']
+    self.web = WebClient(token=slack_integration_config['SLACK_BOT_TOKEN'])
+    self.channel = slack_integration_config['SLACK_CHANNEL']
+    self.channel_id = slack_integration_config['SLACK_CHANNEL_ID']
     self.motion_client = motion_client.MotionClient(self.log)
     self.config = slack_config.SlackClientConfiguration()
 
