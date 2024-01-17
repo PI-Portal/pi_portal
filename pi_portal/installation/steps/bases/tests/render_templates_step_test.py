@@ -9,7 +9,7 @@ from unittest import mock
 import pytest
 from pi_portal.installation.templates import config_file
 from pi_portal.modules.python.mock import CallType
-from .. import system_call_step
+from .. import base_step
 from ..render_templates_step import RenderTemplateStepBase
 
 
@@ -29,15 +29,6 @@ class TestRenderTemplateStepBase:
                   f"'{template.destination}' ..."
               ),
               (
-                  "test - INFO - Executing: 'chown "
-                  f"{template.user}:{template.user} "
-                  f"{template.destination}' ..."
-              ),
-              (
-                  f"test - INFO - Executing: 'chmod "
-                  f"{template.permissions} {template.destination}' ..."
-              ),
-              (
                   f"test - INFO - Template: '{template.source}' -> "
                   f"'{template.destination}' completed."
               ),
@@ -45,7 +36,7 @@ class TestRenderTemplateStepBase:
       ) + "\n"
     return expected_log_calls
 
-  def build_system_call_failed_log_messages(
+  def build_fs_call_failed_log_messages(
       self,
       templates: List[config_file.ConfileFileTemplate],
   ) -> str:
@@ -57,35 +48,22 @@ class TestRenderTemplateStepBase:
                   f"test - INFO - Template: '{template.source}' -> "
                   f"'{template.destination}' ..."
               ),
-              (
-                  "test - INFO - Executing: 'chown "
-                  f"{template.user}:{template.user} "
-                  f"{template.destination}' ..."
-              ),
-              (
-                  f"test - INFO - Executing: 'chmod "
-                  f"{template.permissions} {template.destination}' ..."
-              ),
-              (
-                  f"test - ERROR - Command: 'chmod "
-                  f"{template.permissions} {template.destination}' failed!"
-              )
           ]
       ) + "\n"
     return expected_log_calls
 
-  def build_mocked_system_calls(
+  def build_mocked_fs_calls(
       self,
       templates: List[config_file.ConfileFileTemplate],
   ) -> List[CallType]:
-    expected_system_calls: List[CallType] = []
+    expected_fs_calls: List[CallType] = []
     for template in templates:
-      expected_system_calls += [
-          mock.
-          call(f"chown {template.user}:{template.user} {template.destination}"),
-          mock.call(f"chmod {template.permissions} {template.destination}"),
+      expected_fs_calls += [
+          mock.call(template.destination),
+          mock.call().ownership(template.user, template.user),
+          mock.call().permissions(template.permissions),
       ]
-    return expected_system_calls
+    return expected_fs_calls
 
   def test__initialize__attrs(
       self,
@@ -94,6 +72,15 @@ class TestRenderTemplateStepBase:
     assert isinstance(
         concrete_render_templates_step_instance.log,
         logging.Logger,
+    )
+
+  def test__initialize__inheritance(
+      self,
+      concrete_render_templates_step_instance: RenderTemplateStepBase,
+  ) -> None:
+    assert isinstance(
+        concrete_render_templates_step_instance,
+        base_step.StepBase,
     )
 
   def test__initialize__templates(
@@ -126,9 +113,7 @@ class TestRenderTemplateStepBase:
       self,
       concrete_render_templates_step_instance: RenderTemplateStepBase,
       mocked_stream: StringIO,
-      mocked_system: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 0
     expected_log_messages = self.build_log_messages(
         concrete_render_templates_step_instance.templates
     )
@@ -137,81 +122,71 @@ class TestRenderTemplateStepBase:
 
     assert mocked_stream.getvalue() == expected_log_messages
 
-  def test__render__logs__system_call_failure(
+  def test__render__logs__fs_failure(
       self,
       concrete_render_templates_step_instance: RenderTemplateStepBase,
+      mocked_file_system: mock.Mock,
       mocked_stream: StringIO,
-      mocked_system: mock.Mock,
   ) -> None:
-    mocked_system.side_effect = [0, 127]
+    mocked_file_system.return_value.permissions.side_effect = OSError
     expected_log_messages = \
-        self.build_system_call_failed_log_messages(
+        self.build_fs_call_failed_log_messages(
             concrete_render_templates_step_instance.templates[0:1]
         )
 
-    with pytest.raises(system_call_step.SystemCallError):
+    with pytest.raises(OSError):
       concrete_render_templates_step_instance.render()
 
     assert mocked_stream.getvalue() == expected_log_messages
 
-  def test__render__system_calls__success(
+  def test__render__fs_calls__success(
       self,
       concrete_render_templates_step_instance: RenderTemplateStepBase,
-      mocked_system: mock.Mock,
+      mocked_file_system: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 0
-    expected_system_calls = self.build_mocked_system_calls(
+    expected_fs_calls = self.build_mocked_fs_calls(
         concrete_render_templates_step_instance.templates
     )
 
     concrete_render_templates_step_instance.render()
 
-    assert mocked_system.mock_calls == expected_system_calls
+    assert mocked_file_system.mock_calls == expected_fs_calls
 
-  def test__render__system__calls__system_call_failure(
+  def test__render__fs__calls__fs_call_failure(
       self,
       concrete_render_templates_step_instance: RenderTemplateStepBase,
-      mocked_system: mock.Mock,
+      mocked_file_system: mock.Mock,
   ) -> None:
-    mocked_system.side_effect = [0, 127]
-    expected_system_calls = self.build_mocked_system_calls(
+    mocked_file_system.return_value.permissions.side_effect = OSError
+    expected_fs_calls = self.build_mocked_fs_calls(
         concrete_render_templates_step_instance.templates[0:1]
     )
 
-    with pytest.raises(system_call_step.SystemCallError) as exc:
+    with pytest.raises(OSError):
       concrete_render_templates_step_instance.render()
 
-    assert mocked_system.mock_calls == expected_system_calls
-    assert str(exc.value) == (
-        "Command: 'chmod " +
-        concrete_render_templates_step_instance.templates[0].permissions + " " +
-        concrete_render_templates_step_instance.templates[0].destination +
-        "' failed!"
-    )
+    assert mocked_file_system.mock_calls == expected_fs_calls
 
   def test__render__template_rendering__success(
       self,
       concrete_render_templates_step_instance: RenderTemplateStepBase,
-      mocked_system: mock.Mock,
       mocked_template_render: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 0
-
     concrete_render_templates_step_instance.render()
 
     assert mocked_template_render.mock_calls == [
         mock.call(),
     ] * len(concrete_render_templates_step_instance.templates)
 
-  def test__render__template_rendering__system_call_failure(
+  def test__render__template_rendering__fs_failure(
       self,
       concrete_render_templates_step_instance: RenderTemplateStepBase,
-      mocked_system: mock.Mock,
+      mocked_file_system: mock.Mock,
       mocked_template_render: mock.Mock,
   ) -> None:
-    mocked_system.side_effect = [0, 127]
+    mocked_file_system.return_value.permissions.side_effect = OSError
 
-    with pytest.raises(system_call_step.SystemCallError):
+    with pytest.raises(OSError):
       concrete_render_templates_step_instance.render()
 
     assert mocked_template_render.mock_calls == [mock.call()]

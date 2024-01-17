@@ -9,7 +9,7 @@ import pytest
 from pi_portal.modules.integrations.network import http
 from pi_portal.modules.python.mock import CallType
 from pi_portal.modules.system import file_security
-from .. import remote_file_step, system_call_step
+from .. import base_step, remote_file_step
 
 
 class TestRemoteFileStepBase:
@@ -31,16 +31,6 @@ class TestRemoteFileStepBase:
                   (
                       "test - INFO - Download: Successfully saved "
                       f"'{remote_file.target}' !"
-                  ),
-                  (
-                      "test - INFO - Executing: 'chown "
-                      f"{remote_file.user}:{remote_file.user} "
-                      f"{remote_file.target}' ..."
-                  ),
-                  (
-                      "test - INFO - Executing: 'chmod "
-                      f"{remote_file.permissions} "
-                      f"{remote_file.target}' ..."
                   ),
               ]
           ) + "\n"
@@ -87,7 +77,25 @@ class TestRemoteFileStepBase:
     ) + "\n"
     return expected_logs
 
-  def build_system_call_failed_log_messages(
+  def build_failed_fs_log_messages(
+      self,
+      remote_files: List[remote_file_step.RemoteFile],
+  ) -> str:
+    expected_logs = ""
+    for remote_file in remote_files:
+      expected_logs += (
+          "\n".join(
+              [
+                  (
+                      "test - INFO - Download: "
+                      f"'{remote_file.url}' -> '{remote_file.target}' ..."
+                  ),
+              ]
+          ) + "\n"
+      )
+    return expected_logs
+
+  def build_fs_calls_failed_log_messages(
       self,
       remote_files: List[remote_file_step.RemoteFile],
   ) -> str:
@@ -100,20 +108,6 @@ class TestRemoteFileStepBase:
                       "test - INFO - Download: "
                       f"'{remote_file.url}' -> "
                       f"'{remote_file.target}' ..."
-                  ),
-                  (
-                      "test - INFO - Download: Successfully saved "
-                      f"'{remote_file.target}' !"
-                  ),
-                  (
-                      "test - INFO - Executing: 'chown "
-                      f"{remote_file.user}:{remote_file.user} "
-                      f"{remote_file.target}' ..."
-                  ),
-                  (
-                      "test - ERROR - Command: 'chown "
-                      f"{remote_file.user}:{remote_file.user} "
-                      f"{remote_file.target}' failed!"
                   ),
               ]
           ) + "\n"
@@ -144,28 +138,36 @@ class TestRemoteFileStepBase:
       ]
     return expected_http_client_calls
 
-  def build_mocked_system_calls(
+  def build_mocked_fs_calls(
       self,
       concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
   ) -> List[CallType]:
-    expected_system_calls: List[CallType] = []
+    expected_fs_calls: List[CallType] = []
     for remote_file in concrete_remote_file_step_instance.remote_files:
-      expected_system_calls.append(
-          mock.call(
-              f"chown {remote_file.user}:{remote_file.user} "
-              f"{remote_file.target}"
-          )
-      )
-      expected_system_calls.append(
-          mock.call(f"chmod {remote_file.permissions} {remote_file.target}")
-      )
-    return expected_system_calls
+      expected_fs_calls += [
+          mock.call(remote_file.target),
+          mock.call().ownership(
+              remote_file.user,
+              remote_file.user,
+          ),
+          mock.call().permissions(remote_file.permissions),
+      ]
+    return expected_fs_calls
 
   def test__initialize__attrs(
       self,
       concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
   ) -> None:
     assert isinstance(concrete_remote_file_step_instance.log, logging.Logger)
+
+  def test__initialize__inheritance(
+      self,
+      concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
+  ) -> None:
+    assert isinstance(
+        concrete_remote_file_step_instance,
+        base_step.StepBase,
+    )
 
   def test__initialize__remote_files(
       self,
@@ -193,9 +195,7 @@ class TestRemoteFileStepBase:
       self,
       concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
       mocked_stream: StringIO,
-      mocked_system: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 0
     expected_log_messages = \
         self.build_log_messages(
           concrete_remote_file_step_instance.remote_files
@@ -210,9 +210,7 @@ class TestRemoteFileStepBase:
       concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
       mocked_http_client: mock.Mock,
       mocked_stream: StringIO,
-      mocked_system: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 0
     mocked_http_client.return_value.get.side_effect = \
         [http.HttpClientError, None]
     expected_log_messages = self.build_failed_get_log_messages(
@@ -227,23 +225,23 @@ class TestRemoteFileStepBase:
 
     assert mocked_stream.getvalue() == expected_log_messages
 
-  def test__download__system_call_failure__logging(
+  def test__download__logs__fs_failure(
       self,
       concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
+      mocked_file_system: mock.Mock,
       mocked_stream: StringIO,
-      mocked_system: mock.Mock,
   ) -> None:
-    mocked_system.side_effect = [127, 0, 0, 0]
+    mocked_file_system.return_value.permissions.side_effect = OSError
     expected_log_messages = \
-        self.build_system_call_failed_log_messages(
+        self.build_fs_calls_failed_log_messages(
           concrete_remote_file_step_instance.remote_files[0:1]
         )
     expected_log_messages += \
-        self.build_log_messages(
+        self.build_failed_fs_log_messages(
           concrete_remote_file_step_instance.remote_files[1:]
         )
 
-    with pytest.raises(system_call_step.SystemCallError):
+    with pytest.raises(OSError):
       concrete_remote_file_step_instance.download()
 
     assert mocked_stream.getvalue() == expected_log_messages
@@ -253,9 +251,7 @@ class TestRemoteFileStepBase:
       concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
       mocked_file_security: mock.Mock,
       mocked_stream: StringIO,
-      mocked_system: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 0
     mocked_file_security.return_value.sha256.side_effect = \
         [file_security.FileSecurityViolation, None]
     expected_log_messages = \
@@ -276,9 +272,7 @@ class TestRemoteFileStepBase:
       self,
       concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
       mocked_file_security: mock.Mock,
-      mocked_system: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 0
     expected_file_security_calls = \
         self.build_mocked_file_security_calls(
           concrete_remote_file_step_instance
@@ -294,9 +288,7 @@ class TestRemoteFileStepBase:
       concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
       mocked_file_security: mock.Mock,
       mocked_http_client: mock.Mock,
-      mocked_system: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 0
     mocked_http_client.return_value.get.side_effect = \
         [http.HttpClientError, None]
     expected_file_security_calls = \
@@ -310,19 +302,19 @@ class TestRemoteFileStepBase:
     assert mocked_file_security.mock_calls == \
         expected_file_security_calls
 
-  def test__download__file_security__system_call_failure(
+  def test__download__file_security__fs_failure(
       self,
       concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
       mocked_file_security: mock.Mock,
-      mocked_system: mock.Mock,
+      mocked_file_system: mock.Mock,
   ) -> None:
-    mocked_system.side_effect = [127, 0, 0, 0]
+    mocked_file_system.return_value.permissions.side_effect = OSError
     expected_file_security_calls = \
         self.build_mocked_file_security_calls(
           concrete_remote_file_step_instance
         )
 
-    with pytest.raises(system_call_step.SystemCallError):
+    with pytest.raises(OSError):
       concrete_remote_file_step_instance.download()
 
     assert mocked_file_security.mock_calls == \
@@ -332,9 +324,7 @@ class TestRemoteFileStepBase:
       self,
       concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
       mocked_file_security: mock.Mock,
-      mocked_system: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 0
     mocked_file_security.return_value.sha256.side_effect = \
         [file_security.FileSecurityViolation, None]
     expected_file_security_calls = \
@@ -354,9 +344,7 @@ class TestRemoteFileStepBase:
       self,
       concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
       mocked_http_client: mock.Mock,
-      mocked_system: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 0
     expected_http_client_calls = \
         self.build_mocked_http_client_calls(
           concrete_remote_file_step_instance
@@ -371,9 +359,7 @@ class TestRemoteFileStepBase:
       self,
       concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
       mocked_http_client: mock.Mock,
-      mocked_system: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 0
     mocked_http_client.return_value.get.side_effect = \
         [http.HttpClientError, None]
     expected_http_client_calls = \
@@ -388,19 +374,19 @@ class TestRemoteFileStepBase:
     assert str(exc.value) == \
         concrete_remote_file_step_instance.remote_files[0].url
 
-  def test__download__http_client__system_call_failure(
+  def test__download__http_client__fs_failure(
       self,
       concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
+      mocked_file_system: mock.Mock,
       mocked_http_client: mock.Mock,
-      mocked_system: mock.Mock,
   ) -> None:
-    mocked_system.side_effect = [127, 0, 0, 0]
+    mocked_file_system.return_value.permissions.side_effect = OSError
     expected_http_client_calls = \
         self.build_mocked_http_client_calls(
           concrete_remote_file_step_instance
         )
 
-    with pytest.raises(system_call_step.SystemCallError):
+    with pytest.raises(OSError):
       concrete_remote_file_step_instance.download()
 
     assert mocked_http_client.mock_calls == expected_http_client_calls
@@ -410,9 +396,7 @@ class TestRemoteFileStepBase:
       concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
       mocked_file_security: mock.Mock,
       mocked_http_client: mock.Mock,
-      mocked_system: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 0
     mocked_file_security.return_value.sha256.side_effect = \
         [file_security.FileSecurityViolation, None]
     expected_http_client_calls = \
@@ -425,73 +409,65 @@ class TestRemoteFileStepBase:
 
     assert mocked_http_client.mock_calls == expected_http_client_calls
 
-  def test__download__system_calls__success(
+  def test__download__fs_calls__success(
       self,
       concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
-      mocked_system: mock.Mock,
+      mocked_file_system: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 0
-    expected_system_calls = self.build_mocked_system_calls(
+    expected_fs_calls = self.build_mocked_fs_calls(
         concrete_remote_file_step_instance
     )
 
     concrete_remote_file_step_instance.download()
 
-    assert mocked_system.mock_calls == expected_system_calls
+    assert mocked_file_system.mock_calls == expected_fs_calls
 
-  def test__download__system_calls__download_failure(
+  def test__download__fs_calls__download_failure(
       self,
       concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
+      mocked_file_system: mock.Mock,
       mocked_http_client: mock.Mock,
-      mocked_system: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 0
     mocked_http_client.return_value.get.side_effect = \
         [http.HttpClientError, None]
-    expected_system_calls = self.build_mocked_system_calls(
+    expected_fs_calls = self.build_mocked_fs_calls(
         concrete_remote_file_step_instance
-    )[2:]
+    )[3:]
 
     with pytest.raises(remote_file_step.RemoteFileDownloadError):
       concrete_remote_file_step_instance.download()
 
-    assert mocked_system.mock_calls == \
-        expected_system_calls
+    assert mocked_file_system.mock_calls == \
+        expected_fs_calls
 
-  def test__download__system_calls__system_call_failure(
+  def test__download__fs_calls__fs_call_failure(
       self,
       concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
-      mocked_system: mock.Mock,
+      mocked_file_system: mock.Mock,
   ) -> None:
-    mocked_system.side_effect = [0, 127, 0, 0]
-    expected_system_calls = self.build_mocked_system_calls(
+    mocked_file_system.return_value.permissions.side_effect = OSError
+    expected_fs_calls = self.build_mocked_fs_calls(
         concrete_remote_file_step_instance
     )
 
-    with pytest.raises(system_call_step.SystemCallError) as exc:
+    with pytest.raises(OSError):
       concrete_remote_file_step_instance.download()
 
-    assert mocked_system.mock_calls == expected_system_calls
-    assert str(exc.value) == (
-        "Command: 'chmod "
-        f"{concrete_remote_file_step_instance.remote_files[0].permissions} "
-        f"{concrete_remote_file_step_instance.remote_files[0].target}' failed!"
-    )
+    assert mocked_file_system.mock_calls == expected_fs_calls
 
-  def test__download__system_calls__validation_failure(
+  def test__download__fs_calls__validation_failure(
       self,
       concrete_remote_file_step_instance: remote_file_step.RemoteFileStepBase,
       mocked_file_security: mock.Mock,
-      mocked_system: mock.Mock,
+      mocked_file_system: mock.Mock,
   ) -> None:
-    mocked_system.return_value = 0
     mocked_file_security.return_value.sha256.side_effect = \
         [file_security.FileSecurityViolation, None]
-    expected_system_calls = self.build_mocked_system_calls(
+    expected_fs_calls = self.build_mocked_fs_calls(
         concrete_remote_file_step_instance
-    )[2:]
+    )[3:]
 
     with pytest.raises(remote_file_step.RemoteFileDownloadError):
       concrete_remote_file_step_instance.download()
 
-    assert mocked_system.mock_calls == expected_system_calls
+    assert mocked_file_system.mock_calls == expected_fs_calls
