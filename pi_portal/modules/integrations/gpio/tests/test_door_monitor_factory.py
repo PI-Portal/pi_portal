@@ -28,9 +28,11 @@ class TestDoorMonitorFactory(
   def test_gpio(self) -> None:
     self.assertEqual(
         self.instance.gpio_pins[0].pin_name,
-        self.factory.state.user_config['CONTACT_SWITCHES'][0]["NAME"]
+        self.factory.state.user_config["SWITCHES"]['CONTACT_SWITCHES'][0]
+        ["NAME"]
     )
     self.assertEqual(
         self.instance.gpio_pins[0].pin_number,
-        self.factory.state.user_config['CONTACT_SWITCHES'][0]["GPIO"]
+        self.factory.state.user_config["SWITCHES"]['CONTACT_SWITCHES'][0]
+        ["GPIO"]
     )

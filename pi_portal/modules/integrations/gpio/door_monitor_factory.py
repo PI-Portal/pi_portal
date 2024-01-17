@@ -21,7 +21,7 @@ class DoorMonitorFactory(
     """
 
     switches: List[contact_switch.ContactSwitch] = []
-    for switch in self.state.user_config["CONTACT_SWITCHES"]:
+    for switch in self.state.user_config["SWITCHES"]["CONTACT_SWITCHES"]:
       switches.append(
           contact_switch.ContactSwitch(
               pin_name=switch["NAME"],

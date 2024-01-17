@@ -39,7 +39,7 @@ class ConfileFileTemplate:
     """
 
     context = {
-        "LOGZ_IO_CODE": self.state.user_config["LOGZ_IO_CODE"],
+        "USER_CONFIG": self.state.user_config,
     }
 
     for setting in dir(config):
