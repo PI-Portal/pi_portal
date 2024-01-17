@@ -1,5 +1,5 @@
 """Test fixtures for the network modules tests."""
-# pylint: disable=redefined-outer-name
+# pylint: disable=redefined-outer-name,duplicate-code
 
 import logging
 from contextlib import closing

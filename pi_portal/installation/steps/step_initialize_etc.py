@@ -2,10 +2,11 @@
 
 import os
 
-from .bases import system_call_step
+from pi_portal.modules.system.file_system import FileSystem
+from .bases import base_step
 
 
-class StepInitializeEtc(system_call_step.SystemCallBase):
+class StepInitializeEtc(base_step.StepBase):
   """Initialize etc paths for configuration."""
 
   etc_paths = [
@@ -21,15 +22,16 @@ class StepInitializeEtc(system_call_step.SystemCallBase):
     self.log.info("Initializing etc paths ...")
 
     for etc_path in self.etc_paths:
+      fs = FileSystem(etc_path)
 
       self.log.info("Creating '%s' ...", etc_path)
       if not os.path.exists(etc_path):
-        self._system_call(f"mkdir -p {etc_path}")
+        fs.create(directory=True)
       else:
         self.log.info("Found existing '%s' ...", etc_path)
 
       self.log.info("Setting permissions on '%s' ...", etc_path)
-      self._system_call(f"chown root:root {etc_path}")
-      self._system_call(f"chmod 755 {etc_path}")
+      fs.ownership("root", "root")
+      fs.permissions("755")
 
     self.log.info("Done initializing etc paths.")

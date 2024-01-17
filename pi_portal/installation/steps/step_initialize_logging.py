@@ -3,10 +3,11 @@
 import os
 
 from pi_portal import config
-from .bases import system_call_step
+from pi_portal.modules.system.file_system import FileSystem
+from .bases import base_step
 
 
-class StepInitializeLogging(system_call_step.SystemCallBase):
+class StepInitializeLogging(base_step.StepBase):
   """Initialize logging files for supervisor."""
 
   log_files = [
@@ -23,19 +24,35 @@ class StepInitializeLogging(system_call_step.SystemCallBase):
 
     self.log.info("Initializing logging ...")
 
-    for log_file in self.log_files:
+    self._create_logging_base_folder()
 
+    for log_file in self.log_files:
       self.log.info("Creating '%s' ...", log_file)
+      fs = FileSystem(log_file)
+
       if not os.path.exists(log_file):
-        self._system_call(f"touch {log_file}")
+        fs.create()
       else:
         self.log.info("Found existing '%s' ...", log_file)
 
       self.log.info("Setting permissions on '%s' ...", log_file)
-      self._system_call(
-          f"chown {config.PI_PORTAL_USER}:{config.PI_PORTAL_USER} "
-          f"{log_file}"
-      )
-      self._system_call(f"chmod 600 {log_file}")
+      fs.ownership(config.PI_PORTAL_USER, config.PI_PORTAL_USER)
+      fs.permissions("600")
 
     self.log.info("Done initializing logging.")
+
+  def _create_logging_base_folder(self) -> None:
+    self.log.info("Creating '%s' ...", config.LOG_FILE_BASE_FOLDER)
+    fs = FileSystem(config.LOG_FILE_BASE_FOLDER)
+
+    if not os.path.exists(config.LOG_FILE_BASE_FOLDER):
+      fs.create(directory=True)
+    else:
+      self.log.info("Found existing '%s' ...", config.LOG_FILE_BASE_FOLDER)
+
+    self.log.info(
+        "Setting permissions on '%s' ...",
+        config.LOG_FILE_BASE_FOLDER,
+    )
+    fs.ownership(config.PI_PORTAL_USER, config.PI_PORTAL_USER)
+    fs.permissions("750")

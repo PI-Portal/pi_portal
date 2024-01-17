@@ -46,6 +46,11 @@ def mocked_copy() -> mock.Mock:
 
 
 @pytest.fixture
+def mocked_file_system() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
 def mocked_remote_file_download() -> mock.Mock:
   return mock.Mock()
 
@@ -122,10 +127,12 @@ def step_ensure_root_instance(
 @pytest.fixture
 def step_initialize_data_paths_instance(
     installer_logger_stdout: logging.Logger,
-    mocked_system: mock.Mock,
+    mocked_file_system: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> step_initialize_data_paths.StepInitializeDataPaths:
-  monkeypatch.setattr(system_call_step.__name__ + ".os.system", mocked_system)
+  monkeypatch.setattr(
+      step_initialize_data_paths.__name__ + ".FileSystem", mocked_file_system
+  )
   return step_initialize_data_paths.StepInitializeDataPaths(
       installer_logger_stdout
   )
@@ -134,20 +141,24 @@ def step_initialize_data_paths_instance(
 @pytest.fixture
 def step_initialize_etc_instance(
     installer_logger_stdout: logging.Logger,
-    mocked_system: mock.Mock,
+    mocked_file_system: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> step_initialize_etc.StepInitializeEtc:
-  monkeypatch.setattr(system_call_step.__name__ + ".os.system", mocked_system)
+  monkeypatch.setattr(
+      step_initialize_etc.__name__ + ".FileSystem", mocked_file_system
+  )
   return step_initialize_etc.StepInitializeEtc(installer_logger_stdout)
 
 
 @pytest.fixture
 def step_initialize_logging_instance(
     installer_logger_stdout: logging.Logger,
-    mocked_system: mock.Mock,
+    mocked_file_system: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> step_initialize_logging.StepInitializeLogging:
-  monkeypatch.setattr(system_call_step.__name__ + ".os.system", mocked_system)
+  monkeypatch.setattr(
+      step_initialize_logging.__name__ + ".FileSystem", mocked_file_system
+  )
   return step_initialize_logging.StepInitializeLogging(installer_logger_stdout)
 
 
@@ -156,10 +167,12 @@ def step_install_config_files_instance(
     installer_logger_stdout: logging.Logger,
     mocked_config_file: str,
     mocked_copy: mock.Mock,
-    mocked_system: mock.Mock,
+    mocked_file_system: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> step_install_config_file.StepInstallConfigFile:
-  monkeypatch.setattr(system_call_step.__name__ + ".os.system", mocked_system)
+  monkeypatch.setattr(
+      step_install_config_file.__name__ + ".FileSystem", mocked_file_system
+  )
   monkeypatch.setattr(
       step_install_config_file.__name__ + ".shutil.copy", mocked_copy
   )
