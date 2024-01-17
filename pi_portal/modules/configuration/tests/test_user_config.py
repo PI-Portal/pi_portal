@@ -49,6 +49,41 @@ MOCK_VALID_JSON = user_config.TypeUserConfig(
                 "LOGZ_IO_TOKEN": "... logz io's logger token ..."
             }
         },
+        "MOTION":
+            {
+                "AUTHENTICATION":
+                    {
+                        "USERNAME": "username",
+                        "PASSWORD": "password"
+                    },
+                "CAMERAS":
+                    [
+                        {
+                            "DEVICE": "/dev/video0",
+                            "IMAGE":
+                                {
+                                    "FRAME_RATE": 5,
+                                    "WIDTH": 1280,
+                                    "HEIGHT": 720,
+                                    "AUTO_BRIGHTNESS": "on",
+                                    "BRIGHTNESS": 0,
+                                    "CONTRAST": 0,
+                                    "SATURATION": 0,
+                                    "HUE": 0
+                                }
+                        }
+                    ],
+                "DETECTION": {
+                    "THRESHOLD": 1500,
+                    "EVENT_GAP": 30
+                },
+                "MOVIES": {
+                    "LOCATE_MOTION_MODE": "on"
+                },
+                "SNAPSHOTS": {
+                    "QUALITY": 100
+                }
+            },
         "SWITCHES":
             {
                 "CONTACT_SWITCHES":
@@ -134,6 +169,7 @@ class TestUserConfiguration:
         "'ARCHIVAL' is a required property",
         "'CHAT' is a required property",
         "'LOGS' is a required property",
+        "'MOTION' is a required property",
         "'SWITCHES' is a required property",
         "'TEMPERATURE_SENSORS' is a required property",
     ]

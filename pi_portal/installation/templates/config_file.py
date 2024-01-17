@@ -30,31 +30,29 @@ class ConfileFileTemplate:
     self.destination = destination
     self.permissions = permissions
     self.user = user
+    self.context: Dict[str, Any] = {}
     self.state = state.State()
 
-  def create_context(self) -> Dict[str, Any]:
-    """Create a context dictionary for the template.
+  def update_context(self) -> None:
+    """Update the context dictionary with user config and static config."""
 
-    :returns: A dictionary of template context variables.
-    """
-
-    context = {
+    self.context.update({
         "USER_CONFIG": self.state.user_config,
-    }
+    })
 
     for setting in dir(config):
       if not setting.startswith("__"):
-        context[setting] = getattr(config, setting)
-
-    return context
+        self.context[setting] = getattr(config, setting)
 
   def render(self) -> None:
     """Render the template."""
 
+    self.update_context()
+
     with open(self.source, 'r', encoding='utf-8') as file_handle:
       template = JinjaTemplate(source=file_handle.read())
 
-    rendered_template = template.render(self.create_context())
+    rendered_template = template.render(self.context)
 
     with open(self.destination, 'w', encoding='utf-8') as file_handle:
       file_handle.write(rendered_template)

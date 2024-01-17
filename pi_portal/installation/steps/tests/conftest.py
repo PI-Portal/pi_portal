@@ -7,9 +7,11 @@ from typing import TYPE_CHECKING, TextIO, cast
 from unittest import mock
 
 import pytest
+from pi_portal.modules.configuration import state
 from pi_portal.modules.configuration.logging import installer
 from .. import (
     step_configure_logz_io,
+    step_configure_motion,
     step_ensure_root,
     step_initialize_data_paths,
     step_initialize_etc,
@@ -115,6 +117,26 @@ def step_configure_logz_io_instance(
       mocked_template_render
   )
   return step_configure_logz_io.StepConfigureLogzIo(installer_logger_stdout)
+
+
+@pytest.fixture
+def step_configure_motion_instance(
+    installer_logger_stdout: logging.Logger,
+    mocked_template_render: mock.Mock,
+    mocked_state: state.State,
+    monkeypatch: pytest.MonkeyPatch,
+) -> step_configure_motion.StepConfigureMotion:
+  monkeypatch.setattr(
+      render_templates_step.__name__ + ".RenderTemplateStepBase.render",
+      mocked_template_render,
+  )
+  monkeypatch.setattr(
+      state.State(),
+      "user_config",
+      mocked_state.user_config,
+  )
+  instance = step_configure_motion.StepConfigureMotion(installer_logger_stdout)
+  return instance
 
 
 @pytest.fixture

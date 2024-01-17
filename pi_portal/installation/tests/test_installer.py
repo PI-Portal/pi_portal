@@ -39,12 +39,13 @@ class TestInstaller:
     mocked_steps[4].assert_called_once_with(installer_instance.log)
     mocked_steps[5].assert_called_once_with(installer_instance.log)
     mocked_steps[6].assert_called_once_with(installer_instance.log)
-    mocked_steps[7].assert_called_once_with(
+    mocked_steps[7].assert_called_once_with(installer_instance.log)
+    mocked_steps[8].assert_called_once_with(
         installer_instance.log,
         installer_instance.config_file_path,
     )
-    mocked_steps[8].assert_called_once_with(installer_instance.log)
     mocked_steps[9].assert_called_once_with(installer_instance.log)
+    mocked_steps[10].assert_called_once_with(installer_instance.log)
 
   def test_install__invokes_all_steps(
       self,

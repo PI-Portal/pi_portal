@@ -34,7 +34,7 @@ Please use at your own risk.
 4. Wiring between the switches, temperature monitors and the Raspberry Pi's GPIO connectors.
    - Find out more about the Pi's GPIO [here](https://projects.raspberrypi.org/en/projects/physical-computing).
    - Female [jump wires](https://en.wikipedia.org/wiki/Jump_wire) make installing the connections pretty painless. I spliced them to the ends of modular cables (i.e. phone cables) for longer runs.
-   - Edit the [config.json](./config.json) file to customize your pin outs and integrations.
+   - Edit the [config.json](config.json) file to customize your pin outs and integrations.
 5. A USB camera or webcam that's compatible with [motion](https://motion-project.github.io/).
    - [Many](https://www.lavrsen.dk/foswiki/bin/view/Motion/WorkingDevices) webcams are compatible, and easy to find.
 
@@ -87,52 +87,12 @@ PI Portal ships with a binary for [filebeat](https://www.elastic.co/beats/filebe
 
 ## Creating a configuration file
 
-Create a configuration json file that contains the following:
+To get started rolling your own configuration file, here's some important resources:
 
-```json
-{
-  "ARCHIVAL": {
-    "AWS": {
-      "AWS_ACCESS_KEY_ID": "... AWS key with write access to buckets ...",
-      "AWS_SECRET_ACCESS_KEY": "... AWS secret key with write access buckets ...",
-      "AWS_S3_BUCKETS": {
-        "LOGS": "... s3 logs bucket name ...",
-        "VIDEOS": "... s3 video bucket name ..."
-      }
-    }
-  },
-  "CHAT": {
-    "SLACK": {
-      "SLACK_APP_SIGNING_SECRET": "... secret value from slack to validate bot messages ...",
-      "SLACK_APP_TOKEN": "... token from slack to allow app to use websockets ...",
-      "SLACK_BOT_TOKEN": "... token from slack...",
-      "SLACK_CHANNEL": "... proper name of slack channel ...",
-      "SLACK_CHANNEL_ID": ".. slack's ID for the channel ..."
-    }
-  },
-  "LOGS": {
-    "LOGZ_IO": {
-      "LOGZ_IO_TOKEN": "... logz io's logger token ..."
-    }
-  },
-  "SWITCHES": {
-    "CONTACT_SWITCHES": [
-      {
-        "NAME": "... name and pin-out of a GPIO switch...",
-        "GPIO": 12
-      }
-    ]
-  },
-  "TEMPERATURE_SENSORS": {
-    "DHT11": [
-      {
-        "NAME": "... name and pin-out of a GPIO with a DHT11 connected ...",
-        "GPIO": 4
-      }
-    ]
-  }
-}
-```
+1. First it's handy to look at the [sample config](config.json) included in the repository.
+2. For more detail on what the options all do, there's a JSON schema [documented here](https://pi-portal.readthedocs.io/en/stable/project/5.configuration.html) that can help you make the most of your config.
+3. The actual JSON schema is [here](pi_portal/schema/config_schema.json) and is used to do programmatic validation of your configuration.
+4. The motion configuration can be a bit overwhelming.  The existing values in the [sample config](config.json) should get you started.  You can also check out the [motion](pi_portal/installation/templates/motion/motion.conf) and [camera](pi_portal/installation/templates/motion/camera.conf) configuration files for a bit more information.
 
 ## Installing The PI Portal Software
 

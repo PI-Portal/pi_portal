@@ -22,6 +22,7 @@ class TestHttpClient:
         http_client_instance.log,
         logging.Logger,
     )
+    assert http_client_instance.basic_auth is None
 
   def test_initialize__retry_config(
       self,
@@ -34,7 +35,15 @@ class TestHttpClient:
     assert http_client_instance.retry_config.redirect == 5
     assert http_client_instance.retry_config.total == 5
 
-  def test__invoke__with_target__success__logging(
+  def test__set_basic_auth__is_stored(
+      self,
+      http_client_instance: http.HttpClient,
+  ) -> None:
+    http_client_instance.set_basic_auth("username1", "password1")
+
+    assert http_client_instance.basic_auth == ("username1", "password1")
+
+  def test__get__with_target__success__logging(
       self,
       http_client_instance: http.HttpClient,
       mocked_stream: StringIO,
@@ -48,7 +57,7 @@ class TestHttpClient:
         f"'{self.mock_local_target}' !\n"
     )
 
-  def test__invoke__without_target__success__logging(
+  def test__get__without_target__success__logging(
       self,
       http_client_instance: http.HttpClient,
       mocked_stream: StringIO,
@@ -60,7 +69,7 @@ class TestHttpClient:
         f"INFO - HTTP GET: Connected to '{self.mock_remote_url}' ...\n"
     )
 
-  def test__invoke__with_target__success__adapter(
+  def test__get__with_target__success__adapter(
       self,
       http_client_instance: http.HttpClient,
       mocked_requests_adapter: mock.Mock,
@@ -71,7 +80,7 @@ class TestHttpClient:
         max_retries=http_client_instance.retry_config
     )
 
-  def test__invoke__without_target__success__adapter(
+  def test__get__without_target__success__adapter(
       self,
       http_client_instance: http.HttpClient,
       mocked_requests_adapter: mock.Mock,
@@ -82,7 +91,7 @@ class TestHttpClient:
         max_retries=http_client_instance.retry_config
     )
 
-  def test__invoke__with_target__success__session(
+  def test__get__with_target__no_auth__success__session(
       self,
       http_client_instance: http.HttpClient,
       mocked_requests_adapter: mock.Mock,
@@ -97,7 +106,26 @@ class TestHttpClient:
         mock.call().get(self.mock_remote_url, stream=True),
     ]
 
-  def test__invoke__without_target__success__session(
+  def test__get__with_target__with_auth__success__session(
+      self,
+      http_client_instance: http.HttpClient,
+      mocked_requests_adapter: mock.Mock,
+      mocked_requests_session: mock.Mock,
+  ) -> None:
+    http_client_instance.set_basic_auth("username", "password")
+
+    http_client_instance.get(self.mock_remote_url, self.mock_local_target)
+
+    assert mocked_requests_session.mock_calls == [
+        mock.call(),
+        mock.call().mount("http://", mocked_requests_adapter.return_value),
+        mock.call().mount("https://", mocked_requests_adapter.return_value),
+        mock.call().get(self.mock_remote_url, stream=True),
+    ]
+    assert mocked_requests_session.return_value.auth == \
+        http_client_instance.basic_auth
+
+  def test__get__without_target__no_auth__success__session(
       self,
       http_client_instance: http.HttpClient,
       mocked_requests_adapter: mock.Mock,
@@ -112,7 +140,26 @@ class TestHttpClient:
         mock.call().get(self.mock_remote_url, stream=True),
     ]
 
-  def test__invoke__with_target__success__open(
+  def test__get__without_target__with_auth__success__session(
+      self,
+      http_client_instance: http.HttpClient,
+      mocked_requests_adapter: mock.Mock,
+      mocked_requests_session: mock.Mock,
+  ) -> None:
+    http_client_instance.set_basic_auth("username", "password")
+
+    http_client_instance.get(self.mock_remote_url)
+
+    assert mocked_requests_session.mock_calls == [
+        mock.call(),
+        mock.call().mount("http://", mocked_requests_adapter.return_value),
+        mock.call().mount("https://", mocked_requests_adapter.return_value),
+        mock.call().get(self.mock_remote_url, stream=True),
+    ]
+    assert mocked_requests_session.return_value.auth == \
+        http_client_instance.basic_auth
+
+  def test__get__with_target__success__open(
       self,
       http_client_instance: http.HttpClient,
       mocked_open_write_binary: mock.Mock,
@@ -124,7 +171,7 @@ class TestHttpClient:
         "wb",
     )
 
-  def test__invoke__without_target__success__open(
+  def test__get__without_target__success__open(
       self,
       http_client_instance: http.HttpClient,
       mocked_open_write_binary: mock.Mock,
@@ -135,7 +182,7 @@ class TestHttpClient:
     mocked_open_write_binary.assert_not_called()
     assert response == mocked_requests_session.return_value.get.return_value
 
-  def test__invoke__with_target__success__copyfileobj(
+  def test__get__with_target__success__copyfileobj(
       self,
       http_client_instance: http.HttpClient,
       mocked_file_handle_binary: BytesIO,
@@ -149,7 +196,7 @@ class TestHttpClient:
         mocked_file_handle_binary,
     )
 
-  def test__invoke__without_target__success__copyfileobj(
+  def test__get__without_target__success__copyfileobj(
       self,
       http_client_instance: http.HttpClient,
       mocked_shutil: mock.Mock,
@@ -158,7 +205,7 @@ class TestHttpClient:
 
     mocked_shutil.copyfileobj.assert_not_called()
 
-  def test__invoke__with_target__failure__logging(
+  def test__get__with_target__failure__logging(
       self,
       http_client_instance: http.HttpClient,
       mocked_stream: StringIO,
@@ -177,7 +224,7 @@ class TestHttpClient:
     assert str(exc.value) == \
         self.mock_remote_url
 
-  def test__invoke__with_target__failure__adapter(
+  def test__get__with_target__failure__adapter(
       self,
       http_client_instance: http.HttpClient,
       mocked_requests_adapter: mock.Mock,
@@ -192,7 +239,7 @@ class TestHttpClient:
         max_retries=http_client_instance.retry_config
     )
 
-  def test__invoke__with_target__failure__session(
+  def test__get__with_target__failure__session(
       self,
       http_client_instance: http.HttpClient,
       mocked_requests_adapter: mock.Mock,
@@ -210,7 +257,7 @@ class TestHttpClient:
         mock.call().get(self.mock_remote_url, stream=True),
     ]
 
-  def test__invoke__with_target__failure__open(
+  def test__get__with_target__failure__open(
       self,
       http_client_instance: http.HttpClient,
       mocked_open_write_binary: mock.Mock,
@@ -223,7 +270,7 @@ class TestHttpClient:
 
     mocked_open_write_binary.assert_not_called()
 
-  def test__invoke__with_target__failure__copyfileobj(
+  def test__get__with_target__failure__copyfileobj(
       self,
       http_client_instance: http.HttpClient,
       mocked_requests_session: mock.Mock,
