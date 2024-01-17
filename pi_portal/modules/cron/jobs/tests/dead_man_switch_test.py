@@ -13,7 +13,7 @@ class TestDeadManSwitchCronJob:
   def test__initialization__attrs(
       self,
       dead_man_switch_cron_job_instance: dead_man_switch.DeadManSwitchCronJob,
-      mocked_cron_logger: logging.Logger
+      mocked_cron_logger: logging.Logger,
   ) -> None:
     assert dead_man_switch_cron_job_instance.interval == \
            config.CRON_INTERVAL_DEAD_MAN_SWITCH
