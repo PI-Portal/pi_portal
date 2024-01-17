@@ -18,8 +18,9 @@ class TestVideoUploadCron:
       mocked_cron_logger: logging.Logger,
       mocked_state: state.State,
   ) -> None:
+    aws_config = mocked_state.user_config["ARCHIVAL"]["AWS"]
     assert video_upload_cron_job_instance.bucket_name == \
-           mocked_state.user_config["AWS_S3_BUCKETS"]["VIDEOS"]
+           aws_config["AWS_S3_BUCKETS"]["VIDEOS"]
     assert video_upload_cron_job_instance.interval == \
            config.CRON_INTERVAL_VIDEO_UPLOAD
     assert video_upload_cron_job_instance.log == \
@@ -58,9 +59,10 @@ class TestVideoUploadCron:
       video_upload_cron_job_instance: video_upload.VideoUploadCronJob,
       mocked_state: state.State,
   ) -> None:
+    aws_config = mocked_state.user_config["ARCHIVAL"]["AWS"]
     assert isinstance(
         video_upload_cron_job_instance.s3_client,
         s3_client.S3BucketClient,
     )
     assert video_upload_cron_job_instance.s3_client.bucket_name == \
-        mocked_state.user_config["AWS_S3_BUCKETS"]["VIDEOS"]
+        aws_config["AWS_S3_BUCKETS"]["VIDEOS"]

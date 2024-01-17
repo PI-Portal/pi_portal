@@ -19,5 +19,6 @@ class VideoUploadCronJob(s3_upload_job.S3UploadCronJobBase):
 
   def __init__(self, log: logging.Logger) -> None:
     running_state = state.State()
-    self.bucket_name = running_state.user_config["AWS_S3_BUCKETS"]["VIDEOS"]
+    aws_config = running_state.user_config["ARCHIVAL"]["AWS"]
+    self.bucket_name = aws_config["AWS_S3_BUCKETS"]["VIDEOS"]
     super().__init__(log)

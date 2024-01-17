@@ -14,12 +14,12 @@ class S3BucketClient:
 
   def __init__(self, bucket_name: str) -> None:
     current_state = state.State()
+    aws_config = current_state.user_config["ARCHIVAL"]["AWS"]
     self.bucket_name = bucket_name
     self.boto_client = boto3.client(
         's3',
-        aws_access_key_id=current_state.user_config['AWS_ACCESS_KEY_ID'],
-        aws_secret_access_key=current_state.
-        user_config['AWS_SECRET_ACCESS_KEY'],
+        aws_access_key_id=aws_config['AWS_ACCESS_KEY_ID'],
+        aws_secret_access_key=aws_config['AWS_SECRET_ACCESS_KEY'],
     )
 
   def upload(

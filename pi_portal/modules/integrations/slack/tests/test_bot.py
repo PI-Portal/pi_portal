@@ -2,6 +2,7 @@
 from typing import cast
 from unittest import mock
 
+from pi_portal.modules.configuration import state
 from pi_portal.modules.configuration.tests.fixtures import mock_state
 from pi_portal.modules.integrations import slack
 from pi_portal.modules.integrations.slack import bot, cli
@@ -24,13 +25,14 @@ class TestSlackBot:
   def test_initialize__app(
       self,
       bot_instance: bot.SlackBot,
-      mocked_state: mock.Mock,
+      mocked_state: state.State,
       mocked_slack_bolt_app: mock.Mock,
   ) -> None:
+    slack_integration_config = mocked_state.user_config["CHAT"]["SLACK"]
     assert bot_instance.app == mocked_slack_bolt_app.return_value
     mocked_slack_bolt_app.assert_called_once_with(
-        signing_secret=mocked_state.user_config["SLACK_APP_SIGNING_SECRET"],
-        token=mocked_state.user_config['SLACK_BOT_TOKEN']
+        signing_secret=slack_integration_config["SLACK_APP_SIGNING_SECRET"],
+        token=slack_integration_config['SLACK_BOT_TOKEN']
     )
 
   def test_initialize__client(
@@ -46,10 +48,12 @@ class TestSlackBot:
       mocked_state: mock.Mock,
       mocked_slack_bolt_socket_handler: mock.Mock,
   ) -> None:
+    slack_integration_config = mocked_state.user_config["CHAT"]["SLACK"]
     assert bot_instance.web_socket == \
         mocked_slack_bolt_socket_handler.return_value
     mocked_slack_bolt_socket_handler.assert_called_once_with(
-        bot_instance.app, mocked_state.user_config['SLACK_APP_TOKEN']
+        bot_instance.app,
+        slack_integration_config['SLACK_APP_TOKEN'],
     )
 
   @mock.patch(slack.__name__ + ".cli.handler.SlackCLICommandHandler")
