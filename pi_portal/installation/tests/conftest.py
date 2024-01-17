@@ -19,6 +19,7 @@ step_sequence = [
     steps.StepInitializeDataPaths,
     steps.StepInitializeEtc,
     steps.StepInitializeLogging,
+    steps.StepConfigureMotion,
     steps.StepRenderConfiguration,
     steps.StepInstallConfigFile,
     steps.StepConfigureLogzIo,
@@ -34,6 +35,7 @@ def mocked_config_file_path() -> str:
 @pytest.fixture
 def mocked_steps() -> List[mock.Mock]:
   return [
+      mock.Mock(),
       mock.Mock(),
       mock.Mock(),
       mock.Mock(),

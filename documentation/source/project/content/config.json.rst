@@ -1,4 +1,4 @@
-.. _./config.json:
+.. _config.json:
 
 Example Configuration File
 ==========================

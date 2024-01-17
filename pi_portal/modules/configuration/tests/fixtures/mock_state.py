@@ -21,6 +21,9 @@ MOCK_SLACK_APP_TOKEN = "MOCK_SLACK_APP_TOKEN"
 MOCK_SLACK_BOT_TOKEN = "secretValue"
 MOCK_LOG_UUID = "MOCK_UUID_VALUE"
 MOCK_LOG_LEVEL = logging.DEBUG
+MOCK_MOTION_AUTH_USERNAME = "mock_username"
+MOCK_MOTION_AUTH_PASSWORD = "mock_password"
+MOCK_MOTION_CAMERA_DEVICE = "/dev/video0"
 
 TypeReturn = TypeVar("TypeReturn")
 
@@ -71,6 +74,41 @@ def mock_state_creator() -> Generator[mock.Mock, None, None]:
                   "LOGZ_IO_TOKEN": MOCK_LOGZ_IO_TOKEN,
               }
           },
+          "MOTION":
+              {
+                  "AUTHENTICATION":
+                      {
+                          "USERNAME": MOCK_MOTION_AUTH_USERNAME,
+                          "PASSWORD": MOCK_MOTION_AUTH_PASSWORD
+                      },
+                  "CAMERAS":
+                      [
+                          {
+                              "DEVICE": MOCK_MOTION_CAMERA_DEVICE,
+                              "IMAGE":
+                                  {
+                                      "FRAME_RATE": 5,
+                                      "WIDTH": 320,
+                                      "HEIGHT": 240,
+                                      "AUTO_BRIGHTNESS": "off",
+                                      "BRIGHTNESS": 100,
+                                      "CONTRAST": 0,
+                                      "SATURATION": 100,
+                                      "HUE": 0
+                                  }
+                          }
+                      ],
+                  "DETECTION": {
+                      "THRESHOLD": 1250,
+                      "EVENT_GAP": 60
+                  },
+                  "MOVIES": {
+                      "LOCATE_MOTION_MODE": "on"
+                  },
+                  "SNAPSHOTS": {
+                      "QUALITY": 75
+                  }
+              },
           "SWITCHES": {
               "CONTACT_SWITCHES": [{
                   "NAME": "Front",
