@@ -29,7 +29,10 @@ class StepInstallConfigFile(base_step.StepBase):
     """Install the user's configuration file."""
 
     self.log.info("Installing the user's configuration file ...")
-    shutil.copy(self.config_file_path, config.PATH_USER_CONFIG)
+    try:
+      shutil.copy(self.config_file_path, config.PATH_USER_CONFIG)
+    except shutil.SameFileError:
+      pass
     self.log.info("Done writing the user's configuration file.")
 
     self.log.info("Setting permissions on the user's configuration file ...")
