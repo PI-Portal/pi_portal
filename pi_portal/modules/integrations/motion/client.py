@@ -17,7 +17,7 @@ class MotionException(Exception):
 class MotionClient:
   """Integration with the Motion application."""
 
-  snapshot_url = 'http://localhost:8080/0/action/snapshot'
+  snapshot_url = 'http://localhost:8080/{0}/action/snapshot'
   snapshot_file_name = os.path.join(config.PATH_MOTION_CONTENT, 'lastsnap.jpg')
   video_glob_pattern = os.path.join(config.PATH_MOTION_CONTENT, '/*.mp4')
 
@@ -51,13 +51,14 @@ class MotionClient:
   def _list_videos(self) -> List[str]:
     return glob.glob(self.video_glob_pattern)
 
-  def take_snapshot(self) -> None:
+  def take_snapshot(self, camera: int = 0) -> None:
     """Take a snapshot with Motion.
 
+    :param camera: The camera index to use.
     :raises: :class:`MotionException`
     """
 
     try:
-      self.http_client.get(self.snapshot_url)
+      self.http_client.get(self.snapshot_url.format(camera))
     except http.HttpClientError as exc:
       raise MotionException("Unable to take snapshot.") from exc

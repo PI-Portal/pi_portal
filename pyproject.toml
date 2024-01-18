@@ -23,7 +23,7 @@ show_missing = true
 
 [tool.coverage.run]
 branch = true
-omit = ['*/test*', 'setup.py', 'pi_portal/modules/python/*.py']
+omit = ['*/test*', 'setup.py', 'pi_portal/__main__.py', 'pi_portal/modules/python/*.py']
 source = ['.']
 
 [tool.isort]
@@ -66,9 +66,11 @@ boto3 = '^1.33.12'
 click = '^8.1.7'
 defusedxml = '^0.7.1'
 fake-rpi = '^0.7.1'
+fastapi = '^0.109.0'
 humanize = '^4.0.0'
 jinja2 = '^3.1.2'
 jsonschema = '>=3.2.0,<4.0.0'
+persist-queue = '^0.8.1'
 python = '^3.8'
 python-json-logger = '<2.0.3'
 requests = '^2.31.0'
@@ -83,12 +85,17 @@ version = '^0.7.1'
 platform = 'linux'
 version = '^4.0.1'
 
+[tool.poetry.dependencies.uvicorn]
+extras = ['standard']
+version = '^0.26.0'
+
 [tool.poetry.group]
 [tool.poetry.group.dev]
 [tool.poetry.group.dev.dependencies]
 commitizen = '^3.0.0'
 coverage = '^7.0.0'
 freezegun = '^1.2.0'
+httpx = '^0.26.0'
 mypy = '^1.7.1'
 pylint = '^2.0.0'
 pytest = '^7.2.0'
@@ -120,19 +127,19 @@ pi_portal = 'pi_portal.cli:cli'
 [tool.pylint]
 [tool.pylint.basic]
 argument-rgx = '[a-z_][a-z0-9_]{1,40}$'
-attr-rgx = '[a-z_][a-z0-9_]{2,30}$'
+attr-rgx = '(^[a-z_][a-z0-9_]{1,30})$'
 bad-names = 'foo,bar,baz,toto,tutu,tata'
-class-attribute-rgx = '([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$'
+class-attribute-rgx = '([A-Za-z_][A-Za-z0-9_]{1,50}|(__.{2,30}__))$'
 class-rgx = '[A-Z_][a-zA-Z0-9]+$'
-const-rgx = '(([A-Z_][A-Z0-9_]*)|(__.*__))$|^urls$|^app$|^User$|^router$'
+const-rgx = '(([A-Z_][A-Z0-9_]*)|(__.*__))$|^(ReturnType|ApiEnabled)$'
 docstring-min-length = '-1'
-function-rgx = '[A-Za-z_][A-Za-z0-9_]{2,40}$'
+function-rgx = '[A-Za-z_][A-Za-z0-9_]{1,50}$'
 good-names = 'i,j,k,ex,Run,_'
 inlinevar-rgx = '[A-Za-z_][A-Za-z0-9_]*$'
-method-rgx = '^[A-Za-z_][A-Za-z0-9_]{2,40}$|^test_[A-Za-z_][A-Za-z0-9_]{2,70}$'
+method-rgx = '^[A-Za-z_][A-Za-z0-9_]{2,40}$|^test_[A-Za-z0-9_]{2,70}$'
 module-rgx = '(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$'
 no-docstring-rgx = '.*'
-variable-rgx = '[a-z_][a-z0-9_]{2,30}$|^fs$'
+variable-rgx = '^[a-z_][a-z0-9_]{1,30}$'
 
 [tool.pylint.classes]
 defining-attr-methods = '__init__,__new__,setUp'
@@ -185,8 +192,9 @@ reports = 'no'
 
 [tool.pylint.similarities]
 ignore-comments = 'yes'
-ignore-docstrings = 'yes'
+ignore-docstrings = 'no'
 ignore-imports = 'yes'
+ignore-signatures = 'yes'
 min-similarity-lines = 5
 
 [tool.pylint.typecheck]

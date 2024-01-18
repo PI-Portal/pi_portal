@@ -19,7 +19,7 @@ class TestMotion:
       motion_client_instance: motion_client.MotionClient,
   ) -> None:
     assert motion_client_instance.snapshot_url == \
-        'http://localhost:8080/0/action/snapshot'
+        'http://localhost:8080/{0}/action/snapshot'
     assert motion_client_instance.snapshot_file_name == \
         '/var/lib/motion/lastsnap.jpg'
     assert motion_client_instance.video_glob_pattern == \
@@ -40,7 +40,7 @@ class TestMotion:
         mocked_state.user_config["MOTION"]["AUTHENTICATION"]["PASSWORD"],
     )
 
-  def test_take_snapshot__success(
+  def test_take_snapshot__default_camera__success(
       self,
       motion_client_instance: motion_client.MotionClient,
       mocked_http_client: mock.Mock,
@@ -48,10 +48,21 @@ class TestMotion:
     motion_client_instance.take_snapshot()
 
     mocked_http_client.return_value.get.assert_called_once_with(
-        motion_client_instance.snapshot_url
+        motion_client_instance.snapshot_url.format(0)
     )
 
-  def test_take_snapshot__failure(
+  def test_take_snapshot__specific_camera__success(
+      self,
+      motion_client_instance: motion_client.MotionClient,
+      mocked_http_client: mock.Mock,
+  ) -> None:
+    motion_client_instance.take_snapshot(2)
+
+    mocked_http_client.return_value.get.assert_called_once_with(
+        motion_client_instance.snapshot_url.format(2)
+    )
+
+  def test_take_snapshot__default_camera__failure(
       self,
       motion_client_instance: motion_client.MotionClient,
       mocked_http_client: mock.Mock,
@@ -62,7 +73,7 @@ class TestMotion:
       motion_client_instance.take_snapshot()
 
     mocked_http_client.return_value.get.assert_called_once_with(
-        motion_client_instance.snapshot_url
+        motion_client_instance.snapshot_url.format(0)
     )
 
   def test_get_latest_video_filename__correct_response(

@@ -1,5 +1,5 @@
 [pydocstyle]
 inherit = false
-ignore = D105,D106,D107,D202,D203,D205,D213
+ignore = D105,D106,D107,D202,D203,D205,D213,D403
 match = ((?!^test_|^\d\d\d\d_|^manage\.py|^asgi\.py|^wsgi\.py).*\.py)
 match-dir = ((?!^test).*)

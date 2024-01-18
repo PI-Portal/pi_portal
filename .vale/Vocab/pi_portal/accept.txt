@@ -2,6 +2,7 @@
 (L|l)inux
 (S|s)upervisord
 OAuth
+api|API
 basename
 boto
 ci
@@ -26,6 +27,7 @@ ivars
 json|JSON
 logz.io
 makefile
+metaclass
 mixin
 monostate
 multiarch
