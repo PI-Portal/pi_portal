@@ -8,9 +8,9 @@ class ProcessList(Enum):
 
   BOT = 'bot'
   CAMERA = 'camera'
-  CRON_SCHEDULER = "cron_scheduler"
   DOOR_MONITOR = 'door_monitor'
   FILEBEAT = 'filebeat'
+  TASK_SCHEDULER = "task_scheduler"
   TEMP_MONITOR = 'temp_monitor'
 
 
