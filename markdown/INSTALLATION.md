@@ -112,6 +112,7 @@ Steps:
 6. Install the runtime dependencies. (Commands and exact package names vary by distribution.)
    - [ca-certificates](https://packages.debian.org/bookworm/ca-certificates)
    - [libgpiod2](https://packages.debian.org/bookworm/libgpiod2)
+   - [libsqlite3-0](https://packages.debian.org/buster/libsqlite3-0)
    - [motion](https://packages.debian.org/bookworm/motion)
    - [supervisor](https://packages.debian.org/bookworm/supervisor)
 7. It would be prudent to stop any services launched for motion or supervisor at this point.  

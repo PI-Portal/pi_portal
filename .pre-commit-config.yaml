@@ -53,7 +53,7 @@ repos:
         name: pydocstyle (production)
         args:
           - "--config=./.pydocstyle"
-        files: "^pi_portal/((?!test).)*\\.py$"
+        files: "^pi_portal/((?!test)(?!metaclass).)*\\.py$"
         stages: [pre-commit]
       - id: pydocstyle
         name: pydocstyle (tests)

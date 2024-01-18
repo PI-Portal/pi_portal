@@ -3,7 +3,7 @@
 import abc
 from typing import TYPE_CHECKING
 
-from pi_portal.commands.bases import command
+from pi_portal.cli_commands.bases import command
 from pi_portal.modules.integrations.slack.cli.notifier import SlackCLINotifier
 
 if TYPE_CHECKING:

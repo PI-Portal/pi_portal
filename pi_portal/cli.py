@@ -1,8 +1,7 @@
-"""The Pi Portal CLI."""
+"""The Pi Portal User CLI."""
 
 import click
-from .commands import (
-    cron_scheduler,
+from .cli_commands import (
     door_monitor,
     installer,
     slack_bot,
@@ -17,20 +16,10 @@ from .commands import (
 @click.option('--debug', default=False, is_flag=True, help='Enable debug logs.')
 @click.pass_context
 def cli(ctx: click.Context, debug: bool) -> None:
-  """Door Monitor CLI."""
+  """Pi Portal User CLI."""
 
   ctx.ensure_object(dict)
   ctx.obj['DEBUG'] = debug
-
-
-@cli.command("cron_scheduler")
-@click.pass_context
-def cron_scheduler_command(ctx: click.Context) -> None:
-  """Start the cron job scheduler."""
-
-  command = cron_scheduler.CronSchedulerCommand()
-  command.load_state(debug=ctx.obj['DEBUG'])
-  command.invoke()
 
 
 @cli.command("door_monitor")

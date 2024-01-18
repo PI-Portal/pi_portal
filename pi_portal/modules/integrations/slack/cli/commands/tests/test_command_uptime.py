@@ -21,8 +21,8 @@ class TestUptimeCommand(command_harness.CommandBaseTestHarness):
       {
           "linux": "1000 days",
           "slack_bot": "1 day",
-          "cron_scheduler": "2 days",
-          "door_monitor": "3 days",
+          "door_monitor": "2 days",
+          "task_scheduler": "3 days",
           "temp_monitor": "4 days",
       }
   )
@@ -46,8 +46,8 @@ class TestUptimeCommand(command_harness.CommandBaseTestHarness):
     self.mock_slack_bot.slack_client.send_message.assert_called_once_with(
         f"System Uptime > {self.uptimes['linux']}\n"
         f"Bot Uptime > {self.uptimes['slack_bot']}\n"
-        f"Cron Scheduler Uptime > {self.uptimes['cron_scheduler']}\n"
         f"Door Monitor Uptime > {self.uptimes['door_monitor']}\n"
+        f"Task Scheduler Uptime > {self.uptimes['task_scheduler']}\n"
         f"Temperature Monitor Uptime > {self.uptimes['temp_monitor']}"
     )
 
@@ -63,8 +63,8 @@ class TestUptimeCommand(command_harness.CommandBaseTestHarness):
     assert len(m_process.mock_calls) == 12
     assert m_process.mock_calls[0:4] == [
         mock.call(ProcessList.BOT),
-        mock.call(ProcessList.CRON_SCHEDULER),
         mock.call(ProcessList.DOOR_MONITOR),
+        mock.call(ProcessList.TASK_SCHEDULER),
         mock.call(ProcessList.TEMP_MONITOR),
     ]
     assert m_process.mock_calls[4:8] == [mock.call().uptime()] * 4

@@ -14,10 +14,6 @@ class GPIOSensorBase(gpio_input.GPIOInputBase, abc.ABC):
   :param initial_state: The value to initially set the state to.
   """
 
-  pin_number: int
-  pin_name: str
-  current_state: Any
-  last_state: Any
   hardware: Any
 
   def __init__(
