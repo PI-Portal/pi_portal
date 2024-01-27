@@ -2,6 +2,9 @@
 Codebase Reference
 #############################
 
- .. autopackagesummary:: pi_portal
+ .. autosummary::
     :toctree: _autosummary
-    :template: autosummary/package.rst
+    :template: autosummary/module.rst
+    :recursive:
+
+    pi_portal

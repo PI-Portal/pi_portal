@@ -108,8 +108,6 @@ git = 'https://github.com/cicd-tools-org/pre-commit-dind'
 [tool.poetry.group.docs.dependencies]
 myst-parser = '^2.0.0'
 sphinx = '^7.0.0'
-sphinx-autodoc-typehints = '^1.25.0'
-sphinx-autopackagesummary = '^1.3'
 sphinx-click = '^5.1.0'
 sphinx-jsonschema = '^1.19.1'
 sphinx_rtd_theme = '^2.0.0'
