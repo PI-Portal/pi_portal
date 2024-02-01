@@ -2,11 +2,12 @@
 # pylint: disable=redefined-outer-name
 
 import logging
-from typing import NamedTuple, Tuple
+from typing import Callable, NamedTuple, Tuple
 from unittest import mock
 
 import pytest
 from pi_portal.modules.tasks.processor.bases import processor_base
+from pi_portal.modules.tasks.processor.mixins import chat_client
 from .. import (
     archive_logs,
     archive_videos,
@@ -126,6 +127,21 @@ def mocked_shutil() -> mock.Mock:
 
 
 @pytest.fixture
+def setup_chat_processor_mocks(
+    mocked_chat_client: mock.Mock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> Callable[[], None]:
+
+  def setup() -> None:
+    monkeypatch.setattr(
+        chat_client.__name__ + ".ChatClientMixin.chat_client_class",
+        mocked_chat_client,
+    )
+
+  return setup
+
+
+@pytest.fixture
 def archive_logs_task_processor_instance(
     mocked_task_logger: logging.Logger
 ) -> archive_logs.ProcessorClass:
@@ -144,8 +160,8 @@ def chat_upload_snapshot_instance(
     mocked_file_system_remove: mock.Mock,
     mocked_os: mock.Mock,
     mocked_recover: mock.Mock,
-    mocked_chat_client: mock.Mock,
     mocked_task_logger: logging.Logger,
+    setup_chat_processor_mocks: Callable[[], None],
     monkeypatch: pytest.MonkeyPatch,
 ) -> chat_upload_snapshot.ProcessorClass:
   monkeypatch.setattr(
@@ -160,10 +176,7 @@ def chat_upload_snapshot_instance(
       processor_base.__name__ + ".TaskProcessorBase.recover",
       mocked_recover,
   )
-  monkeypatch.setattr(
-      chat_upload_snapshot.__name__ + ".SlackClient",
-      mocked_chat_client,
-  )
+  setup_chat_processor_mocks()
   return chat_upload_snapshot.ProcessorClass(mocked_task_logger)
 
 
@@ -172,8 +185,8 @@ def chat_upload_video_instance(
     mocked_file_system_move: mock.Mock,
     mocked_os_path_exists: mock.Mock,
     mocked_recover: mock.Mock,
-    mocked_chat_client: mock.Mock,
     mocked_task_logger: logging.Logger,
+    setup_chat_processor_mocks: Callable[[], None],
     monkeypatch: pytest.MonkeyPatch,
 ) -> chat_upload_video.ProcessorClass:
   monkeypatch.setattr(
@@ -188,10 +201,7 @@ def chat_upload_video_instance(
       processor_base.__name__ + ".TaskProcessorBase.recover",
       mocked_recover,
   )
-  monkeypatch.setattr(
-      chat_upload_video.__name__ + ".SlackClient",
-      mocked_chat_client,
-  )
+  setup_chat_processor_mocks()
   return chat_upload_video.ProcessorClass(mocked_task_logger)
 
 
