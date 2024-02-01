@@ -11,6 +11,7 @@ from pi_portal.modules.tasks.processor.mixins import chat_client
 from .. import (
     archive_logs,
     archive_videos,
+    chat_send_message,
     chat_upload_snapshot,
     chat_upload_video,
     file_system_move,
@@ -39,6 +40,15 @@ def mocked_chat_client() -> mock.Mock:
 def mocked_chat_file_task() -> mock.Mock:
   mock_task = mock.Mock()
   mock_task.args.path = "/mock/path.mp4"
+  mock_task.on_failure = []
+  mock_task.on_success = []
+  return mock_task
+
+
+@pytest.fixture
+def mocked_chat_message_task() -> mock.Mock:
+  mock_task = mock.Mock()
+  mock_task.args.message = "Test message!"
   mock_task.on_failure = []
   mock_task.on_success = []
   return mock_task
@@ -153,6 +163,15 @@ def archive_videos_task_processor_instance(
     mocked_task_logger: logging.Logger
 ) -> archive_videos.ProcessorClass:
   return archive_videos.ProcessorClass(mocked_task_logger)
+
+
+@pytest.fixture
+def chat_send_message_instance(
+    mocked_task_logger: logging.Logger,
+    setup_chat_processor_mocks: Callable[[], None],
+) -> chat_send_message.ProcessorClass:
+  setup_chat_processor_mocks()
+  return chat_send_message.ProcessorClass(mocked_task_logger)
 
 
 @pytest.fixture

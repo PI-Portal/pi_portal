@@ -15,6 +15,7 @@ from pi_portal.modules.tasks.registration import registry, registry_factory
 from pi_portal.modules.tasks.task import (
     archive_logs,
     archive_videos,
+    chat_send_message,
     chat_upload_snapshot,
     chat_upload_video,
     file_system_move,
@@ -44,6 +45,10 @@ class InvalidArg(task_args_base.TaskArgsBase):
 
 enabled_tasks__valid_payloads__creation_request_scenarios = [
     TypedTaskCreationRequestParameters(
+        type=chat_send_message.TaskType.value,
+        args=asdict(chat_send_message.Args(message="Test message.")),
+    ),
+    TypedTaskCreationRequestParameters(
         type=chat_upload_snapshot.TaskType.value,
         args=asdict(
             chat_upload_snapshot.Args(
@@ -72,6 +77,10 @@ enabled_tasks__valid_payloads__creation_request_scenarios = [
 ]
 
 enabled_tasks__invalid__payloads__creation_request_scenarios = [
+    TypedTaskCreationRequestParameters(
+        type=chat_send_message.TaskType.value,
+        args=asdict(InvalidArg(invalid_arg="invalid_args")),
+    ),
     TypedTaskCreationRequestParameters(
         type=chat_upload_snapshot.TaskType.value,
         args=asdict(InvalidArg(invalid_arg="invalid_args")),
