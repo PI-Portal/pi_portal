@@ -1,30 +1,26 @@
 """Processes requests to upload a video to chat."""
-import logging
 import os
 
 from pi_portal import config
-from pi_portal.modules.integrations.slack import SlackClient
 from pi_portal.modules.tasks.enums import TaskType
 from pi_portal.modules.tasks.processor.bases import processor_base
+from pi_portal.modules.tasks.processor.mixins import chat_client
 from pi_portal.modules.tasks.task import chat_upload_video, file_system_move
 
 
 class ProcessorClass(
+    chat_client.ChatClientMixin,
     processor_base.TaskProcessorBase[
         chat_upload_video.Args,
         chat_upload_video.ReturnType,
-    ]
+    ],
 ):
   """Processes requests to upload a video to chat."""
 
-  __slots__ = ("client",)
+  __slots__ = ()
 
   recovery_archival_suffix = "-RECOVERED"
   type = TaskType.CHAT_UPLOAD_VIDEO
-
-  def __init__(self, log: logging.Logger) -> None:
-    super().__init__(log)
-    self.client = SlackClient()
 
   def _process(
       self,
