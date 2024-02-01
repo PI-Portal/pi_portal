@@ -9,6 +9,7 @@ from pi_portal.modules.tasks.processor.bases import processor_base
 from pi_portal.modules.tasks.processor.chat_upload_snapshot import (
     ProcessorClass,
 )
+from pi_portal.modules.tasks.processor.mixins import chat_client
 from .conftest import BooleanScenario
 
 
@@ -19,8 +20,7 @@ class TestChatUploadSnapshotProcessor:
       self,
       chat_upload_snapshot_instance: ProcessorClass,
   ) -> None:
-    assert chat_upload_snapshot_instance.type == \
-        TaskType.CHAT_UPLOAD_SNAPSHOT
+    assert chat_upload_snapshot_instance.type == TaskType.CHAT_UPLOAD_SNAPSHOT
 
   def test_initialize__logger(
       self,
@@ -33,14 +33,6 @@ class TestChatUploadSnapshotProcessor:
     )
     assert chat_upload_snapshot_instance.log == mocked_task_logger
 
-  def test_initialize__chat_client(
-      self,
-      chat_upload_snapshot_instance: ProcessorClass,
-      mocked_chat_client: mock.Mock,
-  ) -> None:
-    assert chat_upload_snapshot_instance.client == \
-        mocked_chat_client.return_value
-
   def test_initialize__inheritance(
       self,
       chat_upload_snapshot_instance: ProcessorClass,
@@ -48,6 +40,10 @@ class TestChatUploadSnapshotProcessor:
     assert isinstance(
         chat_upload_snapshot_instance,
         processor_base.TaskProcessorBase,
+    )
+    assert isinstance(
+        chat_upload_snapshot_instance,
+        chat_client.ChatClientMixin,
     )
 
   @pytest.mark.parametrize(
