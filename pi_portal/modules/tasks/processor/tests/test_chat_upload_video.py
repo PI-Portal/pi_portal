@@ -9,6 +9,7 @@ from pi_portal import config
 from pi_portal.modules.tasks.enums import TaskType
 from pi_portal.modules.tasks.processor.bases import processor_base
 from pi_portal.modules.tasks.processor.chat_upload_video import ProcessorClass
+from pi_portal.modules.tasks.processor.mixins import chat_client
 from .conftest import MutableBooleanScenario
 
 
@@ -19,10 +20,8 @@ class TestChatUploadVideoProcessor:
       self,
       chat_upload_video_instance: ProcessorClass,
   ) -> None:
-    assert chat_upload_video_instance.recovery_archival_suffix == \
-        "-RECOVERED"
-    assert chat_upload_video_instance.type == \
-        TaskType.CHAT_UPLOAD_VIDEO
+    assert chat_upload_video_instance.recovery_archival_suffix == "-RECOVERED"
+    assert chat_upload_video_instance.type == TaskType.CHAT_UPLOAD_VIDEO
 
   def test_initialize__logger(
       self,
@@ -35,14 +34,6 @@ class TestChatUploadVideoProcessor:
     )
     assert chat_upload_video_instance.log == mocked_task_logger
 
-  def test_initialize__chat_client(
-      self,
-      chat_upload_video_instance: ProcessorClass,
-      mocked_chat_client: mock.Mock,
-  ) -> None:
-    assert chat_upload_video_instance.client == \
-        mocked_chat_client.return_value
-
   def test_initialize__inheritance(
       self,
       chat_upload_video_instance: ProcessorClass,
@@ -50,6 +41,10 @@ class TestChatUploadVideoProcessor:
     assert isinstance(
         chat_upload_video_instance,
         processor_base.TaskProcessorBase,
+    )
+    assert isinstance(
+        chat_upload_video_instance,
+        chat_client.ChatClientMixin,
     )
 
   @pytest.mark.parametrize(
