@@ -20,6 +20,7 @@ class RegistryFactory:
   task_modules = [
       "archive_logs",
       "archive_videos",
+      "chat_send_message",
       "chat_upload_snapshot",
       "chat_upload_video",
       "file_system_move",
