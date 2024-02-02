@@ -20,6 +20,5 @@ class CronJob(cron_job_base.CronJobBase[archive_videos.Args]):
     running_state = state.State()
     aws_config = running_state.user_config["ARCHIVAL"]["AWS"]
     return archive_videos.Args(
-        archival_path=config.PATH_QUEUE_VIDEO_UPLOAD,
         partition_name=aws_config["AWS_S3_BUCKETS"]["VIDEOS"]
     )
