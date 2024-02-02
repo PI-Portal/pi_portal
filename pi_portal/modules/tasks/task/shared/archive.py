@@ -1,6 +1,7 @@
 """Shared resources for archive tasks."""
 
 from dataclasses import dataclass
+from typing import ClassVar
 
 from pi_portal.modules.tasks.task.bases.task_args_base import TaskArgsBase
 
@@ -9,5 +10,5 @@ from pi_portal.modules.tasks.task.bases.task_args_base import TaskArgsBase
 class ArchivalTaskArgs(TaskArgsBase):
   """Arguments for log archival tasks."""
 
-  archival_path: str
+  archival_path: ClassVar[str]
   partition_name: str
