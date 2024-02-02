@@ -3,6 +3,7 @@
 (S|s)upervisord
 OAuth
 api|API
+args
 basename
 boto
 ci

@@ -1,6 +1,7 @@
 """Test fixtures for the task scheduler api module tests."""
 # pylint: disable=redefined-outer-name
 
+import os
 from dataclasses import asdict, dataclass
 from typing import Any, Dict, List
 from unittest import mock
@@ -8,6 +9,7 @@ from unittest import mock
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from pi_portal import config
 from pi_portal.modules.tasks import scheduler
 from pi_portal.modules.tasks.registration import registry, registry_factory
 from pi_portal.modules.tasks.task import (
@@ -43,11 +45,25 @@ class InvalidArg(task_args_base.TaskArgsBase):
 enabled_tasks__valid_payloads__creation_request_scenarios = [
     TypedTaskCreationRequestParameters(
         type=chat_upload_snapshot.TaskType.value,
-        args=asdict(chat_upload_snapshot.Args(path="/path/1")),
+        args=asdict(
+            chat_upload_snapshot.Args(
+                path=os.path.join(
+                    config.PATH_MOTION_CONTENT,
+                    "file1",
+                )
+            )
+        ),
     ),
     TypedTaskCreationRequestParameters(
         type=chat_upload_video.TaskType.value,
-        args=asdict(chat_upload_video.Args(path="/path/1")),
+        args=asdict(
+            chat_upload_video.Args(
+                path=os.path.join(
+                    config.PATH_MOTION_CONTENT,
+                    "file1",
+                )
+            )
+        ),
     ),
     TypedTaskCreationRequestParameters(
         type=motion_snapshot.TaskType.value,
@@ -73,34 +89,37 @@ enabled_tasks__invalid__payloads__creation_request_scenarios = [
 disabled_tasks__valid_payloads__creation_request_scenarios = [
     TypedTaskCreationRequestParameters(
         type=archive_logs.TaskType.value,
-        args=asdict(
-            archive_logs.Args(
-                archival_path="/path/1",
-                partition_name="partition1",
-            )
-        ),
+        args=asdict(archive_logs.Args(partition_name="partition1")),
     ),
     TypedTaskCreationRequestParameters(
         type=archive_videos.TaskType.value,
-        args=asdict(
-            archive_videos.Args(
-                archival_path="/path/2",
-                partition_name="partition2",
-            )
-        ),
+        args=asdict(archive_videos.Args(partition_name="partition2")),
     ),
     TypedTaskCreationRequestParameters(
         type=file_system_move.TaskType.value,
         args=asdict(
             file_system_move.Args(
-                source="/path/1",
-                destination="/path/2",
+                source=os.path.join(
+                    config.PATH_MOTION_CONTENT,
+                    "file1",
+                ),
+                destination=os.path.join(
+                    config.PATH_QUEUE_VIDEO_UPLOAD,
+                    "file1",
+                ),
             )
         ),
     ),
     TypedTaskCreationRequestParameters(
         type=file_system_remove.TaskType.value,
-        args=asdict(file_system_remove.Args(path="/path/2")),
+        args=asdict(
+            file_system_remove.Args(
+                path=os.path.join(
+                    config.PATH_QUEUE_VIDEO_UPLOAD,
+                    "file2",
+                )
+            )
+        ),
     ),
     TypedTaskCreationRequestParameters(
         type=non_scheduled.TaskType.value,

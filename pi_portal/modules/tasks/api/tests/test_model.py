@@ -1,8 +1,10 @@
 """Tests for the TaskCreationRequestModel class."""
+import os
 from copy import deepcopy
 from typing import Any, cast
 
 import pytest
+from pi_portal import config
 from pi_portal.modules.tasks.enums import TaskPriority, TaskType
 from pi_portal.modules.tasks.task import chat_upload_snapshot, motion_snapshot
 from typing_extensions import Unpack
@@ -49,9 +51,14 @@ class TestTaskCreationRequestModel:
           [
               {
                   "type": "CHAT_UPLOAD_SNAPSHOT",
-                  "args": {
-                      "path": "/var/lib/snapshot.jpg"
-                  },
+                  "args":
+                      {
+                          "path":
+                              os.path.join(
+                                  config.PATH_MOTION_CONTENT,
+                                  "snapshot.jpg",
+                              )
+                      },
                   "priority": "STANDARD",
                   "retry_on_error": True,
               }
