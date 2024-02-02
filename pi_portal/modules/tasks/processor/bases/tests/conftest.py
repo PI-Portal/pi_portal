@@ -40,10 +40,7 @@ def mocked_archival_task(
 
 @pytest.fixture
 def mocked_archival_task_args() -> archive_videos.Args:
-  return archive_videos.Args(
-      archival_path="/var/mock/path1",
-      partition_name="mock_partition",
-  )
+  return archive_videos.Args(partition_name="mock_partition",)
 
 
 @pytest.fixture
