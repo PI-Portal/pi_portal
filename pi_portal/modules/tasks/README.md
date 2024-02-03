@@ -4,6 +4,8 @@ In order to manage events like the power going out, or the internet going down, 
 
 This is essentially an event driven system where the different components of pi_portal can communicate with each other over a robust message bus.
 
+![overview](./markdown/task_scheduler_overview.svg)
+
 ## Components
 
 ### Tasks
