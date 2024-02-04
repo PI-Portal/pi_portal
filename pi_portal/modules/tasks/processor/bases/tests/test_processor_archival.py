@@ -7,9 +7,9 @@ from unittest import mock
 
 import pytest
 from pi_portal.modules.integrations.folder import queue
-from pi_portal.modules.integrations.s3 import client as s3_client
 from pi_portal.modules.python import traceback
 from pi_portal.modules.tasks.enums import TaskType
+from pi_portal.modules.tasks.processor.mixins import archival_client
 from ..processor_archival import ArchivalTaskProcessorBaseClass
 from ..processor_base import TaskProcessorBase
 
@@ -75,14 +75,21 @@ class TestArchivalTaskProcessorBaseClass:
       archival_processor_instance: ArchivalTaskProcessorBaseClass,
       mocked_mutex: mock.Mock,
   ) -> None:
-    assert archival_processor_instance.archival_client_class == \
-         s3_client.S3BucketClient
-    assert archival_processor_instance.\
-        archival_client_exception_class == s3_client.S3BucketException
     assert archival_processor_instance.disk_queue_class == \
         queue.DiskQueueIterator
     assert archival_processor_instance.type == TaskType.BASE
     assert archival_processor_instance.mutex == mocked_mutex
+
+  def test_initialize__archival_client(
+      self,
+      archival_processor_instance: ArchivalTaskProcessorBaseClass,
+      mocked_archival_client_class: mock.Mock,
+  ) -> None:
+    assert archival_processor_instance.archival_client_class == \
+         mocked_archival_client_class
+    assert issubclass(
+        archival_processor_instance.archival_client_exception_class, Exception
+    )
 
   def test_initialize__inheritance(
       self,
@@ -91,6 +98,10 @@ class TestArchivalTaskProcessorBaseClass:
     assert isinstance(
         archival_processor_instance,
         TaskProcessorBase,
+    )
+    assert isinstance(
+        archival_processor_instance,
+        archival_client.ArchivalClientMixin,
     )
 
   def test_initialize__logging(

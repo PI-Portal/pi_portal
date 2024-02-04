@@ -5,8 +5,8 @@ from threading import Lock
 from typing import TYPE_CHECKING
 
 from pi_portal.modules.integrations.folder import queue
-from pi_portal.modules.integrations.s3 import client as s3_client
 from pi_portal.modules.tasks.processor.bases import processor_base
+from pi_portal.modules.tasks.processor.mixins import archival_client
 from pi_portal.modules.tasks.task.shared.archive import ArchivalTaskArgs
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -14,14 +14,13 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class ArchivalTaskProcessorBaseClass(
+    archival_client.ArchivalClientMixin,
     processor_base.TaskProcessorBase["ArchivalTaskArgs", None]
 ):
   """A task processor that uploads files to an archival service."""
 
   __slots__ = ()
 
-  archival_client_class = s3_client.S3BucketClient
-  archival_client_exception_class = s3_client.S3BucketException
   disk_queue_class = queue.DiskQueueIterator
   mutex: Lock
 
