@@ -3,13 +3,13 @@
 
 import logging
 from dataclasses import asdict
-from typing import List, Type
+from typing import Callable, List, Type
 from unittest import mock
 
 import pytest
-from pi_portal.modules.configuration import state
 from pi_portal.modules.tasks.conftest import MockGenericTaskArgs
 from pi_portal.modules.tasks.enums import TaskType
+from pi_portal.modules.tasks.processor.mixins import archival_client
 from pi_portal.modules.tasks.task import archive_videos
 from pi_portal.modules.tasks.task.bases.task_base import TaskBase
 from .. import processor_archival
@@ -80,6 +80,21 @@ def mocked_task_processor_implementation() -> mock.Mock:
 
 
 @pytest.fixture
+def setup_archival_processor_mocks(
+    mocked_archival_client_class: mock.Mock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> Callable[[], None]:
+
+  def setup() -> None:
+    monkeypatch.setattr(
+        archival_client.__name__ + ".ArchivalClientMixin.archival_client_class",
+        mocked_archival_client_class,
+    )
+
+  return setup
+
+
+@pytest.fixture
 def concrete_archival_task_processor_base_class(
     mocked_mutex: mock.MagicMock,
 ) -> Type[ArchivalTaskProcessorBaseClass]:
@@ -98,30 +113,26 @@ def concrete_archival_task_processor_base_instance(
         ArchivalTaskProcessorBaseClass,
     ],
     mocked_os_remove: mock.Mock,
-    mocked_state: state.State,
     mocked_task_logger: logging.Logger,
+    setup_archival_processor_mocks: Callable[[], None],
     monkeypatch: pytest.MonkeyPatch,
 ) -> ArchivalTaskProcessorBaseClass:
-  state.State().user_config = mocked_state.user_config
-  instance = concrete_archival_task_processor_base_class(mocked_task_logger)
   monkeypatch.setattr(
       processor_archival.__name__ + ".os.remove",
       mocked_os_remove,
   )
-  return instance
+  setup_archival_processor_mocks()
+  return concrete_archival_task_processor_base_class(mocked_task_logger)
 
 
 @pytest.fixture(name="archival_processor_instance_with_files")
 # pylint: disable=invalid-name
 def concrete_archival_task_processor_base_with_unlocked_mutex_and_files(
     archival_processor_instance: ArchivalTaskProcessorBaseClass,
-    mocked_archival_client_class: mock.Mock,
     mocked_file_list: List[str],
     mocked_mutex: mock.Mock,
 ) -> ArchivalTaskProcessorBaseClass:
   mocked_mutex.locked.return_value = False
-  archival_processor_instance.archival_client_class = \
-      mocked_archival_client_class
   archival_processor_instance.disk_queue_class = \
       mock.Mock(return_value=mocked_file_list)
   return archival_processor_instance
