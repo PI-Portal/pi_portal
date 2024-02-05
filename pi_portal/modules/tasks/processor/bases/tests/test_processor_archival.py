@@ -354,7 +354,7 @@ class TestArchivalTaskProcessorBaseClass:
 
     assert mocked_stream.getvalue() == \
         self.logging__no_mutex__files__exception1.format(**logging_values) + \
-        traceback.get_traceback(mocked_archival_task.result)
+        traceback.get_traceback(mocked_archival_task.result.value)
 
   def test_process__mutex_unlocked__files__logging__exception2(
       self,
@@ -373,7 +373,7 @@ class TestArchivalTaskProcessorBaseClass:
 
     assert mocked_stream.getvalue() == (
         self.logging__no_mutex__files__exception2.format(**logging_values) +
-        traceback.get_traceback(mocked_archival_task.result).replace(
+        traceback.get_traceback(mocked_archival_task.result.value).replace(
             "builtins.OSError",
             "OSError",
         )

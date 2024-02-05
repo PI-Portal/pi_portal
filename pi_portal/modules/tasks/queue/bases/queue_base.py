@@ -111,7 +111,7 @@ class QueueBase(abc.ABC):
     """
     task.completed = None
     task.ok = None
-    task.result = None
+    task.result.value = None
     self._retry(task)
     self.log.debug(
         "Retried: '%s'!",
