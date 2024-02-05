@@ -42,7 +42,7 @@ class TestTaskProcessorBase:
 
     assert isinstance(mocked_task.completed, datetime)
     assert mocked_task.ok is True
-    assert mocked_task.result == sum(asdict(mocked_task.args).values())
+    assert mocked_task.result.value == sum(asdict(mocked_task.args).values())
     mocked_task_processor_implementation.assert_called_once_with(mocked_task)
 
   def test_process__success__underlying_implementation(
@@ -70,7 +70,7 @@ class TestTaskProcessorBase:
         f"DEBUG - {mocked_task.id} - Processing '{mocked_task}' ...\n"
         f"ERROR - {mocked_task.id} - Failed: '{mocked_task}'!\n"
         f"ERROR - {mocked_task.id} - Exception\n" +
-        traceback.get_traceback(mocked_task.result)
+        traceback.get_traceback(mocked_task.result.value)
     )
 
   def test_process__failure__updates_task(
@@ -85,7 +85,7 @@ class TestTaskProcessorBase:
     concrete_task_processor_base_instance.process(mocked_task)
 
     assert isinstance(mocked_task.completed, datetime)
-    assert mocked_task.result == exception_instance
+    assert mocked_task.result.value == exception_instance
     assert mocked_task.ok is False
 
   def test_process__failure__underlying_implementation(
