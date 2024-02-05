@@ -3,7 +3,7 @@
 import dataclasses
 from typing import Any
 
-from pi_portal.modules.tasks.task.bases import task_args_base
+from pi_portal.modules.tasks.task.bases import task_args_base, task_result
 from pi_portal.modules.tasks.task.bases.task_base import TaskBase
 from pi_portal.modules.tasks.task.serializers.task_serializer import (
     SerializedTask,
@@ -32,5 +32,7 @@ def assert_task_equals_serialized_task(
             task_object[index],
             serializer_object[index],
         )
+    elif isinstance(task_object, task_result.TaskResult):
+      assert dataclasses.asdict(task_object) == serializer_object
     else:
       assert task_object == serializer_object
