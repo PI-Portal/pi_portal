@@ -48,22 +48,22 @@ class TaskBase(
       self,
       args: "TypeTaskArguments_co",
       priority: "TaskPriority" = TaskPriority.STANDARD,
-      retry_on_error: bool = False,
+      retry_after: int = 0,
   ) -> None:
     """:param args: The arguments used by this task instance.
     :param priority: Sets the routing priority for this task.
-    :param retry_on_error: Indicates if the task should be retried on an error.
+    :param retry_after: A positive value in seconds will retry a failed task.
     """
     self.args = args
     self.completed = None
     self.created = datetime.now(tz=timezone.utc)
-    self.retry_on_error = retry_on_error
     self.id = None
     self.ok = None
     self.on_success = []
     self.on_failure = []
     self.priority = priority
     self.result = TaskResult[TypeTaskResult]()
+    self.retry_after = retry_after
     self.scheduled = None
 
   def __str__(self) -> str:
