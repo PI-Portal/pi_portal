@@ -76,6 +76,7 @@ python-json-logger = '<2.0.3'
 requests = '^2.31.0'
 slack-bolt = '^1.18.1'
 slack-sdk = '^3.26.0'
+sqlitedict = '^2.1.0'
 
 [tool.poetry.dependencies.'RPi.GPIO']
 platform = 'linux'

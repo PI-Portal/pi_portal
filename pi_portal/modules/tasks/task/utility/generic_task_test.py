@@ -35,6 +35,7 @@ class GenericTaskModuleTest:
     assert instance.args == self.mock_args
     assert instance.type == self.expected_type
     assert instance.priority == enums.TaskPriority.STANDARD
+    assert instance.retry_after == 0
 
   @pytest.mark.parametrize("priority", list(enums.TaskPriority))
   def test_import__task__vary_priority__attributes(
@@ -49,3 +50,4 @@ class GenericTaskModuleTest:
     assert instance.args == self.mock_args
     assert instance.type == self.expected_type
     assert instance.priority == priority
+    assert instance.retry_after == 0

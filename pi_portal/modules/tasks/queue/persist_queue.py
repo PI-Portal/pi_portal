@@ -5,6 +5,7 @@ import shutil
 from typing import TYPE_CHECKING, cast
 
 from persistqueue import SQLiteAckQueue as VendorQueue
+from pi_portal import config
 from typing_extensions import TypedDict
 from .bases.queue_base import QueueBase, QueueMetrics
 
@@ -29,7 +30,7 @@ class Queue(QueueBase):
   __slots__ = ("_path", "_queue")
 
   _active_size = 0
-  _db_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "db")
+  _db_path = config.PATH_TASKS_SERVICE_DATABASES
   _queue: VendorQueue
   timeout = 2
 

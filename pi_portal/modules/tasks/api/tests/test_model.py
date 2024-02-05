@@ -45,8 +45,8 @@ class TestTaskCreationRequestModel:
       },
       "priority":
           "EXPRESS",
-      "retry_on_error":
-          True,
+      "retry_after":
+          3600,
       "on_failure":
           [
               {
@@ -60,7 +60,7 @@ class TestTaskCreationRequestModel:
                               )
                       },
                   "priority": "STANDARD",
-                  "retry_on_error": True,
+                  "retry_after": 300,
               }
           ],
       "on_success":
@@ -71,7 +71,7 @@ class TestTaskCreationRequestModel:
                       "camera": 2
                   },
                   "priority": "EXPRESS",
-                  "retry_on_error": False,
+                  "retry_after": 0,
               }
           ],
   }
@@ -82,7 +82,7 @@ class TestTaskCreationRequestModel:
     assert instance.priority is TaskPriority.STANDARD
     assert instance.type is TaskType(self.params_with_defaults["type"])
     assert instance.args == self.params_with_defaults["args"]
-    assert instance.retry_on_error is False
+    assert instance.retry_after == 0
     assert len(instance.on_failure) == 0
     assert len(instance.on_success) == 0
 
@@ -115,8 +115,7 @@ class TestTaskCreationRequestModel:
     )
     assert instance.type is TaskType(self.params_with_nested_values["type"])
     assert instance.args == self.params_with_nested_values["args"]
-    assert instance.retry_on_error is self.params_with_nested_values[
-        "retry_on_error"]
+    assert instance.retry_after is self.params_with_nested_values["retry_after"]
     assert len(instance.on_failure) == 1
     assert len(instance.on_failure) == 1
 
@@ -159,7 +158,7 @@ class TestTaskCreationRequestModel:
     assert instance.priority is TaskPriority(nested_params["priority"])
     assert instance.type is TaskType(nested_params["type"])
     assert instance.args == nested_params["args"]
-    assert instance.retry_on_error is nested_params["retry_on_error"]
+    assert instance.retry_after is nested_params["retry_after"]
     assert len(instance.on_failure) == 0
     assert len(instance.on_failure) == 0
 
@@ -202,7 +201,7 @@ class TestTaskCreationRequestModel:
     assert instance.priority is TaskPriority(nested_params["priority"])
     assert instance.type is TaskType(nested_params["type"])
     assert instance.args == nested_params["args"]
-    assert instance.retry_on_error is nested_params["retry_on_error"]
+    assert instance.retry_after is nested_params["retry_after"]
     assert len(instance.on_failure) == 0
     assert len(instance.on_failure) == 0
 
@@ -245,7 +244,7 @@ class TestTaskCreationRequestModel:
     assert task_instance.args.camera == (
         self.params_with_defaults["args"]["camera"]
     )
-    assert task_instance.retry_on_error is False
+    assert task_instance.retry_after == 0
     assert len(task_instance.on_failure) == 0
     assert len(task_instance.on_success) == 0
 
@@ -266,8 +265,8 @@ class TestTaskCreationRequestModel:
     assert task_instance.args.camera == (
         self.params_with_nested_values["args"]["camera"]
     )
-    assert task_instance.retry_on_error is (
-        self.params_with_nested_values["retry_on_error"]
+    assert task_instance.retry_after is (
+        self.params_with_nested_values["retry_after"]
     )
     assert len(task_instance.on_failure) == 1
     assert len(task_instance.on_failure) == 1
@@ -285,7 +284,7 @@ class TestTaskCreationRequestModel:
     assert nested_instance.priority is TaskPriority(nested_params["priority"])
     assert nested_instance.type is TaskType(nested_params["type"])
     assert nested_instance.args.path == nested_params["args"]["path"]
-    assert nested_instance.retry_on_error is nested_params["retry_on_error"]
+    assert nested_instance.retry_after is nested_params["retry_after"]
     assert len(nested_instance.on_failure) == 0
     assert len(nested_instance.on_failure) == 0
 
@@ -302,6 +301,6 @@ class TestTaskCreationRequestModel:
     assert nested_instance.priority is TaskPriority(nested_params["priority"])
     assert nested_instance.type is TaskType(nested_params["type"])
     assert nested_instance.args.camera == nested_params["args"]["camera"]
-    assert nested_instance.retry_on_error is nested_params["retry_on_error"]
+    assert nested_instance.retry_after is nested_params["retry_after"]
     assert len(nested_instance.on_failure) == 0
     assert len(nested_instance.on_failure) == 0

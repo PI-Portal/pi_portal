@@ -24,7 +24,7 @@ class TestCronJobBase:
     assert concrete_cron_job_base_instance.\
         registered_task.TaskClass == \
         mocked_task_registry.tasks[TaskType.NON_SCHEDULED].TaskClass
-    assert concrete_cron_job_base_instance.retry_on_error is False
+    assert concrete_cron_job_base_instance.retry_after == 0
 
   def test_initialize__logging(
       self,
@@ -81,29 +81,33 @@ class TestCronJobBase:
             # pylint: disable=protected-access
             args=concrete_cron_job_base_instance._args(),
             priority=priority,
+            retry_after=concrete_cron_job_base_instance.retry_after,
         )
 
-  @pytest.mark.parametrize("retry_on_error", [
-      True,
-      False,
-  ])
-  def test_schedule__vary_retry_on_error__vary_priority__creates_correct_task(
+  @pytest.mark.parametrize("retry_after", [-1, 0, 10])
+  def test_schedule__vary_retry_after__creates_correct_task(
       self,
       concrete_cron_job_base_instance: TypeConcreteJobInstance,
       mocked_task_router: mock.Mock,
+      mocked_task_registry: mock.Mock,
       monkeypatch: pytest.MonkeyPatch,
-      retry_on_error: bool,
+      retry_after: int,
   ) -> None:
     monkeypatch.setattr(
         concrete_cron_job_base_instance,
-        "retry_on_error",
-        retry_on_error,
+        "retry_after",
+        retry_after,
     )
 
     concrete_cron_job_base_instance.schedule(mocked_task_router)
 
-    task = mocked_task_router.put.call_args_list[0].args[0]
-    assert task.retry_on_error is retry_on_error
+    mocked_task_registry.tasks[concrete_cron_job_base_instance.type]. \
+        TaskClass.assert_called_once_with(
+        # pylint: disable=protected-access
+        args=concrete_cron_job_base_instance._args(),
+        priority=concrete_cron_job_base_instance.priority,
+        retry_after=retry_after,
+      )
 
   def test_schedule__adds_task_to_queue(
       self,

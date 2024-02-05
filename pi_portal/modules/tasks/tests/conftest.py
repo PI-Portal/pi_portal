@@ -2,7 +2,7 @@
 # pylint: disable=redefined-outer-name
 
 import logging
-from typing import Dict
+from typing import Dict, List
 from unittest import mock
 
 import pytest
@@ -22,6 +22,18 @@ def mocked_api_server() -> mock.Mock:
 
 
 @pytest.fixture
+def mocked_manifests() -> List[mock.Mock]:
+  return [mock.Mock()]
+
+
+@pytest.fixture
+def mocked_manifest_factory(mocked_manifests: List[mock.Mock]) -> mock.Mock:
+  instance = mock.Mock()
+  instance.create.side_effect = mocked_manifests
+  return instance
+
+
+@pytest.fixture
 def mocked_scheduler_logger(
     mocked_task_logger: logging.Logger,
 ) -> logging.Logger:
@@ -35,6 +47,11 @@ def mocked_scheduler_logger(
 
 @pytest.fixture
 def mocked_worker_cron() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
+def mocked_worker_failed_tasks() -> mock.Mock:
   return mock.Mock()
 
 
@@ -59,8 +76,7 @@ def mocked_task_scheduler() -> mock.Mock:
 def task_scheduler_instance_with_logger(
     mocked_task_registry_factory: mock.Mock,
     mocked_task_router: mock.Mock,
-    mocked_worker_cron: mock.Mock,
-    mocked_worker_queue: mock.Mock,
+    mocked_manifest_factory: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> scheduler.TaskScheduler:
   monkeypatch.setattr(
@@ -72,16 +88,12 @@ def task_scheduler_instance_with_logger(
       mocked_task_registry_factory,
   )
   monkeypatch.setattr(
+      scheduler.__name__ + ".TaskManifestFactory",
+      mocked_manifest_factory,
+  )
+  monkeypatch.setattr(
       scheduler.__name__ + ".TaskRouter",
       mocked_task_router,
-  )
-  monkeypatch.setattr(
-      scheduler.__name__ + ".CronWorker",
-      mocked_worker_cron,
-  )
-  monkeypatch.setattr(
-      scheduler.__name__ + ".QueueWorker",
-      mocked_worker_queue,
   )
   with mock_state.mock_state_creator():
     instance = scheduler.TaskScheduler()
@@ -92,8 +104,23 @@ def task_scheduler_instance_with_logger(
 def task_scheduler_instance(
     task_scheduler_instance_with_logger: scheduler.TaskScheduler,
     mocked_scheduler_logger: logging.Logger,
+    mocked_worker_cron: mock.Mock,
+    mocked_worker_failed_tasks: mock.Mock,
+    mocked_worker_queue: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> scheduler.TaskScheduler:
+  monkeypatch.setattr(
+      scheduler.__name__ + ".CronWorker",
+      mocked_worker_cron,
+  )
+  monkeypatch.setattr(
+      scheduler.__name__ + ".FailedTaskWorker",
+      mocked_worker_failed_tasks,
+  )
+  monkeypatch.setattr(
+      scheduler.__name__ + ".QueueWorker",
+      mocked_worker_queue,
+  )
   monkeypatch.setattr(
       task_scheduler_instance_with_logger,
       "log",

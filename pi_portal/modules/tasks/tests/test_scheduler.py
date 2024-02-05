@@ -7,7 +7,7 @@ from unittest import mock
 
 from pi_portal.modules.mixins import write_log_file
 from pi_portal.modules.python.mock import CallType
-from pi_portal.modules.tasks.enums import TaskType
+from pi_portal.modules.tasks.enums import TaskManifests, TaskType
 from .. import scheduler
 from .conftest import MOCKED_CONFIG
 
@@ -17,7 +17,9 @@ class TestTaskScheduler:
 
   logging_startup_message = (
       "WARNING - None - None - Task scheduler is starting ...\n"
+      "WARNING - None - None - Creating the '{manifest.value}' manifest ...\n"
       "WARNING - None - None - Creating the cron scheduler ...\n"
+      "WARNING - None - None - Creating the failed task scheduler ...\n"
   ) + "".join(
       [
           (
@@ -32,6 +34,7 @@ class TestTaskScheduler:
       task_scheduler_instance: scheduler.TaskScheduler,
   ) -> None:
     assert task_scheduler_instance.managed_workers == []
+    assert task_scheduler_instance.manifests == {}
 
   def test_initialize__logger(
       self,
@@ -81,7 +84,22 @@ class TestTaskScheduler:
   ) -> None:
     task_scheduler_instance.start()
 
-    assert mocked_stream.getvalue() == self.logging_startup_message
+    assert mocked_stream.getvalue() == self.logging_startup_message.format(
+        manifest=TaskManifests.FAILED_TASKS
+    )
+
+  def test_start__creates_manifests(
+      self, task_scheduler_instance: scheduler.TaskScheduler,
+      mocked_manifest_factory: mock.Mock, mocked_manifests: List[mock.Mock]
+  ) -> None:
+    task_scheduler_instance.start()
+
+    mocked_manifest_factory.create.assert_called_once_with(
+        TaskManifests.FAILED_TASKS
+    )
+    assert task_scheduler_instance.manifests[TaskManifests.FAILED_TASKS
+                                            ] == (mocked_manifests[0])
+    assert len(task_scheduler_instance.manifests) == 1
 
   def test_start__creates_and_starts_cron_worker(
       self,
@@ -98,24 +116,38 @@ class TestTaskScheduler:
     )
     mocked_worker_cron.return_value.start.assert_called_once_with()
 
+  def test_start__creates_and_starts_failed_task_worker(
+      self,
+      task_scheduler_instance: scheduler.TaskScheduler,
+      mocked_worker_failed_tasks: mock.Mock,
+  ) -> None:
+    task_scheduler_instance.start()
+
+    mocked_worker_failed_tasks.assert_called_once_with(
+        task_scheduler_instance.log,
+        task_scheduler_instance.router,
+        task_scheduler_instance.manifests[TaskManifests.FAILED_TASKS],
+    )
+    mocked_worker_failed_tasks.return_value.start.assert_called_once_with()
+
   def test_start__creates_and_starts_queue_workers(
       self,
       task_scheduler_instance: scheduler.TaskScheduler,
       mocked_worker_queue: mock.Mock,
   ) -> None:
     expected_worker_init_calls: List[CallType] = []
+
+    task_scheduler_instance.start()
+
     for priority, count in MOCKED_CONFIG.items():
       expected_worker_init_calls += [
           mock.call(
               task_scheduler_instance.log,
-              priority,
               task_scheduler_instance.router.queues[priority],
               task_scheduler_instance.registry,
+              task_scheduler_instance.manifests[TaskManifests.FAILED_TASKS],
           ),
       ] * count
-
-    task_scheduler_instance.start()
-
     assert mocked_worker_queue.mock_calls == (
         expected_worker_init_calls +
         [mock.call().start()] * sum(MOCKED_CONFIG.values())
@@ -125,13 +157,16 @@ class TestTaskScheduler:
       self,
       task_scheduler_instance: scheduler.TaskScheduler,
       mocked_worker_cron: mock.Mock,
+      mocked_worker_failed_tasks: mock.Mock,
       mocked_worker_queue: mock.Mock,
   ) -> None:
     task_scheduler_instance.start()
 
     assert task_scheduler_instance.managed_workers[0] == \
         mocked_worker_cron.return_value
-    for worker in task_scheduler_instance.managed_workers[1:]:
+    assert task_scheduler_instance.managed_workers[1] == \
+           mocked_worker_failed_tasks.return_value
+    for worker in task_scheduler_instance.managed_workers[2:]:
       assert worker == mocked_worker_queue.return_value
 
   def test_halt__scheduler_has_started__logging(
@@ -144,14 +179,16 @@ class TestTaskScheduler:
     task_scheduler_instance.halt()
 
     assert mocked_stream.getvalue() == (
-        self.logging_startup_message +
-        "WARNING - None - None - Task scheduler is shutting down ...\n"
+        self.logging_startup_message.format(
+            manifest=TaskManifests.FAILED_TASKS
+        ) + "WARNING - None - None - Task scheduler is shutting down ...\n"
     )
 
   def test_halt__scheduler_has_started__halts_all_managed_workers(
       self,
       task_scheduler_instance: scheduler.TaskScheduler,
       mocked_worker_cron: mock.Mock,
+      mocked_worker_failed_tasks: mock.Mock,
       mocked_worker_queue: mock.Mock,
   ) -> None:
     task_scheduler_instance.start()
@@ -159,6 +196,7 @@ class TestTaskScheduler:
     task_scheduler_instance.halt()
 
     mocked_worker_cron.return_value.halt.assert_called_once_with()
+    mocked_worker_failed_tasks.return_value.halt.assert_called_once_with()
     assert mocked_worker_queue.return_value.halt.mock_calls == [
         mock.call()
     ] * sum(MOCKED_CONFIG.values())
@@ -208,3 +246,15 @@ class TestTaskScheduler:
     assert mocked_task_router.return_value.put.call_count == sum(
         MOCKED_CONFIG.values()
     )
+
+  def test_halt__scheduler_has_started__closes_all_manifests(
+      self,
+      task_scheduler_instance: scheduler.TaskScheduler,
+      mocked_manifests: List[mock.Mock],
+  ) -> None:
+    task_scheduler_instance.start()
+
+    task_scheduler_instance.halt()
+
+    for manifest in mocked_manifests:
+      manifest.close.assert_called_once_with()

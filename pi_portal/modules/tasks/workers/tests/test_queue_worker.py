@@ -7,7 +7,7 @@ from unittest import mock
 import pytest
 from pi_portal.modules.python.futures import wait_cm
 from pi_portal.modules.tasks.conftest import Interrupt
-from pi_portal.modules.tasks.enums import TaskPriority, TaskType
+from pi_portal.modules.tasks.enums import TaskType
 from pi_portal.modules.tasks.workers.bases.worker_base import WorkerBase
 from .. import queue_worker
 from .conftest import (
@@ -27,10 +27,12 @@ class TestQueueWorker:
   def test_initialize__attributes(
       self,
       queue_worker_instance: queue_worker.QueueWorker,
+      mocked_queue: mock.Mock,
+      mocked_manifest: mock.Mock,
   ) -> None:
     assert queue_worker_instance.do_not_process == [TaskType.NON_SCHEDULED]
-    assert queue_worker_instance.retry_cool_off == 5
-    assert queue_worker_instance.priority == TaskPriority.STANDARD
+    assert queue_worker_instance.priority == mocked_queue.priority
+    assert queue_worker_instance.failed_task_manifest == mocked_manifest
 
   def test_initialize__logger(
       self,
@@ -236,25 +238,25 @@ class TestQueueWorker:
       "scenario",
       [
           RetryScenario(
-              retry_on_error=True,
+              retry_after=1,
               task_type=TaskType.CHAT_UPLOAD_VIDEO,
               task_args=MockTaskArgs(path="/mock/path1"),
               ok=True,
           ),
           RetryScenario(
-              retry_on_error=False,
+              retry_after=-1,
               task_type=TaskType.CHAT_UPLOAD_VIDEO,
               task_args=MockTaskArgs(path="/mock/path1"),
               ok=True,
           ),
           RetryScenario(
-              retry_on_error=True,
+              retry_after=1,
               task_type=TaskType.FILE_SYSTEM_REMOVE,
               task_args=MockTaskArgs(path="/mock/path2"),
               ok=False,
           ),
           RetryScenario(
-              retry_on_error=False,
+              retry_after=-1,
               task_type=TaskType.FILE_SYSTEM_REMOVE,
               task_args=MockTaskArgs(path="/mock/path2"),
               ok=False,
@@ -270,7 +272,8 @@ class TestQueueWorker:
     scenario_mocks = create_queue_worker_scenario_mocks(scenario.task_type)
     task = scenario_mocks.task(args=scenario.task_args)
     task.ok = scenario.ok
-    task.retry_on_error = scenario.retry_on_error
+    task.completed = task.completed
+    task.retry_after = scenario.retry_after
     mocked_queue.get.return_value = task
     mocked_process_class = scenario_mocks.mocked_processor.ProcessorClass
 
@@ -304,6 +307,7 @@ class TestQueueWorker:
     sub_task_mocks = [mock.Mock(), mock.Mock()]
     task = scenario_mocks.task(args=scenario.task_args)
     task.ok = scenario.ok
+    task.retry_after = 0
     setattr(task, "on_success", sub_task_mocks)
     mocked_queue.get.return_value = task
     mocked_process_class = scenario_mocks.mocked_processor.ProcessorClass
@@ -346,6 +350,7 @@ class TestQueueWorker:
     sub_task_mocks = [mock.Mock(), mock.Mock()]
     task = scenario_mocks.task(args=scenario.task_args)
     task.ok = scenario.ok
+    task.retry_after = 0
     setattr(task, "on_failure", sub_task_mocks)
     mocked_queue.get.return_value = task
     mocked_process_class = scenario_mocks.mocked_processor.ProcessorClass
@@ -374,7 +379,7 @@ class TestQueueWorker:
           TaskScenario(
               task_type=TaskType.CHAT_UPLOAD_SNAPSHOT,
               task_args=MockTaskArgs(path="/mock/path2"),
-              ok=True,
+              ok=False,
           ),
       ],
   )
@@ -382,7 +387,7 @@ class TestQueueWorker:
       "completion_attribute",
       ["on_failure", "on_success"],
   )
-  def test_consumer__vary_tasks_retry_priority__sub_tasks__sets_result_cause(
+  def test_consumer__vary_tasks__vary_ok__vary_sub_tasks__sets_result_cause(
       self,
       create_queue_worker_scenario_mocks: TypeQueueWorkerMocksCreator,
       mocked_queue: mock.Mock,
@@ -393,6 +398,7 @@ class TestQueueWorker:
     sub_task_mocks = [mock.Mock(), mock.Mock()]
     task = scenario_mocks.task(args=scenario.task_args)
     task.ok = scenario.ok
+    task.retry_after = 0
     setattr(task, completion_attribute, sub_task_mocks)
     mocked_queue.get.return_value = task
 
@@ -411,89 +417,107 @@ class TestQueueWorker:
       "scenario",
       [
           RetryScenario(
-              retry_on_error=True,
+              retry_after=1,
               task_type=TaskType.CHAT_UPLOAD_VIDEO,
               task_args=MockTaskArgs(path="/mock/path1"),
               ok=True,
           ),
           RetryScenario(
-              retry_on_error=False,
+              retry_after=-1,
               task_type=TaskType.CHAT_UPLOAD_VIDEO,
               task_args=MockTaskArgs(path="/mock/path1"),
               ok=True,
           ),
           RetryScenario(
-              retry_on_error=True,
+              retry_after=1,
               task_type=TaskType.FILE_SYSTEM_REMOVE,
               task_args=MockTaskArgs(path="/mock/path2"),
-              ok=False,
+              ok=True,
           ),
           RetryScenario(
-              retry_on_error=False,
+              retry_after=-1,
               task_type=TaskType.FILE_SYSTEM_REMOVE,
               task_args=MockTaskArgs(path="/mock/path2"),
               ok=False,
           ),
       ],
   )
-  def test_consumer__vary_tasks__vary_ok__vary_retry__calls_retry(
+  def test_consumer__vary_tasks__vary_ok__vary_retry__updates_manifest(
       self,
       create_queue_worker_scenario_mocks: TypeQueueWorkerMocksCreator,
+      mocked_manifest: mock.Mock,
       mocked_queue: mock.Mock,
       scenario: RetryScenario,
   ) -> None:
     scenario_mocks = create_queue_worker_scenario_mocks(scenario.task_type)
     task = scenario_mocks.task(args=scenario.task_args)
     task.ok = scenario.ok
-    task.retry_on_error = scenario.retry_on_error
+    task.retry_after = scenario.retry_after
     mocked_queue.get.return_value = task
     mocked_process_class = scenario_mocks.mocked_processor.ProcessorClass
 
     scenario_mocks.instance.consumer()
 
     mocked_process_class.assert_called_once_with(scenario_mocks.instance.log)
-    called = mocked_queue.retry.mock_calls == [mock.call(task)]
-    not_called = mocked_queue.retry.call_count == 0
-    assert called is (not scenario.ok and scenario.retry_on_error)
-    assert not_called is (scenario.ok or not scenario.retry_on_error)
+    called = mocked_manifest.add.mock_calls == [mock.call(task)]
+    not_called = mocked_manifest.add.mock_calls == []
+    assert called is (not scenario.ok and scenario.retry_after > 0)
+    assert not_called is (scenario.ok or not scenario.retry_after > 0)
 
   @pytest.mark.parametrize(
       "scenario",
       [
-          TaskScenario(
+          RetryScenario(
+              retry_after=1,
               task_type=TaskType.CHAT_UPLOAD_VIDEO,
               task_args=MockTaskArgs(path="/mock/path1"),
               ok=True,
           ),
-          TaskScenario(
+          RetryScenario(
+              retry_after=-1,
+              task_type=TaskType.CHAT_UPLOAD_VIDEO,
+              task_args=MockTaskArgs(path="/mock/path1"),
+              ok=True,
+          ),
+          RetryScenario(
+              retry_after=1,
+              task_type=TaskType.FILE_SYSTEM_REMOVE,
+              task_args=MockTaskArgs(path="/mock/path2"),
+              ok=False,
+          ),
+          RetryScenario(
+              retry_after=-1,
               task_type=TaskType.FILE_SYSTEM_REMOVE,
               task_args=MockTaskArgs(path="/mock/path2"),
               ok=False,
           ),
       ],
   )
-  def test_consumer__vary_tasks__vary_ok__vary_retry__calls_sleep(
+  def test_consumer__vary_tasks__vary_ok__vary_retry__logging(
       self,
       create_queue_worker_scenario_mocks: TypeQueueWorkerMocksCreator,
       mocked_queue: mock.Mock,
-      mocked_sleep: mock.Mock,
-      scenario: TaskScenario,
+      mocked_stream: StringIO,
+      scenario: RetryScenario,
   ) -> None:
     scenario_mocks = create_queue_worker_scenario_mocks(scenario.task_type)
     task = scenario_mocks.task(args=scenario.task_args)
     task.ok = scenario.ok
+    task.retry_after = scenario.retry_after
     mocked_queue.get.return_value = task
 
     scenario_mocks.instance.consumer()
 
-    called = mocked_sleep.mock_calls == [
-        mock.call(scenario_mocks.instance.retry_cool_off)
-    ]
-    not_called = mocked_sleep.call_count == 0
-    assert called is not scenario.ok
-    assert not_called is scenario.ok
+    has_no_retry_logging = mocked_stream.getvalue() == ""
+    has_retry_logging = mocked_stream.getvalue() == (
+        f"DEBUG - {task.id} - None - "
+        f"{scenario_mocks.instance.priority.value} - Failed task '{task}' will "
+        f"be rescheduled in {scenario.retry_after} second(s).\n"
+    )
+    assert has_no_retry_logging is (scenario.ok or scenario.retry_after < 1)
+    assert has_retry_logging is (not scenario.ok and scenario.retry_after > 0)
 
-  def test_halt__worker_is_running__logging(
+  def test_halt__scheduler_is_running__logging(
       self,
       queue_worker_instance: queue_worker.QueueWorker,
       queue_worker_running: "Future[None]",
@@ -509,7 +533,7 @@ class TestQueueWorker:
         f"Worker thread has exited!\n"
     )
 
-  def test_halt__worker_is_running__stops_all_threads(
+  def test_halt__scheduler_is_running__stops_all_threads(
       self,
       queue_worker_instance: queue_worker.QueueWorker,
       queue_worker_running: "Future[None]",
@@ -517,7 +541,7 @@ class TestQueueWorker:
     with wait_cm(queue_worker_running):
       queue_worker_instance.halt()
 
-  def test_halt__worker_is_running__ensure_minimum_iterations(
+  def test_halt__scheduler_is_running__ensure_minimum_iterations(
       self,
       queue_worker_instance: queue_worker.QueueWorker,
       queue_worker_running: "Future[None]",

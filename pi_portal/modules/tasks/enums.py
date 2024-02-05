@@ -24,3 +24,9 @@ class TaskPriority(enum.Enum):
 
   EXPRESS = "EXPRESS"
   STANDARD = "STANDARD"
+
+
+class TaskManifests(enum.Enum):
+  """Manifests for task inventorying."""
+
+  FAILED_TASKS = "FAILED_TASKS"

@@ -26,7 +26,7 @@ class TaskCreationRequestModel(BaseModel):
   on_failure: List["TaskCreationRequestModel"] = []
   on_success: List["TaskCreationRequestModel"] = []
   priority: "TaskPriority" = Field(default=TaskPriority.STANDARD)
-  retry_on_error: bool = Field(default=False)
+  retry_after: int = Field(default=0)
 
   def model_post_init(self, __context: Any) -> None:
     """Complete model initialization."""
@@ -67,7 +67,7 @@ class TaskCreationRequestModel(BaseModel):
     self._instance = task_class(
         args=self._args,
         priority=self.priority,
-        retry_on_error=self.retry_on_error,
+        retry_after=self.retry_after,
     )
 
   def as_task(self) -> 'TaskBase[TaskArgsBase, Any]':

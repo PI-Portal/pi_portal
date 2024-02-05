@@ -33,7 +33,7 @@ class TestTaskBase:
     )
     assert concrete_task_base_instance.result.cause is None
     assert concrete_task_base_instance.result.value is None
-    assert concrete_task_base_instance.retry_on_error is False
+    assert concrete_task_base_instance.retry_after == 0
     assert concrete_task_base_instance.scheduled is None
     assert concrete_task_base_instance.type == TaskType.BASE
 
@@ -62,20 +62,20 @@ class TestTaskBase:
     )
     assert prioritized_task_base_instance.result.cause is None
     assert prioritized_task_base_instance.result.value is None
-    assert prioritized_task_base_instance.retry_on_error is False
+    assert prioritized_task_base_instance.retry_after == 0
     assert prioritized_task_base_instance.scheduled is None
     assert prioritized_task_base_instance.type == TaskType.BASE
 
-  @pytest.mark.parametrize("retry_on_error", [True, False])
+  @pytest.mark.parametrize("retry_after", [-1, 1])
   def test_initialize__vary_retry__attributes(
       self,
       concrete_task_base_class: "Type[task_base.TypeGenericTask]",
       mocked_generic_task_args: MockGenericTaskArgs,
-      retry_on_error: bool,
+      retry_after: bool,
   ) -> None:
     task_base_instance = concrete_task_base_class(
         mocked_generic_task_args,
-        retry_on_error=retry_on_error,
+        retry_after=retry_after,
     )
 
     assert task_base_instance.args == mocked_generic_task_args
@@ -89,7 +89,7 @@ class TestTaskBase:
     assert isinstance(task_base_instance.result, task_result.TaskResult)
     assert task_base_instance.result.cause is None
     assert task_base_instance.result.value is None
-    assert task_base_instance.retry_on_error is retry_on_error
+    assert task_base_instance.retry_after is retry_after
     assert task_base_instance.scheduled is None
     assert task_base_instance.type == TaskType.BASE
 

@@ -35,7 +35,7 @@ class CronJobBase(Generic[TypeTaskArguments_co], abc.ABC):
   priority: TaskPriority = TaskPriority.STANDARD
   type: "TaskType"
   quiet = False
-  retry_on_error = False
+  retry_after = 0
 
   def __init__(self, log: logging.Logger, registry: "TaskRegistry") -> None:
     self.log = log
@@ -67,6 +67,9 @@ class CronJobBase(Generic[TypeTaskArguments_co], abc.ABC):
     """
 
     task_class = self.registered_task.TaskClass
-    task = task_class(args=self._args(), priority=self.priority)
-    task.retry_on_error = self.retry_on_error
+    task = task_class(
+        args=self._args(),
+        priority=self.priority,
+        retry_after=self.retry_after,
+    )
     router.put(task)

@@ -43,6 +43,12 @@ PATH_QUEUE_VIDEO_UPLOAD = os.path.join(
     "queue_videos",
 )
 PATH_SUPERVISOR_SOCKET = "/var/run/supervisor.sock"
+PATH_TASKS_SERVICE_DATABASES = os.path.join(
+    os.path.dirname(__file__),
+    "modules",
+    "tasks",
+    "db",
+)
 PATH_USER_CONFIG = "/etc/pi_portal/config.json"
 
 PID_FILE_MOTION = '/var/run/motion/motion.pid'

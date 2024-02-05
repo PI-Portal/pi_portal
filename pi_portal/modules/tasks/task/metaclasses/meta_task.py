@@ -38,9 +38,9 @@ class MetaTask(type):
       cls: "MetaTask",
       args: "TaskArgsBase",
       priority: "TaskPriority" = TaskPriority.STANDARD,
-      retry_on_error: bool = False,
+      retry_after: int = 0,
   ) -> "MetaTask":
     return cast(
         MetaTask,
-        type.__call__(cls, args, priority, retry_on_error),
+        type.__call__(cls, args, priority, retry_after),
     )

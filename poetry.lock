@@ -2636,6 +2636,16 @@ lint = ["docutils-stubs", "flake8", "mypy"]
 test = ["pytest"]
 
 [[package]]
+name = "sqlitedict"
+version = "2.1.0"
+description = "Persistent dict in Python, backed up by sqlite3 and pickle, multithread-safe."
+optional = false
+python-versions = "*"
+files = [
+    {file = "sqlitedict-2.1.0.tar.gz", hash = "sha256:03d9cfb96d602996f1d4c2db2856f1224b96a9c431bdd16e78032a72940f9e8c"},
+]
+
+[[package]]
 name = "starlette"
 version = "0.35.1"
 description = "The little ASGI library that shines."
@@ -3221,4 +3231,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "036ad62debbef27689981883656540bfa83758450afc1535827fc0121526c0d7"
+content-hash = "28e8b40556d68b1de0f18c8d8c6ae9850873efc8a813471fd7d8cda601ef241e"

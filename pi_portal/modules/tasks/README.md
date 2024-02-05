@@ -36,6 +36,14 @@ Each queue priority will have one or more implementations of [WorkerBase](./work
 
 There is also a separate [WorkerBase](./workers/bases/worker_base.py) implementation that runs a set of [cron jobs](./workers/cron_jobs) at specific intervals of time.  This worker does no task processing, but rather creates tasks to send to the queues for processing.
 
+Finally, a third [WorkerBase](./workers/bases/worker_base.py) implementation receives failed tasks and stores them in a persistent task manifest.  These tasks are reintroduced periodically via the task router to re-attempt processing.
+
+### Manifests
+
+Tasks can also be stored in "manifests", which are implementations of [TaskManifestBase](./manifest/bases/task_manifest_base.py).  These are essentially persistent Python dictionaries.  
+
+The implementations chosen should be hardy against abrupt system restarts and be disk based as to not rely on a network connection.  This allows the manifest to "resume" it's state in the event of a service outage.
+
 ### Scheduler
 
 Managing the interaction of all these pieces is the [Scheduler](./scheduler.py) which instantiates the registry, the router (and it's queues) and then launches a set of workers according to its [configuration](./config.py).  
