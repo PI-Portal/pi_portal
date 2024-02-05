@@ -33,7 +33,7 @@ class TypedTaskCreationRequestParameters(TypedDict):
   type: str
   args: Dict[str, Any]
   priority: NotRequired[str]
-  retry_on_error: NotRequired[bool]
+  retry_after: NotRequired[int]
   on_failure: NotRequired[List["TypedTaskCreationRequestParameters"]]
   on_success: NotRequired[List["TypedTaskCreationRequestParameters"]]
 

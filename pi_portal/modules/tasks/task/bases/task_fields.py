@@ -22,7 +22,7 @@ class TaskFields(Generic[TypeTaskResult]):
       "ok",
       "priority",
       "result",
-      "retry_on_error",
+      "retry_after",
       "scheduled",
   )
 
@@ -38,7 +38,7 @@ class TaskFields(Generic[TypeTaskResult]):
   priority: "TaskPriority"
   #: Set to None before job completion, afterward returned results.
   result: "TaskResult[TypeTaskResult]"
-  #: A boolean indicating if failed jobs should be retried.
-  retry_on_error: bool
+  #: A positive value in seconds ensures this task will be retried on failure.
+  retry_after: int
   #: Set to None before job completion, afterward returned results.
   scheduled: Optional[datetime]
