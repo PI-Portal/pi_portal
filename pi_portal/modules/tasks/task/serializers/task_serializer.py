@@ -1,9 +1,10 @@
 """TaskSerializer class."""
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from typing import TYPE_CHECKING, Any, Dict, List, TypeVar
 
 from pi_portal.modules.tasks.task.bases.task_base import TaskFields
+from pi_portal.modules.tasks.task.bases.task_result import TaskResult
 
 if TYPE_CHECKING:  # pragma: no cover
   from pi_portal.modules.tasks.enums import TaskType
@@ -52,12 +53,14 @@ class SerializedTask(TaskFields[Any]):
 
     for slot in cls._get_slots():
       slot_value = getattr(task, slot)
-      if not isinstance(slot_value, list):
-        definition[slot] = slot_value
-      if isinstance(slot_value, list):
+      if isinstance(slot_value, TaskResult):
+        definition[slot] = asdict(slot_value)
+      elif isinstance(slot_value, list):
         definition[slot] = []
         for sub_task in slot_value:
           definition[slot].append(cls.serialize(sub_task))
+      else:
+        definition[slot] = slot_value
 
     serialized_instance = cls(**definition)
     return serialized_instance

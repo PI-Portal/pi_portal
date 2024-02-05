@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Generic, List, TypeVar
 from pi_portal.modules.tasks.enums import TaskPriority, TaskType
 from typing_extensions import TypeAlias
 from .task_fields import TaskFields
+from .task_result import TaskResult
 
 if TYPE_CHECKING:  # pragma: no cover
   from typing import Any
@@ -62,8 +63,8 @@ class TaskBase(
     self.on_success = []
     self.on_failure = []
     self.priority = priority
+    self.result = TaskResult[TypeTaskResult]()
     self.scheduled = None
-    self.result = None
 
   def __str__(self) -> str:
     return f"Task(id:{self.id}, type:{self.type.value})"

@@ -54,8 +54,8 @@ class TaskProcessorBase(Generic[TypeTaskArguments_co, TypeTaskResult], abc.ABC):
         },
     )
     try:
-      task.result = self._process(task)
       task.ok = True
+      task.result.value = self._process(task)
       self.log.debug(
           "Completed '%s'!",
           task,
@@ -65,7 +65,7 @@ class TaskProcessorBase(Generic[TypeTaskArguments_co, TypeTaskResult], abc.ABC):
       )
     except Exception as exc:  # pylint: disable=broad-exception-caught
       task.ok = False
-      task.result = exc
+      task.result.value = exc
       self.log.error(
           "Failed: '%s'!",
           task,

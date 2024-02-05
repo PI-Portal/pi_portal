@@ -84,13 +84,14 @@ class QueueWorker(worker_base.WorkerBase):
   def _do_task_success(self, task: "TypeGenericTask") -> None:
     if task.ok:
       for success_task in task.on_success:
+        success_task.result.cause = task.result
         self.queue.put(success_task)
 
   def _do_task_failure(self, task: "TypeGenericTask") -> None:
     if not task.ok:
-      if task.on_failure:
-        for failure_task in task.on_failure:
-          self.queue.put(failure_task)
+      for failure_task in task.on_failure:
+        failure_task.result.cause = task.result
+        self.queue.put(failure_task)
       if task.retry_on_error:
         time.sleep(self.retry_cool_off)
         self.queue.retry(task)

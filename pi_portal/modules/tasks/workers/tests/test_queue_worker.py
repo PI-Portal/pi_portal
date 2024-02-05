@@ -366,6 +366,50 @@ class TestQueueWorker:
   @pytest.mark.parametrize(
       "scenario",
       [
+          TaskScenario(
+              task_type=TaskType.FILE_SYSTEM_REMOVE,
+              task_args=MockTaskArgs(path="/mock/path1"),
+              ok=True,
+          ),
+          TaskScenario(
+              task_type=TaskType.CHAT_UPLOAD_SNAPSHOT,
+              task_args=MockTaskArgs(path="/mock/path2"),
+              ok=True,
+          ),
+      ],
+  )
+  @pytest.mark.parametrize(
+      "completion_attribute",
+      ["on_failure", "on_success"],
+  )
+  def test_consumer__vary_tasks_retry_priority__sub_tasks__sets_result_cause(
+      self,
+      create_queue_worker_scenario_mocks: TypeQueueWorkerMocksCreator,
+      mocked_queue: mock.Mock,
+      scenario: TaskScenario,
+      completion_attribute: str,
+  ) -> None:
+    scenario_mocks = create_queue_worker_scenario_mocks(scenario.task_type)
+    sub_task_mocks = [mock.Mock(), mock.Mock()]
+    task = scenario_mocks.task(args=scenario.task_args)
+    task.ok = scenario.ok
+    setattr(task, completion_attribute, sub_task_mocks)
+    mocked_queue.get.return_value = task
+
+    scenario_mocks.instance.consumer()
+
+    task_created = (
+        (scenario.ok and completion_attribute == "on_success")
+        or (not scenario.ok and completion_attribute == "on_failure")
+    )
+
+    if task_created:
+      for sub_task in sub_task_mocks:
+        assert sub_task.result.cause == task.result
+
+  @pytest.mark.parametrize(
+      "scenario",
+      [
           RetryScenario(
               retry_on_error=True,
               task_type=TaskType.CHAT_UPLOAD_VIDEO,

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Type
 import pytest
 from pi_portal.modules.tasks.conftest import MockGenericTaskArgs
 from pi_portal.modules.tasks.enums import TaskPriority, TaskType
-from .. import task_fields
+from .. import task_fields, task_result
 
 if TYPE_CHECKING:  # pragma: no cover
   from .. import task_base
@@ -28,7 +28,11 @@ class TestTaskBase:
     assert concrete_task_base_instance.ok is None
     assert concrete_task_base_instance.on_success == []
     assert concrete_task_base_instance.on_failure == []
-    assert concrete_task_base_instance.result is None
+    assert isinstance(
+        concrete_task_base_instance.result, task_result.TaskResult
+    )
+    assert concrete_task_base_instance.result.cause is None
+    assert concrete_task_base_instance.result.value is None
     assert concrete_task_base_instance.retry_on_error is False
     assert concrete_task_base_instance.scheduled is None
     assert concrete_task_base_instance.type == TaskType.BASE
@@ -53,7 +57,11 @@ class TestTaskBase:
     assert prioritized_task_base_instance.ok is None
     assert prioritized_task_base_instance.on_success == []
     assert prioritized_task_base_instance.on_failure == []
-    assert prioritized_task_base_instance.result is None
+    assert isinstance(
+        prioritized_task_base_instance.result, task_result.TaskResult
+    )
+    assert prioritized_task_base_instance.result.cause is None
+    assert prioritized_task_base_instance.result.value is None
     assert prioritized_task_base_instance.retry_on_error is False
     assert prioritized_task_base_instance.scheduled is None
     assert prioritized_task_base_instance.type == TaskType.BASE
@@ -65,23 +73,25 @@ class TestTaskBase:
       mocked_generic_task_args: MockGenericTaskArgs,
       retry_on_error: bool,
   ) -> None:
-    prioritized_task_base_instance = concrete_task_base_class(
+    task_base_instance = concrete_task_base_class(
         mocked_generic_task_args,
         retry_on_error=retry_on_error,
     )
 
-    assert prioritized_task_base_instance.args == mocked_generic_task_args
-    assert prioritized_task_base_instance.completed is None
-    assert isinstance(prioritized_task_base_instance.created, datetime)
-    assert prioritized_task_base_instance.id is None
-    assert prioritized_task_base_instance.priority is TaskPriority.STANDARD
-    assert prioritized_task_base_instance.ok is None
-    assert prioritized_task_base_instance.on_success == []
-    assert prioritized_task_base_instance.on_failure == []
-    assert prioritized_task_base_instance.result is None
-    assert prioritized_task_base_instance.retry_on_error is retry_on_error
-    assert prioritized_task_base_instance.scheduled is None
-    assert prioritized_task_base_instance.type == TaskType.BASE
+    assert task_base_instance.args == mocked_generic_task_args
+    assert task_base_instance.completed is None
+    assert isinstance(task_base_instance.created, datetime)
+    assert task_base_instance.id is None
+    assert task_base_instance.priority is TaskPriority.STANDARD
+    assert task_base_instance.ok is None
+    assert task_base_instance.on_success == []
+    assert task_base_instance.on_failure == []
+    assert isinstance(task_base_instance.result, task_result.TaskResult)
+    assert task_base_instance.result.cause is None
+    assert task_base_instance.result.value is None
+    assert task_base_instance.retry_on_error is retry_on_error
+    assert task_base_instance.scheduled is None
+    assert task_base_instance.type == TaskType.BASE
 
   def test_initialize__inheritance(
       self,
