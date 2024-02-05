@@ -2,9 +2,10 @@
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Generic, Optional, TypeVar, Union
+from typing import Any, Generic, Optional, TypeVar
 
 from pi_portal.modules.tasks.enums import TaskPriority
+from pi_portal.modules.tasks.task.bases.task_result import TaskResult
 
 TypeTaskResult = TypeVar("TypeTaskResult")
 
@@ -36,7 +37,7 @@ class TaskFields(Generic[TypeTaskResult]):
   #: Configure to control task routing, defaults to 'STANDARD'.
   priority: "TaskPriority"
   #: Set to None before job completion, afterward returned results.
-  result: Union[Exception, "TypeTaskResult", None]
+  result: "TaskResult[TypeTaskResult]"
   #: A boolean indicating if failed jobs should be retried.
   retry_on_error: bool
   #: Set to None before job completion, afterward returned results.

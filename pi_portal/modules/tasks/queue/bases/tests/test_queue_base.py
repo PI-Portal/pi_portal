@@ -163,13 +163,13 @@ class TestQueueBase:
   ) -> None:
     mocked_task.completed = datetime.now()
     mocked_task.ok = False
-    mocked_task.result = Exception
+    mocked_task.result.value = Exception
 
     concrete_queue_base_instance.retry(mocked_task)
 
     assert mocked_task.completed is None
     assert mocked_task.ok is None
-    assert mocked_task.result is None
+    assert mocked_task.result.value is None
 
   def test_retry__underlying_implementation(
       self,
