@@ -8,6 +8,10 @@ from .serializers import SerializerType
 # isort: off
 
 
+class Empty(Exception):
+  ...
+
+
 class SQLiteAckQueue(SQLiteBase):
 
   def __init__(
