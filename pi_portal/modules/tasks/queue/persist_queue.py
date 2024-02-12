@@ -2,8 +2,9 @@
 import logging
 import os
 import shutil
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Optional, cast
 
+from persistqueue import Empty as VendorException
 from persistqueue import SQLiteAckQueue as VendorQueue
 from pi_portal import config
 from typing_extensions import TypedDict
@@ -62,7 +63,7 @@ class Queue(QueueBase):
 
   def _get(self) -> "TypeGenericTask":
     try:
-      raw_data = cast(TypeRawTask, self._queue.get(raw=True))
+      raw_data = self._responsive_get()
       item = raw_data['data']
       item.id = raw_data['pqid']
       return item
@@ -85,6 +86,20 @@ class Queue(QueueBase):
       shutil.rmtree(self._path)
       self._initialize()
       return self._get()
+
+  def _responsive_get(self) -> "TypeRawTask":
+    raw_data: "Optional[TypeRawTask]" = None
+
+    while not raw_data:
+      try:
+        raw_data = cast(
+            TypeRawTask,
+            self._queue.get(block=True, timeout=1, raw=True),
+        )
+      except VendorException:
+        pass
+
+    return raw_data
 
   def _maintenance(self) -> None:
     self._queue.clear_acked_data()
