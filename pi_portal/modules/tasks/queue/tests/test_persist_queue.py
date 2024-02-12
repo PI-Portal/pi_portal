@@ -2,7 +2,7 @@
 import logging
 import os
 from io import StringIO
-from typing import Type
+from typing import Any, Dict, Type
 from unittest import mock
 
 import pytest
@@ -19,6 +19,12 @@ from .conftest import (
 
 class TestQueue:
   """Test the Queue class."""
+
+  vendor_queue_call_args: Dict[str, Any] = {
+      "block": True,
+      "timeout": 1,
+      "raw": True,
+  }
 
   @pytest.mark.parametrize(
       "priority",
@@ -113,7 +119,27 @@ class TestQueue:
 
     received = persist_queue_instance_standard.get()
 
-    mocked_queue_implementation.return_value.get.called_once_with(raw=True)
+    mocked_queue_implementation.return_value.get.called_once_with(
+        **self.vendor_queue_call_args
+    )
+    assert received == mocked_raw_task["data"]
+    assert received.id == mocked_raw_task["pqid"]
+
+  def test_get__underlying_implementation__vendor_exception_raised(
+      self,
+      persist_queue_instance_standard: persist_queue.Queue,
+      mocked_queue_implementation: mock.Mock,
+      mocked_raw_task: TypeMockRawTask,
+  ) -> None:
+    mocked_queue_implementation.return_value.get.side_effect = [
+        persist_queue.VendorException, mocked_raw_task
+    ]
+
+    received = persist_queue_instance_standard.get()
+
+    mocked_queue_implementation.return_value.get.called_once_with(
+        **self.vendor_queue_call_args
+    )
     assert received == mocked_raw_task["data"]
     assert received.id == mocked_raw_task["pqid"]
 
@@ -179,7 +205,7 @@ class TestQueue:
             multithreading=True,
             timeout=persist_queue_instance_standard.timeout,
         ),
-        mock.call().get(raw=True),
+        mock.call().get(**self.vendor_queue_call_args),
     ] * 2
 
   def test_get__deserialization_error__underlying_implementation(
@@ -196,8 +222,8 @@ class TestQueue:
     received = persist_queue_instance_standard.get()
 
     assert mocked_queue_implementation.return_value.get.mock_calls == [
-        mock.call(raw=True),
-        mock.call(raw=True),
+        mock.call(**self.vendor_queue_call_args),
+        mock.call(**self.vendor_queue_call_args),
     ]
     assert received == mocked_raw_task["data"]
 
