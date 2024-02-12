@@ -9,6 +9,7 @@ services:
         BUILD_ARG_CONTAINER_GID: "${DOCKER_USER_UID:-1000}"
         BUILD_ARG_PIP_INDEX_URL: "https://pypi.org/simple"
         BUILD_ARG_PLATFORM: "amd64"
+        BUILD_ARG_PYTHON_VERSION: "${BUILD_ARG_PYTHON_VERSION:-3.8}"
       context: .
       dockerfile: assets/Dockerfile
       target: development
@@ -22,5 +23,6 @@ services:
       - ${HOME}/.ssh:/home/user/.ssh
       - ${HOME}/.gitconfig:/home/user/.gitconfig
       - ${HOME}/.gitconfig_global:/home/user/.gitconfig_global
+      - .pre-commit:/home/user/.cache/pre-commit
       - ./:/app
       - /var/run/docker.sock:/var/run/docker.sock
