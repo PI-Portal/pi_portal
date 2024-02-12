@@ -157,3 +157,10 @@ packaging/debian/build_arm64
 packaging/debian/build_armhf
 packaging/debian/dist_arm64
 packaging/debian/dist_armhf
+
+# Pre-Commit
+.pre-commit/
+
+# CICD Tools
+.cicd-tools/boxes/*
+!.cicd-tools/boxes/bootstrap

@@ -120,5 +120,6 @@ USER user
 
 # Install the project
 RUN poetry install
+RUN poetry run python -m pre_commit_dind
 
 CMD ["./pi_portal/container_init.sh"]
