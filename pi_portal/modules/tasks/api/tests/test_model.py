@@ -53,6 +53,8 @@ class TestTaskCreationRequestModel:
                   "type": "CHAT_UPLOAD_SNAPSHOT",
                   "args":
                       {
+                          "description":
+                              "A snapshot for testing purposes.",
                           "path":
                               os.path.join(
                                   config.PATH_MOTION_CONTENT,
