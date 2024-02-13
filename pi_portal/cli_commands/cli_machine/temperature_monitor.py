@@ -1,8 +1,8 @@
 """CLI command to start the Temperature Monitor."""
 
+from pi_portal.cli_commands.bases import command
+from pi_portal.cli_commands.mixins import state
 from pi_portal.modules.integrations import gpio
-from .bases import command
-from .mixins import state
 
 
 class TemperatureMonitorCommand(
