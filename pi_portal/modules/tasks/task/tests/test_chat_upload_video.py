@@ -22,6 +22,7 @@ class TestChatUploadVideo(GenericTaskModuleTest):
   expected_return_type = None
   expected_type = enums.TaskType.CHAT_UPLOAD_VIDEO
   mock_args = chat_upload_video.Args(
+      description="Test file number 1.",
       path=os.path.join(config.PATH_MOTION_CONTENT, "file1")
   )
   module = chat_upload_video
@@ -39,4 +40,7 @@ class TestChatUploadVideo(GenericTaskModuleTest):
 
   def test_import__args_class__initialize_with_invalid_args(self) -> None:
     with pytest.raises(ValueError):
-      chat_upload_video.Args(path="invalid_path1")
+      chat_upload_video.Args(
+          description="A file from a restricted path.",
+          path="invalid_path1",
+      )

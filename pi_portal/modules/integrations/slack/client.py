@@ -39,10 +39,11 @@ class SlackClient(write_log_file.LogFileWriter):
       except (SlackRequestError, SlackApiError):
         self.log.error("Failed to send message: '%s'", message)
 
-  def send_file(self, file_name: str) -> None:
+  def send_file(self, file_name: str, description: str) -> None:
     """Send a file with the Slack Web client.
 
     :param file_name: The path to upload to Slack.
+    :param description: A description of the file being uploaded to Slack.
     """
 
     for _ in range(0, self.retries):
@@ -50,7 +51,7 @@ class SlackClient(write_log_file.LogFileWriter):
         self.web.files_upload_v2(
             channel=self.channel_id,
             file=file_name,
-            title=self.config.upload_file_title,
+            title=description,
         )
         break
       except (SlackRequestError, SlackApiError):
@@ -63,7 +64,7 @@ class SlackClient(write_log_file.LogFileWriter):
     """
 
     try:
-      self.send_file(file_name)
+      self.send_file(file_name, self.config.upload_file_title)
       self.motion_client.cleanup_snapshot(file_name)
     except motion_client.MotionException:
       self.send_message("An error occurred cleaning up this snapshot.")
