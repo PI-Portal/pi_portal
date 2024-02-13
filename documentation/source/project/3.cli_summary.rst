@@ -1,6 +1,6 @@
 CLI Summary
 ===========
 
-.. click:: pi_portal.cli:cli
-    :prog: pi_portal.cli
+.. click:: pi_portal.cli_user:cli
+    :prog: pi_portal.cli_user
     :nested: short
