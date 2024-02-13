@@ -1,156 +1,100 @@
-"""Tests for the Click CLI."""
+"""Tests for the User CLI."""
 
-from typing import Any, List, Optional, Tuple
-from unittest.mock import Mock, patch
+import pytest
+from ..cli_user import cli as user_cli
+from .conftest import (
+    CliScenarioCreatorArgs,
+    TypeCliScenarioCreator,
+    generate_debug_test_names,
+    generate_scenario_test_names,
+)
 
-from click.testing import CliRunner
-from .. import cli
 
+class TestUserCLI:
+  """Test the User CLI."""
 
-class TestCLI:
-  """Test the Click CLI."""
-
-  def check_state(
+  @pytest.mark.parametrize(
+      "scenario_args",
+      [
+          CliScenarioCreatorArgs(
+              cli_command="install_config config.json",
+              module_class_args=["config.json", False],
+              module_path="cli_user.installer.InstallerCommand",
+          ),
+          CliScenarioCreatorArgs(
+              cli_command="install_config -y config.json",
+              module_class_args=["config.json", True],
+              module_path="cli_user.installer.InstallerCommand",
+          ),
+          CliScenarioCreatorArgs(
+              cli_command="version",
+              module_path="cli_user.version.VersionCommand",
+          ),
+      ],
+      ids=generate_scenario_test_names,
+  )
+  def test__vary_cli_command__calls_command_class(
       self,
-      m_command: Mock,
+      scenario_args: CliScenarioCreatorArgs,
+      cli_scenario_creator: TypeCliScenarioCreator,
+  ) -> None:
+    scenario = cli_scenario_creator(scenario_args, user_cli)
+
+    scenario.invoke()
+
+    scenario.command_mock.assert_called_once_with(
+        *scenario_args.module_class_args
+    )
+    scenario.command_mock.return_value.invoke.assert_called_once_with()
+
+  @pytest.mark.parametrize(
+      "scenario_args",
+      [
+          CliScenarioCreatorArgs(
+              cli_command="install_config config.json",
+              module_path="cli_user.installer.InstallerCommand",
+              state_args={"file_path": "config.json"}
+          ),
+      ],
+      ids=generate_scenario_test_names,
+  )
+  @pytest.mark.parametrize(
+      "debug",
+      [True, False],
+      ids=generate_debug_test_names,
+  )
+  def test__vary_cli_command__calls_loads_state(
+      self,
+      scenario_args: CliScenarioCreatorArgs,
+      cli_scenario_creator: TypeCliScenarioCreator,
       debug: bool,
-      file_path: Optional[str] = None
   ) -> None:
-    if file_path is None:
-      m_command.return_value.load_state.assert_called_once_with(debug=debug)
-    else:
-      m_command.return_value.load_state.assert_called_once_with(
-          debug=debug,
-          file_path=file_path,
-      )
-    m_command.return_value.load_state.reset_mock()
+    scenario = cli_scenario_creator(scenario_args, user_cli, debug)
 
-  def check_no_state(self, m_command: Mock) -> None:
-    m_command.return_value.load_state.assert_not_called()
+    scenario.invoke()
 
-  def check_invoke(self, m_command: Mock) -> None:
-    m_command.assert_called_once_with()
-    m_command.return_value.invoke.assert_called_once_with()
-    m_command.return_value.invoke.reset_mock()
-    m_command.reset_mock()
+    scenario.load_state_mock.assert_called_once_with(
+        debug=debug,
+        **scenario_args.state_args,
+    )
 
-  def check_invoke_variable(self, m_command: Mock, args: List[Any]) -> None:
-    m_command.assert_called_once_with(*args)
-    m_command.return_value.invoke.assert_called_once_with()
-    m_command.return_value.invoke.reset_mock()
-    m_command.reset_mock()
-
-  def get_debug_subtests(self, command: str) -> List[Tuple[str, bool]]:
-    return [(command, False), ("--debug " + command, True)]
-
-  @patch(cli.__name__ + ".door_monitor")
-  def test_door_monitor__invoke(
+  @pytest.mark.parametrize(
+      "scenario_args",
+      [
+          CliScenarioCreatorArgs(
+              cli_command="version",
+              module_path="cli_user.version.VersionCommand",
+          ),
+      ],
+      ids=generate_scenario_test_names,
+  )
+  def test__vary_cli_command__does_not_load_state(
       self,
-      m_command: Mock,
-      cli_runner: CliRunner,
+      scenario_args: CliScenarioCreatorArgs,
+      cli_scenario_creator: TypeCliScenarioCreator,
   ) -> None:
-    for command, debug in self.get_debug_subtests("door_monitor"):
+    scenario = cli_scenario_creator(scenario_args, user_cli)
 
-      cli_runner.invoke(cli.cli, command)
+    scenario.invoke()
 
-      self.check_state(m_command.DoorMonitorCommand, debug)
-      self.check_invoke(m_command.DoorMonitorCommand)
-
-  @patch(cli.__name__ + ".installer")
-  def test_installer__invoke(
-      self,
-      m_command: Mock,
-      cli_runner: CliRunner,
-  ) -> None:
-    mock_config_file = __file__
-    for flag, confirmation in [("", False), ("-y", True)]:
-      for command, debug in self.get_debug_subtests(
-          f"install_config {flag} {mock_config_file}"
-      ):
-
-        cli_runner.invoke(cli.cli, command)
-
-        self.check_state(
-            m_command.InstallerCommand, debug, file_path=mock_config_file
-        )
-        self.check_invoke_variable(
-            m_command.InstallerCommand,
-            [mock_config_file, confirmation],
-        )
-
-  @patch(cli.__name__ + ".slack_bot")
-  def test_slack_bot__invoke(
-      self,
-      m_command: Mock,
-      cli_runner: CliRunner,
-  ) -> None:
-    for command, debug in self.get_debug_subtests("slack_bot"):
-
-      cli_runner.invoke(cli.cli, command)
-
-      self.check_state(m_command.SlackBotCommand, debug)
-      self.check_invoke(m_command.SlackBotCommand)
-
-  @patch(cli.__name__ + ".temperature_monitor")
-  def test_temp_monitor__invoke(
-      self,
-      m_command: Mock,
-      cli_runner: CliRunner,
-  ) -> None:
-    for command, debug in self.get_debug_subtests("temp_monitor"):
-
-      cli_runner.invoke(cli.cli, command)
-
-      self.check_state(m_command.TemperatureMonitorCommand, debug)
-      self.check_invoke(m_command.TemperatureMonitorCommand)
-
-  @patch(cli.__name__ + ".upload_snapshot")
-  def test_upload_snapshot__invoke(
-      self,
-      m_command: Mock,
-      cli_runner: CliRunner,
-  ) -> None:
-    mock_snapshot_name = __file__
-    for command, debug in self.get_debug_subtests(
-        f"upload_snapshot {mock_snapshot_name}"
-    ):
-
-      cli_runner.invoke(cli.cli, command)
-
-      self.check_state(m_command.UploadSnapshotCommand, debug)
-      self.check_invoke_variable(
-          m_command.UploadSnapshotCommand,
-          [mock_snapshot_name],
-      )
-
-  @patch(cli.__name__ + ".upload_video")
-  def test_upload_video__invoke(
-      self,
-      m_command: Mock,
-      cli_runner: CliRunner,
-  ) -> None:
-    mock_video_name = __file__
-    for command, debug in self.get_debug_subtests(
-        f"upload_video {mock_video_name}"
-    ):
-
-      cli_runner.invoke(cli.cli, command)
-
-      self.check_state(m_command.UploadVideoCommand, debug)
-      self.check_invoke_variable(
-          m_command.UploadVideoCommand,
-          [mock_video_name],
-      )
-
-  @patch(cli.__name__ + ".version")
-  def test_version__invoke(
-      self,
-      m_command: Mock,
-      cli_runner: CliRunner,
-  ) -> None:
-    command = "version"
-
-    cli_runner.invoke(cli.cli, command)
-
-    self.check_no_state(m_command.VersionCommand)
-    self.check_invoke(m_command.VersionCommand)
+    scenario.load_state_mock.assert_not_called()
