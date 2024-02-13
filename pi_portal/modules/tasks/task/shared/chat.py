@@ -18,4 +18,5 @@ class ChatUploadTaskArgs(
 
   file_system_arg_restrictions = {"path": [config.PATH_MOTION_CONTENT]}
 
+  description: str
   path: str

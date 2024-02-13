@@ -86,11 +86,15 @@ class TestChatUploadSnapshotProcessor:
       scenario: BooleanScenario,
   ) -> None:
     mocked_os_path_exists.return_value = scenario.exists
+    mocked_send_file_call = mock.call(
+        mocked_chat_file_task.args.path,
+        mocked_chat_file_task.args.description,
+    )
 
     chat_upload_snapshot_instance.process(mocked_chat_file_task)
 
     called = mocked_chat_client.return_value.send_file.mock_calls == \
-        [mock.call(mocked_chat_file_task.args.path)]
+        [mocked_send_file_call]
     not_called = mocked_chat_client.return_value.send_file.call_count == 0
     assert called is scenario.expected
     assert not_called is not scenario.expected

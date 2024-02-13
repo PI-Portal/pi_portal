@@ -52,6 +52,7 @@ enabled_tasks__valid_payloads__creation_request_scenarios = [
         type=chat_upload_snapshot.TaskType.value,
         args=asdict(
             chat_upload_snapshot.Args(
+                description="A snapshot file for testing purposes.",
                 path=os.path.join(
                     config.PATH_MOTION_CONTENT,
                     "file1",
@@ -63,6 +64,7 @@ enabled_tasks__valid_payloads__creation_request_scenarios = [
         type=chat_upload_video.TaskType.value,
         args=asdict(
             chat_upload_video.Args(
+                description="A video file for testing purposes.",
                 path=os.path.join(
                     config.PATH_MOTION_CONTENT,
                     "file1",
