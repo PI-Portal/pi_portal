@@ -2,9 +2,9 @@
 
 from unittest import mock
 
+from pi_portal.cli_commands.bases import command
+from pi_portal.cli_commands.cli_user import version
 from pi_portal.modules.python.metadata import metadata_version
-from .. import version
-from ..bases import command
 
 
 class TestVersionCommand:
