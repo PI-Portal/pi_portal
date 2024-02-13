@@ -2,9 +2,9 @@
 
 from unittest import mock
 
-from .. import upload_snapshot
-from ..bases import file_command
-from ..mixins import state
+from pi_portal.cli_commands.bases import file_command
+from pi_portal.cli_commands.cli_machine import upload_snapshot
+from pi_portal.cli_commands.mixins import state
 
 
 class TestUploadSnapshotCommand:

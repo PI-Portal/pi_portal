@@ -2,9 +2,9 @@
 
 from unittest import mock
 
-from .. import installer
-from ..bases import file_command
-from ..mixins import state
+from pi_portal.cli_commands.bases import file_command
+from pi_portal.cli_commands.cli_user import installer
+from pi_portal.cli_commands.mixins import state
 
 
 class TestInstallerCommand:
@@ -62,7 +62,7 @@ class TestInstallerCommand:
         "Are you sure you want to proceed?"
     )
 
-  def test_invoke____no_override__declined__calls(
+  def test_invoke__no_override__declined__calls(
       self,
       installer_command_instance: installer.InstallerCommand,
       mocked_installer: mock.Mock,

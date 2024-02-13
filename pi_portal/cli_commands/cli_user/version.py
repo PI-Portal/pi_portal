@@ -1,8 +1,8 @@
 """CLI command to report the Pi Portal version."""
 
 import click
+from pi_portal.cli_commands.bases import command
 from pi_portal.modules.python.metadata import metadata_version
-from .bases import command
 
 
 class VersionCommand(command.CommandBase):

@@ -2,9 +2,9 @@
 
 from unittest import mock
 
-from .. import slack_bot
-from ..bases import command
-from ..mixins import state
+from pi_portal.cli_commands.bases import command
+from pi_portal.cli_commands.cli_machine import slack_bot
+from pi_portal.cli_commands.mixins import state
 
 
 class TestSlackBotCommand:

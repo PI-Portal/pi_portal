@@ -4,9 +4,9 @@ import os
 import shutil
 
 from pi_portal import config
+from pi_portal.cli_commands.bases import file_command
+from pi_portal.cli_commands.mixins import state
 from pi_portal.modules.integrations import slack
-from .bases import file_command
-from .mixins import state
 
 
 class UploadVideoCommand(

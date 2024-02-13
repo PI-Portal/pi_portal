@@ -4,9 +4,9 @@ import os
 from unittest import mock
 
 from pi_portal import config
-from .. import upload_video
-from ..bases import file_command
-from ..mixins import state
+from pi_portal.cli_commands.bases import file_command
+from pi_portal.cli_commands.cli_machine import upload_video
+from pi_portal.cli_commands.mixins import state
 
 
 class TestUploadVideoCommand:

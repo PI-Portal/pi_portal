@@ -1,14 +1,13 @@
-"""The Pi Portal User CLI."""
+"""Pi Portal Machine CLI."""
 
 import click
-from .cli_commands import (
+from .cli_commands.cli_machine import (
     door_monitor,
-    installer,
     slack_bot,
+    task_scheduler,
     temperature_monitor,
     upload_snapshot,
     upload_video,
-    version,
 )
 
 
@@ -16,7 +15,7 @@ from .cli_commands import (
 @click.option('--debug', default=False, is_flag=True, help='Enable debug logs.')
 @click.pass_context
 def cli(ctx: click.Context, debug: bool) -> None:
-  """Pi Portal User CLI."""
+  """Pi Portal Machine CLI."""
 
   ctx.ensure_object(dict)
   ctx.obj['DEBUG'] = debug
@@ -32,36 +31,22 @@ def door_monitor_command(ctx: click.Context) -> None:
   command.invoke()
 
 
-@cli.command("install_config")
-@click.option(
-    '-y',
-    '--yes',
-    'confirmation',
-    default=False,
-    is_flag=True,
-    help='Answer "yes" to installation confirmation.',
-)
-@click.argument('config_file', type=click.Path(exists=True))
-@click.pass_context
-def installer_command(
-    ctx: click.Context, confirmation: bool, config_file: str
-) -> None:
-  """Install a configuration file. Requires root.
-
-  CONFIG_FILE: The path to the configuration file to use.
-  """
-
-  command = installer.InstallerCommand(config_file, confirmation)
-  command.load_state(debug=ctx.obj['DEBUG'], file_path=config_file)
-  command.invoke()
-
-
 @cli.command("slack_bot")
 @click.pass_context
 def slack_bot_command(ctx: click.Context) -> None:
   """Connect the interactive Slack bot."""
 
   command = slack_bot.SlackBotCommand()
+  command.load_state(debug=ctx.obj['DEBUG'])
+  command.invoke()
+
+
+@cli.command("task_scheduler")
+@click.pass_context
+def task_scheduler_command(ctx: click.Context) -> None:
+  """Start the task scheduler."""
+
+  command = task_scheduler.TaskSchedulerCommand()
   command.load_state(debug=ctx.obj['DEBUG'])
   command.invoke()
 
@@ -101,12 +86,4 @@ def upload_video_command(ctx: click.Context, filename: str) -> None:
 
   command = upload_video.UploadVideoCommand(filename)
   command.load_state(debug=ctx.obj['DEBUG'])
-  command.invoke()
-
-
-@cli.command("version")
-def version_command() -> None:
-  """Display the Pi Portal version."""
-
-  command = version.VersionCommand()
   command.invoke()

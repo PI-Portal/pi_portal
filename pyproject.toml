@@ -15,6 +15,7 @@ version_provider = 'poetry'
 
 [tool.coverage]
 [tool.coverage.report]
+exclude_also = ['\.\.\.']
 exclude_lines = ['no cover']
 fail_under = 100
 ignore_errors = true
@@ -123,7 +124,7 @@ sphinx_rtd_theme = '^2.0.0'
 include = 'pi_portal'
 
 [tool.poetry.scripts]
-pi_portal = 'pi_portal.cli:cli'
+pi_portal = 'pi_portal.cli_user:cli'
 
 [tool.pylint]
 [tool.pylint.basic]
