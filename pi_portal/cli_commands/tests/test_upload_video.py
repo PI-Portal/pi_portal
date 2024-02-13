@@ -41,7 +41,8 @@ class TestUploadVideoCommand:
 
     mocked_slack_client.assert_called_once_with()
     mocked_slack_client.return_value.send_file.assert_called_once_with(
-        mocked_file_name
+        mocked_file_name,
+        mocked_slack_client.return_value.config.upload_file_title,
     )
     mocked_shutil.move.assert_called_once_with(
         mocked_file_name,

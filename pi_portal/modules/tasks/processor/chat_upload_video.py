@@ -42,7 +42,7 @@ class ProcessorClass(
       return
 
     if exists_source and not exists_destination:
-      self.client.send_file(task.args.path)
+      self.client.send_file(task.args.path, task.args.description)
 
     if exists_destination:
       archival_path = self._recovery_archival_path(archival_path)

@@ -22,6 +22,7 @@ class TestChatUploadSnapshot(GenericTaskModuleTest):
   expected_return_type = None
   expected_type = enums.TaskType.CHAT_UPLOAD_SNAPSHOT
   mock_args = chat_upload_snapshot.Args(
+      description="Test file number 1.",
       path=os.path.join(config.PATH_MOTION_CONTENT, "file1")
   )
   module = chat_upload_snapshot
@@ -39,4 +40,7 @@ class TestChatUploadSnapshot(GenericTaskModuleTest):
 
   def test_import__args_class__initialize_with_invalid_args(self) -> None:
     with pytest.raises(ValueError):
-      chat_upload_snapshot.Args(path="invalid_path1")
+      chat_upload_snapshot.Args(
+          description="A file from a restricted path.",
+          path="invalid_path1",
+      )

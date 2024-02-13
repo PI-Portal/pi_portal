@@ -19,7 +19,10 @@ class UploadVideoCommand(
     """Invoke the command."""
 
     slack_client = slack.SlackClient()
-    slack_client.send_file(self.file_name)
+    slack_client.send_file(
+        self.file_name,
+        slack_client.config.upload_file_title,
+    )
     shutil.move(
         self.file_name,
         os.path.join(

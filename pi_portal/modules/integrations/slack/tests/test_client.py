@@ -91,14 +91,15 @@ class TestSlackClient:
       mocked_slack_web_client: mock.Mock,
   ) -> None:
     test_file = "/path/to/mock/file.txt"
+    test_file_description = "Just a test file."
 
-    client_instance.send_file(test_file)
+    client_instance.send_file(test_file, test_file_description)
 
     mocked_slack_web_client.return_value.files_upload_v2.\
         assert_called_once_with(
             channel=client_instance.channel_id,
             file=test_file,
-            title=client_instance.config.upload_file_title
+            title=test_file_description,
         )
 
   def test_send_file__exception(
@@ -108,10 +109,11 @@ class TestSlackClient:
       mocked_slack_web_client: mock.Mock,
   ) -> None:
     test_file = "/path/to/mock/file.txt"
+    test_file_description = "Just a test file."
     mocked_slack_web_client.return_value.files_upload_v2.side_effect = \
         SlackRequestError("Boom!")
 
-    client_instance.send_file(test_file)
+    client_instance.send_file(test_file, test_file_description)
 
     assert mocked_slack_web_client.return_value.files_upload_v2.\
         mock_calls == \
@@ -119,7 +121,7 @@ class TestSlackClient:
              mock.call(
                channel=client_instance.channel_id,
                file=test_file,
-               title=client_instance.config.upload_file_title
+               title=test_file_description,
              )
         ] * client_instance.retries
     assert mocked_logger.mock_calls == \
