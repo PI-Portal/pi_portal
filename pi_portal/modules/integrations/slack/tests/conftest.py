@@ -4,7 +4,6 @@
 from unittest import mock
 
 import pytest
-from pi_portal.modules.configuration.tests.fixtures import mock_state
 from pi_portal.modules.integrations.slack import bot, client
 
 
@@ -51,9 +50,8 @@ def bot_instance(
       bot, "SocketModeHandler", mocked_slack_bolt_socket_handler
   )
   monkeypatch.setattr(bot.client, "SlackClient", mocked_slack_client)
-  with mock_state.mock_state_creator():
-    slack_bot = bot.SlackBot()
-    slack_bot.log = mocked_logger()
+  slack_bot = bot.SlackBot()
+  slack_bot.log = mocked_logger()
   return slack_bot
 
 
@@ -65,8 +63,7 @@ def client_instance(
     mocked_slack_web_client: mock.Mock,
 ) -> client.SlackClient:
   monkeypatch.setattr(client, "WebClient", mocked_slack_web_client)
-  with mock_state.mock_state_creator():
-    slack_client = client.SlackClient()
-    slack_client.log = mocked_logger()
-    slack_client.motion_client = mocked_motion_client()
+  slack_client = client.SlackClient()
+  slack_client.log = mocked_logger()
+  slack_client.motion_client = mocked_motion_client()
   return slack_client

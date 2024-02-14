@@ -9,6 +9,7 @@ from pi_portal.modules.configuration.tests.fixtures import mock_state
 from pi_portal.modules.integrations.s3 import client
 
 
+@pytest.mark.usefixtures("test_state")
 class TestS3Bucket:
   """Test the S3BucketClient class."""
 
