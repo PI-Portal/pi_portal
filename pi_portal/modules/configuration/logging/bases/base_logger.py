@@ -2,10 +2,9 @@
 
 import abc
 import logging
-from typing import Optional
+from typing import ClassVar, Optional, Type
 
 from pi_portal.modules.configuration import state
-from ..handlers import rotation
 
 
 class LoggerConfigurationBase(abc.ABC):
@@ -13,6 +12,10 @@ class LoggerConfigurationBase(abc.ABC):
 
   format_str: str
   formatter: logging.Formatter
+  formatter_class: ClassVar[Type[logging.Formatter]]
+  handler: logging.Handler
+  handler_class: ClassVar[Type[logging.Handler]]
+  handler_log_file_path: Optional[str] = None
   running_state: state.State
 
   def __init__(self) -> None:
@@ -22,38 +25,28 @@ class LoggerConfigurationBase(abc.ABC):
   def configure(
       self,
       log: logging.Logger,
-      file_name: Optional[str] = None,
+      log_file_path: Optional[str] = None,
   ) -> None:
     """Configure application logging.
 
     :param log: The logger instance to configure.
-    :param file_name: The path to write logs to, none for stdout.
+    :param log_file_path: An optional log file path to configure.
     """
 
     log.setLevel(self.level)
-    self.configure_formatter()
-    self.configure_handler(log, file_name)
-
-  def configure_handler(
-      self, log: logging.Logger, file_name: Optional[str]
-  ) -> None:
-    """Configure the logger's handler.
-
-    :param log: The logger instance to configure.
-    :param file_name: The path to write logs to, none for stdout.
-    """
-
     log.handlers = []
-    handler: Optional[logging.Handler]
 
-    if file_name is None:
-      handler = logging.StreamHandler()
-    else:
-      handler = rotation.RotatingFileHandlerWithEnqueue(file_name)
+    self.formatter = self.configure_formatter()
+    self.handler_log_file_path = log_file_path
+    self.handler = self.configure_handler()
+    self.handler.setFormatter(self.formatter)
 
-    handler.setFormatter(self.formatter)
-    log.addHandler(handler)
+    log.addHandler(self.handler)
 
   @abc.abstractmethod
-  def configure_formatter(self) -> None:
-    """Configure the logger's formatter."""
+  def configure_formatter(self) -> logging.Formatter:
+    """Configure the logger's formatter class."""
+
+  @abc.abstractmethod
+  def configure_handler(self) -> logging.Handler:
+    """Configure the logger's handler class."""
