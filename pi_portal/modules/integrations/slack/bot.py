@@ -6,7 +6,7 @@ from pi_portal import config
 from pi_portal.modules.configuration import state
 from pi_portal.modules.integrations.slack import cli, client
 from pi_portal.modules.integrations.slack.cli import handler
-from pi_portal.modules.mixins import write_log_file
+from pi_portal.modules.mixins import write_archived_log_file
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from typing_extensions import TypedDict
@@ -19,7 +19,7 @@ class TypeSlackBoltEvent(TypedDict):
   text: str
 
 
-class SlackBot(write_log_file.LogFileWriter):
+class SlackBot(write_archived_log_file.ArchivedLogFileWriter):
   """Slack bot."""
 
   logger_name = "bot"
