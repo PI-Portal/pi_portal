@@ -5,7 +5,7 @@ from typing import List
 from unittest import mock
 
 import pytest
-from pi_portal.modules.mixins import write_log_file
+from pi_portal.modules.mixins import write_archived_log_file
 from .. import monitor_base
 from .conftest import Interrupt, TypeGenericGpioMonitor
 
@@ -36,7 +36,7 @@ class TestGPIOMonitorBase:
     )
     assert isinstance(
         concrete_gpio_monitor_instance,
-        write_log_file.LogFileWriter,
+        write_archived_log_file.ArchivedLogFileWriter,
     )
 
   def test_initialize__logger(
