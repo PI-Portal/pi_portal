@@ -5,7 +5,7 @@ from io import StringIO
 from typing import List
 from unittest import mock
 
-from pi_portal.modules.mixins import write_log_file
+from pi_portal.modules.mixins import write_archived_log_file
 from pi_portal.modules.python.mock import CallType
 from pi_portal.modules.tasks.enums import TaskManifests, TaskType
 from .. import scheduler
@@ -74,7 +74,7 @@ class TestTaskScheduler:
   ) -> None:
     assert isinstance(
         task_scheduler_instance,
-        write_log_file.LogFileWriter,
+        write_archived_log_file.ArchivedLogFileWriter,
     )
 
   def test_start__logging(

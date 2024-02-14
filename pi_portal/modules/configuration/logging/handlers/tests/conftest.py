@@ -7,17 +7,12 @@ from io import StringIO
 from unittest import mock
 
 import pytest
-from .. import rotation
+from .. import rotation_archived, rotation_unarchived
 
 
 @pytest.fixture
 def mocked_file_system() -> mock.Mock:
   return mock.Mock()
-
-
-@pytest.fixture
-def mocked_logger_file_name() -> str:
-  return "/var/log/mock.log"
 
 
 @pytest.fixture
@@ -54,16 +49,16 @@ def mocked_shutil() -> mock.Mock:
 
 
 @pytest.fixture
-def queuing_rotating_file_handler_instance(
+def archived_rotating_file_handler_instance(
     mocked_file_system: mock.Mock,
     mocked_logger_file_name: str,
     mocked_os_path_exists: mock.Mock,
     mocked_should_rotate: mock.Mock,
     mocked_shutil: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
-) -> rotation.RotatingFileHandlerWithEnqueue:
+) -> rotation_archived.RotatingFileHandlerArchived:
   monkeypatch.setattr(
-      rotation.__name__ + ".file_system.FileSystem",
+      rotation_archived.__name__ + ".file_system.FileSystem",
       mocked_file_system,
   )
   monkeypatch.setattr(
@@ -75,17 +70,19 @@ def queuing_rotating_file_handler_instance(
       mocked_should_rotate,
   )
   monkeypatch.setattr(
-      rotation.__name__ + ".shutil",
+      rotation_archived.__name__ + ".shutil",
       mocked_shutil,
   )
-  handler = rotation.RotatingFileHandlerWithEnqueue(mocked_logger_file_name)
+  handler = rotation_archived.RotatingFileHandlerArchived(
+      mocked_logger_file_name
+  )
   return handler
 
 
 @pytest.fixture
-def rotating_logger_instance(
-    queuing_rotating_file_handler_instance: rotation.
-    RotatingFileHandlerWithEnqueue,
+def archived_logger_instance(
+    archived_rotating_file_handler_instance: rotation_archived.
+    RotatingFileHandlerArchived,
     mocked_logger_name: str,
     mocked_open: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
@@ -95,8 +92,17 @@ def rotating_logger_instance(
       mocked_open,
   )
   log = logging.getLogger(mocked_logger_name)
-  handler = queuing_rotating_file_handler_instance
+  handler = archived_rotating_file_handler_instance
   handler.setFormatter(logging.Formatter('%(levelname)s - %(message)s'))
   log.handlers = [handler]
   log.setLevel(logging.DEBUG)
   return log
+
+
+@pytest.fixture
+def unarchived_rotating_file_handler_instance(
+    mocked_logger_file_name: str,
+) -> rotation_unarchived.RotatingFileHandlerUnarchived:
+  return rotation_unarchived.RotatingFileHandlerUnarchived(
+      mocked_logger_file_name
+  )

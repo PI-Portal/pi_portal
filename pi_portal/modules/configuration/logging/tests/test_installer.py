@@ -1,11 +1,11 @@
 """Test the InstallerLoggingConfiguration class."""
 
 import logging
-import os.path
 from io import StringIO
-from unittest import mock
 
+import pytest
 from freezegun import freeze_time
+from ..exceptions.configuration import LoggerConfigurationError
 from ..installer import InstallerLoggerConfiguration
 
 
@@ -14,43 +14,66 @@ class TestInstallerLoggingConfiguration:
 
   def test_initialization__attrs(
       self,
-      installer_logger_configuration_instance: InstallerLoggerConfiguration
+      installer_logger_configuration_instance: InstallerLoggerConfiguration,
   ) -> None:
-
     assert installer_logger_configuration_instance.format_str == \
            "%(name)s - %(levelname)s - %(message)s"
+    assert installer_logger_configuration_instance.formatter_class == \
+        logging.Formatter
+    assert installer_logger_configuration_instance.handler_class == \
+        logging.StreamHandler
 
-  def test_configure__stdout(
-      self, mocked_logger_name: str,
-      installer_logger_configuration_instance: InstallerLoggerConfiguration
+  def test_configure__with_filename__exception(
+      self,
+      mocked_logger_name: str,
+      mocked_logger_file_name: str,
+      installer_logger_configuration_instance: InstallerLoggerConfiguration,
+  ) -> None:
+    mock_log = logging.getLogger(mocked_logger_name)
+
+    with pytest.raises(LoggerConfigurationError) as exc:
+      installer_logger_configuration_instance.configure(
+          mock_log,
+          mocked_logger_file_name,
+      )
+
+    assert str(exc.value) == (
+        installer_logger_configuration_instance.
+        misconfiguration_exception_message
+    )
+
+  def test_configure__without_filename__creates_correct_formatter(
+      self,
+      mocked_logger_name: str,
+      installer_logger_configuration_instance: InstallerLoggerConfiguration,
+  ) -> None:
+    mock_log = logging.getLogger(mocked_logger_name)
+
+    installer_logger_configuration_instance.configure(mock_log)
+
+    assert isinstance(
+        installer_logger_configuration_instance.formatter,
+        logging.Formatter,
+    )
+    assert installer_logger_configuration_instance.handler.formatter == \
+           installer_logger_configuration_instance.formatter
+
+  def test_configure__without_filename__creates_correct_handler(
+      self,
+      mocked_logger_name: str,
+      installer_logger_configuration_instance: InstallerLoggerConfiguration,
   ) -> None:
     mock_log = logging.getLogger(mocked_logger_name)
 
     installer_logger_configuration_instance.configure(mock_log)
 
     assert len(mock_log.handlers) == 1
-    assert isinstance(mock_log.handlers[0], logging.StreamHandler)
-    assert mock_log.handlers[0].formatter == \
-           installer_logger_configuration_instance.formatter
-
-  @mock.patch("os.open", mock.mock_open())
-  def test_configure__file(
-      self, mocked_logger_name: str,
-      installer_logger_configuration_instance: InstallerLoggerConfiguration
-  ) -> None:
-    mock_log = logging.getLogger(mocked_logger_name)
-    mock_file_name = "test.log"
-
-    installer_logger_configuration_instance.configure(mock_log, mock_file_name)
-
-    assert len(mock_log.handlers) == 1
-    assert isinstance(mock_log.handlers[0], logging.FileHandler)
-    assert mock_file_name == \
-        os.path.basename(
-            mock_log.handlers[0].baseFilename
-        )
-    assert mock_log.handlers[0].formatter == \
-           installer_logger_configuration_instance.formatter
+    assert isinstance(
+        installer_logger_configuration_instance.handler,
+        logging.StreamHandler,
+    )
+    assert installer_logger_configuration_instance.handler == \
+        mock_log.handlers[0]
 
   @freeze_time("2012-01-14")
   def test_logging__error_message__no_fields(
