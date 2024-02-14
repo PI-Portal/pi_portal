@@ -7,12 +7,10 @@ from unittest import mock
 
 from pi_portal.modules.configuration import state
 
+MOCK_ARCHIVAL_LOGS_PARTITION = "MOCK_S3_BUCKET_NAME_1"
+MOCK_ARCHIVAL_VIDEOS_PARTITION = "MOCK_S3_BUCKET_NAME_2"
 MOCK_AWS_ACCESS_KEY_ID = "awsKeyId"
 MOCK_AWS_SECRET_ACCESS_KEY = "awsKeySecret"
-MOCK_AWS_S3_BUCKETS = {
-    'LOGS': 'MOCK_S3_BUCKET_NAME_1',
-    'VIDEOS': 'MOCK_S3_BUCKET_NAME_2',
-}
 MOCK_LOGZ_IO_TOKEN = "secretCode"
 MOCK_SLACK_CHANNEL = "mockChannel"
 MOCK_SLACK_CHANNEL_ID = "CHHH111"
@@ -43,14 +41,28 @@ def mock_state_creator() -> Generator[mock.Mock, None, None]:
   with mock.patch(state.__name__ + ".State") as mock_state:
     try:
       mock_state_instance = mock_state.return_value
-      mock_state_instance.user_config = {
+      mock_state_instance.user_config = mock_user_state_creator()
+      mock_state_instance.log_uuid = MOCK_LOG_UUID
+      mock_state_instance.log_level = MOCK_LOG_LEVEL
+      yield mock_state_instance
+    finally:
+      pass
+
+
+def mock_user_state_creator() -> state.TypeUserConfig:
+  return state.TypeUserConfig(
+      **{
           "ARCHIVAL":
               {
                   "AWS":
                       {
                           "AWS_ACCESS_KEY_ID": MOCK_AWS_ACCESS_KEY_ID,
                           "AWS_SECRET_ACCESS_KEY": MOCK_AWS_SECRET_ACCESS_KEY,
-                          "AWS_S3_BUCKETS": MOCK_AWS_S3_BUCKETS,
+                          "AWS_S3_BUCKETS":
+                              {
+                                  'LOGS': MOCK_ARCHIVAL_LOGS_PARTITION,
+                                  'VIDEOS': MOCK_ARCHIVAL_VIDEOS_PARTITION,
+                              },
                       }
               },
           "CHAT":
@@ -122,8 +134,4 @@ def mock_state_creator() -> Generator[mock.Mock, None, None]:
               }]
           },
       }
-      mock_state_instance.log_uuid = MOCK_LOG_UUID
-      mock_state_instance.log_level = MOCK_LOG_LEVEL
-      yield mock_state_instance
-    finally:
-      pass
+  )

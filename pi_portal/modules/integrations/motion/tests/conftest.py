@@ -5,7 +5,6 @@ import logging
 from unittest import mock
 
 import pytest
-from pi_portal.modules.configuration.tests.fixtures import mock_state
 from .. import client as motion_client
 
 
@@ -50,6 +49,4 @@ def motion_client_instance(
       motion_client.__name__ + ".os",
       mocked_os,
   )
-  with mock_state.mock_state_creator():
-    instance = motion_client.MotionClient(mocked_logger)
-  return instance
+  return motion_client.MotionClient(mocked_logger)

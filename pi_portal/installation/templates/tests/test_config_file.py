@@ -26,11 +26,11 @@ class TestConfigFileTemplate:
 
   def test__update_context__stores_updated_context(
       self,
-      mocked_state: state.State,
+      test_state: state.State,
       config_file_template: config_file.ConfileFileTemplate,
   ) -> None:
     expected_values = {
-        "USER_CONFIG": mocked_state.user_config,
+        "USER_CONFIG": test_state.user_config,
     }
     for setting in dir(config):
       if not setting.startswith("__"):

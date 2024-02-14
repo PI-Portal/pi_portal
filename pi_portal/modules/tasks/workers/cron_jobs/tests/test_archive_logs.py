@@ -36,9 +36,9 @@ class TestArchiveLogsCronJob:
   def test_args__returns_correct_value(
       self,
       archive_logs_cron_job_instance: archive_logs.CronJob,
-      mocked_state: state.State,
+      test_state: state.State,
   ) -> None:
-    aws_config = mocked_state.user_config["ARCHIVAL"]["AWS"]
+    aws_config = test_state.user_config["ARCHIVAL"]["AWS"]
     expected_args = Args(partition_name=aws_config["AWS_S3_BUCKETS"]["LOGS"])
 
     # pylint: disable=protected-access

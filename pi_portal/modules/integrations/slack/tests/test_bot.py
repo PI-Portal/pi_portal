@@ -2,12 +2,14 @@
 from typing import cast
 from unittest import mock
 
+import pytest
 from pi_portal.modules.configuration import state
 from pi_portal.modules.configuration.tests.fixtures import mock_state
 from pi_portal.modules.integrations import slack
 from pi_portal.modules.integrations.slack import bot, cli
 
 
+@pytest.mark.usefixtures("test_state")
 class TestSlackBot:
   """Test the SlackBot class."""
 
@@ -25,10 +27,10 @@ class TestSlackBot:
   def test_initialize__app(
       self,
       bot_instance: bot.SlackBot,
-      mocked_state: state.State,
+      test_state: state.State,
       mocked_slack_bolt_app: mock.Mock,
   ) -> None:
-    slack_integration_config = mocked_state.user_config["CHAT"]["SLACK"]
+    slack_integration_config = test_state.user_config["CHAT"]["SLACK"]
     assert bot_instance.app == mocked_slack_bolt_app.return_value
     mocked_slack_bolt_app.assert_called_once_with(
         signing_secret=slack_integration_config["SLACK_APP_SIGNING_SECRET"],
@@ -45,10 +47,10 @@ class TestSlackBot:
   def test_initialize__web_socket(
       self,
       bot_instance: bot.SlackBot,
-      mocked_state: mock.Mock,
+      test_state: state.State,
       mocked_slack_bolt_socket_handler: mock.Mock,
   ) -> None:
-    slack_integration_config = mocked_state.user_config["CHAT"]["SLACK"]
+    slack_integration_config = test_state.user_config["CHAT"]["SLACK"]
     assert bot_instance.web_socket == \
         mocked_slack_bolt_socket_handler.return_value
     mocked_slack_bolt_socket_handler.assert_called_once_with(

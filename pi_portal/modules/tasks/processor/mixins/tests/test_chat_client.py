@@ -1,9 +1,11 @@
 """Test the ChatClientMixin class."""
 
+import pytest
 from pi_portal.modules.integrations import slack
 from pi_portal.modules.tasks.processor.mixins.chat_client import ChatClientMixin
 
 
+@pytest.mark.usefixtures('test_state')
 class TestChatClientMixin:
   """Test the ChatClientMixin class."""
 
