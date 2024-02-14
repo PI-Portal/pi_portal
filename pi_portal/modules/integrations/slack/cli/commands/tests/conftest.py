@@ -5,7 +5,6 @@ from typing import Callable, Dict
 from unittest import mock
 
 import pytest
-from pi_portal.modules.configuration import state
 from .. import (
     command_arm,
     command_disarm,
@@ -75,11 +74,7 @@ def help_command_instance(
 
 
 @pytest.fixture
-def id_command_instance(
-    mocked_chat_bot: mock.Mock,
-    mocked_state: state.State,
-) -> command_id.IDCommand:
-  state.State().log_uuid = mocked_state.log_uuid
+def id_command_instance(mocked_chat_bot: mock.Mock,) -> command_id.IDCommand:
   return command_id.IDCommand(mocked_chat_bot)
 
 
@@ -123,11 +118,9 @@ def status_command_instance(
 @pytest.fixture
 def temperature_command_instance(
     mocked_chat_bot: mock.Mock,
-    mocked_state: state.State,
     mocked_temperature_log_file_reader: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> command_temperature.TemperatureCommand:
-  state.State().user_config = mocked_state.user_config
   monkeypatch.setattr(
       command_temperature.__name__ +
       ".temperature_monitor_logfile.TemperatureMonitorLogFileReader",

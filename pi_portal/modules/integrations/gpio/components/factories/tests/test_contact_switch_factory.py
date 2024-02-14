@@ -1,27 +1,28 @@
 """Test the TemperatureSensorFactory class."""
 
-from unittest import mock
-
+import pytest
 from pi_portal.modules.configuration import state
 from pi_portal.modules.integrations.gpio.components import contact_switch
 from ..bases import input_factory_base
 from ..contact_switch_factory import ContactSwitchFactory
 
 
+@pytest.mark.usefixtures("test_state")
 class TestTemperatureSensorFactory:
   """Test the TemperatureSensorFactory class."""
 
   def test_initiate__attributes(
       self,
       contact_switch_factory_instance: ContactSwitchFactory,
-      mocked_state: mock.Mock,
+      test_state: state.State,
   ) -> None:
     assert isinstance(
         contact_switch_factory_instance.state,
         state.State,
     )
-    assert contact_switch_factory_instance.state.user_config == \
-        mocked_state.user_config
+    assert contact_switch_factory_instance.state.user_config == (
+        test_state.user_config
+    )
 
   def test_initiate__inheritance(
       self,
@@ -47,13 +48,13 @@ class TestTemperatureSensorFactory:
   def test_create__returns_correctly_configured_sensors(
       self,
       contact_switch_factory_instance: ContactSwitchFactory,
-      mocked_state: mock.Mock,
+      test_state: state.State,
   ) -> None:
     result = contact_switch_factory_instance.create()
 
     for index, configured_switch in enumerate(
-        mocked_state.state.user_config["SWITCHES"]["CONTACT_SWITCHES"]
+        test_state.user_config["SWITCHES"]["CONTACT_SWITCHES"]
     ):
-      assert result[index].sensor_type == contact_switch.__name__
+      assert result[index].sensor_type == contact_switch.ContactSwitch.__name__
       assert result[index].pin_name == configured_switch["NAME"]
       assert result[index].pin_number == configured_switch["GPIO"]

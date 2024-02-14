@@ -15,6 +15,7 @@ from ..handlers.rotation_unarchived import RotatingFileHandlerUnarchived
 from ..json_unarchived import JsonLoggerConfigurationUnarchived
 
 
+@pytest.mark.usefixtures('test_state')
 class TestJsonLoggerConfigurationUnarchived:
   """Test JsonLoggerConfigurationUnarchived class."""
 
@@ -98,7 +99,7 @@ class TestJsonLoggerConfigurationUnarchived:
       self,
       unarchived_json_logger_stdout_instance: logging.Logger,
       mocked_logger_name: str,
-      mocked_state: state.State,
+      test_state: state.State,
       mocked_logger_stream: StringIO,
   ) -> None:
     test_message = "test logging message"
@@ -110,6 +111,6 @@ class TestJsonLoggerConfigurationUnarchived:
         "message": test_message,
         "levelname": "ERROR",
         "name": mocked_logger_name,
-        "trace_id": mocked_state.log_uuid,
+        "trace_id": test_state.log_uuid,
         "asctime": expected_timestamp.isoformat(" ") + ",000",
     }

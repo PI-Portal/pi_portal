@@ -2,6 +2,7 @@
 
 from unittest import mock
 
+import pytest
 from pi_portal.modules.configuration import state
 from pi_portal.modules.integrations.gpio.components.bases import (
     temperature_sensor_base,
@@ -10,6 +11,7 @@ from pi_portal.modules.integrations.slack.cli.commands import TemperatureCommand
 from ..bases import command
 
 
+@pytest.mark.usefixtures("test_state")
 class TestTemperatureCommand:
   """Test the TemperatureCommand class."""
 
@@ -26,13 +28,13 @@ class TestTemperatureCommand:
       self,
       temperature_command_instance: TemperatureCommand,
       mocked_chat_bot: mock.Mock,
-      mocked_state: state.State,
+      test_state: state.State,
       mocked_temperature_log_file_reader: mock.Mock,
   ) -> None:
     log_file_reader = mocked_temperature_log_file_reader.return_value
     log_file_reader.read_last_values.return_value = {}
     log_file_reader.configured_sensor_count = 0
-    mocked_state.user_config['TEMPERATURE_SENSORS'] = {"DHT11": []}
+    test_state.user_config['TEMPERATURE_SENSORS'] = {"DHT11": []}
 
     temperature_command_instance.invoke()
 

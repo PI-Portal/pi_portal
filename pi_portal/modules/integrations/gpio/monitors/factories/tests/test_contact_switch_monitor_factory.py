@@ -2,6 +2,8 @@
 
 from unittest import mock
 
+import pytest
+from pi_portal.modules.configuration import state
 from pi_portal.modules.integrations.gpio.monitors import contact_switch_monitor
 from pi_portal.modules.integrations.gpio.monitors.factories.bases import (
     monitor_factory_base,
@@ -9,16 +11,17 @@ from pi_portal.modules.integrations.gpio.monitors.factories.bases import (
 from ..contact_switch_monitor_factory import ContactSwitchMonitorFactory
 
 
+@pytest.mark.usefixtures("test_state")
 class TestContactSwitchMonitorFactory:
   """Tests for the ContactSwitchMonitorFactory class."""
 
   def test_initialize__attributes(
       self,
       contact_switch_monitor_factory_instance: ContactSwitchMonitorFactory,
-      mocked_state: mock.Mock,
+      test_state: state.State,
   ) -> None:
     assert contact_switch_monitor_factory_instance.state.user_config == (
-        mocked_state.user_config
+        test_state.user_config
     )
 
   def test_initialize__inheritance(

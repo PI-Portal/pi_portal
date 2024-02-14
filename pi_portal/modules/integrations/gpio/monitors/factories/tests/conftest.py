@@ -5,7 +5,6 @@ from typing import List
 from unittest import mock
 
 import pytest
-from pi_portal.modules.configuration import state
 from .. import (
     contact_switch_monitor_factory,
     temperature_sensor_monitor_factory,
@@ -44,9 +43,7 @@ def mocked_dht11_factory_class(
 def contact_switch_monitor_factory_instance(
     mocked_contact_switch_factory_class: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
-    mocked_state: mock.Mock,
 ) -> contact_switch_monitor_factory.ContactSwitchMonitorFactory:
-  state.State().user_config = mocked_state.user_config
   monkeypatch.setattr(
       contact_switch_monitor_factory.__name__ +
       ".contact_switch_factory.ContactSwitchFactory",
@@ -59,9 +56,7 @@ def contact_switch_monitor_factory_instance(
 def temperature_sensor_monitor_factory_instance(
     mocked_dht11_factory_class: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
-    mocked_state: mock.Mock,
 ) -> temperature_sensor_monitor_factory.TemperatureSensorMonitorFactory:
-  state.State().user_config = mocked_state.user_config
   monkeypatch.setattr(
       temperature_sensor_monitor_factory.__name__ +
       ".dht11_sensor_factory.DHT11Factory",

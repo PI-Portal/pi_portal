@@ -5,7 +5,6 @@ import logging
 from unittest import mock
 
 import pytest
-from pi_portal.modules.configuration import state
 from .. import (
     archive_logs,
     archive_videos,
@@ -17,11 +16,9 @@ from .. import (
 
 @pytest.fixture
 def archive_logs_cron_job_instance(
-    mocked_state: state.State,
     mocked_worker_logger: logging.Logger,
     mocked_task_registry: mock.Mock,
 ) -> archive_logs.CronJob:
-  state.State().user_config = mocked_state.user_config
   return archive_logs.CronJob(
       mocked_worker_logger,
       mocked_task_registry,
@@ -30,11 +27,9 @@ def archive_logs_cron_job_instance(
 
 @pytest.fixture
 def archive_videos_cron_job_instance(
-    mocked_state: state.State,
     mocked_worker_logger: logging.Logger,
     mocked_task_registry: mock.Mock,
 ) -> archive_videos.CronJob:
-  state.State().user_config = mocked_state.user_config
   return archive_videos.CronJob(
       mocked_worker_logger,
       mocked_task_registry,

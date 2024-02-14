@@ -4,6 +4,7 @@ import json
 import os
 from unittest import mock
 
+import pytest
 from pi_portal import config
 from pi_portal.modules.configuration import state
 from pi_portal.modules.integrations.gpio.components.bases import (
@@ -15,6 +16,7 @@ from ..temperature_monitor_logfile import TemperatureMonitorLogFileReader
 READ_LOG_FILE_MODULE = read_log_file.__name__
 
 
+@pytest.mark.usefixtures("test_state")
 class TestTemperatureMonitorLogFileReader:
   """Test the TemperatureMonitorLogFileReader class."""
 
@@ -57,13 +59,15 @@ class TestTemperatureMonitorLogFileReader:
 
   def test_initialization__one_sensor(
       self,
-      mocked_state: state.State,
+      test_state: state.State,
       one_sensor_temp_log_file_reader: TemperatureMonitorLogFileReader,
   ) -> None:
-    assert one_sensor_temp_log_file_reader.log_file_path == \
-           config.LOG_FILE_TEMPERATURE_MONITOR
-    assert one_sensor_temp_log_file_reader.state.user_config == \
-           mocked_state.user_config
+    assert one_sensor_temp_log_file_reader.log_file_path == (
+        config.LOG_FILE_TEMPERATURE_MONITOR
+    )
+    assert one_sensor_temp_log_file_reader.state.user_config == (
+        test_state.user_config
+    )
     assert one_sensor_temp_log_file_reader.configured_sensor_count == 1
     assert one_sensor_temp_log_file_reader.temperature_readings == {
         'DHT11': {
@@ -76,13 +80,15 @@ class TestTemperatureMonitorLogFileReader:
 
   def test_initialization__two_sensors(
       self,
-      mocked_state: state.State,
+      test_state: state.State,
       two_sensor_temp_log_file_reader: TemperatureMonitorLogFileReader,
   ) -> None:
-    assert two_sensor_temp_log_file_reader.log_file_path == \
-           config.LOG_FILE_TEMPERATURE_MONITOR
-    assert two_sensor_temp_log_file_reader.state.user_config == \
-           mocked_state.user_config
+    assert two_sensor_temp_log_file_reader.log_file_path == (
+        config.LOG_FILE_TEMPERATURE_MONITOR
+    )
+    assert two_sensor_temp_log_file_reader.state.user_config == (
+        test_state.user_config
+    )
     assert two_sensor_temp_log_file_reader.configured_sensor_count == 2
     assert two_sensor_temp_log_file_reader.temperature_readings == {
         'DHT11':

@@ -2,6 +2,8 @@
 
 from unittest import mock
 
+import pytest
+from pi_portal.modules.configuration import state
 from pi_portal.modules.integrations.gpio.monitors import (
     temperature_sensor_monitor,
 )
@@ -11,16 +13,17 @@ from pi_portal.modules.integrations.gpio.monitors.factories.bases import (
 from ..temperature_sensor_monitor_factory import TemperatureSensorMonitorFactory
 
 
+@pytest.mark.usefixtures("test_state")
 class TestTemperatureMonitorFactory:
   """Tests for the TemperatureMonitorFactory class."""
 
   def test_initialize__attributes(
       self,
       temp_sensor_monitor_factory_instance: TemperatureSensorMonitorFactory,
-      mocked_state: mock.Mock,
+      test_state: state.State,
   ) -> None:
     assert temp_sensor_monitor_factory_instance.state.user_config == (
-        mocked_state.user_config
+        test_state.user_config
     )
 
   def test_initialize__inheritance(

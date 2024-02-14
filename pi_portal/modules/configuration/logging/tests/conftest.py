@@ -5,7 +5,6 @@ import logging
 from io import StringIO
 
 import pytest
-from pi_portal.modules.configuration.tests.fixtures import mock_state
 from ..installer import InstallerLoggerConfiguration
 from ..json_archived import JsonLoggerConfigurationArchived
 from ..json_unarchived import JsonLoggerConfigurationUnarchived
@@ -13,8 +12,7 @@ from ..json_unarchived import JsonLoggerConfigurationUnarchived
 
 @pytest.fixture
 def installer_logger_configuration_instance() -> InstallerLoggerConfiguration:
-  with mock_state.mock_state_creator():
-    return InstallerLoggerConfiguration()
+  return InstallerLoggerConfiguration()
 
 
 @pytest.fixture
@@ -33,8 +31,7 @@ def installer_logger_stdout_instance(
 
 @pytest.fixture
 def archived_json_logger_instance() -> JsonLoggerConfigurationArchived:
-  with mock_state.mock_state_creator():
-    return JsonLoggerConfigurationArchived()
+  return JsonLoggerConfigurationArchived()
 
 
 @pytest.fixture
@@ -54,8 +51,7 @@ def archived_json_logger_stdout_instance(
 
 @pytest.fixture
 def unarchived_json_logger_instance() -> JsonLoggerConfigurationUnarchived:
-  with mock_state.mock_state_creator():
-    return JsonLoggerConfigurationUnarchived()
+  return JsonLoggerConfigurationUnarchived()
 
 
 @pytest.fixture

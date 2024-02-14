@@ -11,6 +11,7 @@ from pi_portal.modules.integrations.network import http
 from .. import client as motion_client
 
 
+@pytest.mark.usefixtures("test_state")
 class TestMotion:
   """Test the Motion class."""
 
@@ -30,14 +31,14 @@ class TestMotion:
       motion_client_instance: motion_client.MotionClient,
       mocked_http_client: mock.Mock,
       mocked_logger: logging.Logger,
-      mocked_state: state.State,
+      test_state: state.State,
   ) -> None:
     assert motion_client_instance.http_client == \
         mocked_http_client.return_value
     mocked_http_client.assert_called_once_with(mocked_logger)
     mocked_http_client.return_value.set_basic_auth.assert_called_once_with(
-        mocked_state.user_config["MOTION"]["AUTHENTICATION"]["USERNAME"],
-        mocked_state.user_config["MOTION"]["AUTHENTICATION"]["PASSWORD"],
+        test_state.user_config["MOTION"]["AUTHENTICATION"]["USERNAME"],
+        test_state.user_config["MOTION"]["AUTHENTICATION"]["PASSWORD"],
     )
 
   def test_take_snapshot__default_camera__success(

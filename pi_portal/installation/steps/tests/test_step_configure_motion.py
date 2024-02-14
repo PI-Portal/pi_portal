@@ -4,11 +4,13 @@ import os
 from io import StringIO
 from unittest import mock
 
+import pytest
 from pi_portal.installation.templates import config_file, motion_templates
 from pi_portal.modules.configuration import state
 from ..step_configure_motion import StepConfigureMotion
 
 
+@pytest.mark.usefixtures("test_state")
 class TestStepRenderTemplates:
   """Test the StepRenderConfiguration class."""
 
@@ -22,12 +24,12 @@ class TestStepRenderTemplates:
   def test__invoke__success__logging(
       self,
       step_configure_motion_instance: StepConfigureMotion,
-      mocked_state: state.State,
+      test_state: state.State,
       mocked_stream: StringIO,
       mocked_system: mock.Mock,
   ) -> None:
     mocked_system.return_value = 0
-    camera_config = mocked_state.user_config["MOTION"]["CAMERAS"]
+    camera_config = test_state.user_config["MOTION"]["CAMERAS"]
     expected_log_messages = ""
     for camera in camera_config:
       expected_log_messages += \
@@ -53,9 +55,9 @@ class TestStepRenderTemplates:
   def test__generate_camera_templates__updates_templates(
       self,
       step_configure_motion_instance: StepConfigureMotion,
-      mocked_state: state.State,
+      test_state: state.State,
   ) -> None:
-    camera_config = mocked_state.user_config["MOTION"]["CAMERAS"]
+    camera_config = test_state.user_config["MOTION"]["CAMERAS"]
     motion_template_count = len(motion_templates)
     assert step_configure_motion_instance.templates == \
            motion_templates
@@ -68,9 +70,9 @@ class TestStepRenderTemplates:
   def test__generate_camera_templates__creates_valid_templates(
       self,
       step_configure_motion_instance: StepConfigureMotion,
-      mocked_state: state.State,
+      test_state: state.State,
   ) -> None:
-    camera_config = mocked_state.user_config["MOTION"]["CAMERAS"]
+    camera_config = test_state.user_config["MOTION"]["CAMERAS"]
     motion_template_count = len(motion_templates)
 
     step_configure_motion_instance.generate_camera_templates()

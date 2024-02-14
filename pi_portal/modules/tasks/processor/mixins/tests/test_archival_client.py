@@ -1,11 +1,13 @@
 """Test the ArchivalClientMixin class."""
 
+import pytest
 from pi_portal.modules.integrations.s3 import client as s3_client
 from pi_portal.modules.tasks.processor.mixins.archival_client import (
     ArchivalClientMixin,
 )
 
 
+@pytest.mark.usefixtures('test_state')
 class TestArchivalClientMixin:
   """Test the ArchivalClientMixin class."""
 
