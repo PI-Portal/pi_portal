@@ -2,6 +2,8 @@
 
 from unittest import mock
 
+import pytest
+from pi_portal.modules.configuration import state
 from pi_portal.modules.configuration.tests.fixtures import mock_state
 from pi_portal.modules.integrations.motion import client as motion_client
 from pi_portal.modules.integrations.slack import client as slack_client
@@ -9,6 +11,7 @@ from pi_portal.modules.integrations.slack import config as slack_config
 from slack_sdk.errors import SlackRequestError
 
 
+@pytest.mark.usefixtures("test_state")
 class TestSlackClient:
   """Test the SlackClient class."""
 
@@ -28,12 +31,12 @@ class TestSlackClient:
   def test_initialize__web(
       self,
       client_instance: slack_client.SlackClient,
-      mocked_state: mock.Mock,
+      test_state: state.State,
       mocked_slack_web_client: mock.Mock,
   ) -> None:
     assert client_instance.web == mocked_slack_web_client.return_value
     mocked_slack_web_client.assert_called_once_with(
-        token=mocked_state.user_config["CHAT"]["SLACK"]['SLACK_BOT_TOKEN']
+        token=test_state.user_config["CHAT"]["SLACK"]['SLACK_BOT_TOKEN']
     )
 
   def test_initialize__motion(

@@ -2,11 +2,13 @@
 
 from unittest import mock
 
+import pytest
 from pi_portal.modules.configuration import state
 from pi_portal.modules.integrations.slack.cli.commands import IDCommand
 from ..bases import command
 
 
+@pytest.mark.usefixtures("test_state")
 class TestIDCommand:
   """Test the IDCommand class."""
 
@@ -23,10 +25,10 @@ class TestIDCommand:
       self,
       id_command_instance: IDCommand,
       mocked_chat_bot: mock.Mock,
-      mocked_state: state.State,
+      test_state: state.State,
   ) -> None:
     id_command_instance.invoke()
 
     mocked_chat_bot.chat_client.send_message.assert_called_once_with(
-        f"ID: {mocked_state.log_uuid}"
+        f"ID: {test_state.log_uuid}"
     )
