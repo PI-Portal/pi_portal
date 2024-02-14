@@ -7,6 +7,11 @@ import pytest
 
 
 @pytest.fixture
+def mocked_logger_file_name() -> str:
+  return "/var/log/mock.log"
+
+
+@pytest.fixture
 def mocked_logger_name() -> str:
   """Return a mock logger name."""
   return "mockLogger"

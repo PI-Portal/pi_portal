@@ -6,7 +6,12 @@ from io import BytesIO, StringIO
 from unittest import mock
 
 import pytest
-from .. import read_json_file, read_log_file, write_log_file
+from .. import (
+    read_json_file,
+    read_log_file,
+    write_archived_log_file,
+    write_unarchived_log_file,
+)
 
 
 @pytest.fixture
@@ -17,16 +22,6 @@ def mocked_file_handle_binary() -> BytesIO:
 @pytest.fixture
 def mocked_file_handle_string() -> StringIO:
   return StringIO()
-
-
-@pytest.fixture
-def mocked_get_logger() -> mock.Mock:
-  return mock.Mock()
-
-
-@pytest.fixture
-def mocked_json_logger() -> mock.Mock:
-  return mock.Mock()
 
 
 @pytest.fixture
@@ -50,10 +45,19 @@ class LoggingReader(read_log_file.LogFileReader):
   log_file_path = "/var/run/some.log"
 
 
-class LoggingWriter(write_log_file.LogFileWriter):
-  """A test class using the LogFileWriter mixin."""
+class ArchivedLoggingWriter(write_archived_log_file.ArchivedLogFileWriter):
+  """A test class using the ArchivedLogFileWriter mixin."""
 
-  logger_name = "test_logger"
+  logger_name = "test_archived_logger"
+  log_file_path = "/var/run/some.log"
+
+
+class UnarchivedLoggingWriter(
+    write_unarchived_log_file.UnarchivedLogFileWriter
+):
+  """A test class using the UnarchivedLogFileWriter mixin."""
+
+  logger_name = "test_unarchived_logger"
   log_file_path = "/var/run/some.log"
 
 
@@ -81,17 +85,12 @@ def log_file_reader_instance(
 
 
 @pytest.fixture
-def log_file_writer_instance(
-    mocked_get_logger: mock.Mock,
-    mocked_json_logger: mock.Mock,
-    monkeypatch: pytest.MonkeyPatch,
-) -> write_log_file.LogFileWriter:
-  monkeypatch.setattr(
-      write_log_file.__name__ + ".getLogger",
-      mocked_get_logger,
-  )
-  monkeypatch.setattr(
-      write_log_file.__name__ + ".JsonLoggerConfiguration",
-      mocked_json_logger,
-  )
-  return LoggingWriter()
+def log_file_archived_writer_instance(
+) -> write_archived_log_file.ArchivedLogFileWriter:
+  return ArchivedLoggingWriter()
+
+
+@pytest.fixture
+def log_file_unarchived_writer_instance(
+) -> write_unarchived_log_file.UnarchivedLogFileWriter:
+  return UnarchivedLoggingWriter()

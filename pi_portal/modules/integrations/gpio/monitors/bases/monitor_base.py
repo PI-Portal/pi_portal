@@ -7,7 +7,7 @@ from typing import Any, Generic, Sequence, TypeVar
 from pi_portal.modules.integrations.gpio.components.bases import \
     input_base as gpio_input
 from pi_portal.modules.integrations.slack import client
-from pi_portal.modules.mixins import write_log_file
+from pi_portal.modules.mixins import write_archived_log_file
 from pi_portal.modules.python.rpi import RPi
 
 TypeGenericGpio = TypeVar(
@@ -18,7 +18,7 @@ TypeGenericGpio = TypeVar(
 
 class GPIOMonitorBase(
     abc.ABC,
-    write_log_file.LogFileWriter,
+    write_archived_log_file.ArchivedLogFileWriter,
     Generic[TypeGenericGpio],
 ):
   """GPIO input monitor class.

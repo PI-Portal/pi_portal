@@ -1,28 +1,19 @@
-"""RotatingFileHandlerWithEnqueue class."""
+"""RotatingFileHandlerArchived class."""
 
 import os
 import shutil
 import threading
 from datetime import datetime, timezone
-from logging.handlers import RotatingFileHandler
 
 from pi_portal import config
 from pi_portal.modules.system import file_system
+from .bases.rotation import RotatingFileHandlerBase
 
 
-class RotatingFileHandlerWithEnqueue(RotatingFileHandler):
-  """Rotating file handler that adds post rotation task enqueuing."""
+class RotatingFileHandlerArchived(RotatingFileHandlerBase):
+  """Rotating file handler that adds post rotation archival."""
 
   post_rotation_queue_folder = config.PATH_QUEUE_LOG_UPLOAD
-
-  def __init__(self, filename: str):
-    super().__init__(
-        filename,
-        backupCount=3,
-        delay=True,
-        encoding="utf-8",
-        maxBytes=10000000,  # 10MB
-    )
 
   def rotate(self, source: str, dest: str) -> None:
     """Perform the log rotation.

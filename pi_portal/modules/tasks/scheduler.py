@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from typing import TYPE_CHECKING, Dict, List
 
 from pi_portal import config
-from pi_portal.modules.mixins import write_log_file
+from pi_portal.modules.mixins import write_archived_log_file
 from pi_portal.modules.tasks.manifest import TaskManifestFactory
 from pi_portal.modules.tasks.workers.cron_worker import CronWorker
 from pi_portal.modules.tasks.workers.failed_task_worker import FailedTaskWorker
@@ -24,7 +24,7 @@ if TYPE_CHECKING:  # pragma: no cover
   from .enums import TaskPriority
 
 
-class TaskScheduler(write_log_file.LogFileWriter):
+class TaskScheduler(write_archived_log_file.ArchivedLogFileWriter):
   """Threaded task scheduler."""
 
   __slots__ = ("manifests", "registry", "router", "managed_workers")

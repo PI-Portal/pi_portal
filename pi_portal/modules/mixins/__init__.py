@@ -1,1 +1,1 @@
-"""Pi Portal module mixins."""
+"""Pi Portal mixin modules."""
