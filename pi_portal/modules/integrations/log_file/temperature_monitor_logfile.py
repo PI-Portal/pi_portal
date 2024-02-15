@@ -6,11 +6,11 @@ from pi_portal import config
 from pi_portal.modules.configuration import state
 from pi_portal.modules.configuration.types import gpio_config_type
 from pi_portal.modules.integrations.gpio.components.bases import (
-    temperature_sensor,
+    temperature_sensor_base,
 )
 from pi_portal.modules.mixins import read_log_file
 
-TemperatureReadingType = Dict[str, temperature_sensor.TypeTemperatureData]
+TemperatureReadingType = Dict[str, temperature_sensor_base.TypeTemperatureData]
 
 
 class TemperatureMonitorLogFileReader(read_log_file.LogFileReader):
@@ -37,7 +37,9 @@ class TemperatureMonitorLogFileReader(read_log_file.LogFileReader):
       sensor_type_readings: TemperatureReadingType = {}
       for sensor in sensor_config:
         sensor_name = sensor["NAME"]
-        sensor_type_readings[sensor_name] = temperature_sensor.EMPTY_READING
+        sensor_type_readings[sensor_name] = (
+            temperature_sensor_base.EMPTY_READING
+        )
       self.temperature_readings[sensor_type] = sensor_type_readings
 
   def read_last_values(self) -> Dict[str, TemperatureReadingType]:
@@ -60,7 +62,7 @@ class TemperatureMonitorLogFileReader(read_log_file.LogFileReader):
       humidity = json_log_line["humidity"]
       temperature = json_log_line["temperature"]
       self.temperature_readings[sensor_type][sensor_name] = \
-          temperature_sensor.TypeTemperatureData(
+          temperature_sensor_base.TypeTemperatureData(
             humidity=humidity,
             temperature=temperature
           )

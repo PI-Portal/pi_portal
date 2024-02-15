@@ -21,7 +21,7 @@ class TestUptimeCommand(command_harness.CommandBaseTestHarness):
       {
           "linux": "1000 days",
           "slack_bot": "1 day",
-          "door_monitor": "2 days",
+          "contact_switch_monitor": "2 days",
           "task_scheduler": "3 days",
           "temp_monitor": "4 days",
       }
@@ -46,7 +46,8 @@ class TestUptimeCommand(command_harness.CommandBaseTestHarness):
     self.mock_slack_bot.slack_client.send_message.assert_called_once_with(
         f"System Uptime > {self.uptimes['linux']}\n"
         f"Bot Uptime > {self.uptimes['slack_bot']}\n"
-        f"Door Monitor Uptime > {self.uptimes['door_monitor']}\n"
+        "Contact Switch Monitor Uptime > "
+        f"{self.uptimes['contact_switch_monitor']}\n"
         f"Task Scheduler Uptime > {self.uptimes['task_scheduler']}\n"
         f"Temperature Monitor Uptime > {self.uptimes['temp_monitor']}"
     )
@@ -63,7 +64,7 @@ class TestUptimeCommand(command_harness.CommandBaseTestHarness):
     assert len(m_process.mock_calls) == 12
     assert m_process.mock_calls[0:4] == [
         mock.call(ProcessList.BOT),
-        mock.call(ProcessList.DOOR_MONITOR),
+        mock.call(ProcessList.CONTACT_SWITCH_MONITOR),
         mock.call(ProcessList.TASK_SCHEDULER),
         mock.call(ProcessList.TEMP_MONITOR),
     ]
@@ -87,13 +88,13 @@ class TestUptimeCommand(command_harness.CommandBaseTestHarness):
 
   @mock.patch(process_command.__name__ + ".SupervisorProcess", mock.Mock())
   @mock.patch(command_uptime.__name__ + ".linux.uptime", mock.Mock())
-  @mock.patch(command_uptime.__name__ + ".DoorMonitorUptimeCommand")
-  def test_invoke__error_door(
+  @mock.patch(command_uptime.__name__ + ".ContactSwitchMonitorUptimeCommand")
+  def test_invoke__error_contact_switch(
       self,
-      m_door: mock.Mock,
+      m_contact_switch: mock.Mock,
   ) -> None:
-    m_door.return_value.invoke.side_effect = supervisor.SupervisorException(
-        "Boom!"
+    m_contact_switch.return_value.invoke.side_effect = (
+        supervisor.SupervisorException("Boom!")
     )
 
     self.instance.invoke()
