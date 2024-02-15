@@ -24,13 +24,13 @@ class TestTemperatureMonitorCommand:
       self,
       temperature_monitor_command_instance: temperature_monitor.
       TemperatureMonitorCommand,
-      mocked_temperature_monitor_factory: mock.Mock,
+      mocked_temperature_sensor_monitor_factory: mock.Mock,
   ) -> None:
     temperature_monitor_command_instance.invoke()
 
-    m_factory_instance = mocked_temperature_monitor_factory.return_value
+    m_factory_instance = mocked_temperature_sensor_monitor_factory.return_value
     m_monitor_instance = m_factory_instance.create.return_value
 
-    mocked_temperature_monitor_factory.assert_called_once_with()
+    mocked_temperature_sensor_monitor_factory.assert_called_once_with()
     m_factory_instance.create.assert_called_once_with()
     m_monitor_instance.start.assert_called_once_with()

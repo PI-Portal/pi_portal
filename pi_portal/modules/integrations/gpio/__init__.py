@@ -1,4 +1,8 @@
 """GPIO integration classes."""
 
-from .door_monitor_factory import DoorMonitorFactory
-from .temperature_monitor_factory import TemperatureMonitorFactory
+from .monitors.factories.contact_switch_monitor_factory import (
+    ContactSwitchMonitorFactory,
+)
+from .monitors.factories.temperature_sensor_monitor_factory import (
+    TemperatureSensorMonitorFactory,
+)

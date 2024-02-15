@@ -17,8 +17,9 @@ class TestMachineCLI:
       "scenario_args",
       [
           CliScenarioCreatorArgs(
-              cli_command="door_monitor",
-              module_path="cli_machine.door_monitor.DoorMonitorCommand",
+              cli_command="contact_switch_monitor",
+              module_path=
+              "cli_machine.contact_switch_monitor.ContactSwitchMonitorCommand",
           ),
           CliScenarioCreatorArgs(
               cli_command="slack_bot",
@@ -64,8 +65,9 @@ class TestMachineCLI:
       "scenario_args",
       [
           CliScenarioCreatorArgs(
-              cli_command="door_monitor",
-              module_path="cli_machine.door_monitor.DoorMonitorCommand",
+              cli_command="contact_switch_monitor",
+              module_path=
+              "cli_machine.contact_switch_monitor.ContactSwitchMonitorCommand",
           ),
           CliScenarioCreatorArgs(
               cli_command="slack_bot",
