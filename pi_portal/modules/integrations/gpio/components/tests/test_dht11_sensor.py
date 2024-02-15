@@ -1,72 +1,110 @@
 """Test the DHT11 class."""
 
-from typing import Type, cast
 from unittest import mock
 
-from pi_portal.modules.integrations.gpio.components import dht11_sensor
-from pi_portal.modules.integrations.gpio.components.bases import (
-    temperature_sensor,
-)
-from pi_portal.modules.python import rpi
-from ..bases.tests.fixtures import sensor_harness
+from .. import dht11_sensor
+from ..bases.temperature_sensor_base import EMPTY_READING, TemperatureSensorBase
 
 
-class TestGPIOInput(sensor_harness.GPIOSensorTestHarness):
+class TestDHT11:
   """Test the DHT11 class."""
 
-  __test__ = True
-  gpio_input_1_initial_value = temperature_sensor.EMPTY_READING
-  test_class: Type[dht11_sensor.DHT11]
+  def test_initialize__attributes(
+      self,
+      dht11_sensor_sensor_instance: dht11_sensor.DHT11,
+      mocked_pin_name: str,
+      mocked_pin_number: int,
+  ) -> None:
+    assert dht11_sensor_sensor_instance.pin_name == mocked_pin_name
+    assert dht11_sensor_sensor_instance.pin_number == mocked_pin_number
+    assert dht11_sensor_sensor_instance.last_state == EMPTY_READING
+    assert dht11_sensor_sensor_instance.current_state == EMPTY_READING
 
-  @classmethod
-  def setUpClass(cls) -> None:
-    cls.test_class = dht11_sensor.DHT11
-
-  def _instance(self) -> dht11_sensor.DHT11:
-    return cast(dht11_sensor.DHT11, self.instance)
-
-  def _adafruit_module(self) -> mock.Mock:
-    return cast(mock.Mock, rpi.adafruit_dht)
-
-  def setUp(self) -> None:
-    self._adafruit_module().reset_mock()
-    self._adafruit_module().DHT11.reset_mock()
-    self.instance = self.test_class(
-        pin_number=self.gpio_input_1_pin,
-        pin_name=self.gpio_input_1_name,
+  def test_initialize__inheritance(
+      self,
+      dht11_sensor_sensor_instance: dht11_sensor.DHT11,
+  ) -> None:
+    assert isinstance(
+        dht11_sensor_sensor_instance,
+        TemperatureSensorBase,
     )
 
-  def test_hook_setup_hardware(self) -> None:
-    self.assertIs(
-        self._instance().hardware,
-        self._adafruit_module().DHT11.return_value,
+  def test_initialize__hardware_setup(
+      self,
+      dht11_sensor_sensor_instance: dht11_sensor.DHT11,
+      mocked_rpi_dht_module: mock.Mock,
+      mocked_rpi_board_module: mock.Mock,
+  ) -> None:
+    mocked_board_pin = getattr(
+        mocked_rpi_board_module,
+        f"D{dht11_sensor_sensor_instance.pin_number}",
     )
-    self._adafruit_module().DHT11.assert_called_once_with(
-        getattr(rpi.board, f"D{self.instance.pin_number}"),
+    assert dht11_sensor_sensor_instance.hardware == (
+        mocked_rpi_dht_module.DHT11.return_value
+    )
+    mocked_rpi_dht_module.DHT11.assert_called_once_with(
+        mocked_board_pin,
         use_pulseio=False,
     )
 
-  def test_poll(self) -> None:
-    self.instance.poll()
-    self.assertDictEqual(
-        {**self.instance.current_state},
-        {
-            "temperature": self._instance().hardware.temperature,
-            "humidity": self._instance().hardware.humidity,
-        },
-    )
+  def test_hook_update_state__nominal_reading__correct_data(
+      self,
+      dht11_sensor_sensor_instance: dht11_sensor.DHT11,
+      mocked_humidity_property: mock.PropertyMock,
+      mocked_temperature_property: mock.PropertyMock,
+  ) -> None:
+    mocked_humidity_property.return_value = 30
+    mocked_temperature_property.return_value = 20
 
-  def test_poll_with_error(self) -> None:
-    with mock.patch.object(
-        self.instance,
-        "hardware",
-    ) as m_hardware:
-      type(m_hardware).temperature = mock.PropertyMock(side_effect=RuntimeError)
-      self.instance.poll()
-      self.assertDictEqual(
-          {**self.instance.current_state},
-          temperature_sensor.EMPTY_READING,
-      )
+    return_value = dht11_sensor_sensor_instance.hook_update_state()
 
-  def test_sensor_type__is_expected(self) -> None:
-    assert self.instance.sensor_type == "DHT11"
+    assert return_value["temperature"] == 20
+    assert return_value["humidity"] == 30
+    assert mocked_temperature_property.call_count == 1
+    assert mocked_humidity_property.call_count == 1
+
+  def test_hook_update_state__1_error_reading__correct_new_reading(
+      self,
+      dht11_sensor_sensor_instance: dht11_sensor.DHT11,
+      mocked_humidity_property: mock.PropertyMock,
+      mocked_temperature_property: mock.PropertyMock,
+  ) -> None:
+    mocked_humidity_property.side_effect = [30]
+    mocked_temperature_property.side_effect = [RuntimeError, 20]
+
+    return_value = dht11_sensor_sensor_instance.hook_update_state()
+
+    assert return_value["temperature"] == 20
+    assert return_value["humidity"] == 30
+    assert mocked_temperature_property.call_count == 2
+    assert mocked_humidity_property.call_count == 1
+
+  def test_hook_update_state__2_error_readings__correct_new_reading(
+      self,
+      dht11_sensor_sensor_instance: dht11_sensor.DHT11,
+      mocked_humidity_property: mock.PropertyMock,
+      mocked_temperature_property: mock.PropertyMock,
+  ) -> None:
+    mocked_humidity_property.side_effect = [RuntimeError, 30]
+    mocked_temperature_property.side_effect = [RuntimeError, 20, 20]
+
+    return_value = dht11_sensor_sensor_instance.hook_update_state()
+
+    assert return_value["temperature"] == 20
+    assert return_value["humidity"] == 30
+    assert mocked_temperature_property.call_count == 3
+    assert mocked_humidity_property.call_count == 2
+
+  def test_hook_update_state__3_error_readings__returns_current_state(
+      self,
+      dht11_sensor_sensor_instance: dht11_sensor.DHT11,
+      mocked_temperature_property: mock.PropertyMock,
+  ) -> None:
+    mocked_temperature_property.side_effect = [
+        RuntimeError, RuntimeError, RuntimeError
+    ]
+    assert dht11_sensor_sensor_instance.current_state == EMPTY_READING
+
+    return_value = dht11_sensor_sensor_instance.hook_update_state()
+
+    assert return_value == EMPTY_READING

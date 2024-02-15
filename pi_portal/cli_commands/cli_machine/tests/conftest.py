@@ -5,7 +5,7 @@ from unittest import mock
 
 import pytest
 from .. import (
-    door_monitor,
+    contact_switch_monitor,
     slack_bot,
     task_scheduler,
     temperature_monitor,
@@ -15,7 +15,7 @@ from .. import (
 
 
 @pytest.fixture
-def mocked_door_monitor_factory() -> mock.Mock:
+def mocked_contact_switch_monitor_factory() -> mock.Mock:
   return mock.Mock()
 
 
@@ -40,7 +40,7 @@ def mocked_shutil() -> mock.Mock:
 
 
 @pytest.fixture
-def mocked_temperature_monitor_factory() -> mock.Mock:
+def mocked_temperature_sensor_monitor_factory() -> mock.Mock:
   return mock.Mock()
 
 
@@ -50,15 +50,15 @@ def mocked_uvicorn() -> mock.Mock:
 
 
 @pytest.fixture
-def door_monitor_command_instance(
-    mocked_door_monitor_factory: mock.Mock,
+def contact_switch_monitor_command_instance(
+    mocked_contact_switch_monitor_factory: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
-) -> door_monitor.DoorMonitorCommand:
+) -> contact_switch_monitor.ContactSwitchMonitorCommand:
   monkeypatch.setattr(
-      door_monitor.__name__ + ".gpio.DoorMonitorFactory",
-      mocked_door_monitor_factory,
+      contact_switch_monitor.__name__ + ".gpio.ContactSwitchMonitorFactory",
+      mocked_contact_switch_monitor_factory,
   )
-  return door_monitor.DoorMonitorCommand()
+  return contact_switch_monitor.ContactSwitchMonitorCommand()
 
 
 @pytest.fixture
@@ -87,12 +87,12 @@ def task_scheduler_command_instance(
 
 @pytest.fixture
 def temperature_monitor_command_instance(
-    mocked_temperature_monitor_factory: mock.Mock,
+    mocked_temperature_sensor_monitor_factory: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> temperature_monitor.TemperatureMonitorCommand:
   monkeypatch.setattr(
-      temperature_monitor.__name__ + ".gpio.TemperatureMonitorFactory",
-      mocked_temperature_monitor_factory,
+      temperature_monitor.__name__ + ".gpio.TemperatureSensorMonitorFactory",
+      mocked_temperature_sensor_monitor_factory,
   )
   return temperature_monitor.TemperatureMonitorCommand()
 
