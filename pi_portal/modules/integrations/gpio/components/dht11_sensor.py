@@ -3,16 +3,16 @@
 from typing import Any
 
 from pi_portal.modules.integrations.gpio.components.bases import (
-    temperature_sensor,
+    temperature_sensor_base,
 )
 from pi_portal.modules.python.rpi import adafruit_dht, board
 
 
-class DHT11(temperature_sensor.TemperatureSensor):
+class DHT11(temperature_sensor_base.TemperatureSensorBase[adafruit_dht.DHT11]):
   """DHT11 Temperature Sensor class.
 
   :param: pin_number: The GPIO input number.
-  :param pin_name: The name of this door in alerts and logs.
+  :param pin_name: The name of this sensor in alerts and logs.
   """
 
   def hook_board_pin(self) -> Any:
@@ -22,7 +22,7 @@ class DHT11(temperature_sensor.TemperatureSensor):
     """
     return getattr(board, f"D{self.pin_number}")
 
-  def hook_setup_hardware(self) -> Any:
+  def hook_setup_hardware(self) -> adafruit_dht.DHT11:
     """Retrieve the adafruit_dht sensor object for the DHT11.
 
     :returns: The hardware sensor interface.
@@ -34,13 +34,13 @@ class DHT11(temperature_sensor.TemperatureSensor):
     )
 
   def hook_update_state(
-      self, retries: int = 3
-  ) -> temperature_sensor.TypeTemperatureData:
+      self,
+      retries: int = 3,
+  ) -> temperature_sensor_base.TypeTemperatureData:
     """Retrieve new state for the GPIO input.
     :param retries: The number of times to retry a failed sensor reading.
 
     :returns: The new GPIO state value.
-    :raises: RuntimeError
     """
 
     if retries < 1:
@@ -52,7 +52,7 @@ class DHT11(temperature_sensor.TemperatureSensor):
     except RuntimeError:
       return self.hook_update_state(retries - 1)
 
-    return temperature_sensor.TypeTemperatureData(
+    return temperature_sensor_base.TypeTemperatureData(
         temperature=temperature,
         humidity=humidity,
     )
