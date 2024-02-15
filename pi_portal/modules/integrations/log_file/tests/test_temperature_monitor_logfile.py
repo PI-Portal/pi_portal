@@ -7,7 +7,7 @@ from unittest import mock
 from pi_portal import config
 from pi_portal.modules.configuration import state
 from pi_portal.modules.integrations.gpio.components.bases import (
-    temperature_sensor,
+    temperature_sensor_base,
 )
 from pi_portal.modules.mixins import read_log_file
 from ..temperature_monitor_logfile import TemperatureMonitorLogFileReader
@@ -148,7 +148,7 @@ class TestTemperatureMonitorLogFileReader:
         "DHT11":
             {
                 "Kitchen":
-                    temperature_sensor.TypeTemperatureData(
+                    temperature_sensor_base.TypeTemperatureData(
                         humidity=38,
                         temperature=22,
                     )
@@ -168,12 +168,12 @@ class TestTemperatureMonitorLogFileReader:
         "DHT11":
             {
                 'Bedroom':
-                    temperature_sensor.TypeTemperatureData(
+                    temperature_sensor_base.TypeTemperatureData(
                         humidity=39,
                         temperature=23,
                     ),
                 "Kitchen":
-                    temperature_sensor.TypeTemperatureData(
+                    temperature_sensor_base.TypeTemperatureData(
                         humidity=38,
                         temperature=22,
                     )
@@ -194,12 +194,12 @@ class TestTemperatureMonitorLogFileReader:
         "DHT11":
             {
                 'Bedroom':
-                    temperature_sensor.TypeTemperatureData(
+                    temperature_sensor_base.TypeTemperatureData(
                         humidity=37,
                         temperature=21,
                     ),
                 "Kitchen":
-                    temperature_sensor.TypeTemperatureData(
+                    temperature_sensor_base.TypeTemperatureData(
                         humidity=38,
                         temperature=22,
                     )

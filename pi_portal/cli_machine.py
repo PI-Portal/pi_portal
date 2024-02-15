@@ -2,7 +2,7 @@
 
 import click
 from .cli_commands.cli_machine import (
-    door_monitor,
+    contact_switch_monitor,
     slack_bot,
     task_scheduler,
     temperature_monitor,
@@ -21,12 +21,12 @@ def cli(ctx: click.Context, debug: bool) -> None:
   ctx.obj['DEBUG'] = debug
 
 
-@cli.command("door_monitor")
+@cli.command("contact_switch_monitor")
 @click.pass_context
-def door_monitor_command(ctx: click.Context) -> None:
-  """Start the door monitor."""
+def contact_switch_monitor_command(ctx: click.Context) -> None:
+  """Start the contact switch monitor."""
 
-  command = door_monitor.DoorMonitorCommand()
+  command = contact_switch_monitor.ContactSwitchMonitorCommand()
   command.load_state(debug=ctx.obj['DEBUG'])
   command.invoke()
 

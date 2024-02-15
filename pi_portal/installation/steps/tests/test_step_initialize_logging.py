@@ -100,7 +100,7 @@ class TestStepInitializeLogging:
   ) -> None:
     assert isinstance(step_initialize_logging_instance.log, logging.Logger)
     assert step_initialize_logging_instance.log_files == [
-        config.LOG_FILE_DOOR_MONITOR,  # pylint: disable=duplicate-code
+        config.LOG_FILE_CONTACT_SWITCH_MONITOR,  # pylint: disable=duplicate-code
         config.LOG_FILE_MOTION,
         config.LOG_FILE_SLACK_BOT,
         config.LOG_FILE_SLACK_CLIENT,

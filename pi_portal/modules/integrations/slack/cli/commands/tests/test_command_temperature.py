@@ -4,7 +4,7 @@ from unittest import mock
 
 from pi_portal.modules.configuration.tests.fixtures import mock_state
 from pi_portal.modules.integrations.gpio.components.bases import (
-    temperature_sensor,
+    temperature_sensor_base,
 )
 from pi_portal.modules.integrations.log_file import temperature_monitor_logfile
 from pi_portal.modules.integrations.slack.cli.commands import (
@@ -45,7 +45,7 @@ class TestStatusCommand(command_harness.CommandBaseTestHarness):
         "DHT11":
             {
                 "Kitchen":
-                    temperature_sensor.TypeTemperatureData(
+                    temperature_sensor_base.TypeTemperatureData(
                         humidity=None,
                         temperature=None,
                     )
@@ -66,7 +66,7 @@ class TestStatusCommand(command_harness.CommandBaseTestHarness):
         "DHT11":
             {
                 "Kitchen":
-                    temperature_sensor.TypeTemperatureData(
+                    temperature_sensor_base.TypeTemperatureData(
                         humidity=40,
                         temperature=20,
                     )
@@ -87,12 +87,12 @@ class TestStatusCommand(command_harness.CommandBaseTestHarness):
         "DHT11":
             {
                 "Bedroom":
-                    temperature_sensor.TypeTemperatureData(
+                    temperature_sensor_base.TypeTemperatureData(
                         humidity=39,
                         temperature=19,
                     ),
                 "Kitchen":
-                    temperature_sensor.TypeTemperatureData(
+                    temperature_sensor_base.TypeTemperatureData(
                         humidity=40,
                         temperature=20,
                     )
@@ -114,7 +114,7 @@ class TestStatusCommand(command_harness.CommandBaseTestHarness):
         "DHT11":
             {
                 "Kitchen":
-                    temperature_sensor.TypeTemperatureData(
+                    temperature_sensor_base.TypeTemperatureData(
                         humidity=40,
                         temperature=20,
                     )
@@ -122,7 +122,7 @@ class TestStatusCommand(command_harness.CommandBaseTestHarness):
         "UNKNOWN":
             {
                 "Kitchen":
-                    temperature_sensor.TypeTemperatureData(
+                    temperature_sensor_base.TypeTemperatureData(
                         humidity=41,
                         temperature=21,
                     )

@@ -14,14 +14,14 @@ class ConcreteProcessUptimeCommand(
 ):
   """A concrete instance of the SlackProcessUptimeCommandBase class."""
 
-  process_name = supervisor_config.ProcessList.DOOR_MONITOR
+  process_name = supervisor_config.ProcessList.CONTACT_SWITCH_MONITOR
 
 
 class TestNestedUptimeCommandBase(ProcessUptimeCommandBaseTestHarness):
   """Test the SlackProcessUptimeCommandBase class."""
 
   __test__ = True
-  expected_process_name = supervisor_config.ProcessList.DOOR_MONITOR
+  expected_process_name = supervisor_config.ProcessList.CONTACT_SWITCH_MONITOR
 
   @classmethod
   def setUpClass(cls) -> None:

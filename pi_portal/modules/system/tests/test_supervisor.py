@@ -116,12 +116,12 @@ class TestSupervisorClient:
         return_value = self.mock_process_info
 
     result = supervisor_instance.start_time(
-        supervisor_config.ProcessList.DOOR_MONITOR
+        supervisor_config.ProcessList.CONTACT_SWITCH_MONITOR
     )
 
     mocked_supervisor_server.return_value.supervisor.getProcessInfo.\
         assert_called_once_with(
-          supervisor_config.ProcessList.DOOR_MONITOR.value
+          supervisor_config.ProcessList.CONTACT_SWITCH_MONITOR.value
         )
     assert result == self.mock_start
 
@@ -136,4 +136,6 @@ class TestSupervisorClient:
         )
     with pytest.raises(supervisor.SupervisorException):
 
-      supervisor_instance.start_time(supervisor_config.ProcessList.DOOR_MONITOR)
+      supervisor_instance.start_time(
+          supervisor_config.ProcessList.CONTACT_SWITCH_MONITOR
+      )
