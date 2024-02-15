@@ -14,6 +14,6 @@ class TemperatureMonitorCommand(
   def invoke(self) -> None:
     """Invoke the command."""
 
-    factory = gpio.TemperatureMonitorFactory()
+    factory = gpio.TemperatureSensorMonitorFactory()
     temperature_monitor = factory.create()
     temperature_monitor.start()
