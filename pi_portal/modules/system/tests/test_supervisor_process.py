@@ -1,161 +1,214 @@
-"""Test SupervisorProcess Class."""
+"""Test SupervisorProcess class."""
 
-from typing import cast
-from unittest import TestCase, mock
+from typing import List
+from unittest import mock
 
+import pytest
 from freezegun import freeze_time
-from pi_portal.modules.system import (
-    supervisor,
-    supervisor_config,
-    supervisor_process,
-)
+from pi_portal.modules.system import supervisor_config, supervisor_process
 
 
-class TestSupervisorProcess(TestCase):
+class TestSupervisorProcess:
   """Test the SupervisorProcess class."""
 
-  def setUp(self) -> None:
-    self.mock_process = supervisor_config.ProcessList.BOT
-    with mock.patch(
-        supervisor_process.__name__ + ".supervisor.SupervisorClient"
-    ):
-      self.instance = supervisor_process.SupervisorProcess(self.mock_process)
-
-  def _mocked_client(self) -> mock.Mock:
-    return cast(mock.Mock, self.instance.client)
-
-  def test_initialize(self) -> None:
-    instance = supervisor_process.SupervisorProcess(self.mock_process)
-    self.assertIsInstance(instance.client, supervisor.SupervisorClient)
-    self.assertEqual(instance.process_name, self.mock_process)
-
-  def test_start_is_stopped(self) -> None:
-    self._mocked_client(
-    ).status.return_value = supervisor_config.ProcessStatus.STOPPED
-    self.instance.start()
-
-    self._mocked_client().status.assert_called_once_with(self.mock_process)
-    self._mocked_client().start.assert_called_once_with(self.mock_process)
-
-  def test_start_is_running(self) -> None:
-    self._mocked_client(
-    ).status.return_value = supervisor_config.ProcessStatus.RUNNING
-
-    with self.assertRaises(supervisor_process.SupervisorProcessException):
-      self.instance.start()
-
-    self._mocked_client().status.assert_called_once_with(self.mock_process)
-    self._mocked_client().start.assert_not_called()
-
-  def test_start_is_restarting(self) -> None:
-    self._mocked_client(
-    ).status.return_value = supervisor_config.ProcessStatus.RESTARTING
-
-    with self.assertRaises(supervisor_process.SupervisorProcessException):
-      self.instance.start()
-
-    self._mocked_client().status.assert_called_once_with(self.mock_process)
-    self._mocked_client().start.assert_not_called()
-
-  def test_stop_is_running(self) -> None:
-    self._mocked_client(
-    ).status.return_value = supervisor_config.ProcessStatus.RUNNING
-    self.instance.stop()
-
-    self._mocked_client().status.assert_called_once_with(self.mock_process)
-    self._mocked_client().stop.assert_called_once_with(self.mock_process)
-
-  def test_stop_is_restarting(self) -> None:
-    self._mocked_client(
-    ).status.return_value = supervisor_config.ProcessStatus.RESTARTING
-
-    self.instance.stop()
-
-    self._mocked_client().status.assert_called_once_with(self.mock_process)
-    self._mocked_client().stop.assert_called_once_with(self.mock_process)
-
-  def test_stop_is_stopped(self) -> None:
-    self._mocked_client(
-    ).status.return_value = supervisor_config.ProcessStatus.STOPPED
-
-    with self.assertRaises(supervisor_process.SupervisorProcessException):
-      self.instance.stop()
-
-    self._mocked_client().status.assert_called_once_with(self.mock_process)
-    self._mocked_client().stop.assert_not_called()
-
-  def test_stop_is_fatal(self) -> None:
-    self._mocked_client(
-    ).status.return_value = supervisor_config.ProcessStatus.FATAL
-
-    with self.assertRaises(supervisor_process.SupervisorProcessException):
-      self.instance.stop()
-
-    self._mocked_client().status.assert_called_once_with(self.mock_process)
-    self._mocked_client().stop.assert_not_called()
-
-  def test_status_running(self) -> None:
-    self._mocked_client(
-    ).status.return_value = supervisor_config.ProcessStatus.RUNNING
-
-    result = self.instance.status()
-
-    self.assertEqual(result, supervisor_config.ProcessStatus.RUNNING.value)
-    self._mocked_client().status.assert_called_once_with(self.mock_process)
-
-  def test_status_stopped(self) -> None:
-    self._mocked_client(
-    ).status.return_value = supervisor_config.ProcessStatus.STOPPED
-
-    result = self.instance.status()
-
-    self.assertEqual(result, supervisor_config.ProcessStatus.STOPPED.value)
-    self._mocked_client().status.assert_called_once_with(self.mock_process)
-
-  def test_status_in_true(self) -> None:
-    self._mocked_client(
-    ).status.return_value = supervisor_config.ProcessStatus.RUNNING
-
-    result = self.instance.status_in(
-        [
-            supervisor_config.ProcessStatus.SHUTDOWN,
-            supervisor_config.ProcessStatus.RUNNING
-        ],
+  def test_initialize__attributes(
+      self, supervisor_process_instance: supervisor_process.SupervisorProcess
+  ) -> None:
+    assert supervisor_process_instance.process_name == (
+        supervisor_config.ProcessList.BOT
     )
 
-    self.assertTrue(result)
-    self._mocked_client().status.assert_called_once_with(self.mock_process)
+  def test_initialize__supervisor_client(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+  ) -> None:
+    assert supervisor_process_instance.client == (
+        mocked_supervisor_client.return_value
+    )
+    mocked_supervisor_client.assert_called_once_with()
 
-  def test_status_in_false(self) -> None:
-    self._mocked_client(
-    ).status.return_value = supervisor_config.ProcessStatus.FATAL
+  @pytest.mark.parametrize(
+      "test_status", [
+          supervisor_config.ProcessStatus.FATAL,
+          supervisor_config.ProcessStatus.SHUTDOWN,
+          supervisor_config.ProcessStatus.STOPPED,
+      ]
+  )
+  def test_start__vary_state__calls_client_correctly(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+      test_status: supervisor_config.ProcessStatus,
+  ) -> None:
+    mocked_supervisor_client.return_value.status.return_value = test_status
 
-    result = self.instance.status_in(
-        [
-            supervisor_config.ProcessStatus.SHUTDOWN,
-            supervisor_config.ProcessStatus.RUNNING
-        ],
+    supervisor_process_instance.start()
+
+    mocked_supervisor_client.return_value.status.assert_called_once_with(
+        supervisor_process_instance.process_name
+    )
+    mocked_supervisor_client.return_value.start.assert_called_once_with(
+        supervisor_process_instance.process_name
     )
 
-    self.assertFalse(result)
-    self._mocked_client().status.assert_called_once_with(self.mock_process)
+  @pytest.mark.parametrize(
+      "test_status", [
+          supervisor_config.ProcessStatus.RUNNING,
+          supervisor_config.ProcessStatus.RESTARTING,
+          supervisor_config.ProcessStatus.STARTING,
+      ]
+  )
+  def test_start__vary_state__raises_exception(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+      test_status: supervisor_config.ProcessStatus,
+  ) -> None:
+    mocked_supervisor_client.return_value.status.return_value = test_status
+
+    with pytest.raises(supervisor_process.SupervisorProcessException):
+      supervisor_process_instance.start()
+
+    mocked_supervisor_client.return_value.status.assert_called_once_with(
+        supervisor_process_instance.process_name
+    )
+    mocked_supervisor_client.return_value.start.assert_not_called()
+
+  @pytest.mark.parametrize(
+      "test_status", [
+          supervisor_config.ProcessStatus.RUNNING,
+          supervisor_config.ProcessStatus.STARTING,
+      ]
+  )
+  def test_stop__vary_state__calls_client_correctly(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+      test_status: supervisor_config.ProcessStatus,
+  ) -> None:
+    mocked_supervisor_client.return_value.status.return_value = test_status
+
+    supervisor_process_instance.stop()
+
+    mocked_supervisor_client.return_value.status.assert_called_once_with(
+        supervisor_process_instance.process_name
+    )
+    mocked_supervisor_client.return_value.stop.assert_called_once_with(
+        supervisor_process_instance.process_name
+    )
+
+  @pytest.mark.parametrize(
+      "test_status", [
+          supervisor_config.ProcessStatus.FATAL,
+          supervisor_config.ProcessStatus.SHUTDOWN,
+          supervisor_config.ProcessStatus.STOPPED,
+      ]
+  )
+  def test_stop__vary_state__raises_exception(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+      test_status: supervisor_config.ProcessStatus,
+  ) -> None:
+    mocked_supervisor_client.return_value.status.return_value = test_status
+
+    with pytest.raises(supervisor_process.SupervisorProcessException):
+      supervisor_process_instance.stop()
+
+    mocked_supervisor_client.return_value.status.assert_called_once_with(
+        supervisor_process_instance.process_name
+    )
+    mocked_supervisor_client.return_value.stop.assert_not_called()
+
+  @pytest.mark.parametrize(
+      "test_status",
+      supervisor_config.ProcessStatus,
+  )
+  def test_status__vary_state__returns_correct_value(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+      test_status: supervisor_config.ProcessStatus,
+  ) -> None:
+    mocked_supervisor_client.return_value.status.return_value = test_status
+
+    result = supervisor_process_instance.status()
+
+    mocked_supervisor_client.return_value.status.assert_called_once_with(
+        supervisor_process_instance.process_name
+    )
+    assert result == test_status.value
+
+  @pytest.mark.parametrize(
+      "status_range,test_status", [
+          [
+              [supervisor_config.ProcessStatus.STOPPED],
+              supervisor_config.ProcessStatus.RUNNING,
+          ],
+          [
+              [supervisor_config.ProcessStatus.RUNNING],
+              supervisor_config.ProcessStatus.RUNNING,
+          ],
+      ]
+  )
+  def test_status_in__vary_state__returns_correct_value(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+      status_range: List[supervisor_config.ProcessStatus],
+      test_status: supervisor_config.ProcessStatus,
+  ) -> None:
+    mocked_supervisor_client.return_value.status.return_value = test_status
+
+    result = supervisor_process_instance.status_in(status_range)
+
+    assert result == (test_status in status_range)
 
   @freeze_time("2021-11-21-04:30:00")
-  def test_uptime_running(self) -> None:
-    self._mocked_client(
-    ).status.return_value = supervisor_config.ProcessStatus.RUNNING
-    self._mocked_client().start_time.return_value = "1637288711"
+  @pytest.mark.parametrize(
+      "test_status",
+      [
+          supervisor_config.ProcessStatus.RUNNING,
+      ],
+  )
+  def test_uptime__vary_state__returns_correct_value(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+      test_status: supervisor_config.ProcessStatus,
+  ) -> None:
+    mocked_supervisor_client.return_value.status.return_value = test_status
+    mocked_supervisor_client.return_value.start_time.return_value = "1637288711"
 
-    result = self.instance.uptime()
+    result = supervisor_process_instance.uptime()
 
-    self._mocked_client().start_time.assert_called_once_with(self.mock_process)
-    self.assertEqual(result, "2 days")
+    mocked_supervisor_client.return_value.status.assert_called_once_with(
+        supervisor_process_instance.process_name
+    )
+    assert result == "2 days"
 
-  def test_uptime_stopped(self) -> None:
-    self._mocked_client(
-    ).status.return_value = supervisor_config.ProcessStatus.STOPPED
+  @pytest.mark.parametrize(
+      "test_status",
+      [
+          supervisor_config.ProcessStatus.FATAL,
+          supervisor_config.ProcessStatus.RESTARTING,
+          supervisor_config.ProcessStatus.SHUTDOWN,
+          supervisor_config.ProcessStatus.STARTING,
+          supervisor_config.ProcessStatus.STOPPED,
+      ],
+  )
+  def test_uptime__vary_state__return_correct_message(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+      test_status: supervisor_config.ProcessStatus,
+  ) -> None:
+    mocked_supervisor_client.return_value.status.return_value = test_status
 
-    result = self.instance.uptime()
+    result = supervisor_process_instance.uptime()
 
-    self._mocked_client().start_time.assert_not_called()
-    self.assertEqual(result, self.instance.uptime_when_stopped)
+    mocked_supervisor_client.return_value.status.assert_called_once_with(
+        supervisor_process_instance.process_name
+    )
+    assert result == supervisor_process_instance.uptime_when_stopped
