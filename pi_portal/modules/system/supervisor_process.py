@@ -32,6 +32,7 @@ class SupervisorProcess:
         [
             supervisor_config.ProcessStatus.RUNNING,
             supervisor_config.ProcessStatus.RESTARTING,
+            supervisor_config.ProcessStatus.STARTING,
         ]
     )
     if not query:
@@ -63,6 +64,7 @@ class SupervisorProcess:
         [
             supervisor_config.ProcessStatus.RUNNING,
             supervisor_config.ProcessStatus.RESTARTING,
+            supervisor_config.ProcessStatus.STARTING,
         ]
     )
     if query:

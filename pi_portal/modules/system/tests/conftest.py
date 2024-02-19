@@ -6,7 +6,13 @@ from io import BytesIO
 from unittest import mock
 
 import pytest
-from .. import file_security, file_system, supervisor
+from .. import (
+    file_security,
+    file_system,
+    supervisor,
+    supervisor_config,
+    supervisor_process,
+)
 
 
 @pytest.fixture
@@ -61,6 +67,11 @@ def mocked_file_path() -> str:
 
 
 @pytest.fixture
+def mocked_process() -> supervisor_config.ProcessList:
+  return supervisor_config.ProcessList.BOT
+
+
+@pytest.fixture
 def mocked_hashlib_sha256() -> mock.Mock:
   return mock.Mock()
 
@@ -83,12 +94,17 @@ def mocked_shutil() -> mock.Mock:
 
 
 @pytest.fixture
+def mocked_supervisor_client() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
 def mocked_supervisor_server() -> mock.Mock:
   return mock.Mock()
 
 
 @pytest.fixture
-def supervisor_instance(
+def supervisor_client_instance(
     mocked_supervisor_server: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> supervisor.SupervisorClient:
@@ -97,3 +113,16 @@ def supervisor_instance(
       mocked_supervisor_server,
   )
   return supervisor.SupervisorClient()
+
+
+@pytest.fixture
+def supervisor_process_instance(
+    mocked_process: supervisor_config.ProcessList,
+    mocked_supervisor_client: mock.Mock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> supervisor_process.SupervisorProcess:
+  monkeypatch.setattr(
+      supervisor_process.__name__ + ".supervisor.SupervisorClient",
+      mocked_supervisor_client,
+  )
+  return supervisor_process.SupervisorProcess(mocked_process)
