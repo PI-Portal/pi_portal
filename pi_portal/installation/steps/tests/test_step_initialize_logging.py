@@ -99,11 +99,13 @@ class TestStepInitializeLogging:
       step_initialize_logging_instance: StepInitializeLogging,
   ) -> None:
     assert isinstance(step_initialize_logging_instance.log, logging.Logger)
+    # pylint: disable=duplicate-code
     assert step_initialize_logging_instance.log_files == [
-        config.LOG_FILE_CONTACT_SWITCH_MONITOR,  # pylint: disable=duplicate-code
-        config.LOG_FILE_MOTION,
         config.LOG_FILE_CHAT_BOT,
         config.LOG_FILE_CHAT_CLIENT,
+        config.LOG_FILE_CONTACT_SWITCH_MONITOR,
+        config.LOG_FILE_DEAD_MAN_SWITCH,
+        config.LOG_FILE_MOTION,
         config.LOG_FILE_TASK_SCHEDULER,
         config.LOG_FILE_TEMPERATURE_MONITOR,
     ]

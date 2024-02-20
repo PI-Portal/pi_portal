@@ -27,6 +27,17 @@ filebeat.inputs:
 
   - type: log
     paths:
+      - "{{ LOG_FILE_DEAD_MAN_SWITCH }}*"
+    fields:
+      logzio_codec: json
+      token: "{{ USER_CONFIG['LOGS']['LOGZ_IO']['LOGZ_IO_TOKEN'] }}"
+      type: pi_portal_dead_man_switch_json
+    fields_under_root: true
+    encoding: utf-8
+    ignore_older: 12h
+
+  - type: log
+    paths:
       - "{{ LOG_FILE_TASK_SCHEDULER }}*"
     fields:
       logzio_codec: json
