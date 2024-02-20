@@ -1,20 +1,25 @@
-"""Test the Slack CLI Disarm Command."""
+"""Test the DisarmCommand class."""
 
 from pi_portal.modules.integrations.slack.cli.commands import DisarmCommand
 from pi_portal.modules.system.supervisor_config import ProcessList
-from typing_extensions import Literal
-from ..bases.tests.fixtures import process_management_command_harness
+from ..bases import process_management_command
 
 
-class TestDisarmCommand(
-    process_management_command_harness.ProcessManagementCommandBaseTestHarness
-):
-  """Test the Slack CLI Disarm Command."""
+class TestDisarmCommand:
+  """Test the DisarmCommand class."""
 
-  __test__ = True
-  expected_process_name = ProcessList.CAMERA
-  expected_process_command: Literal["stop"] = "stop"
+  def test_initialize__attributes(
+      self,
+      disarm_command_instance: DisarmCommand,
+  ) -> None:
+    assert disarm_command_instance.process_name == ProcessList.CAMERA
+    assert disarm_command_instance.process_command == "stop"
 
-  @classmethod
-  def setUpClass(cls) -> None:
-    cls.test_class = DisarmCommand
+  def test_initialize__inheritance(
+      self,
+      disarm_command_instance: DisarmCommand,
+  ) -> None:
+    assert isinstance(
+        disarm_command_instance,
+        process_management_command.ChatProcessManagementCommandBase,
+    )

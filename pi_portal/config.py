@@ -28,8 +28,8 @@ LOG_FILE_CONTACT_SWITCH_MONITOR = (
 )
 LOG_FILE_MOTION = f"{LOG_FILE_BASE_FOLDER}/pi_portal.motion.log"
 LOG_FILE_TASK_SCHEDULER = f"{LOG_FILE_BASE_FOLDER}/pi_portal.tasks.log"
-LOG_FILE_SLACK_BOT = f"{LOG_FILE_BASE_FOLDER}/pi_portal.slack_bot.log"
-LOG_FILE_SLACK_CLIENT = f"{LOG_FILE_BASE_FOLDER}/pi_portal.slack_client.log"
+LOG_FILE_CHAT_BOT = f"{LOG_FILE_BASE_FOLDER}/pi_portal.chat_bot.log"
+LOG_FILE_CHAT_CLIENT = f"{LOG_FILE_BASE_FOLDER}/pi_portal.chat_client.log"
 LOG_FILE_TEMPERATURE_MONITOR = (
     f"{LOG_FILE_BASE_FOLDER}/pi_portal.temperature.log"
 )

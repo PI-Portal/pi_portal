@@ -20,10 +20,10 @@ class TypeSlackBoltEvent(TypedDict):
 
 
 class SlackBot(write_archived_log_file.ArchivedLogFileWriter):
-  """Slack bot."""
+  """Slack implementation of a chatbot."""
 
   logger_name = "bot"
-  log_file_path = config.LOG_FILE_SLACK_BOT
+  log_file_path = config.LOG_FILE_CHAT_BOT
   web_socket: SocketModeHandler
 
   def __init__(self) -> None:
@@ -36,14 +36,14 @@ class SlackBot(write_archived_log_file.ArchivedLogFileWriter):
     self.configure_logger()
     self.channel_id = slack_integration_config['SLACK_CHANNEL_ID']
     self.command_list = cli.get_available_commands()
-    self.slack_client = client.SlackClient()
+    self.chat_client = client.SlackClient()
     self.web_socket = SocketModeHandler(
         self.app,
         slack_integration_config['SLACK_APP_TOKEN'],
     )
 
   def connect(self) -> None:
-    """Start the Slack bot."""
+    """Start the chatbot."""
 
     @self.app.event("message")
     def receiver(event: TypeSlackBoltEvent) -> None:
@@ -54,10 +54,10 @@ class SlackBot(write_archived_log_file.ArchivedLogFileWriter):
 
       self.handle_event(event)  # pragma: no cover
 
-    self.slack_client.send_message(
+    self.chat_client.send_message(
         "I've rebooted!  Now listening for commands..."
     )
-    self.log.warning("Slack Bot process has started.")
+    self.log.warning("Chat Bot process has started.")
 
     # BaseSocketModeHandler is untyped
     start = cast(Callable[[], None], self.web_socket.start)
@@ -83,11 +83,11 @@ class SlackBot(write_archived_log_file.ArchivedLogFileWriter):
   def handle_command(self, command: str) -> None:
     """Handle a CLI command by name.
 
-    :param command: The Slack CLI command to handle.
+    :param command: The chat CLI command to handle.
     """
 
     self.log.debug("Received command: '%s'", command)
     if command in self.command_list:
       self.log.info("Executing valid command: '%s'", command)
-      command_handler = handler.SlackCLICommandHandler(bot=self)
+      command_handler = handler.ChatCLICommandHandler(bot=self)
       getattr(command_handler, command_handler.method_prefix + command)()

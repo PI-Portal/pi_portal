@@ -1,21 +1,29 @@
-"""Base class for Slack CLI commands."""
+"""Base class for chat CLI commands."""
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from pi_portal.modules.system.supervisor_config import ProcessList
 from typing_extensions import Literal
-from .process_command import SlackProcessCommandBase
+from .process_command import ChatProcessCommandBase
+
+if TYPE_CHECKING:
+  from pi_portal.modules.integrations.slack.bot import \
+      SlackBot  # pragma: no cover
 
 
-class SlackProcessStatusCommandBase(SlackProcessCommandBase):
-  """A base command for the Slack CLI that retrieves process information.
+class ChatProcessStatusCommandBase(ChatProcessCommandBase):
+  """A base command for the chat CLI that retrieves process information.
 
-  :param bot: The configured slack bot in use.
+  :param bot: The configured chatbot in use.
   """
 
   process_name: ProcessList
   process_command: Literal["status", "uptime"]
   result: Optional[str]
+
+  def __init__(self, bot: "SlackBot") -> None:
+    super().__init__(bot)
+    self.result = None
 
   def hook_invoker(self) -> None:
     """Retrieve process information."""

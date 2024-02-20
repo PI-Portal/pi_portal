@@ -1,4 +1,4 @@
-"""Slack CLI Snapshot command."""
+"""Chat CLI Snapshot command."""
 
 from typing import TYPE_CHECKING
 
@@ -7,17 +7,17 @@ from pi_portal.modules.system.supervisor_config import (
     ProcessList,
     ProcessStatus,
 )
-from .bases.process_command import SlackProcessCommandBase
+from .bases.process_command import ChatProcessCommandBase
 
 if TYPE_CHECKING:
   from pi_portal.modules.integrations.slack.bot import \
       SlackBot  # pragma: no cover
 
 
-class SnapshotCommand(SlackProcessCommandBase):
-  """Slack CLI command to take a snapshot with the camera.
+class SnapshotCommand(ChatProcessCommandBase):
+  """Chat CLI command to take a snapshot with the camera.
 
-  :param bot: The configured slack bot in use.
+  :param bot: The configured chatbot in use.
   """
 
   process_name = ProcessList.CAMERA
@@ -32,9 +32,7 @@ class SnapshotCommand(SlackProcessCommandBase):
     if self._is_camera_running():
       self._do_snapshot()
     else:
-      self.slack_bot.slack_client.send_message(
-          "Please `arm` the camera first ..."
-      )
+      self.chatbot.chat_client.send_message("Please `arm` the camera first ...")
 
   def _is_camera_running(self) -> bool:
     return self.process.status_in([ProcessStatus.RUNNING])
