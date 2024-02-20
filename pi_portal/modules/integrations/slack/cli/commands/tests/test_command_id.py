@@ -1,24 +1,32 @@
-"""Test the Slack CLI ID Command."""
+"""Test the IDCommand class."""
 
 from unittest import mock
 
 from pi_portal.modules.configuration import state
-from pi_portal.modules.integrations.slack.cli.commands import command_id
-from ..bases.tests.fixtures import command_harness
+from pi_portal.modules.integrations.slack.cli.commands import IDCommand
+from ..bases import command
 
 
-class TestIDCommand(command_harness.CommandBaseTestHarness):
-  """Test the Slack CLI ID Command."""
+class TestIDCommand:
+  """Test the IDCommand class."""
 
-  __test__ = True
+  def test_initialize__inheritance(
+      self,
+      id_command_instance: IDCommand,
+  ) -> None:
+    assert isinstance(
+        id_command_instance,
+        command.ChatCommandBase,
+    )
 
-  @classmethod
-  def setUpClass(cls) -> None:
-    cls.test_class = command_id.IDCommand
+  def test_invoke__sends_correct_message(
+      self,
+      id_command_instance: IDCommand,
+      mocked_chat_bot: mock.Mock,
+      mocked_state: state.State,
+  ) -> None:
+    id_command_instance.invoke()
 
-  @mock.patch(state.__name__ + ".State")
-  def test_invoke(self, m_state: mock.Mock) -> None:
-    self.instance.invoke()
-    self.mock_slack_bot.slack_client.send_message.assert_called_once_with(
-        f"ID: {m_state.return_value.log_uuid}"
+    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
+        f"ID: {mocked_state.log_uuid}"
     )

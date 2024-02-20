@@ -1,23 +1,32 @@
-"""Test the Slack CLI Help Command."""
+"""Test the HelpCommand class."""
 
-from pi_portal.modules.integrations.slack.cli.commands import command_help
-from ..bases.tests.fixtures import command_harness
+from unittest import mock
+
+from pi_portal.modules.integrations.slack.cli.commands import HelpCommand
+from ..bases import command
 
 
-class TestHelpCommand(command_harness.CommandBaseTestHarness):
-  """Test the Slack CLI Help Command."""
+class TestHelpCommand:
+  """Test the HelpCommand class."""
 
-  __test__ = True
+  def test_initialize__inheritance(
+      self,
+      help_command_instance: HelpCommand,
+  ) -> None:
+    assert isinstance(
+        help_command_instance,
+        command.ChatCommandBase,
+    )
 
-  @classmethod
-  def setUpClass(cls) -> None:
-    cls.test_class = command_help.HelpCommand
+  def test_invoke__sends_correct_message(
+      self,
+      help_command_instance: HelpCommand,
+      mocked_chat_bot: mock.Mock,
+  ) -> None:
+    mocked_chat_bot.command_list = ['a', 'b', 'c']
 
-  def test_invoke(self) -> None:
-    self.mock_slack_bot.command_list = ['a', 'b', 'c']
+    help_command_instance.invoke()
 
-    self.instance.invoke()
-
-    self.mock_slack_bot.slack_client.send_message.assert_called_once_with(
-        f"Available Commands: {', '.join(self.mock_slack_bot.command_list)}"
+    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
+        f"Available Commands: {', '.join(mocked_chat_bot.command_list)}"
     )

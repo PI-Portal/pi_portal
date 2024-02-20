@@ -1,22 +1,22 @@
-"""Slack CLI."""
+"""Chat CLI."""
 
 from typing import List
 
 from pi_portal.modules.integrations.slack.cli import commands, handler
 from pi_portal.modules.integrations.slack.cli.commands.bases.command import (
-    SlackCommandBase,
+    ChatCommandBase,
 )
 
 
 def get_available_commands() -> List[str]:
-  """Retrieve a complete list of Slack CLI commands.
+  """Retrieve a complete list of chat CLI commands.
 
-  :returns: The complete list of Slack CLI commands.
+  :returns: The complete list of chat CLI commands.
   """
   command_list = []
-  for method in dir(handler.SlackCLICommandHandler):
-    if method.startswith(handler.SlackCLICommandHandler.method_prefix) is True:
+  for method in dir(handler.ChatCLICommandHandler):
+    if method.startswith(handler.ChatCLICommandHandler.method_prefix) is True:
       command_list.append(
-          method.replace(handler.SlackCLICommandHandler.method_prefix, '')
+          method.replace(handler.ChatCLICommandHandler.method_prefix, '')
       )
   return command_list
