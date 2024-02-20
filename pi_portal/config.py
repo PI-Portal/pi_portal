@@ -26,6 +26,9 @@ LOG_FILE_BASE_FOLDER = "/var/log/pi_portal"
 LOG_FILE_CONTACT_SWITCH_MONITOR = (
     f"{LOG_FILE_BASE_FOLDER}/pi_portal.contact_switch.log"
 )
+LOG_FILE_DEAD_MAN_SWITCH = (
+    f"{LOG_FILE_BASE_FOLDER}/pi_portal.dead_man_switch.log"
+)
 LOG_FILE_MOTION = f"{LOG_FILE_BASE_FOLDER}/pi_portal.motion.log"
 LOG_FILE_TASK_SCHEDULER = f"{LOG_FILE_BASE_FOLDER}/pi_portal.tasks.log"
 LOG_FILE_CHAT_BOT = f"{LOG_FILE_BASE_FOLDER}/pi_portal.chat_bot.log"
