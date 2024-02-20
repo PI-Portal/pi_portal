@@ -1,46 +1,40 @@
-"""Slack CLI Uptime commands."""
+"""Chat CLI Uptime commands."""
 
-from pi_portal.modules.system import linux, supervisor
-from .bases.command import SlackCommandBase
-from .process_uptime_commands.contact_switch_monitor_uptime import (
+from pi_portal.modules.system import linux
+from .bases.command import ChatCommandBase
+from .subcommands.uptime_chat_bot import BotUptimeCommand
+from .subcommands.uptime_contact_switch_monitor import (
     ContactSwitchMonitorUptimeCommand,
 )
-from .process_uptime_commands.slack_bot_uptime import BotUptimeCommand
-from .process_uptime_commands.task_scheduler_uptime import (
-    TaskSchedulerUptimeCommand,
-)
-from .process_uptime_commands.temp_monitor_uptime import (
-    TempMonitorUptimeCommand,
-)
+from .subcommands.uptime_task_scheduler import TaskSchedulerUptimeCommand
+from .subcommands.uptime_temp_monitor import TempMonitorUptimeCommand
 
 
-class UptimeCommand(SlackCommandBase):
-  """Slack CLI command to report the uptime of the system components.
+class UptimeCommand(ChatCommandBase):
+  """Chat CLI command to report the uptime of the system components."""
 
-  :param bot: The configured slack bot in use.
-  """
+  exception_message = "An error occurred when collecting uptime information..."
 
   def invoke(self) -> None:
     """Report the uptime of the system and Pi Portal processes."""
 
-    bot_uptime_command = BotUptimeCommand(self.slack_bot)
+    bot_uptime_command = BotUptimeCommand(self.chatbot)
     switch_monitor_uptime_command = ContactSwitchMonitorUptimeCommand(
-        self.slack_bot
+        self.chatbot
     )
-    task_scheduler_uptime_command = TaskSchedulerUptimeCommand(self.slack_bot)
-    temp_monitor_uptime_command = TempMonitorUptimeCommand(self.slack_bot)
+    task_scheduler_uptime_command = TaskSchedulerUptimeCommand(self.chatbot)
+    temp_monitor_uptime_command = TempMonitorUptimeCommand(self.chatbot)
 
     try:
+      linux_uptime = linux.uptime()
       bot_uptime_command.invoke()
       switch_monitor_uptime_command.invoke()
       task_scheduler_uptime_command.invoke()
       temp_monitor_uptime_command.invoke()
-    except supervisor.SupervisorException:
-      pass
+    except Exception:  # pylint: disable=broad-exception-caught
+      self.notifier.notify_error()
     else:
-      linux_uptime = linux.uptime()
-
-      self.slack_bot.slack_client.send_message(
+      self.chatbot.chat_client.send_message(
           f"System Uptime > {linux_uptime}\n"
           f"Bot Uptime > {bot_uptime_command.result}\n"
           "Contact Switch Monitor Uptime > "

@@ -1,20 +1,25 @@
-"""Test the Slack CLI Arm Command."""
+"""Test the ArmCommand class."""
 
 from pi_portal.modules.integrations.slack.cli.commands import ArmCommand
 from pi_portal.modules.system.supervisor_config import ProcessList
-from typing_extensions import Literal
-from ..bases.tests.fixtures import process_management_command_harness
+from ..bases import process_management_command
 
 
-class TestArmCommand(
-    process_management_command_harness.ProcessManagementCommandBaseTestHarness
-):
-  """Test the Slack CLI Arm Command."""
+class TestArmCommand:
+  """Test the ArmCommand class."""
 
-  __test__ = True
-  expected_process_name = ProcessList.CAMERA
-  expected_process_command: Literal["start"] = "start"
+  def test_initialize__attributes(
+      self,
+      arm_command_instance: ArmCommand,
+  ) -> None:
+    assert arm_command_instance.process_name == ProcessList.CAMERA
+    assert arm_command_instance.process_command == "start"
 
-  @classmethod
-  def setUpClass(cls) -> None:
-    cls.test_class = ArmCommand
+  def test_initialize__inheritance(
+      self,
+      arm_command_instance: ArmCommand,
+  ) -> None:
+    assert isinstance(
+        arm_command_instance,
+        process_management_command.ChatProcessManagementCommandBase,
+    )

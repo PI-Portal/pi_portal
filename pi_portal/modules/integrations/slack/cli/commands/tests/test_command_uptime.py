@@ -1,115 +1,140 @@
-"""Test the Slack CLI Uptime Command."""
+"""Test the UptimeCommand class."""
 
-from collections import OrderedDict
+from typing import Dict, List
 from unittest import mock
 
-from pi_portal.modules.integrations.slack.cli.commands import command_uptime
-from pi_portal.modules.integrations.slack.cli.commands.bases import (
-    process_command,
-)
-from pi_portal.modules.system import supervisor
-from pi_portal.modules.system.supervisor_config import ProcessList
-from ..bases.tests.fixtures import command_harness
+import pytest
+from pi_portal.modules.integrations.slack.cli.commands import UptimeCommand
+from ..bases import command
 
 
-class TestUptimeCommand(command_harness.CommandBaseTestHarness):
-  """Test the Slack CLI Uptime Command."""
+class TestUptimeCommand:
+  """Test the UptimeCommand class."""
 
-  __test__ = True
+  def test_initialize__inheritance(
+      self,
+      uptime_command_instance: UptimeCommand,
+  ) -> None:
+    assert isinstance(
+        uptime_command_instance,
+        command.ChatCommandBase,
+    )
 
-  uptimes = OrderedDict(
-      {
-          "linux": "1000 days",
-          "slack_bot": "1 day",
-          "contact_switch_monitor": "2 days",
-          "task_scheduler": "3 days",
-          "temp_monitor": "4 days",
-      }
+  def test_invoke__no_error__calls_expected_processes(
+      self,
+      uptime_command_instance: UptimeCommand,
+      mocked_linux_module: mock.Mock,
+      mocked_uptime_subcommands: Dict[str, mock.Mock],
+  ) -> None:
+
+    uptime_command_instance.invoke()
+
+    mocked_linux_module.uptime.assert_called_once_with()
+    for mocked_class in mocked_uptime_subcommands.values():
+      mocked_class.return_value.invoke.assert_called_once_with()
+
+  def test_invoke__no_error__sends_correct_message(
+      self,
+      uptime_command_instance: UptimeCommand,
+      mocked_linux_module: mock.Mock,
+      mocked_chat_bot: mock.Mock,
+      mocked_uptime_subcommands: Dict[str, mock.Mock],
+  ) -> None:
+    uptime_command_instance.invoke()
+
+    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
+        "System Uptime > "
+        f"{mocked_linux_module.uptime.return_value}\n"
+        "Bot Uptime > " +
+        str(mocked_uptime_subcommands['BotUptimeCommand'].return_value.result) +
+        "\n"
+        "Contact Switch Monitor Uptime > " + str(
+            mocked_uptime_subcommands['ContactSwitchMonitorUptimeCommand'].
+            return_value.result
+        ) + "\n"
+        "Task Scheduler Uptime > " + str(
+            mocked_uptime_subcommands['TaskSchedulerUptimeCommand'].
+            return_value.result
+        ) + "\n"
+        "Temperature Monitor Uptime > " + str(
+            mocked_uptime_subcommands['TempMonitorUptimeCommand'].return_value.
+            result
+        )
+    )
+
+  def test_invoke__linux_uptime_error__calls_expected_processes(
+      self,
+      uptime_command_instance: UptimeCommand,
+      mocked_linux_module: mock.Mock,
+      mocked_uptime_subcommands: Dict[str, mock.Mock],
+  ) -> None:
+    mocked_linux_module.uptime.side_effect = Exception
+
+    uptime_command_instance.invoke()
+
+    for mocked_class in mocked_uptime_subcommands.values():
+      mocked_class.return_value.uptime.assert_not_called()
+
+  def test_invoke__linux_uptime_error__sends_error_message(
+      self,
+      uptime_command_instance: UptimeCommand,
+      mocked_chat_bot: mock.Mock,
+      mocked_cli_notifier: mock.Mock,
+      mocked_linux_module: mock.Mock,
+  ) -> None:
+    mocked_linux_module.uptime.side_effect = Exception
+
+    uptime_command_instance.invoke()
+
+    mocked_cli_notifier.return_value.notify_error.assert_called_once_with()
+    mocked_chat_bot.chat_client.send_message.assert_not_called()
+
+  @pytest.mark.parametrize(
+      "error_class,expected_calls", [
+          ["BotUptimeCommand", [True, False, False, False]],
+          ["ContactSwitchMonitorUptimeCommand", [True, True, False, False]],
+          ["TaskSchedulerUptimeCommand", [True, True, True, False]],
+          ["TempMonitorUptimeCommand", [True, True, True, True]],
+      ]
   )
-
-  @classmethod
-  def setUpClass(cls) -> None:
-    cls.test_class = command_uptime.UptimeCommand
-
-  @mock.patch(process_command.__name__ + ".SupervisorProcess")
-  @mock.patch(command_uptime.__name__ + ".linux.uptime")
-  def test_invoke__correct_message(
+  def test_invoke__vary_uptime_error__calls_expected_processes(
       self,
-      m_linux: mock.Mock,
-      m_process: mock.Mock,
+      uptime_command_instance: UptimeCommand,
+      mocked_uptime_subcommands: Dict[str, mock.Mock],
+      error_class: str,
+      expected_calls: List[bool],
   ) -> None:
-    m_process.return_value.uptime.side_effect = list(self.uptimes.values())[1:]
-    m_linux.return_value = self.uptimes["linux"]
-
-    self.instance.invoke()
-
-    self.mock_slack_bot.slack_client.send_message.assert_called_once_with(
-        f"System Uptime > {self.uptimes['linux']}\n"
-        f"Bot Uptime > {self.uptimes['slack_bot']}\n"
-        "Contact Switch Monitor Uptime > "
-        f"{self.uptimes['contact_switch_monitor']}\n"
-        f"Task Scheduler Uptime > {self.uptimes['task_scheduler']}\n"
-        f"Temperature Monitor Uptime > {self.uptimes['temp_monitor']}"
+    mocked_uptime_subcommands[error_class].return_value.invoke.side_effect = (
+        Exception
     )
 
-  @mock.patch(process_command.__name__ + ".SupervisorProcess")
-  @mock.patch(command_uptime.__name__ + ".linux.uptime", mock.Mock())
-  def test_invoke__correct_processes(
-      self,
-      m_process: mock.Mock,
-  ) -> None:
-    self.instance.invoke()
-    m_process.return_value.uptime.return_value = "string"
+    uptime_command_instance.invoke()
 
-    assert len(m_process.mock_calls) == 12
-    assert m_process.mock_calls[0:4] == [
-        mock.call(ProcessList.BOT),
-        mock.call(ProcessList.CONTACT_SWITCH_MONITOR),
-        mock.call(ProcessList.TASK_SCHEDULER),
-        mock.call(ProcessList.TEMP_MONITOR),
-    ]
-    assert m_process.mock_calls[4:8] == [mock.call().uptime()] * 4
-    assert [str(call) for call in m_process.mock_calls[8:12]] == \
-           ["call().uptime().__str__()"] * 4
+    for index, mocked_class in enumerate(mocked_uptime_subcommands.values()):
+      called = mocked_class.return_value.invoke.mock_calls == [mock.call()]
+      assert called == expected_calls[index]
 
-  @mock.patch(process_command.__name__ + ".SupervisorProcess", mock.Mock())
-  @mock.patch(command_uptime.__name__ + ".linux.uptime", mock.Mock())
-  @mock.patch(command_uptime.__name__ + ".BotUptimeCommand")
-  def test_invoke__error_bot(
+  @pytest.mark.parametrize(
+      "error_class", [
+          "BotUptimeCommand",
+          "ContactSwitchMonitorUptimeCommand",
+          "TaskSchedulerUptimeCommand",
+          "TempMonitorUptimeCommand",
+      ]
+  )
+  def test_invoke__vary_uptime_error__sends_error_message(
       self,
-      m_bot: mock.Mock,
+      uptime_command_instance: UptimeCommand,
+      mocked_chat_bot: mock.Mock,
+      mocked_cli_notifier: mock.Mock,
+      mocked_uptime_subcommands: Dict[str, mock.Mock],
+      error_class: str,
   ) -> None:
-    m_bot.return_value.invoke.side_effect = supervisor.SupervisorException(
-        "Boom!"
+    mocked_uptime_subcommands[error_class].return_value.invoke.side_effect = (
+        Exception
     )
 
-    self.instance.invoke()
-    self.mock_slack_bot.slack_client.send_message.assert_not_called()
+    uptime_command_instance.invoke()
 
-  @mock.patch(process_command.__name__ + ".SupervisorProcess", mock.Mock())
-  @mock.patch(command_uptime.__name__ + ".linux.uptime", mock.Mock())
-  @mock.patch(command_uptime.__name__ + ".ContactSwitchMonitorUptimeCommand")
-  def test_invoke__error_contact_switch(
-      self,
-      m_contact_switch: mock.Mock,
-  ) -> None:
-    m_contact_switch.return_value.invoke.side_effect = (
-        supervisor.SupervisorException("Boom!")
-    )
-
-    self.instance.invoke()
-    self.mock_slack_bot.slack_client.send_message.assert_not_called()
-
-  @mock.patch(process_command.__name__ + ".SupervisorProcess", mock.Mock())
-  @mock.patch(command_uptime.__name__ + ".linux.uptime", mock.Mock())
-  @mock.patch(command_uptime.__name__ + ".TempMonitorUptimeCommand")
-  def test_invoke__error_temp(
-      self,
-      m_temp: mock.Mock,
-  ) -> None:
-    m_temp.return_value.invoke.side_effect = supervisor.SupervisorException(
-        "Boom!"
-    )
-
-    self.instance.invoke()
-    self.mock_slack_bot.slack_client.send_message.assert_not_called()
+    mocked_cli_notifier.return_value.notify_error.assert_called_once_with()
+    mocked_chat_bot.chat_client.send_message.assert_not_called()

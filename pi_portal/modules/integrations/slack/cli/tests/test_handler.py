@@ -10,26 +10,26 @@ class TestSlackCLICommandHandler:
 
   def test_initialize__attributes(
       self,
-      cli_command_handler_instance: handler.SlackCLICommandHandler,
+      cli_command_handler_instance: handler.ChatCLICommandHandler,
       mocked_slack_bot: mock.Mock,
   ) -> None:
     assert cli_command_handler_instance.method_prefix == "command_"
-    assert cli_command_handler_instance.slack_bot == mocked_slack_bot
+    assert cli_command_handler_instance.chatbot == mocked_slack_bot
 
   def test_handle__mocked_command(
       self,
-      cli_command_handler_instance: handler.SlackCLICommandHandler,
+      cli_command_handler_instance: handler.ChatCLICommandHandler,
   ) -> None:
     mock_command = mock.Mock()
 
     cli_command_handler_instance.handle(mock_command)
 
-    mock_command.assert_called_once_with(cli_command_handler_instance.slack_bot)
+    mock_command.assert_called_once_with(cli_command_handler_instance.chatbot)
     mock_command.return_value.invoke.assert_called_once_with()
 
   def test_id_command(
       self,
-      mocked_cli_command_handler_instance: handler.SlackCLICommandHandler,
+      mocked_cli_command_handler_instance: handler.ChatCLICommandHandler,
       mocked_handler: mock.Mock,
   ) -> None:
     mocked_cli_command_handler_instance.command_id()
@@ -38,7 +38,7 @@ class TestSlackCLICommandHandler:
 
   def test_arm_command(
       self,
-      mocked_cli_command_handler_instance: handler.SlackCLICommandHandler,
+      mocked_cli_command_handler_instance: handler.ChatCLICommandHandler,
       mocked_handler: mock.Mock,
   ) -> None:
     mocked_cli_command_handler_instance.command_arm()
@@ -47,7 +47,7 @@ class TestSlackCLICommandHandler:
 
   def test_disarm_command(
       self,
-      mocked_cli_command_handler_instance: handler.SlackCLICommandHandler,
+      mocked_cli_command_handler_instance: handler.ChatCLICommandHandler,
       mocked_handler: mock.Mock,
   ) -> None:
     mocked_cli_command_handler_instance.command_disarm()
@@ -56,7 +56,7 @@ class TestSlackCLICommandHandler:
 
   def test_help_command(
       self,
-      mocked_cli_command_handler_instance: handler.SlackCLICommandHandler,
+      mocked_cli_command_handler_instance: handler.ChatCLICommandHandler,
       mocked_handler: mock.Mock,
   ) -> None:
     mocked_cli_command_handler_instance.command_help()
@@ -65,7 +65,7 @@ class TestSlackCLICommandHandler:
 
   def test_restart_command(
       self,
-      mocked_cli_command_handler_instance: handler.SlackCLICommandHandler,
+      mocked_cli_command_handler_instance: handler.ChatCLICommandHandler,
       mocked_handler: mock.Mock,
   ) -> None:
     mocked_cli_command_handler_instance.command_restart()
@@ -74,7 +74,7 @@ class TestSlackCLICommandHandler:
 
   def test_snapshot_command(
       self,
-      mocked_cli_command_handler_instance: handler.SlackCLICommandHandler,
+      mocked_cli_command_handler_instance: handler.ChatCLICommandHandler,
       mocked_handler: mock.Mock,
   ) -> None:
     mocked_cli_command_handler_instance.command_snapshot()
@@ -83,7 +83,7 @@ class TestSlackCLICommandHandler:
 
   def test_status_command(
       self,
-      mocked_cli_command_handler_instance: handler.SlackCLICommandHandler,
+      mocked_cli_command_handler_instance: handler.ChatCLICommandHandler,
       mocked_handler: mock.Mock,
   ) -> None:
     mocked_cli_command_handler_instance.command_status()
@@ -92,7 +92,7 @@ class TestSlackCLICommandHandler:
 
   def test_temp_command(
       self,
-      mocked_cli_command_handler_instance: handler.SlackCLICommandHandler,
+      mocked_cli_command_handler_instance: handler.ChatCLICommandHandler,
       mocked_handler: mock.Mock,
   ) -> None:
     mocked_cli_command_handler_instance.command_temp()
@@ -101,7 +101,7 @@ class TestSlackCLICommandHandler:
 
   def test_uptime_command(
       self,
-      mocked_cli_command_handler_instance: handler.SlackCLICommandHandler,
+      mocked_cli_command_handler_instance: handler.ChatCLICommandHandler,
       mocked_handler: mock.Mock,
   ) -> None:
     mocked_cli_command_handler_instance.command_uptime()
