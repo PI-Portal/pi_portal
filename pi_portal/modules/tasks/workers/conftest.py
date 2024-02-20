@@ -6,7 +6,7 @@ import pytest
 
 
 @pytest.fixture
-def mocked_worker_logger(mocked_task_logger: logging.Logger,) -> logging.Logger:
+def mocked_worker_logger(mocked_task_logger: logging.Logger) -> logging.Logger:
   worker_formatter = logging.Formatter(
       '%(levelname)s - %(task)s - %(cron)s - %(queue)s - %(message)s',
       validate=False,
