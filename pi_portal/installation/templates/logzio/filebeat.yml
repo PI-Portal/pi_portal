@@ -15,8 +15,8 @@ filebeat.inputs:
 
   - type: log
     paths:
-      - "{{ LOG_FILE_SLACK_BOT }}*"
-      - "{{ LOG_FILE_SLACK_CLIENT }}*"
+      - "{{ LOG_FILE_CHAT_BOT }}*"
+      - "{{ LOG_FILE_CHAT_CLIENT }}*"
     fields:
       logzio_codec: json
       token: "{{ USER_CONFIG['LOGS']['LOGZ_IO']['LOGZ_IO_TOKEN'] }}"

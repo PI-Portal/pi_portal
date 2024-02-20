@@ -13,8 +13,8 @@ class StepInitializeLogging(base_step.StepBase):
   log_files = [
       config.LOG_FILE_CONTACT_SWITCH_MONITOR,
       config.LOG_FILE_MOTION,
-      config.LOG_FILE_SLACK_BOT,
-      config.LOG_FILE_SLACK_CLIENT,
+      config.LOG_FILE_CHAT_BOT,
+      config.LOG_FILE_CHAT_CLIENT,
       config.LOG_FILE_TASK_SCHEDULER,
       config.LOG_FILE_TEMPERATURE_MONITOR,
   ]

@@ -1,21 +1,17 @@
-"""Base process management class for Slack CLI commands."""
+"""Base process management class for chat CLI commands."""
 
 from pi_portal.modules.system.supervisor import SupervisorException
 from pi_portal.modules.system.supervisor_process import (
     SupervisorProcessException,
 )
 from typing_extensions import Literal
-from .process_command import SlackProcessCommandBase
+from .process_command import ChatProcessCommandBase
 
 
-class SlackProcessManagementCommandBase(SlackProcessCommandBase):
-  """A base command for the Slack CLI that manages a process.
-
-  :param bot: The configured slack bot in use.
-  """
+class ChatProcessManagementCommandBase(ChatProcessCommandBase):
+  """A base command for the chat CLI that manages a process."""
 
   process_command: Literal["start", "stop"]
-  process_notifier: Literal["start", "stop"]
 
   def hook_invoker(self) -> None:
     """Manage the configured process."""

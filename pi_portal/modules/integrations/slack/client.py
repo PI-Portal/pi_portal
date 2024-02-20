@@ -13,7 +13,7 @@ class SlackClient(write_archived_log_file.ArchivedLogFileWriter):
   """Slack messaging client."""
 
   logger_name = "client"
-  log_file_path = config.LOG_FILE_SLACK_CLIENT
+  log_file_path = config.LOG_FILE_CHAT_CLIENT
   retries = 5
 
   def __init__(self) -> None:
