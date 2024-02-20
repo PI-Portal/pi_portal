@@ -1,15 +1,12 @@
-"""Slack CLI Status command."""
+"""Chat CLI Status command."""
 
 from pi_portal.modules.system.supervisor_config import ProcessList
 from typing_extensions import Literal
-from .bases.process_status_command import SlackProcessStatusCommandBase
+from .bases.process_status_command import ChatProcessStatusCommandBase
 
 
-class StatusCommand(SlackProcessStatusCommandBase):
-  """Slack CLI command to report the status of the camera.
-
-  :param bot: The configured slack bot in use.
-  """
+class StatusCommand(ChatProcessStatusCommandBase):
+  """Chat CLI command to report the status of the camera."""
 
   process_name = ProcessList.CAMERA
   process_command: Literal["status"] = "status"
@@ -18,4 +15,4 @@ class StatusCommand(SlackProcessStatusCommandBase):
     """Report if the camera is running or not."""
 
     super().hook_invoker()
-    self.slack_bot.slack_client.send_message(f"Status: {self.result}")
+    self.chatbot.chat_client.send_message(f"Status: {self.result}")

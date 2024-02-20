@@ -1,39 +1,83 @@
-"""Test the SlackProcessCommandBase class."""
+"""Test the ChatProcessCommandBase class."""
 
-from typing import cast
 from unittest import mock
 
 from pi_portal.modules.system import supervisor, supervisor_config
-from .. import process_command
-from .fixtures import simple_process_command_harness
+from .. import command
+from ..process_command import ChatProcessCommandBase
 
 
-class ConcreteCLIProcessCommand(process_command.SlackProcessCommandBase):
-  """A testable concrete instance of the SlackProcessCommandBase class."""
+class TestChatProcessCommandBase:
+  """Test the ChatProcessCommandBase class."""
 
-  process_name = supervisor_config.ProcessList.BOT
-  internal_mock = mock.MagicMock()
+  def test_initialize__attributes(
+      self,
+      concrete_process_command_instance: ChatProcessCommandBase,
+  ) -> None:
+    assert concrete_process_command_instance.process_name == (
+        supervisor_config.ProcessList.BOT
+    )
 
-  def hook_invoker(self) -> None:
-    self.internal_mock()
+  def test_initialize__inheritance(
+      self,
+      concrete_process_command_instance: ChatProcessCommandBase,
+  ) -> None:
+    assert isinstance(
+        concrete_process_command_instance,
+        command.ChatCommandBase,
+    )
+    assert isinstance(
+        concrete_process_command_instance,
+        ChatProcessCommandBase,
+    )
 
+  def test_initialize__bot(
+      self,
+      concrete_process_command_instance: ChatProcessCommandBase,
+      mocked_chat_bot: mock.Mock,
+  ) -> None:
+    assert concrete_process_command_instance.chatbot == mocked_chat_bot
 
-class TestSlackProcessCommandBase(
-    simple_process_command_harness.SimpleProcessCommandBaseTestHarness
-):
-  """Test the SlackProcessCommandBase class."""
+  def test_initialize__notifier(
+      self,
+      concrete_process_command_instance: ChatProcessCommandBase,
+      mocked_chat_client: mock.Mock,
+      mocked_cli_notifier: mock.Mock,
+  ) -> None:
+    assert concrete_process_command_instance.notifier == (
+        mocked_cli_notifier.return_value
+    )
+    mocked_cli_notifier.assert_called_once_with(mocked_chat_client)
 
-  __test__ = True
-  expected_process_name = supervisor_config.ProcessList.BOT
+  def test_initialize__supervisor_process(
+      self,
+      concrete_process_command_instance: ChatProcessCommandBase,
+      mocked_supervisor_process: mock.Mock,
+  ) -> None:
+    assert concrete_process_command_instance.process == (
+        mocked_supervisor_process.return_value
+    )
+    mocked_supervisor_process.assert_called_once_with(
+        concrete_process_command_instance.process_name
+    )
 
-  @classmethod
-  def setUpClass(cls) -> None:
-    cls.test_class = ConcreteCLIProcessCommand
+  def test_invoke__calls_mocked_invoker(
+      self,
+      concrete_process_command_instance: ChatProcessCommandBase,
+      mocked_process_invoker: mock.Mock,
+  ) -> None:
+    concrete_process_command_instance.invoke()
 
-  def test_invoke_with_error(self) -> None:
-    cast(
-        ConcreteCLIProcessCommand,
-        self.instance,
-    ).internal_mock.side_effect = supervisor.SupervisorException("Boom!")
-    self.instance.invoke()
-    self.mock_notifier.notify_error.assert_called_once_with()
+    mocked_process_invoker.assert_called_once_with()
+
+  def test_invoke__supervisor_exception__calls_mocked_notifier(
+      self,
+      concrete_process_command_instance: ChatProcessCommandBase,
+      mocked_process_invoker: mock.Mock,
+      mocked_cli_notifier: mock.Mock,
+  ) -> None:
+    mocked_process_invoker.side_effect = supervisor.SupervisorException("Boom!")
+
+    concrete_process_command_instance.invoke()
+
+    mocked_cli_notifier.return_value.notify_error.assert_called_once_with()
