@@ -1,4 +1,4 @@
-"""Base process command class for Slack CLI commands."""
+"""Base process command class for chat CLI commands."""
 
 import abc
 from typing import TYPE_CHECKING
@@ -6,17 +6,17 @@ from typing import TYPE_CHECKING
 from pi_portal.modules.system.supervisor import SupervisorException
 from pi_portal.modules.system.supervisor_config import ProcessList
 from pi_portal.modules.system.supervisor_process import SupervisorProcess
-from .command import SlackCommandBase
+from .command import ChatCommandBase
 
 if TYPE_CHECKING:
   from pi_portal.modules.integrations.slack.bot import \
       SlackBot  # pragma: no cover
 
 
-class SlackProcessCommandBase(SlackCommandBase, abc.ABC):
-  """A base command for interacting with processes via the Slack CLI.
+class ChatProcessCommandBase(ChatCommandBase, abc.ABC):
+  """A base command for interacting with processes via the chat CLI.
 
-  :param bot: The configured slack bot in use.
+  :param bot: The configured chatbot in use.
   """
 
   process_name: ProcessList

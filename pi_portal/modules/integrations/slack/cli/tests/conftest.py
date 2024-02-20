@@ -18,7 +18,7 @@ def mocked_slack_bot() -> mock.Mock:
 
 
 @pytest.fixture()
-def mocked_slack_client() -> mock.Mock:
+def mocked_chat_client() -> mock.Mock:
   return mock.Mock()
 
 
@@ -27,20 +27,20 @@ def mocked_cli_command_handler_instance(
     mocked_handler: mock.Mock,
     mocked_slack_bot: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
-) -> handler.SlackCLICommandHandler:
-  monkeypatch.setattr(handler.SlackCLICommandHandler, "handle", mocked_handler)
-  return handler.SlackCLICommandHandler(mocked_slack_bot)
+) -> handler.ChatCLICommandHandler:
+  monkeypatch.setattr(handler.ChatCLICommandHandler, "handle", mocked_handler)
+  return handler.ChatCLICommandHandler(mocked_slack_bot)
 
 
 @pytest.fixture
 def cli_command_handler_instance(
     mocked_slack_bot: mock.Mock,
-) -> handler.SlackCLICommandHandler:
-  return handler.SlackCLICommandHandler(mocked_slack_bot)
+) -> handler.ChatCLICommandHandler:
+  return handler.ChatCLICommandHandler(mocked_slack_bot)
 
 
 @pytest.fixture
 def cli_notifier_instance(
-    mocked_slack_client: mock.Mock,
-) -> notifier.SlackCLINotifier:
-  return notifier.SlackCLINotifier(mocked_slack_client)
+    mocked_chat_client: mock.Mock,
+) -> notifier.ChatCLINotifier:
+  return notifier.ChatCLINotifier(mocked_chat_client)

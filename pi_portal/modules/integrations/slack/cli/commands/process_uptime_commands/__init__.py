@@ -1,1 +1,0 @@
-"""Slack CLI uptime commands."""

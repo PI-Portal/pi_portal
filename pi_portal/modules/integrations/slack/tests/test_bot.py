@@ -19,7 +19,7 @@ class TestSlackBot:
     assert isinstance(bot_instance.log, mock.Mock)
     assert bot_instance.channel_id == mock_state.MOCK_SLACK_CHANNEL_ID
     assert bot_instance.command_list == cli.get_available_commands()
-    assert isinstance(bot_instance.slack_client, mock.Mock)
+    assert isinstance(bot_instance.chat_client, mock.Mock)
     assert isinstance(bot_instance.web_socket, mock.Mock)
 
   def test_initialize__app(
@@ -40,7 +40,7 @@ class TestSlackBot:
       bot_instance: bot.SlackBot,
       mocked_slack_client: mock.Mock,
   ) -> None:
-    assert bot_instance.slack_client == mocked_slack_client.return_value
+    assert bot_instance.chat_client == mocked_slack_client.return_value
 
   def test_initialize__web_socket(
       self,
@@ -56,20 +56,20 @@ class TestSlackBot:
         slack_integration_config['SLACK_APP_TOKEN'],
     )
 
-  @mock.patch(slack.__name__ + ".cli.handler.SlackCLICommandHandler")
+  @mock.patch(slack.__name__ + ".cli.handler.ChatCLICommandHandler")
   def test_handle_command_valid(
       self,
-      m_slack_cli: mock.Mock,
+      m_chat_cli: mock.Mock,
       bot_instance: bot.SlackBot,
       mocked_logger: mock.Mock,
   ) -> None:
     test_command = "id"
-    m_slack_cli.return_value.method_prefix = "command_"
+    m_chat_cli.return_value.method_prefix = "command_"
 
     bot_instance.handle_command(test_command)
 
-    m_slack_cli.assert_called_once_with(bot=bot_instance)
-    m_slack_cli.return_value.command_id.assert_called_once_with()
+    m_chat_cli.assert_called_once_with(bot=bot_instance)
+    m_chat_cli.return_value.command_id.assert_called_once_with()
     mocked_logger.return_value.debug.assert_called_once_with(
         "Received command: '%s'", test_command
     )
@@ -77,10 +77,10 @@ class TestSlackBot:
         "Executing valid command: '%s'", test_command
     )
 
-  @mock.patch(slack.__name__ + ".cli.handler.SlackCLICommandHandler")
+  @mock.patch(slack.__name__ + ".cli.handler.ChatCLICommandHandler")
   def test_handle_command_invalid(
       self,
-      m_slack_cli: mock.Mock,
+      m_chat_cli: mock.Mock,
       bot_instance: bot.SlackBot,
       mocked_logger: mock.Mock,
   ) -> None:
@@ -88,7 +88,7 @@ class TestSlackBot:
 
     bot_instance.handle_command(invalid_command)
 
-    m_slack_cli.return_value.command_id.assert_not_called()
+    m_chat_cli.return_value.command_id.assert_not_called()
     mocked_logger.return_value.debug.assert_called_once_with(
         "Received command: '%s'", invalid_command
     )

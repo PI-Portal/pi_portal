@@ -1,22 +1,22 @@
-"""Base command class for Slack CLI commands."""
+"""Base command class for chat CLI commands."""
 
 import abc
 from typing import TYPE_CHECKING
 
 from pi_portal.cli_commands.bases import command
-from pi_portal.modules.integrations.slack.cli.notifier import SlackCLINotifier
+from pi_portal.modules.integrations.slack.cli.notifier import ChatCLINotifier
 
 if TYPE_CHECKING:
   from pi_portal.modules.integrations.slack.bot import \
       SlackBot  # pragma: no cover
 
 
-class SlackCommandBase(command.CommandBase, abc.ABC):
-  """A base command for the Slack CLI.
+class ChatCommandBase(command.CommandBase, abc.ABC):
+  """A base command for the chat CLI.
 
-  :param bot: The configured slack bot in use.
+  :param bot: The configured chatbot in use.
   """
 
   def __init__(self, bot: "SlackBot") -> None:
-    self.notifier = SlackCLINotifier(bot.slack_client)
-    self.slack_bot = bot
+    self.notifier = ChatCLINotifier(bot.chat_client)
+    self.chatbot = bot

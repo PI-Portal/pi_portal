@@ -1,4 +1,4 @@
-"""Notifier for the Slack CLI."""
+"""Notifier for the Chat CLI."""
 
 from typing import TYPE_CHECKING
 
@@ -7,38 +7,38 @@ if TYPE_CHECKING:
       SlackClient  # pragma: no cover
 
 
-class SlackCLINotifier:
-  """Notifier for the Slack CLI.
+class ChatCLINotifier:
+  """Notifier for the Chat CLI.
 
   :param client: The configured slack client to use.
   """
 
   def __init__(self, client: "SlackClient") -> None:
-    self.slack_client = client
+    self.chat_client = client
 
   def notify_already_start(self) -> None:
     """Report that the service is already up."""
 
-    self.slack_client.send_message("Already running ...")
+    self.chat_client.send_message("Already running ...")
 
   def notify_already_stop(self) -> None:
     """Report that the service is already down."""
 
-    self.slack_client.send_message("Already stopped ...")
+    self.chat_client.send_message("Already stopped ...")
 
   def notify_error(self) -> None:
     """Report that an error has occurred."""
 
-    self.slack_client.send_message(
+    self.chat_client.send_message(
         "An internal error occurred ... you better take a look."
     )
 
   def notify_start(self) -> None:
     """Report that the service is starting."""
 
-    self.slack_client.send_message("Starting ...")
+    self.chat_client.send_message("Starting ...")
 
   def notify_stop(self) -> None:
     """Report that the service is stopping."""
 
-    self.slack_client.send_message("Shutting down ...")
+    self.chat_client.send_message("Shutting down ...")

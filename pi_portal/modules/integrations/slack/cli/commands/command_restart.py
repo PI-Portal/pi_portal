@@ -1,22 +1,19 @@
-"""Slack CLI Restart command."""
+"""Chat CLI Restart command."""
 
 import os
 from typing import Callable, cast
 
-from .bases.command import SlackCommandBase
+from .bases.command import ChatCommandBase
 
 
-class RestartCommand(SlackCommandBase):
-  """Slack CLI command to restart the Slack Bot process.
-
-  :param bot: The configured slack bot in use.
-  """
+class RestartCommand(ChatCommandBase):
+  """Chat CLI command to restart the Bot process."""
 
   def invoke(self) -> None:
-    """Restart the Slack CLI bot."""
+    """Restart the chat CLI bot."""
 
-    self.slack_bot.slack_client.send_message("Rebooting myself ...")
+    self.chatbot.chat_client.send_message("Rebooting myself ...")
     # BaseSocketModeHandler is untyped
-    close = cast(Callable[[], None], self.slack_bot.web_socket.close)
+    close = cast(Callable[[], None], self.chatbot.web_socket.close)
     close()
     os._exit(1)  # pylint: disable=protected-access

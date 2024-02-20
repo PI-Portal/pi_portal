@@ -1,28 +1,54 @@
-"""Test the Slack CLI Status Command."""
+"""Test the StatusCommand class."""
+from unittest import mock
 
-from pi_portal.modules.integrations.slack.cli.commands import command_status
+import pytest
+from pi_portal.modules.integrations.slack.cli.commands import StatusCommand
 from pi_portal.modules.system.supervisor_config import (
     ProcessList,
     ProcessStatus,
 )
-from ..bases.tests.fixtures import process_status_command_harness
+from ..bases import process_status_command
 
 
-class TestStatusCommand(
-    process_status_command_harness.ProcessStatusCommandBaseTestHarness
-):
-  """Test the Slack CLI Status Command."""
+class TestStatusCommand:
+  """Test the StatusCommand class."""
 
-  __test__ = True
-  expected_process_name = ProcessList.CAMERA
+  def test_initialize__attributes(
+      self,
+      status_command_instance: StatusCommand,
+  ) -> None:
+    assert status_command_instance.process_name == ProcessList.CAMERA
+    assert status_command_instance.process_command == "status"
 
-  @classmethod
-  def setUpClass(cls) -> None:
-    cls.test_class = command_status.StatusCommand
+  def test_initialize__inheritance(
+      self,
+      status_command_instance: StatusCommand,
+  ) -> None:
+    assert isinstance(
+        status_command_instance,
+        process_status_command.ChatProcessStatusCommandBase,
+    )
 
-  def test_invoke(self) -> None:
-    self._mocked_process().status.return_value = ProcessStatus.RUNNING.value
-    self.instance.invoke()
-    self.mock_slack_bot.slack_client.send_message.assert_called_once_with(
-        f"Status: {ProcessStatus.RUNNING.value}"
+  @pytest.mark.parametrize(
+      "test_status",
+      [
+          ProcessStatus.RUNNING,
+          ProcessStatus.STOPPED,
+      ],
+  )
+  def test_invoke__sends_correct_message(
+      self,
+      status_command_instance: StatusCommand,
+      mocked_chat_bot: mock.Mock,
+      mocked_supervisor_process: mock.Mock,
+      test_status: ProcessStatus,
+  ) -> None:
+    mocked_supervisor_process.return_value.status.return_value = (
+        test_status.value
+    )
+
+    status_command_instance.invoke()
+
+    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
+        f"Status: {test_status.value}"
     )

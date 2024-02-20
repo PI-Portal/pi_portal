@@ -1,47 +1,54 @@
-"""Test the Slack CLI Temperature Command."""
+"""Test the TemperatureCommand class."""
 
 from unittest import mock
 
-from pi_portal.modules.configuration.tests.fixtures import mock_state
+from pi_portal.modules.configuration import state
 from pi_portal.modules.integrations.gpio.components.bases import (
     temperature_sensor_base,
 )
-from pi_portal.modules.integrations.log_file import temperature_monitor_logfile
-from pi_portal.modules.integrations.slack.cli.commands import (
-    command_temperature,
-)
-from ..bases.tests.fixtures import command_harness
-
-TEMPERATURE_MONITOR_LOGFILE = temperature_monitor_logfile.__name__
+from pi_portal.modules.integrations.slack.cli.commands import TemperatureCommand
+from ..bases import command
 
 
-class TestStatusCommand(command_harness.CommandBaseTestHarness):
-  """Test the Slack CLI Status Command."""
+class TestTemperatureCommand:
+  """Test the TemperatureCommand class."""
 
-  __test__ = True
+  def test_initialize__inheritance(
+      self,
+      temperature_command_instance: TemperatureCommand,
+  ) -> None:
+    assert isinstance(
+        temperature_command_instance,
+        command.ChatCommandBase,
+    )
 
-  @classmethod
-  def setUpClass(cls) -> None:
-    cls.test_class = command_temperature.TemperatureCommand
+  def test_invoke__no_sensors__one_type__no_results__sends_correct_message(
+      self,
+      temperature_command_instance: TemperatureCommand,
+      mocked_chat_bot: mock.Mock,
+      mocked_state: state.State,
+      mocked_temperature_log_file_reader: mock.Mock,
+  ) -> None:
+    log_file_reader = mocked_temperature_log_file_reader.return_value
+    log_file_reader.read_last_values.return_value = {}
+    log_file_reader.configured_sensor_count = 0
+    mocked_state.user_config['TEMPERATURE_SENSORS'] = {"DHT11": []}
 
-  @mock.patch(TEMPERATURE_MONITOR_LOGFILE + ".TemperatureMonitorLogFileReader")
-  def test_invoke__no_sensors__no_results(self, m_log: mock.Mock) -> None:
-    m_log.return_value.read_last_values.return_value = {}
-    m_log.return_value.configured_sensor_count = 0
-    with mock_state.mock_state_creator() as mocked_state:
-      mocked_state.user_config['TEMPERATURE_SENSORS'] = {}
+    temperature_command_instance.invoke()
 
-      self.instance.invoke()
-
-    self.mock_slack_bot.slack_client.send_message.assert_called_once_with(
+    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
         "No sensors configured."
     )
 
-  @mock_state.patch
-  @mock.patch(TEMPERATURE_MONITOR_LOGFILE + ".TemperatureMonitorLogFileReader")
-  def test_invoke__one_sensor__no_results(self, m_log: mock.Mock) -> None:
-    m_log.return_value.configured_sensor_count = 1
-    m_log.return_value.read_last_values.return_value = {
+  def test_invoke__one_sensor__one_type__no_results__sends_correct_message(
+      self,
+      temperature_command_instance: TemperatureCommand,
+      mocked_chat_bot: mock.Mock,
+      mocked_temperature_log_file_reader: mock.Mock,
+  ) -> None:
+    log_file_reader = mocked_temperature_log_file_reader.return_value
+    log_file_reader.configured_sensor_count = 1
+    log_file_reader.read_last_values.return_value = {
         "DHT11":
             {
                 "Kitchen":
@@ -52,17 +59,21 @@ class TestStatusCommand(command_harness.CommandBaseTestHarness):
             }
     }
 
-    self.instance.invoke()
+    temperature_command_instance.invoke()
 
-    self.mock_slack_bot.slack_client.send_message.assert_called_once_with(
+    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
         "Kitchen: not yet measured"
     )
 
-  @mock_state.patch
-  @mock.patch(TEMPERATURE_MONITOR_LOGFILE + ".TemperatureMonitorLogFileReader")
-  def test_invoke__one_sensor__results(self, m_log: mock.Mock) -> None:
-    m_log.return_value.configured_sensor_count = 1
-    m_log.return_value.read_last_values.return_value = {
+  def test_invoke__one_sensor__one_type__results__sends_correct_message(
+      self,
+      temperature_command_instance: TemperatureCommand,
+      mocked_chat_bot: mock.Mock,
+      mocked_temperature_log_file_reader: mock.Mock,
+  ) -> None:
+    log_file_reader = mocked_temperature_log_file_reader.return_value
+    log_file_reader.configured_sensor_count = 1
+    log_file_reader.read_last_values.return_value = {
         "DHT11":
             {
                 "Kitchen":
@@ -73,17 +84,21 @@ class TestStatusCommand(command_harness.CommandBaseTestHarness):
             }
     }
 
-    self.instance.invoke()
+    temperature_command_instance.invoke()
 
-    self.mock_slack_bot.slack_client.send_message.assert_called_once_with(
+    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
         "Kitchen: 20°C, 40% humidity"
     )
 
-  @mock_state.patch
-  @mock.patch(TEMPERATURE_MONITOR_LOGFILE + ".TemperatureMonitorLogFileReader")
-  def test_invoke__two_sensors__results(self, m_log: mock.Mock) -> None:
-    m_log.return_value.configured_sensor_count = 2
-    m_log.return_value.read_last_values.return_value = {
+  def test_invoke__two_sensors__one_type__results__sends_correct_message(
+      self,
+      temperature_command_instance: TemperatureCommand,
+      mocked_chat_bot: mock.Mock,
+      mocked_temperature_log_file_reader: mock.Mock,
+  ) -> None:
+    log_file_reader = mocked_temperature_log_file_reader.return_value
+    log_file_reader.configured_sensor_count = 2
+    log_file_reader.read_last_values.return_value = {
         "DHT11":
             {
                 "Bedroom":
@@ -99,18 +114,22 @@ class TestStatusCommand(command_harness.CommandBaseTestHarness):
             }
     }
 
-    self.instance.invoke()
+    temperature_command_instance.invoke()
 
-    self.mock_slack_bot.slack_client.send_message.assert_called_once_with(
+    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
         ("Bedroom: 19°C, 39% humidity\n"
          "Kitchen: 20°C, 40% humidity")
     )
 
-  @mock_state.patch
-  @mock.patch(TEMPERATURE_MONITOR_LOGFILE + ".TemperatureMonitorLogFileReader")
-  def test_invoke__two_sensor_types__results(self, m_log: mock.Mock) -> None:
-    m_log.return_value.configured_sensor_count = 2
-    m_log.return_value.read_last_values.return_value = {
+  def test_invoke__two_sensors__two_types__results__sends_correct_message(
+      self,
+      temperature_command_instance: TemperatureCommand,
+      mocked_chat_bot: mock.Mock,
+      mocked_temperature_log_file_reader: mock.Mock,
+  ) -> None:
+    log_file_reader = mocked_temperature_log_file_reader.return_value
+    log_file_reader.configured_sensor_count = 2
+    log_file_reader.read_last_values.return_value = {
         "DHT11":
             {
                 "Kitchen":
@@ -129,9 +148,9 @@ class TestStatusCommand(command_harness.CommandBaseTestHarness):
             }
     }
 
-    self.instance.invoke()
+    temperature_command_instance.invoke()
 
-    self.mock_slack_bot.slack_client.send_message.assert_called_once_with(
+    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
         ("Kitchen: 20°C, 40% humidity\n"
          "Kitchen: 21°C, 41% humidity")
     )

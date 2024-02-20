@@ -1,1 +1,1 @@
-"""Slack CLI command base classes."""
+"""Chat CLI command base classes."""

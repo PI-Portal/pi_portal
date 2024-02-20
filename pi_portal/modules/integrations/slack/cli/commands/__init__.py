@@ -1,4 +1,4 @@
-"""Slack CLI command classes."""
+"""Chat CLI command classes."""
 
 from .command_arm import ArmCommand
 from .command_disarm import DisarmCommand

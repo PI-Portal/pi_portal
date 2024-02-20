@@ -1,10 +1,10 @@
-"""Slack CLI command handler."""
+"""Chat CLI command handler."""
 
 from typing import TYPE_CHECKING, Type
 
 from pi_portal.modules.integrations.slack.cli import commands
 from pi_portal.modules.integrations.slack.cli.commands.bases.command import (
-    SlackCommandBase,
+    ChatCommandBase,
 )
 
 if TYPE_CHECKING:
@@ -12,23 +12,23 @@ if TYPE_CHECKING:
       SlackBot  # pragma: no cover
 
 
-class SlackCLICommandHandler:
-  """Slack CLI command handler.
+class ChatCLICommandHandler:
+  """Chat CLI command handler.
 
-  :param bot: The configured slack bot in use.
+  :param bot: The configured chatbot in use.
   """
 
   method_prefix = "command_"
 
   def __init__(self, bot: "SlackBot") -> None:
-    self.slack_bot = bot
+    self.chatbot = bot
 
-  def handle(self, command_class: Type[SlackCommandBase]) -> None:
+  def handle(self, command_class: Type[ChatCommandBase]) -> None:
     """Handle a command class instance.
 
     :param command_class:  The command class to invoke.
     """
-    instance = command_class(self.slack_bot)
+    instance = command_class(self.chatbot)
     instance.invoke()
 
   def command_id(self) -> None:
@@ -57,7 +57,7 @@ class SlackCLICommandHandler:
     self.handle(commands.RestartCommand)
 
   def command_snapshot(self) -> None:
-    """Post a realtime camera snapshot to Slack."""
+    """Post a realtime camera snapshot to chat."""
 
     self.handle(commands.SnapshotCommand)
 

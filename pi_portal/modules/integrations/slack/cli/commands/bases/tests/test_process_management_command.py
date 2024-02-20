@@ -1,54 +1,167 @@
-"""Test the SlackProcessManagementCommandBase class."""
+"""Test the ChatProcessManagementCommandBase class."""
 
-from pi_portal.modules.system import supervisor_config
-from typing_extensions import Literal
-from .. import process_management_command
-from .fixtures.process_management_command_harness import (
-    ProcessManagementCommandBaseTestHarness,
+from unittest import mock
+
+import pytest
+from pi_portal.modules.system import (
+    supervisor,
+    supervisor_config,
+    supervisor_process,
 )
+from .. import command, process_command
+from ..process_management_command import ChatProcessManagementCommandBase
+from .conftest import ProcessScenario, TypeProcessMgmtScenarioCreator
 
 
-class ConcreteStartCLIProcessCommand(
-    process_management_command.SlackProcessManagementCommandBase
-):
-  """A concrete instance of the SlackProcessManagementCommandBase class."""
+class TestChatProcessManagementCommandBase:
+  """Test the ChatProcessManagementCommandBase class."""
 
-  process_name = supervisor_config.ProcessList.BOT
-  process_command: Literal["start"] = "start"
+  def test_initialize__attributes(
+      self,
+      concrete_process_management_command_instance:
+      ChatProcessManagementCommandBase,
+  ) -> None:
+    assert concrete_process_management_command_instance.process_name == (
+        supervisor_config.ProcessList.BOT
+    )
 
+  def test_initialize__inheritance(
+      self,
+      concrete_process_management_command_instance:
+      ChatProcessManagementCommandBase,
+  ) -> None:
+    assert isinstance(
+        concrete_process_management_command_instance,
+        command.ChatCommandBase,
+    )
+    assert isinstance(
+        concrete_process_management_command_instance,
+        process_command.ChatProcessCommandBase,
+    )
 
-class ConcreteStopCLIProcessCommand(
-    process_management_command.SlackProcessManagementCommandBase
-):
-  """A concrete instance of the SlackProcessManagementCommandBase class."""
+  def test_initialize__bot(
+      self,
+      concrete_process_management_command_instance:
+      ChatProcessManagementCommandBase,
+      mocked_chat_bot: mock.Mock,
+  ) -> None:
+    assert concrete_process_management_command_instance.chatbot == (
+        mocked_chat_bot
+    )
 
-  process_name = supervisor_config.ProcessList.BOT
-  process_command: Literal["stop"] = "stop"
+  def test_initialize__notifier(
+      self,
+      concrete_process_management_command_instance:
+      ChatProcessManagementCommandBase,
+      mocked_chat_client: mock.Mock,
+      mocked_cli_notifier: mock.Mock,
+  ) -> None:
+    assert concrete_process_management_command_instance.notifier == (
+        mocked_cli_notifier.return_value
+    )
+    mocked_cli_notifier.assert_called_once_with(mocked_chat_client)
 
+  def test_initialize__supervisor_process(
+      self,
+      concrete_process_management_command_instance:
+      ChatProcessManagementCommandBase,
+      mocked_supervisor_process: mock.Mock,
+  ) -> None:
+    assert concrete_process_management_command_instance.process == (
+        mocked_supervisor_process.return_value
+    )
+    mocked_supervisor_process.assert_called_once_with(
+        concrete_process_management_command_instance.process_name
+    )
 
-class TestProcessManagementCommandBaseStart(
-    ProcessManagementCommandBaseTestHarness
-):
-  """Test a concrete start instance of SlackProcessManagementCommandBase."""
+  @pytest.mark.parametrize(
+      "scenario", [
+          ProcessScenario(command="start"),
+          ProcessScenario(command="stop"),
+      ]
+  )
+  def test_invoke__calls_supervisor_process_method(
+      self,
+      create_process_mgmt_scenario: TypeProcessMgmtScenarioCreator,
+      scenario: ProcessScenario,
+  ) -> None:
+    created_scenario = create_process_mgmt_scenario(scenario)
 
-  __test__ = True
-  expected_process_command: Literal["start"] = "start"
-  expected_process_name = supervisor_config.ProcessList.BOT
+    created_scenario.command_instance.invoke()
 
-  @classmethod
-  def setUpClass(cls) -> None:
-    cls.test_class = ConcreteStartCLIProcessCommand
+    created_scenario.process_command_mock.assert_called_once_with()
 
+  @pytest.mark.parametrize(
+      "scenario", [
+          ProcessScenario(
+              command="start",
+              notifier_method="notify_start",
+          ),
+          ProcessScenario(
+              command="stop",
+              notifier_method="notify_stop",
+          )
+      ]
+  )
+  def test_invoke__calls_notifier_method(
+      self,
+      create_process_mgmt_scenario: TypeProcessMgmtScenarioCreator,
+      scenario: ProcessScenario,
+  ) -> None:
+    created_scenario = create_process_mgmt_scenario(scenario)
 
-class TestProcessManagementCommandBaseStop(
-    ProcessManagementCommandBaseTestHarness
-):
-  """Test a concrete stop instance of SlackProcessManagementCommandBase."""
+    created_scenario.command_instance.invoke()
 
-  __test__ = True
-  expected_process_command: Literal["stop"] = "stop"
-  expected_process_name = supervisor_config.ProcessList.BOT
+    created_scenario.notifier_mock.assert_called_once_with()
 
-  @classmethod
-  def setUpClass(cls) -> None:
-    cls.test_class = ConcreteStopCLIProcessCommand
+  @pytest.mark.parametrize(
+      "scenario", [
+          ProcessScenario(
+              command="start",
+              notifier_method="notify_error",
+          ),
+          ProcessScenario(
+              command="stop",
+              notifier_method="notify_error",
+          )
+      ]
+  )
+  def test_invoke__supervisor_exception__calls_notifier_method(
+      self,
+      create_process_mgmt_scenario: TypeProcessMgmtScenarioCreator,
+      scenario: ProcessScenario,
+  ) -> None:
+    created_scenario = create_process_mgmt_scenario(scenario)
+    created_scenario.process_command_mock.side_effect = (
+        supervisor.SupervisorException
+    )
+
+    created_scenario.command_instance.invoke()
+
+    created_scenario.notifier_mock.assert_called_once_with()
+
+  @pytest.mark.parametrize(
+      "scenario", [
+          ProcessScenario(
+              command="start",
+              notifier_method="notify_already_start",
+          ),
+          ProcessScenario(
+              command="stop",
+              notifier_method="notify_already_stop",
+          )
+      ]
+  )
+  def test_invoke__supervisor_process_exception__calls_notifier_method(
+      self,
+      create_process_mgmt_scenario: TypeProcessMgmtScenarioCreator,
+      scenario: ProcessScenario,
+  ) -> None:
+    created_scenario = create_process_mgmt_scenario(scenario)
+    created_scenario.process_command_mock.side_effect = (
+        supervisor_process.SupervisorProcessException
+    )
+
+    created_scenario.command_instance.invoke()
+
+    created_scenario.notifier_mock.assert_called_once_with()

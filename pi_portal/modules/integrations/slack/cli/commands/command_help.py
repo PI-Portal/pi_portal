@@ -1,17 +1,14 @@
-"""Slack CLI Help command."""
+"""Chat CLI Help command."""
 
-from .bases.command import SlackCommandBase
+from .bases.command import ChatCommandBase
 
 
-class HelpCommand(SlackCommandBase):
-  """Slack CLI command to list the available commands.
-
-  :param bot: The configured slack bot in use.
-  """
+class HelpCommand(ChatCommandBase):
+  """Chat CLI command to list the available commands."""
 
   def invoke(self) -> None:
     """Send a list of available CLI commands."""
 
-    self.slack_bot.slack_client.send_message(
-        f"Available Commands: {', '.join(self.slack_bot.command_list)}"
+    self.chatbot.chat_client.send_message(
+        f"Available Commands: {', '.join(self.chatbot.command_list)}"
     )

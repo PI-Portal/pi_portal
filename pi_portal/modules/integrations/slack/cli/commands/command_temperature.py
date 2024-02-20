@@ -1,16 +1,13 @@
-"""Slack CLI Temperature command."""
+"""Chat CLI Temperature command."""
 
 from typing import List
 
 from pi_portal.modules.integrations.log_file import temperature_monitor_logfile
-from .bases.command import SlackCommandBase
+from .bases.command import ChatCommandBase
 
 
-class TemperatureCommand(SlackCommandBase):
-  """Command to show the last known temperature sensor values.
-
-  :param bot: The configured slack bot in use.
-  """
+class TemperatureCommand(ChatCommandBase):
+  """Chat CLI command to show the last known temperature sensor values."""
 
   def invoke(self) -> None:
     """Report the last known temperature sensor values."""
@@ -32,4 +29,4 @@ class TemperatureCommand(SlackCommandBase):
             message_line += "not yet measured"
           multiline_message.append(message_line)
 
-    self.slack_bot.slack_client.send_message("\n".join(multiline_message),)
+    self.chatbot.chat_client.send_message("\n".join(multiline_message),)
