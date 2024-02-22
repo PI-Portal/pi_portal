@@ -6,6 +6,7 @@ from typing import Dict, List
 from unittest import mock
 
 import pytest
+from pi_portal.modules import tasks
 from pi_portal.modules.configuration.tests.fixtures import mock_state
 from pi_portal.modules.tasks.enums import TaskPriority
 from .. import scheduler, service, service_client
@@ -18,6 +19,11 @@ MOCKED_CONFIG: Dict[TaskPriority, int] = {
 
 @pytest.fixture
 def mocked_api_server() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
+def mocked_import_module() -> mock.Mock:
   return mock.Mock()
 
 
@@ -58,6 +64,17 @@ def mocked_worker_failed_tasks() -> mock.Mock:
 @pytest.fixture
 def mocked_worker_queue() -> mock.Mock:
   return mock.Mock()
+
+
+@pytest.fixture
+def setup_service_creation_mocks(
+    mocked_import_module: mock.Mock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+  monkeypatch.setattr(
+      tasks.__name__ + ".import_module",
+      mocked_import_module,
+  )
 
 
 @pytest.fixture

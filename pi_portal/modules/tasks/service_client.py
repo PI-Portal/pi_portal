@@ -115,3 +115,25 @@ class TaskSchedulerServiceClient:
       pass
 
     return camera, parsed_datetime
+
+  def file_system_copy(
+      self,
+      source: str,
+      destination: str,
+  ) -> UnixStreamHttpResponse:
+    """Schedule copying a file via the API.
+
+    :param source: The path to the source file.
+    :param destination: The path to the destination file.
+    :returns: A response from the task scheduler API.
+    """
+    payload = {
+        "type": TaskType.FILE_SYSTEM_COPY.value,
+        "args": {
+            "destination": destination,
+            "source": source
+        },
+        "priority": TaskPriority.STANDARD.value,
+    }
+
+    return self.http_client.post("/schedule/", payload)

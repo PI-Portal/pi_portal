@@ -23,6 +23,7 @@ class RegistryFactory:
       "chat_send_message",
       "chat_upload_snapshot",
       "chat_upload_video",
+      "file_system_copy",
       "file_system_move",
       "file_system_remove",
       "motion_snapshot",

@@ -1,12 +1,11 @@
 """RotatingFileHandlerArchived class."""
 
 import os
-import shutil
 import threading
 from datetime import datetime, timezone
 
 from pi_portal import config
-from pi_portal.modules.system import file_system
+from pi_portal.modules.tasks.service_client import TaskSchedulerServiceClient
 from .bases.rotation import RotatingFileHandlerBase
 
 
@@ -33,14 +32,14 @@ class RotatingFileHandlerArchived(RotatingFileHandlerBase):
 
     :param dest:  The post rotation file name of the log file.
     """
+
     archival_filename = self.archival_filename()
 
-    shutil.copy(
+    service_client = TaskSchedulerServiceClient()
+    service_client.file_system_copy(
         dest,
         archival_filename,
     )
-    fs = file_system.FileSystem(archival_filename)
-    fs.permissions("640")
 
   def archival_filename(self) -> str:
     """Create an utc timestamped filename for archival."""

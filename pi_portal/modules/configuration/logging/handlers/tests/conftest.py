@@ -11,11 +11,6 @@ from .. import rotation_archived, rotation_unarchived
 
 
 @pytest.fixture
-def mocked_file_system() -> mock.Mock:
-  return mock.Mock()
-
-
-@pytest.fixture
 def mocked_open(
     mocked_logger_stream: StringIO,
     mocked_rotated_logger_stream: StringIO,
@@ -44,23 +39,18 @@ def mocked_should_rotate() -> mock.Mock:
 
 
 @pytest.fixture
-def mocked_shutil() -> mock.Mock:
+def mocked_task_scheduler_service_client() -> mock.Mock:
   return mock.Mock()
 
 
 @pytest.fixture
 def archived_rotating_file_handler_instance(
-    mocked_file_system: mock.Mock,
     mocked_logger_file_name: str,
     mocked_os_path_exists: mock.Mock,
     mocked_should_rotate: mock.Mock,
-    mocked_shutil: mock.Mock,
+    mocked_task_scheduler_service_client: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> rotation_archived.RotatingFileHandlerArchived:
-  monkeypatch.setattr(
-      rotation_archived.__name__ + ".file_system.FileSystem",
-      mocked_file_system,
-  )
   monkeypatch.setattr(
       logging.handlers.__name__ + ".os.path.exists",
       mocked_os_path_exists,
@@ -70,8 +60,8 @@ def archived_rotating_file_handler_instance(
       mocked_should_rotate,
   )
   monkeypatch.setattr(
-      rotation_archived.__name__ + ".shutil",
-      mocked_shutil,
+      rotation_archived.__name__ + ".TaskSchedulerServiceClient",
+      mocked_task_scheduler_service_client,
   )
   handler = rotation_archived.RotatingFileHandlerArchived(
       mocked_logger_file_name

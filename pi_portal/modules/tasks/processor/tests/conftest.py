@@ -14,6 +14,7 @@ from .. import (
     chat_send_message,
     chat_upload_snapshot,
     chat_upload_video,
+    file_system_copy,
     file_system_move,
     file_system_remove,
     motion_snapshot,
@@ -222,6 +223,19 @@ def chat_upload_video_instance(
   )
   setup_chat_processor_mocks()
   return chat_upload_video.ProcessorClass(mocked_task_logger)
+
+
+@pytest.fixture
+def file_system_copy_instance(
+    mocked_shutil: mock.Mock,
+    mocked_task_logger: logging.Logger,
+    monkeypatch: pytest.MonkeyPatch,
+) -> file_system_copy.ProcessorClass:
+  monkeypatch.setattr(
+      file_system_copy.__name__ + ".shutil",
+      mocked_shutil,
+  )
+  return file_system_copy.ProcessorClass(mocked_task_logger)
 
 
 @pytest.fixture

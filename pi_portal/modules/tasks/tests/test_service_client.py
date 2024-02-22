@@ -172,3 +172,47 @@ class TestServiceClient:
     assert response == (
         mocked_unix_stream_http_client.return_value.post.return_value
     )
+
+  def test_file_system_copy__sends_correct_api_request(
+      self,
+      task_scheduler_service_client_instance: TaskSchedulerServiceClient,
+      mocked_unix_stream_http_client: mock.Mock,
+  ) -> None:
+    mocked_destination = "/var/folder2/mocked_filename"
+    mocked_source = "/var/folder1/mocked_filename"
+    # pylint: disable=duplicate-code
+    expected_payload = {
+        "type": TaskType.FILE_SYSTEM_COPY.value,
+        "args": {
+            "destination": mocked_destination,
+            "source": mocked_source
+        },
+        "priority": TaskPriority.STANDARD.value,
+    }
+
+    task_scheduler_service_client_instance.file_system_copy(
+        mocked_source,
+        mocked_destination,
+    )
+
+    mocked_unix_stream_http_client.return_value.post.assert_called_once_with(
+        "/schedule/",
+        expected_payload,
+    )
+
+  def test_file_system_copy__returns_expected_response(
+      self,
+      task_scheduler_service_client_instance: TaskSchedulerServiceClient,
+      mocked_unix_stream_http_client: mock.Mock,
+  ) -> None:
+    mocked_destination = "/var/folder2/mocked_filename"
+    mocked_source = "/var/folder1/mocked_filename"
+
+    response = task_scheduler_service_client_instance.file_system_copy(
+        mocked_source,
+        mocked_destination,
+    )
+
+    assert response == (
+        mocked_unix_stream_http_client.return_value.post.return_value
+    )
