@@ -2,6 +2,7 @@
 
 from typing import TYPE_CHECKING
 
+from pi_portal.modules.configuration import state
 from pi_portal.modules.integrations.motion import client as motion_client
 from pi_portal.modules.system.supervisor_config import (
     ProcessList,
@@ -38,7 +39,9 @@ class SnapshotCommand(ChatProcessCommandBase):
     return self.process.status_in([ProcessStatus.RUNNING])
 
   def _do_snapshot(self) -> None:
-    try:
-      self.motion_client.take_snapshot()
-    except motion_client.MotionException:
-      self.notifier.notify_error()
+    user_config = state.State().user_config
+    for camera_index, _ in enumerate(user_config["MOTION"]["CAMERAS"]):
+      try:
+        self.motion_client.take_snapshot(camera=camera_index)
+      except motion_client.MotionException:
+        self.notifier.notify_error()
