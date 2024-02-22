@@ -2,12 +2,15 @@
 
 from unittest import mock
 
+import pytest
+from pi_portal.modules.configuration import state
 from pi_portal.modules.integrations.motion import client as motion_client
 from pi_portal.modules.integrations.slack.cli.commands import SnapshotCommand
 from pi_portal.modules.system.supervisor_config import ProcessList
 from ..bases import process_command
 
 
+@pytest.mark.usefixtures("test_state")
 class TestSnapshotCommand:
   """Test the SnapshotCommand class."""
 
@@ -37,17 +40,28 @@ class TestSnapshotCommand:
     )
     mocked_motion_client.assert_called_once_with(mocked_chat_bot.log)
 
+  @pytest.mark.parametrize("camera_count", [1, 2, 3])
   def test_invoke__process_is_running__no_error__takes_snapshot(
       self,
       snapshot_command_instance: SnapshotCommand,
       mocked_supervisor_process: mock.Mock,
       mocked_motion_client: mock.Mock,
+      test_state: state.State,
+      camera_count: int,
   ) -> None:
     mocked_supervisor_process.return_value.status_in.return_value = True
+    test_state.user_config["MOTION"]["CAMERAS"] = (
+        test_state.user_config["MOTION"]["CAMERAS"] * camera_count
+    )
+    expected_calls = [
+        mock.call(camera=index) for index in range(0, camera_count)
+    ]
 
     snapshot_command_instance.invoke()
 
-    mocked_motion_client.return_value.take_snapshot.assert_called_once_with()
+    assert mocked_motion_client.return_value.take_snapshot.mock_calls == (
+        expected_calls
+    )
 
   def test_invoke__process_is_running__error__raises_exception(
       self,
