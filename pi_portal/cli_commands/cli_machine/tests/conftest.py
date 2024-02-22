@@ -30,12 +30,7 @@ def mocked_slack_bot() -> mock.Mock:
 
 
 @pytest.fixture
-def mocked_slack_client() -> mock.Mock:
-  return mock.Mock()
-
-
-@pytest.fixture
-def mocked_shutil() -> mock.Mock:
+def mocked_task_scheduler_service_client() -> mock.Mock:
   return mock.Mock()
 
 
@@ -100,12 +95,12 @@ def temperature_monitor_command_instance(
 @pytest.fixture
 def upload_snapshot_command_instance(
     mocked_file_name: str,
-    mocked_slack_client: mock.Mock,
+    mocked_task_scheduler_service_client: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> upload_snapshot.UploadSnapshotCommand:
   monkeypatch.setattr(
-      upload_snapshot.__name__ + ".slack.SlackClient",
-      mocked_slack_client,
+      upload_snapshot.__name__ + ".TaskSchedulerServiceClient",
+      mocked_task_scheduler_service_client,
   )
   return upload_snapshot.UploadSnapshotCommand(mocked_file_name)
 
@@ -113,16 +108,11 @@ def upload_snapshot_command_instance(
 @pytest.fixture
 def upload_video_command_instance(
     mocked_file_name: str,
-    mocked_slack_client: mock.Mock,
-    mocked_shutil: mock.Mock,
+    mocked_task_scheduler_service_client: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> upload_video.UploadVideoCommand:
   monkeypatch.setattr(
-      upload_video.__name__ + ".slack.SlackClient",
-      mocked_slack_client,
-  )
-  monkeypatch.setattr(
-      upload_video.__name__ + ".shutil",
-      mocked_shutil,
+      upload_video.__name__ + ".TaskSchedulerServiceClient",
+      mocked_task_scheduler_service_client,
   )
   return upload_video.UploadVideoCommand(mocked_file_name)
