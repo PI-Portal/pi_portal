@@ -72,20 +72,20 @@ class TestRotatingFileHandlerArchived:
       self,
       archived_logger_instance: logging.Logger,
       mocked_should_rotate: mock.Mock,
-      mocked_shutil: mock.Mock,
+      mocked_task_scheduler_service_client: mock.Mock,
   ) -> None:
     mocked_should_rotate.side_effect = [0, 0]
 
     archived_logger_instance.info("A")
 
-    mocked_shutil.copy.assert_not_called()
+    mocked_task_scheduler_service_client.file_system_copy.assert_not_called()
 
   def test__log__rotation__no_new_file__does_not_enqueue(
       self,
       archived_logger_instance: logging.Logger,
       mocked_os_path_exists: mock.Mock,
       mocked_should_rotate: mock.Mock,
-      mocked_shutil: mock.Mock,
+      mocked_task_scheduler_service_client: mock.Mock,
   ) -> None:
     mocked_should_rotate.side_effect = [1, 0, 0, 0]
     mocked_os_path_exists.side_effect = \
@@ -93,28 +93,7 @@ class TestRotatingFileHandlerArchived:
 
     archived_logger_instance.info("A")
 
-    mocked_shutil.copy.assert_not_called()
-
-  def test__log__rotation__new_file__does_not_secure(
-      self,
-      archived_logger_instance: logging.Logger,
-      mocked_file_system: mock.Mock,
-      mocked_os_path_exists: mock.Mock,
-      mocked_should_rotate: mock.Mock,
-  ) -> None:
-    mock_filename = mock.Mock()
-    setattr(
-        archived_logger_instance.handlers[0],
-        "archival_filename",
-        mock_filename,
-    )
-    mocked_should_rotate.side_effect = [1, 0, 0, 0]
-    mocked_os_path_exists.side_effect = \
-        self.base_class_exists_calls + [False]
-
-    archived_logger_instance.info("A")
-
-    mocked_file_system.assert_not_called()
+    mocked_task_scheduler_service_client.file_system_copy.assert_not_called()
 
   def test__log__rotation__new_file__enqueues(
       self,
@@ -122,7 +101,7 @@ class TestRotatingFileHandlerArchived:
       mocked_logger_file_name: str,
       mocked_os_path_exists: mock.Mock,
       mocked_should_rotate: mock.Mock,
-      mocked_shutil: mock.Mock,
+      mocked_task_scheduler_service_client: mock.Mock,
   ) -> None:
     mock_filename = mock.Mock()
     setattr(
@@ -136,31 +115,9 @@ class TestRotatingFileHandlerArchived:
 
     archived_logger_instance.info("A")
 
-    mocked_shutil.copy.assert_called_with(
-        mocked_logger_file_name + ".1",
-        mock_filename.return_value,
-    )
-
-  def test__log__rotation__new_file__is_secured(
-      self,
-      archived_logger_instance: logging.Logger,
-      mocked_file_system: mock.Mock,
-      mocked_os_path_exists: mock.Mock,
-      mocked_should_rotate: mock.Mock,
-  ) -> None:
-    mock_filename = mock.Mock()
-    setattr(
-        archived_logger_instance.handlers[0],
-        "archival_filename",
-        mock_filename,
-    )
-    mocked_should_rotate.side_effect = [1, 0, 0, 0]
-    mocked_os_path_exists.side_effect = \
-        self.base_class_exists_calls + [True]
-
-    archived_logger_instance.info("A")
-
-    assert mocked_file_system.mock_calls == [
-        mock.call(mock_filename.return_value),
-        mock.call().permissions("640")
-    ]
+    mocked_task_scheduler_service_client.assert_called_once_with()
+    mocked_task_scheduler_service_client.return_value.\
+        file_system_copy.assert_called_with(
+            mocked_logger_file_name + ".1",
+            mock_filename.return_value,
+        )

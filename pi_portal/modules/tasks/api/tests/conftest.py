@@ -18,6 +18,7 @@ from pi_portal.modules.tasks.task import (
     chat_send_message,
     chat_upload_snapshot,
     chat_upload_video,
+    file_system_copy,
     file_system_move,
     file_system_remove,
     motion_snapshot,
@@ -73,6 +74,21 @@ enabled_tasks__valid_payloads__creation_request_scenarios = [
         ),
     ),
     TypedTaskCreationRequestParameters(
+        type=file_system_copy.TaskType.value,
+        args=asdict(
+            file_system_copy.Args(
+                source=os.path.join(
+                    config.LOG_FILE_BASE_FOLDER,
+                    "file1",
+                ),
+                destination=os.path.join(
+                    config.PATH_QUEUE_LOG_UPLOAD,
+                    "file1",
+                ),
+            )
+        ),
+    ),
+    TypedTaskCreationRequestParameters(
         type=motion_snapshot.TaskType.value,
         args=asdict(motion_snapshot.Args(camera=2)),
     ),
@@ -89,6 +105,10 @@ enabled_tasks__invalid__payloads__creation_request_scenarios = [
     ),
     TypedTaskCreationRequestParameters(
         type=chat_upload_video.TaskType.value,
+        args=asdict(InvalidArg(invalid_arg="invalid_args")),
+    ),
+    TypedTaskCreationRequestParameters(
+        type=file_system_copy.TaskType.value,
         args=asdict(InvalidArg(invalid_arg="invalid_args")),
     ),
     TypedTaskCreationRequestParameters(
