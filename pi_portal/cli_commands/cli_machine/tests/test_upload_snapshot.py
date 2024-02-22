@@ -31,12 +31,13 @@ class TestUploadSnapshotCommand:
   def test_invoke__calls(
       self,
       mocked_file_name: str,
-      mocked_slack_client: mock.Mock,
+      mocked_task_scheduler_service_client: mock.Mock,
       upload_snapshot_command_instance: upload_snapshot.UploadSnapshotCommand,
   ) -> None:
     upload_snapshot_command_instance.invoke()
 
-    mocked_slack_client.assert_called_once_with()
-    mocked_slack_client.return_value.send_snapshot.assert_called_once_with(
-        mocked_file_name
-    )
+    mocked_task_scheduler_service_client.assert_called_once_with()
+    mocked_task_scheduler_service_client.return_value.\
+        chat_upload_snapshot.assert_called_once_with(
+            mocked_file_name
+        )

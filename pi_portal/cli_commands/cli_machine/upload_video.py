@@ -1,12 +1,8 @@
 """CLI command to send a Motion video to Slack and S3."""
 
-import os
-import shutil
-
-from pi_portal import config
 from pi_portal.cli_commands.bases import file_command
 from pi_portal.cli_commands.mixins import state
-from pi_portal.modules.integrations import slack
+from pi_portal.modules.tasks.service_client import TaskSchedulerServiceClient
 
 
 class UploadVideoCommand(
@@ -18,14 +14,5 @@ class UploadVideoCommand(
   def invoke(self) -> None:
     """Invoke the command."""
 
-    slack_client = slack.SlackClient()
-    slack_client.send_file(
-        self.file_name,
-        slack_client.config.upload_file_title,
-    )
-    shutil.move(
-        self.file_name,
-        os.path.join(
-            config.PATH_QUEUE_VIDEO_UPLOAD, os.path.basename(self.file_name)
-        )
-    )
+    service_client = TaskSchedulerServiceClient()
+    service_client.chat_upload_video(self.file_name)

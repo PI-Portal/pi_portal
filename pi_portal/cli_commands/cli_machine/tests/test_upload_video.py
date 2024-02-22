@@ -1,9 +1,7 @@
 """Test the UploadVideoCommand class."""
 
-import os
 from unittest import mock
 
-from pi_portal import config
 from pi_portal.cli_commands.bases import file_command
 from pi_portal.cli_commands.cli_machine import upload_video
 from pi_portal.cli_commands.mixins import state
@@ -33,21 +31,13 @@ class TestUploadVideoCommand:
   def test_invoke__calls(
       self,
       mocked_file_name: str,
-      mocked_slack_client: mock.Mock,
-      mocked_shutil: mock.Mock,
+      mocked_task_scheduler_service_client: mock.Mock,
       upload_video_command_instance: upload_video.UploadVideoCommand,
   ) -> None:
     upload_video_command_instance.invoke()
 
-    mocked_slack_client.assert_called_once_with()
-    mocked_slack_client.return_value.send_file.assert_called_once_with(
-        mocked_file_name,
-        mocked_slack_client.return_value.config.upload_file_title,
-    )
-    mocked_shutil.move.assert_called_once_with(
-        mocked_file_name,
-        os.path.join(
-            config.PATH_QUEUE_VIDEO_UPLOAD,
-            os.path.basename(mocked_file_name),
+    mocked_task_scheduler_service_client.assert_called_once_with()
+    mocked_task_scheduler_service_client.return_value.\
+        chat_upload_video.assert_called_once_with(
+            mocked_file_name,
         )
-    )

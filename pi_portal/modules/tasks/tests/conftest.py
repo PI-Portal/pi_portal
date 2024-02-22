@@ -8,7 +8,7 @@ from unittest import mock
 import pytest
 from pi_portal.modules.configuration.tests.fixtures import mock_state
 from pi_portal.modules.tasks.enums import TaskPriority
-from .. import scheduler, service
+from .. import scheduler, service, service_client
 
 MOCKED_CONFIG: Dict[TaskPriority, int] = {
     TaskPriority.STANDARD: 2,
@@ -69,6 +69,11 @@ def mocked_task_registry_factory(mocked_task_registry: mock.Mock) -> mock.Mock:
 
 @pytest.fixture
 def mocked_task_scheduler() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
+def mocked_unix_stream_http_client() -> mock.Mock:
   return mock.Mock()
 
 
@@ -144,3 +149,15 @@ def task_scheduler_service_instance(
       mocked_task_scheduler,
   )
   return service.TaskSchedulerService()
+
+
+@pytest.fixture
+def task_scheduler_service_client_instance(
+    mocked_unix_stream_http_client: mock.Mock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> service_client.TaskSchedulerServiceClient:
+  monkeypatch.setattr(
+      service_client.__name__ + ".UnixStreamHttpClient",
+      mocked_unix_stream_http_client
+  )
+  return service_client.TaskSchedulerServiceClient()
