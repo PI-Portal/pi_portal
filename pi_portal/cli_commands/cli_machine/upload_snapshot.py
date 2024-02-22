@@ -2,7 +2,7 @@
 
 from pi_portal.cli_commands.bases import file_command
 from pi_portal.cli_commands.mixins import state
-from pi_portal.modules.integrations import slack
+from pi_portal.modules.tasks.service_client import TaskSchedulerServiceClient
 
 
 class UploadSnapshotCommand(
@@ -14,5 +14,5 @@ class UploadSnapshotCommand(
   def invoke(self) -> None:
     """Invoke the command."""
 
-    slack_client = slack.SlackClient()
-    slack_client.send_snapshot(self.file_name)
+    service_client = TaskSchedulerServiceClient()
+    service_client.chat_upload_snapshot(self.file_name)
