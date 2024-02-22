@@ -1,7 +1,9 @@
 """Tests for the Machine CLI."""
 
+from unittest import mock
+
 import pytest
-from ..cli_machine import cli as machine_cli
+from .. import cli_machine
 from .conftest import (
     CliScenarioCreatorArgs,
     TypeCliScenarioCreator,
@@ -18,44 +20,52 @@ class TestMachineCLI:
       [
           CliScenarioCreatorArgs(
               cli_command="contact_switch_monitor",
-              module_path=
-              "cli_machine.contact_switch_monitor.ContactSwitchMonitorCommand",
+              module_class="ContactSwitchMonitorCommand",
+              module_name="contact_switch_monitor",
           ),
           CliScenarioCreatorArgs(
               cli_command="slack_bot",
-              module_path="cli_machine.slack_bot.SlackBotCommand",
+              module_class="SlackBotCommand",
+              module_name="slack_bot",
           ),
           CliScenarioCreatorArgs(
               cli_command="task_scheduler",
-              module_path="cli_machine.task_scheduler.TaskSchedulerCommand",
+              module_class="TaskSchedulerCommand",
+              module_name="task_scheduler",
           ),
           CliScenarioCreatorArgs(
               cli_command="temp_monitor",
-              module_path=
-              "cli_machine.temperature_monitor.TemperatureMonitorCommand",
+              module_class="TemperatureMonitorCommand",
+              module_name="temperature_monitor",
           ),
           CliScenarioCreatorArgs(
               cli_command="upload_snapshot config.json",
-              module_path="cli_machine.upload_snapshot.UploadSnapshotCommand",
-              module_class_args=["config.json"]
+              module_class="UploadSnapshotCommand",
+              module_class_args=["config.json"],
+              module_name="upload_snapshot",
           ),
           CliScenarioCreatorArgs(
               cli_command="upload_video config.json",
-              module_path="cli_machine.upload_video.UploadVideoCommand",
-              module_class_args=["config.json"]
+              module_class="UploadVideoCommand",
+              module_class_args=["config.json"],
+              module_name="upload_video",
           ),
       ],
       ids=generate_scenario_test_names,
   )
   def test__vary_cli_command__calls_command_class(
       self,
+      mocked_import_module: mock.Mock,
       scenario_args: CliScenarioCreatorArgs,
       cli_scenario_creator: TypeCliScenarioCreator,
   ) -> None:
-    scenario = cli_scenario_creator(scenario_args, machine_cli)
+    scenario = cli_scenario_creator(cli_machine, scenario_args)
 
     scenario.invoke()
 
+    mocked_import_module.assert_called_once_with(
+        "pi_portal.cli_commands.cli_machine." + scenario_args.module_name
+    )
     scenario.command_mock.assert_called_once_with(
         *scenario_args.module_class_args
     )
@@ -66,31 +76,35 @@ class TestMachineCLI:
       [
           CliScenarioCreatorArgs(
               cli_command="contact_switch_monitor",
-              module_path=
-              "cli_machine.contact_switch_monitor.ContactSwitchMonitorCommand",
+              module_class="ContactSwitchMonitorCommand",
+              module_name="contact_switch_monitor",
           ),
           CliScenarioCreatorArgs(
               cli_command="slack_bot",
-              module_path="cli_machine.slack_bot.SlackBotCommand",
+              module_class="SlackBotCommand",
+              module_name="slack_bot",
           ),
           CliScenarioCreatorArgs(
               cli_command="task_scheduler",
-              module_path="cli_machine.task_scheduler.TaskSchedulerCommand",
+              module_class="TaskSchedulerCommand",
+              module_name="task_scheduler",
           ),
           CliScenarioCreatorArgs(
               cli_command="temp_monitor",
-              module_path=
-              "cli_machine.temperature_monitor.TemperatureMonitorCommand",
+              module_class="TemperatureMonitorCommand",
+              module_name="temperature_monitor",
           ),
           CliScenarioCreatorArgs(
               cli_command="upload_snapshot config.json",
-              module_path="cli_machine.upload_snapshot.UploadSnapshotCommand",
-              module_class_args=["config.json"]
+              module_class="UploadSnapshotCommand",
+              module_class_args=["config.json"],
+              module_name="upload_snapshot",
           ),
           CliScenarioCreatorArgs(
               cli_command="upload_video config.json",
-              module_path="cli_machine.upload_video.UploadVideoCommand",
-              module_class_args=["config.json"]
+              module_class="UploadVideoCommand",
+              module_class_args=["config.json"],
+              module_name="upload_video",
           ),
       ],
       ids=generate_scenario_test_names,
@@ -106,7 +120,7 @@ class TestMachineCLI:
       cli_scenario_creator: TypeCliScenarioCreator,
       debug: bool,
   ) -> None:
-    scenario = cli_scenario_creator(scenario_args, machine_cli, debug)
+    scenario = cli_scenario_creator(cli_machine, scenario_args, debug)
 
     scenario.invoke()
 

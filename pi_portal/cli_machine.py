@@ -1,14 +1,8 @@
 """Pi Portal Machine CLI."""
 
+from importlib import import_module
+
 import click
-from .cli_commands.cli_machine import (
-    contact_switch_monitor,
-    slack_bot,
-    task_scheduler,
-    temperature_monitor,
-    upload_snapshot,
-    upload_video,
-)
 
 
 @click.group()
@@ -26,6 +20,9 @@ def cli(ctx: click.Context, debug: bool) -> None:
 def contact_switch_monitor_command(ctx: click.Context) -> None:
   """Start the contact switch monitor."""
 
+  contact_switch_monitor = import_module(
+      "pi_portal.cli_commands.cli_machine.contact_switch_monitor"
+  )
   command = contact_switch_monitor.ContactSwitchMonitorCommand()
   command.load_state(debug=ctx.obj['DEBUG'])
   command.invoke()
@@ -36,6 +33,7 @@ def contact_switch_monitor_command(ctx: click.Context) -> None:
 def slack_bot_command(ctx: click.Context) -> None:
   """Connect the interactive Slack bot."""
 
+  slack_bot = import_module("pi_portal.cli_commands.cli_machine.slack_bot")
   command = slack_bot.SlackBotCommand()
   command.load_state(debug=ctx.obj['DEBUG'])
   command.invoke()
@@ -46,6 +44,9 @@ def slack_bot_command(ctx: click.Context) -> None:
 def task_scheduler_command(ctx: click.Context) -> None:
   """Start the task scheduler."""
 
+  task_scheduler = import_module(
+      "pi_portal.cli_commands.cli_machine.task_scheduler"
+  )
   command = task_scheduler.TaskSchedulerCommand()
   command.load_state(debug=ctx.obj['DEBUG'])
   command.invoke()
@@ -56,6 +57,9 @@ def task_scheduler_command(ctx: click.Context) -> None:
 def temp_monitor_command(ctx: click.Context) -> None:
   """Start the temperature monitor."""
 
+  temperature_monitor = import_module(
+      "pi_portal.cli_commands.cli_machine.temperature_monitor"
+  )
   command = temperature_monitor.TemperatureMonitorCommand()
   command.load_state(debug=ctx.obj['DEBUG'])
   command.invoke()
@@ -70,6 +74,9 @@ def upload_snapshot_command(ctx: click.Context, filename: str) -> None:
   FILENAME: The path to the image file to upload.
   """
 
+  upload_snapshot = import_module(
+      "pi_portal.cli_commands.cli_machine.upload_snapshot"
+  )
   command = upload_snapshot.UploadSnapshotCommand(filename)
   command.load_state(debug=ctx.obj['DEBUG'])
   command.invoke()
@@ -84,6 +91,9 @@ def upload_video_command(ctx: click.Context, filename: str) -> None:
   FILENAME: The path to the video file to upload.
   """
 
+  upload_video = import_module(
+      "pi_portal.cli_commands.cli_machine.upload_video"
+  )
   command = upload_video.UploadVideoCommand(filename)
   command.load_state(debug=ctx.obj['DEBUG'])
   command.invoke()

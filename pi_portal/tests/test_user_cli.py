@@ -1,7 +1,9 @@
 """Tests for the User CLI."""
 
+from unittest import mock
+
 import pytest
-from ..cli_user import cli as user_cli
+from .. import cli_user
 from .conftest import (
     CliScenarioCreatorArgs,
     TypeCliScenarioCreator,
@@ -18,30 +20,37 @@ class TestUserCLI:
       [
           CliScenarioCreatorArgs(
               cli_command="install_config config.json",
+              module_class="InstallerCommand",
               module_class_args=["config.json", False],
-              module_path="cli_user.installer.InstallerCommand",
+              module_name="installer",
           ),
           CliScenarioCreatorArgs(
               cli_command="install_config -y config.json",
+              module_class="InstallerCommand",
               module_class_args=["config.json", True],
-              module_path="cli_user.installer.InstallerCommand",
+              module_name="installer",
           ),
           CliScenarioCreatorArgs(
               cli_command="version",
-              module_path="cli_user.version.VersionCommand",
+              module_class="VersionCommand",
+              module_name="version",
           ),
       ],
       ids=generate_scenario_test_names,
   )
   def test__vary_cli_command__calls_command_class(
       self,
+      mocked_import_module: mock.Mock,
       scenario_args: CliScenarioCreatorArgs,
       cli_scenario_creator: TypeCliScenarioCreator,
   ) -> None:
-    scenario = cli_scenario_creator(scenario_args, user_cli)
+    scenario = cli_scenario_creator(cli_user, scenario_args)
 
     scenario.invoke()
 
+    mocked_import_module.assert_called_once_with(
+        "pi_portal.cli_commands.cli_user." + scenario_args.module_name
+    )
     scenario.command_mock.assert_called_once_with(
         *scenario_args.module_class_args
     )
@@ -52,7 +61,8 @@ class TestUserCLI:
       [
           CliScenarioCreatorArgs(
               cli_command="install_config config.json",
-              module_path="cli_user.installer.InstallerCommand",
+              module_class="InstallerCommand",
+              module_name="installer",
               state_args={"file_path": "config.json"}
           ),
       ],
@@ -69,7 +79,7 @@ class TestUserCLI:
       cli_scenario_creator: TypeCliScenarioCreator,
       debug: bool,
   ) -> None:
-    scenario = cli_scenario_creator(scenario_args, user_cli, debug)
+    scenario = cli_scenario_creator(cli_user, scenario_args, debug)
 
     scenario.invoke()
 
@@ -83,7 +93,8 @@ class TestUserCLI:
       [
           CliScenarioCreatorArgs(
               cli_command="version",
-              module_path="cli_user.version.VersionCommand",
+              module_class="VersionCommand",
+              module_name="version",
           ),
       ],
       ids=generate_scenario_test_names,
@@ -93,7 +104,7 @@ class TestUserCLI:
       scenario_args: CliScenarioCreatorArgs,
       cli_scenario_creator: TypeCliScenarioCreator,
   ) -> None:
-    scenario = cli_scenario_creator(scenario_args, user_cli)
+    scenario = cli_scenario_creator(cli_user, scenario_args)
 
     scenario.invoke()
 
