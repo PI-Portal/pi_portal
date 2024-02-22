@@ -1,7 +1,8 @@
 """The Pi Portal User CLI."""
 
+from importlib import import_module
+
 import click
-from .cli_commands.cli_user import installer, version
 
 
 @click.group()
@@ -33,6 +34,7 @@ def installer_command(
   CONFIG_FILE: The path to the configuration file to use.
   """
 
+  installer = import_module("pi_portal.cli_commands.cli_user.installer")
   command = installer.InstallerCommand(config_file, confirmation)
   command.load_state(debug=ctx.obj['DEBUG'], file_path=config_file)
   command.invoke()
@@ -42,5 +44,6 @@ def installer_command(
 def version_command() -> None:
   """Display the Pi Portal version."""
 
+  version = import_module("pi_portal.cli_commands.cli_user.version")
   command = version.VersionCommand()
   command.invoke()
