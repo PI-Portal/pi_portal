@@ -15,6 +15,17 @@ def cli(ctx: click.Context, debug: bool) -> None:
   ctx.obj['DEBUG'] = debug
 
 
+@cli.command("chatbot")
+@click.pass_context
+def chatbot_command(ctx: click.Context) -> None:
+  """Connect the interactive chatbot."""
+
+  chatbot = import_module("pi_portal.cli_commands.cli_machine.chatbot")
+  command = chatbot.ChatBotCommand()
+  command.load_state(debug=ctx.obj['DEBUG'])
+  command.invoke()
+
+
 @cli.command("contact_switch_monitor")
 @click.pass_context
 def contact_switch_monitor_command(ctx: click.Context) -> None:
@@ -24,17 +35,6 @@ def contact_switch_monitor_command(ctx: click.Context) -> None:
       "pi_portal.cli_commands.cli_machine.contact_switch_monitor"
   )
   command = contact_switch_monitor.ContactSwitchMonitorCommand()
-  command.load_state(debug=ctx.obj['DEBUG'])
-  command.invoke()
-
-
-@cli.command("slack_bot")
-@click.pass_context
-def slack_bot_command(ctx: click.Context) -> None:
-  """Connect the interactive Slack bot."""
-
-  slack_bot = import_module("pi_portal.cli_commands.cli_machine.slack_bot")
-  command = slack_bot.SlackBotCommand()
   command.load_state(debug=ctx.obj['DEBUG'])
   command.invoke()
 

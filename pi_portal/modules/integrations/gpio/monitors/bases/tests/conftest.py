@@ -28,6 +28,7 @@ def mocked_configure_logger() -> mock.Mock:
 
 @pytest.fixture
 def mocked_logger(mocked_stream: StringIO) -> logging.Logger:
+  # pylint: disable=duplicate-code
   logger = logging.getLogger("test")
   handler = logging.StreamHandler(stream=mocked_stream)
   handler.setFormatter(logging.Formatter('%(levelname)s - %(message)s'))

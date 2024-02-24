@@ -1,7 +1,7 @@
 """Test the ChatClientMixin class."""
 
 import pytest
-from pi_portal.modules.integrations import slack
+from pi_portal.modules.integrations.chat.service_client import ChatClient
 from pi_portal.modules.tasks.processor.mixins.chat_client import ChatClientMixin
 
 
@@ -14,8 +14,8 @@ class TestChatClientMixin:
       concrete_chat_mixin_instance: ChatClientMixin,
   ) -> None:
     assert concrete_chat_mixin_instance.chat_client_class == \
-        slack.SlackClient
+        ChatClient
     assert isinstance(
         concrete_chat_mixin_instance.client,
-        slack.SlackClient,
+        ChatClient,
     )

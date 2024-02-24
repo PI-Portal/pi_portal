@@ -44,12 +44,12 @@ class ContactSwitchMonitor(
             'state': self._state_name(gpio_pin),
         }
     )
-    slack_message = (
-        f":rotating_light: The {gpio_pin.pin_name}"
-        f"was {self._state_name(gpio_pin)}!"
+    chat_message = (
+        f"{self.chat_client.configuration.emoji_alert} "
+        f"The {gpio_pin.pin_name} was {self._state_name(gpio_pin)}!"
     )
 
-    self.slack_client.send_message(slack_message)
+    self.chat_client.send_message(chat_message)
 
   def _state_name(self, gpio_pin: contact_switch.ContactSwitch) -> str:
     return SwitchState(gpio_pin.current_state == self.open).name

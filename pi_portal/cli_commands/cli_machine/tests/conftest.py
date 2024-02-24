@@ -5,13 +5,18 @@ from unittest import mock
 
 import pytest
 from .. import (
+    chatbot,
     contact_switch_monitor,
-    slack_bot,
     task_scheduler,
     temperature_monitor,
     upload_snapshot,
     upload_video,
 )
+
+
+@pytest.fixture
+def mocked_chatbot() -> mock.Mock:
+  return mock.Mock()
 
 
 @pytest.fixture
@@ -22,11 +27,6 @@ def mocked_contact_switch_monitor_factory() -> mock.Mock:
 @pytest.fixture
 def mocked_file_name() -> str:
   return "/mock/path/mock.file"
-
-
-@pytest.fixture
-def mocked_slack_bot() -> mock.Mock:
-  return mock.Mock()
 
 
 @pytest.fixture
@@ -45,6 +45,18 @@ def mocked_uvicorn() -> mock.Mock:
 
 
 @pytest.fixture
+def chatbot_command_instance(
+    mocked_chatbot: mock.Mock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> chatbot.ChatBotCommand:
+  monkeypatch.setattr(
+      chatbot.__name__ + ".ChatBot",
+      mocked_chatbot,
+  )
+  return chatbot.ChatBotCommand()
+
+
+@pytest.fixture
 def contact_switch_monitor_command_instance(
     mocked_contact_switch_monitor_factory: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
@@ -54,18 +66,6 @@ def contact_switch_monitor_command_instance(
       mocked_contact_switch_monitor_factory,
   )
   return contact_switch_monitor.ContactSwitchMonitorCommand()
-
-
-@pytest.fixture
-def slack_bot_command_instance(
-    mocked_slack_bot: mock.Mock,
-    monkeypatch: pytest.MonkeyPatch,
-) -> slack_bot.SlackBotCommand:
-  monkeypatch.setattr(
-      slack_bot.__name__ + ".slack.SlackBot",
-      mocked_slack_bot,
-  )
-  return slack_bot.SlackBotCommand()
 
 
 @pytest.fixture

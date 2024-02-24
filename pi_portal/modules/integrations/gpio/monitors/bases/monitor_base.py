@@ -4,9 +4,9 @@ import abc
 import time
 from typing import Any, Generic, Sequence, TypeVar
 
+from pi_portal.modules.integrations.chat.service_client import ChatClient
 from pi_portal.modules.integrations.gpio.components.bases import \
     input_base as gpio_input
-from pi_portal.modules.integrations.slack import client
 from pi_portal.modules.mixins import write_archived_log_file
 from pi_portal.modules.python.rpi import RPi
 
@@ -34,7 +34,7 @@ class GPIOMonitorBase(
 
   def __init__(self, gpio_pins: Sequence[TypeGenericGpio]) -> None:
     self.configure_logger()
-    self.slack_client = client.SlackClient()
+    self.chat_client = ChatClient()
     self.gpio_pins = gpio_pins
     self.hook_setup_gpio()
 

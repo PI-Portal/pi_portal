@@ -20,7 +20,7 @@ def mocked_rpi_module() -> mock.Mock:
 
 
 @pytest.fixture
-def mocked_slack_client() -> mock.Mock:
+def mocked_chat_client() -> mock.Mock:
   return mock.Mock()
 
 
@@ -38,7 +38,7 @@ def mocked_stream() -> StringIO:
 def setup_monitor_mocks(
     monkeypatch: pytest.MonkeyPatch,
     mocked_rpi_module: mock.Mock,
-    mocked_slack_client: mock.Mock,
+    mocked_chat_client: mock.Mock,
 ) -> Callable[[], None]:
 
   def setup() -> None:
@@ -47,8 +47,8 @@ def setup_monitor_mocks(
         mocked_rpi_module,
     )
     monkeypatch.setattr(
-        monitor_base.__name__ + ".client.SlackClient",
-        mocked_slack_client,
+        monitor_base.__name__ + ".ChatClient",
+        mocked_chat_client,
     )
 
   return setup
