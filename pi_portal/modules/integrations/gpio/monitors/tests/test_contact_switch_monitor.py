@@ -44,15 +44,15 @@ class TestContactSwitchMonitor:
         mocked_rpi_module.GPIO.BCM
     )
 
-  def test_initialize__slack_client(
+  def test_initialize__chat_client(
       self,
       contact_switch_monitor_instance: ContactSwitchMonitor,
-      mocked_slack_client: mock.Mock,
+      mocked_chat_client: mock.Mock,
   ) -> None:
-    assert contact_switch_monitor_instance.slack_client == (
-        mocked_slack_client.return_value
+    assert contact_switch_monitor_instance.chat_client == (
+        mocked_chat_client.return_value
     )
-    mocked_slack_client.assert_called_once_with()
+    mocked_chat_client.assert_called_once_with()
 
   @pytest.mark.parametrize(
       "scenario",
@@ -89,11 +89,11 @@ class TestContactSwitchMonitor:
       ],
       ids=generate_switch_scenario_ids,
   )
-  def test_hook_log_state__vary_gpio_and_state__calls_slack_client(
+  def test_hook_log_state__vary_gpio_and_state__calls_chat_client(
       self,
       contact_switch_monitor_instance: ContactSwitchMonitor,
       mocked_gpio_pins: List[mock.Mock],
-      mocked_slack_client: mock.Mock,
+      mocked_chat_client: mock.Mock,
       scenario: ContactSwitchScenario,
   ) -> None:
     mocked_gpio_pins[0].current_state = scenario.state
@@ -103,7 +103,7 @@ class TestContactSwitchMonitor:
 
     contact_switch_monitor_instance.hook_log_state(mocked_gpio_pins[0])
 
-    mocked_slack_client.return_value.send_message.assert_called_once_with(
-        f":rotating_light: The {scenario.name}"
-        f"was {expected_state_str}!"
+    mocked_chat_client.return_value.send_message.assert_called_once_with(
+        str(mocked_chat_client.return_value.configuration.emoji_alert) + " "
+        f"The {scenario.name} was {expected_state_str}!"
     )

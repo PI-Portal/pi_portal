@@ -50,12 +50,12 @@ class TestTemperatureSensorMonitor:
   def test_initialize__slack_client(
       self,
       temperature_sensor_monitor_instance: TemperatureSensorMonitor,
-      mocked_slack_client: mock.Mock,
+      mocked_chat_client: mock.Mock,
   ) -> None:
-    assert temperature_sensor_monitor_instance.slack_client == (
-        mocked_slack_client.return_value
+    assert temperature_sensor_monitor_instance.chat_client == (
+        mocked_chat_client.return_value
     )
-    mocked_slack_client.assert_called_once_with()
+    mocked_chat_client.assert_called_once_with()
 
   @pytest.mark.parametrize(
       "scenario",
@@ -120,11 +120,11 @@ class TestTemperatureSensorMonitor:
       ],
       ids=generate_temperature_scenario_ids,
   )
-  def test_hook_log_state__vary_gpio_and_state__does_not_call_slack_client(
+  def test_hook_log_state__vary_gpio_and_state__does_not_call_chat_client(
       self,
       temperature_sensor_monitor_instance: TemperatureSensorMonitor,
       mocked_gpio_pins: List[mock.Mock],
-      mocked_slack_client: mock.Mock,
+      mocked_chat_client: mock.Mock,
       scenario: TemperatureSensorScenario,
   ) -> None:
     mocked_gpio_pins[0].current_state = scenario.state
@@ -133,4 +133,4 @@ class TestTemperatureSensorMonitor:
 
     temperature_sensor_monitor_instance.hook_log_state(mocked_gpio_pins[0])
 
-    mocked_slack_client.return_value.send_message.assert_not_called()
+    mocked_chat_client.return_value.send_message.assert_not_called()
