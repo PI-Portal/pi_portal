@@ -19,14 +19,14 @@ class TestMachineCLI:
       "scenario_args",
       [
           CliScenarioCreatorArgs(
+              cli_command="chatbot",
+              module_class="ChatBotCommand",
+              module_name="chatbot",
+          ),
+          CliScenarioCreatorArgs(
               cli_command="contact_switch_monitor",
               module_class="ContactSwitchMonitorCommand",
               module_name="contact_switch_monitor",
-          ),
-          CliScenarioCreatorArgs(
-              cli_command="slack_bot",
-              module_class="SlackBotCommand",
-              module_name="slack_bot",
           ),
           CliScenarioCreatorArgs(
               cli_command="task_scheduler",
@@ -75,14 +75,14 @@ class TestMachineCLI:
       "scenario_args",
       [
           CliScenarioCreatorArgs(
+              cli_command="chatbot",
+              module_class="ChatBotCommand",
+              module_name="chatbot",
+          ),
+          CliScenarioCreatorArgs(
               cli_command="contact_switch_monitor",
               module_class="ContactSwitchMonitorCommand",
               module_name="contact_switch_monitor",
-          ),
-          CliScenarioCreatorArgs(
-              cli_command="slack_bot",
-              module_class="SlackBotCommand",
-              module_name="slack_bot",
           ),
           CliScenarioCreatorArgs(
               cli_command="task_scheduler",

@@ -57,15 +57,15 @@ class TestGPIOMonitorBase:
         mocked_rpi_module.GPIO.BCM
     )
 
-  def test_initialize__slack_client(
+  def test_initialize__chat_client(
       self,
       concrete_gpio_monitor_instance: TypeGenericGpioMonitor,
-      mocked_slack_client: mock.Mock,
+      mocked_chat_client: mock.Mock,
   ) -> None:
-    assert concrete_gpio_monitor_instance.slack_client == (
-        mocked_slack_client.return_value
+    assert concrete_gpio_monitor_instance.chat_client == (
+        mocked_chat_client.return_value
     )
-    mocked_slack_client.assert_called_once_with()
+    mocked_chat_client.assert_called_once_with()
 
   def test_start__single_run__changes_only__has_changed__updates_gpio_state(
       self,
