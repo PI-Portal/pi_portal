@@ -11,6 +11,7 @@ from .. import (
     archive_logs,
     archive_videos,
     dead_man_switch,
+    manifest_metrics,
     queue_maintenance,
     queue_metrics,
 )
@@ -86,6 +87,22 @@ def dead_man_switch_logger_instance(
       mocked_isolated_worker_logger,
   )
   return instance
+
+
+@pytest.fixture
+def manifest_metrics_cron_job_instance(
+    mocked_worker_logger: logging.Logger,
+    mocked_task_registry: mock.Mock,
+) -> manifest_metrics.CronJob:
+  metrics_formatter = logging.Formatter(
+      '%(levelname)s - %(task)s - %(cron)s - %(metrics)s - %(message)s',
+      validate=False,
+  )
+  mocked_worker_logger.handlers[0].formatter = metrics_formatter
+  return manifest_metrics.CronJob(
+      mocked_worker_logger,
+      mocked_task_registry,
+  )
 
 
 @pytest.fixture
