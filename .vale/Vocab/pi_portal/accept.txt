@@ -5,6 +5,7 @@ OAuth
 abc
 api|API
 args
+aws|AWS
 basename
 boto
 ci

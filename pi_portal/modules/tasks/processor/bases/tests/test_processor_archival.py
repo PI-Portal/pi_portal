@@ -2,10 +2,11 @@
 import logging
 import os
 from io import StringIO
-from typing import List
+from typing import List, Type, cast
 from unittest import mock
 
 import pytest
+from pi_portal.modules.integrations.archival import TypeArchivalClient
 from pi_portal.modules.integrations.folder import queue
 from pi_portal.modules.python import traceback
 from pi_portal.modules.tasks.enums import TaskType
@@ -86,7 +87,7 @@ class TestArchivalTaskProcessorBaseClass:
       mocked_archival_client_class: mock.Mock,
   ) -> None:
     assert archival_processor_instance.archival_client_class == \
-         mocked_archival_client_class
+         cast(Type[TypeArchivalClient], mocked_archival_client_class)
     assert issubclass(
         archival_processor_instance.archival_client_exception_class, Exception
     )
