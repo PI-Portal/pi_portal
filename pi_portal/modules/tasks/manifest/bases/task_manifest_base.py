@@ -1,9 +1,15 @@
 """Task manifest base class."""
 
 import abc
-from typing import List, MutableMapping
+from typing import List, MutableMapping, TypedDict
 
 from pi_portal.modules.tasks.task.bases.task_base import TypeGenericTask
+
+
+class TypeManifestMetrics(TypedDict):
+  """Typed representation of a task manifest's metrics."""
+
+  tasks: int
 
 
 class TaskManifestBase:
@@ -38,6 +44,10 @@ class TaskManifestBase:
   def contents(self) -> "List[TypeGenericTask]":
     """Return the contents of the manifest, without disk activity."""
     return list(self.cached_dict.values())
+
+  def metrics(self) -> "TypeManifestMetrics":
+    """Return metrics for this manifest, without disk activity."""
+    return TypeManifestMetrics(tasks=len(self.contents))
 
   def remove(self, task: "TypeGenericTask") -> None:
     """Remove a task from the manifest.
