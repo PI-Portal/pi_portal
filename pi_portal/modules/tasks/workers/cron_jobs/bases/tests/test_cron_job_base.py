@@ -50,11 +50,11 @@ class TestCronJobBase:
   def test_schedule__resets_elapsed(
       self,
       concrete_cron_job_base_instance: TypeConcreteJobInstance,
-      mocked_task_router: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
   ) -> None:
     concrete_cron_job_base_instance.time_remaining = 1
 
-    concrete_cron_job_base_instance.schedule(mocked_task_router)
+    concrete_cron_job_base_instance.schedule(mocked_task_scheduler)
 
     assert concrete_cron_job_base_instance.time_remaining == \
            concrete_cron_job_base_instance.interval
@@ -63,7 +63,7 @@ class TestCronJobBase:
   def test_schedule__vary_priority__creates_correct_task(
       self,
       concrete_cron_job_base_instance: TypeConcreteJobInstance,
-      mocked_task_router: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       mocked_task_registry: mock.Mock,
       monkeypatch: pytest.MonkeyPatch,
       priority: TaskPriority,
@@ -74,7 +74,7 @@ class TestCronJobBase:
         priority,
     )
 
-    concrete_cron_job_base_instance.schedule(mocked_task_router)
+    concrete_cron_job_base_instance.schedule(mocked_task_scheduler)
 
     mocked_task_registry.tasks[concrete_cron_job_base_instance.type].\
         TaskClass.assert_called_once_with(
@@ -88,7 +88,7 @@ class TestCronJobBase:
   def test_schedule__vary_retry_after__creates_correct_task(
       self,
       concrete_cron_job_base_instance: TypeConcreteJobInstance,
-      mocked_task_router: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       mocked_task_registry: mock.Mock,
       monkeypatch: pytest.MonkeyPatch,
       retry_after: int,
@@ -99,7 +99,7 @@ class TestCronJobBase:
         retry_after,
     )
 
-    concrete_cron_job_base_instance.schedule(mocked_task_router)
+    concrete_cron_job_base_instance.schedule(mocked_task_scheduler)
 
     mocked_task_registry.tasks[concrete_cron_job_base_instance.type]. \
         TaskClass.assert_called_once_with(
@@ -112,18 +112,16 @@ class TestCronJobBase:
   def test_schedule__adds_task_to_queue(
       self,
       concrete_cron_job_base_instance: TypeConcreteJobInstance,
-      mocked_task_router: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       mocked_task_registry: mock.Mock,
   ) -> None:
-    concrete_cron_job_base_instance.schedule(mocked_task_router)
+    concrete_cron_job_base_instance.schedule(mocked_task_scheduler)
 
-    assert mocked_task_router.put.call_count == 1
-    assert len(mocked_task_router.put.call_args_list) == 1
-    task = mocked_task_router.put.call_args_list[0].args[0]
-    assert task == (
-        mocked_task_registry.tasks[concrete_cron_job_base_instance.type
-                                  ].TaskClass.return_value
-    )
+    assert mocked_task_scheduler.router.put.call_count == 1
+    assert len(mocked_task_scheduler.router.put.call_args_list) == 1
+    task = mocked_task_scheduler.router.put.call_args_list[0].args[0]
+    assert task == mocked_task_registry.\
+        tasks[concrete_cron_job_base_instance.type].TaskClass.return_value
 
   def test_tick__decrements_elapsed(
       self,
