@@ -14,6 +14,7 @@ class RegistryFactory:
       "archive_logs",
       "archive_videos",
       "dead_man_switch",
+      "manifest_metrics",
       "queue_maintenance",
       "queue_metrics",
   ]
