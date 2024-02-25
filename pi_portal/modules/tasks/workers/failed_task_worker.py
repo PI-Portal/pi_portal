@@ -1,37 +1,40 @@
 """FailedTaskWorker class."""
-import logging
 import time
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, cast
 
+from pi_portal.modules.tasks.enums import TaskManifests
 from .bases import worker_base
 
 if TYPE_CHECKING:  # pragma: no cover
   from pi_portal.modules.tasks.manifest.bases import task_manifest_base
-  from pi_portal.modules.tasks.queue import TaskRouter
+  from pi_portal.modules.tasks.scheduler import TaskScheduler
   from pi_portal.modules.tasks.task.bases import task_base
 
 
 class FailedTaskWorker(worker_base.WorkerBase):
   """Reschedule failed but retryable tasks.
 
-  :params log: The logger instance to use.
-  :params router: The task router instance to use.
-  :params manifest: The manifest containing failed tasks.
+  :param scheduler: A task scheduler instance.
   """
+
+  __slots__ = (
+      "_is_running",
+      "log",
+      "manifest",
+      "router",
+  )
 
   manifest: "task_manifest_base.TaskManifestBase"
 
   def __init__(
       self,
-      log: logging.Logger,
-      router: "TaskRouter",
-      manifest: "task_manifest_base.TaskManifestBase",
+      scheduler: "TaskScheduler",
   ) -> None:
-    self.log = log
-    self.router = router
     self._is_running = True
-    self.manifest = manifest
+    self.log = scheduler.log
+    self.manifest = scheduler.manifests[TaskManifests.FAILED_TASKS]
+    self.router = scheduler.router
 
   def start(self) -> None:
     """Start the scheduler."""

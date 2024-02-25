@@ -105,15 +105,10 @@ class TestTaskScheduler:
       self,
       task_scheduler_instance: scheduler.TaskScheduler,
       mocked_worker_cron: mock.Mock,
-      mocked_task_registry: mock.Mock,
   ) -> None:
     task_scheduler_instance.start()
 
-    mocked_worker_cron.assert_called_once_with(
-        task_scheduler_instance.log,
-        task_scheduler_instance.router,
-        mocked_task_registry,
-    )
+    mocked_worker_cron.assert_called_once_with(task_scheduler_instance)
     mocked_worker_cron.return_value.start.assert_called_once_with()
 
   def test_start__creates_and_starts_failed_task_worker(
@@ -123,11 +118,7 @@ class TestTaskScheduler:
   ) -> None:
     task_scheduler_instance.start()
 
-    mocked_worker_failed_tasks.assert_called_once_with(
-        task_scheduler_instance.log,
-        task_scheduler_instance.router,
-        task_scheduler_instance.manifests[TaskManifests.FAILED_TASKS],
-    )
+    mocked_worker_failed_tasks.assert_called_once_with(task_scheduler_instance)
     mocked_worker_failed_tasks.return_value.start.assert_called_once_with()
 
   def test_start__creates_and_starts_queue_workers(
@@ -142,10 +133,8 @@ class TestTaskScheduler:
     for priority, count in MOCKED_CONFIG.items():
       expected_worker_init_calls += [
           mock.call(
-              task_scheduler_instance.log,
-              task_scheduler_instance.router.queues[priority],
-              task_scheduler_instance.registry,
-              task_scheduler_instance.manifests[TaskManifests.FAILED_TASKS],
+              task_scheduler_instance,
+              priority,
           ),
       ] * count
     assert mocked_worker_queue.mock_calls == (
