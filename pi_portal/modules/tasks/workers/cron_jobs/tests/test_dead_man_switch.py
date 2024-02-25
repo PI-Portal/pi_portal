@@ -81,20 +81,20 @@ class TestDeadManSwitchCronJob:
   def test_hook_submit__standard_logging(
       self,
       dead_man_switch_cron_job_instance: dead_man_switch.CronJob,
-      mocked_queue: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       mocked_stream: StringIO,
   ) -> None:
-    dead_man_switch_cron_job_instance.schedule(mocked_queue)
+    dead_man_switch_cron_job_instance.schedule(mocked_task_scheduler)
 
     assert mocked_stream.getvalue() == ""
 
   def test_hook_submit__isolated_logging(
       self,
       dead_man_switch_cron_job_instance: dead_man_switch.CronJob,
-      mocked_queue: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       mocked_isolated_stream: StringIO,
   ) -> None:
-    dead_man_switch_cron_job_instance.schedule(mocked_queue)
+    dead_man_switch_cron_job_instance.schedule(mocked_task_scheduler)
 
     assert mocked_isolated_stream.getvalue() == \
         "INFO - None - Dead Man's Switch - None - ok\n"
