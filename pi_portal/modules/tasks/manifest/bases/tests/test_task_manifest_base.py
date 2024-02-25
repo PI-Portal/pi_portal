@@ -112,6 +112,20 @@ class TestTaskManifestBase:
         concrete_task_manifest_instance.cached_dict.values()
     )
 
+  def test_metrics__returns_correct_data(
+      self,
+      concrete_task_manifest_instance: TaskManifestBase,
+  ) -> None:
+    concrete_task_manifest_instance.cached_dict.update(
+        {"mock_task_id": mock.Mock()}
+    )
+
+    return_value = concrete_task_manifest_instance.metrics()
+
+    assert return_value["tasks"] == len(
+        concrete_task_manifest_instance.cached_dict
+    )
+
   @pytest.mark.parametrize("initial_contents", initial_contents_values)
   def test_remove__updates_vendor_dictionary(
       self,
