@@ -5,11 +5,11 @@ import logging
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from pi_portal.modules.tasks.enums import TaskPriority
-from pi_portal.modules.tasks.queue.bases.router_base import TaskRouterBase
 
 if TYPE_CHECKING:  # pragma: no cover
   from pi_portal.modules.tasks.enums import TaskType
   from pi_portal.modules.tasks.registration.registry import TaskRegistry
+  from pi_portal.modules.tasks.scheduler import TaskScheduler
   from pi_portal.modules.tasks.task.bases.task_args_base import TaskArgsBase
 
 TypeTaskArguments_co = TypeVar(
@@ -42,13 +42,13 @@ class CronJobBase(Generic[TypeTaskArguments_co], abc.ABC):
     self.registered_task = registry.tasks[self.type]
     self.time_remaining = self.interval
 
-  def schedule(self, router: TaskRouterBase) -> None:
+  def schedule(self, scheduler: "TaskScheduler") -> None:
     """Schedule a task execution.
 
-    :param router: The scheduler's task router.
+    :param scheduler: A task scheduler instance.
     """
     self.time_remaining = self.interval
-    self._hook_submit(router)
+    self._hook_submit(scheduler)
 
   def tick(self) -> None:
     """Advance the cron timer."""
@@ -60,10 +60,10 @@ class CronJobBase(Generic[TypeTaskArguments_co], abc.ABC):
   def _args(self) -> "TypeTaskArguments_co":
     """Generate task arguments for scheduling.."""
 
-  def _hook_submit(self, router: TaskRouterBase) -> None:
+  def _hook_submit(self, scheduler: "TaskScheduler") -> None:
     """Override to customize job scheduling.
 
-    :param router: The scheduler's task router.
+    param scheduler: A task scheduler instance.
     """
 
     task_class = self.registered_task.TaskClass
@@ -72,4 +72,4 @@ class CronJobBase(Generic[TypeTaskArguments_co], abc.ABC):
         priority=self.priority,
         retry_after=self.retry_after,
     )
-    router.put(task)
+    scheduler.router.put(task)

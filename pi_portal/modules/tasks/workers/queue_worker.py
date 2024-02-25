@@ -1,26 +1,20 @@
 """QueueWorker class."""
-import logging
 from typing import TYPE_CHECKING
 
-from pi_portal.modules.tasks.enums import TaskType
+from pi_portal.modules.tasks.enums import TaskManifests, TaskType
 from .bases import worker_base
 
 if TYPE_CHECKING:  # pragma: no cover
-  from pi_portal.modules.tasks.manifest.bases.task_manifest_base import (
-      TaskManifestBase,
-  )
-  from pi_portal.modules.tasks.queue.bases.queue_base import QueueBase
-  from pi_portal.modules.tasks.registration.registry import TaskRegistry
+  from pi_portal.modules.tasks.enums import TaskPriority
+  from pi_portal.modules.tasks.scheduler import TaskScheduler
   from pi_portal.modules.tasks.task.bases.task_base import TypeGenericTask
 
 
 class QueueWorker(worker_base.WorkerBase):
   """Queue worker for the task scheduler.
 
-  :param log: The logging instance to use.
-  :param queue: The queue instance this worker processes.
-  :param registry: An instances of the task registry.
-  :param failed_task_manifest: The failed tasks manifest.
+  :param priority: The priority of this queue worker.
+  :param scheduler: A task scheduler instance
   """
 
   __slots__ = (
@@ -36,17 +30,15 @@ class QueueWorker(worker_base.WorkerBase):
 
   def __init__(
       self,
-      log: logging.Logger,
-      queue: "QueueBase",
-      registry: "TaskRegistry",
-      failed_task_manifest: "TaskManifestBase",
+      scheduler: "TaskScheduler",
+      priority: "TaskPriority",
   ) -> None:
     self._is_running = True
-    self.log = log
-    self.queue = queue
-    self.priority = queue.priority
-    self.registry = registry
-    self.failed_task_manifest = failed_task_manifest
+    self.failed_task_manifest = scheduler.manifests[TaskManifests.FAILED_TASKS]
+    self.log = scheduler.log
+    self.priority = priority
+    self.queue = scheduler.router.queues[priority]
+    self.registry = scheduler.registry
 
   def start(self) -> None:
     """Maintain a continuous flow of tasks to the worker thread."""

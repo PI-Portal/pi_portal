@@ -52,14 +52,14 @@ class TestQueueMetricsCronJob:
   def test_process__logging(
       self,
       queue_metrics_cron_job_instance: queue_metrics.CronJob,
-      mocked_task_router: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       mocked_stream: StringIO,
   ) -> None:
-    mocked_task_router.queues = {
+    mocked_task_scheduler.router.queues = {
         priority: mock.Mock() for priority in enums.TaskPriority
     }
 
-    queue_metrics_cron_job_instance.schedule(mocked_task_router)
+    queue_metrics_cron_job_instance.schedule(mocked_task_scheduler)
 
     assert mocked_stream.getvalue() == "".join(
         [
@@ -67,8 +67,8 @@ class TestQueueMetricsCronJob:
                 task=None,
                 queue=priority.value,
                 metrics=(
-                    mocked_task_router.queues[priority].metrics.return_value.
-                    _asdict.return_value
+                    mocked_task_scheduler.router.queues[priority].metrics.
+                    return_value._asdict.return_value
                 )
             ) for priority in enums.TaskPriority
         ]
@@ -77,13 +77,13 @@ class TestQueueMetricsCronJob:
   def test_process__calls_queue_metrics(
       self,
       queue_metrics_cron_job_instance: queue_metrics.CronJob,
-      mocked_task_router: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
   ) -> None:
-    mocked_task_router.queues = {
+    mocked_task_scheduler.router.queues = {
         priority: mock.Mock() for priority in enums.TaskPriority
     }
 
-    queue_metrics_cron_job_instance.schedule(mocked_task_router)
+    queue_metrics_cron_job_instance.schedule(mocked_task_scheduler)
 
-    for mocked_queue in mocked_task_router.queues.values():
+    for mocked_queue in mocked_task_scheduler.router.queues.values():
       mocked_queue.metrics.assert_called_once_with()
