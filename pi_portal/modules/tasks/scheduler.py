@@ -71,19 +71,11 @@ class TaskScheduler(write_archived_log_file.ArchivedLogFileWriter):
     self.log.warning(
         "Creating the cron scheduler ...", extra={"cron": "scheduler"}
     )
-    self.managed_workers.append(
-        CronWorker(self.log, self.router, self.registry)
-    )
+    self.managed_workers.append(CronWorker(self))
 
   def _create_failed_task_worker(self) -> None:
     self.log.warning("Creating the failed task scheduler ...")
-    self.managed_workers.append(
-        FailedTaskWorker(
-            self.log,
-            self.router,
-            self.manifests[TaskManifests.FAILED_TASKS],
-        )
-    )
+    self.managed_workers.append(FailedTaskWorker(self))
 
   def _create_queue_worker_pool(
       self, count: int, priority: "TaskPriority"
@@ -97,12 +89,7 @@ class TaskScheduler(write_archived_log_file.ArchivedLogFileWriter):
       self.managed_workers.append(self._create_queue_worker(priority))
 
   def _create_queue_worker(self, priority: "TaskPriority") -> QueueWorker:
-    return QueueWorker(
-        self.log,
-        self.router.queues[priority],
-        self.registry,
-        self.manifests[TaskManifests.FAILED_TASKS],
-    )
+    return QueueWorker(self, priority)
 
   def halt(self) -> None:
     """Gracefully shutdown the scheduler."""

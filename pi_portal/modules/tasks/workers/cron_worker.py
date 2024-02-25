@@ -1,10 +1,9 @@
 """Cron job worker class."""
+# pylint: disable=redefined-outer-name
 
-import logging
 import time
 from typing import TYPE_CHECKING, Sequence
 
-from pi_portal.modules.tasks.queue.bases import router_base
 from pi_portal.modules.tasks.workers.cron_jobs.bases.cron_job_base import (
     CronJobAlarm,
     CronJobBase,
@@ -12,41 +11,39 @@ from pi_portal.modules.tasks.workers.cron_jobs.bases.cron_job_base import (
 from .bases import worker_base
 
 if TYPE_CHECKING:  # pragma: no cover
-  from pi_portal.modules.tasks.registration.registry import TaskRegistry
+  from pi_portal.modules.tasks.scheduler import TaskScheduler
   from pi_portal.modules.tasks.task.bases.task_args_base import TaskArgsBase
 
 
 class CronWorker(worker_base.WorkerBase):
   """Schedules tasks via a set of cron jobs.
 
-  :param log: A logger instance.
-  :param router: The task router to schedule created tasks to.
-  :param registry: A populated task registry instance.
+  :param scheduler: A task scheduler instance.
   """
 
-  __slots__ = ("_is_running", "jobs", "log", "router")
+  __slots__ = ("_is_running", "log", "scheduler")
 
   def __init__(
       self,
-      log: logging.Logger,
-      router: router_base.TaskRouterBase,
-      registry: "TaskRegistry",
+      scheduler: "TaskScheduler",
   ) -> None:
     self._is_running = True
+    self.scheduler = scheduler
     self.jobs: "Sequence[CronJobBase[TaskArgsBase]]" = []
-    self.log = log
-    self.router = router
-    self._initialize_cron_jobs(registry)
+    self.log = scheduler.log
+    self._initialize_cron_jobs()
 
-  def _initialize_cron_jobs(self, registry: "TaskRegistry") -> None:
+  def _initialize_cron_jobs(self) -> None:
     cron_jobs = []
-    for registered_cron_job in registry.cron_jobs:
+    for registered_cron_job in self.scheduler.registry.cron_jobs:
       self.log.warning(
           "Loading cron job '%s' ...",
           registered_cron_job.CronJobClass.name,
           extra={"cron": "Scheduler"},
       )
-      cron_jobs.append(registered_cron_job.CronJobClass(self.log, registry))
+      cron_jobs.append(
+          registered_cron_job.CronJobClass(self.log, self.scheduler.registry)
+      )
     self.jobs = cron_jobs
 
   def start(self) -> None:
@@ -72,7 +69,7 @@ class CronWorker(worker_base.WorkerBase):
                       "cron": "Scheduler",
                   }
               )
-            cron_job.schedule(self.router)
+            cron_job.schedule(self.scheduler)
           except Exception as exc:  # pylint: disable=broad-exception-caught
             self.log.error(
                 "A scheduled '%s' task encountered a critical failure!",

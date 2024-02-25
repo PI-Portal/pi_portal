@@ -44,11 +44,6 @@ def mocked_generic_task_args() -> MockGenericTaskArgs:
 
 
 @pytest.fixture
-def mocked_queue() -> mock.Mock:
-  return mock.Mock()
-
-
-@pytest.fixture
 def mocked_task_router(
     mocked_task_router_queues: Dict[TaskPriority, mock.Mock]
 ) -> mock.Mock:

@@ -1,7 +1,6 @@
 """Test fixtures for the cron job modules."""
 # pylint: disable=redefined-outer-name
 
-import logging
 from collections import OrderedDict
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass
@@ -81,10 +80,11 @@ def create_queue_worker_scenario_mocks(
 
 
 @pytest.fixture
-def mocked_manifest() -> mock.Mock:
-  instance = mock.Mock()
-  instance.contents = []
-  return instance
+def mocked_current_queue(
+    mocked_task_router_queues: Dict[TaskPriority, mock.Mock],
+    queue_worker_instance: queue_worker.QueueWorker,
+) -> mock.Mock:
+  return mocked_task_router_queues[queue_worker_instance.priority]
 
 
 @pytest.fixture
@@ -94,21 +94,15 @@ def mocked_sleep() -> mock.Mock:
 
 @pytest.fixture
 def cron_worker_instance(
-    mocked_task_router: mock.Mock,
+    mocked_task_scheduler: mock.Mock,
     mocked_sleep: mock.Mock,
-    mocked_worker_logger: logging.Logger,
-    mocked_task_registry: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> cron_worker.CronWorker:
   monkeypatch.setattr(
       cron_worker.__name__ + ".time.sleep",
       mocked_sleep,
   )
-  return cron_worker.CronWorker(
-      mocked_worker_logger,
-      mocked_task_router,
-      mocked_task_registry,
-  )
+  return cron_worker.CronWorker(mocked_task_scheduler)
 
 
 @pytest.fixture
@@ -149,21 +143,15 @@ def cron_worker_running(
 
 @pytest.fixture
 def failed_task_worker_instance(
-    mocked_manifest: mock.Mock,
     mocked_sleep: mock.Mock,
-    mocked_task_router: mock.Mock,
-    mocked_worker_logger: logging.Logger,
+    mocked_task_scheduler: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> failed_task_worker.FailedTaskWorker:
   monkeypatch.setattr(
       failed_task_worker.__name__ + ".time.sleep",
       mocked_sleep,
   )
-  return failed_task_worker.FailedTaskWorker(
-      mocked_worker_logger,
-      mocked_task_router,
-      mocked_manifest,
-  )
+  return failed_task_worker.FailedTaskWorker(mocked_task_scheduler)
 
 
 @pytest.fixture
@@ -184,23 +172,17 @@ def failed_task_worker_running(
 
 @pytest.fixture
 def queue_worker_instance(
-    mocked_worker_logger: logging.Logger,
-    mocked_manifest: mock.Mock,
-    mocked_queue: mock.Mock,
+    mocked_task_scheduler: mock.Mock,
     mocked_sleep: mock.Mock,
-    mocked_task_registry: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> queue_worker.QueueWorker:
   monkeypatch.setattr(
       cron_worker.__name__ + ".time.sleep",
       mocked_sleep,
   )
-  mocked_queue.priority = TaskPriority.STANDARD
   return queue_worker.QueueWorker(
-      mocked_worker_logger,
-      mocked_queue,
-      mocked_task_registry,
-      mocked_manifest,
+      mocked_task_scheduler,
+      TaskPriority.STANDARD,
   )
 
 
@@ -236,15 +218,17 @@ def queue_worker_processing_sequence(
 @pytest.fixture
 def queue_worker_running(
     queue_worker_instance: queue_worker.QueueWorker,
-    mocked_queue: mock.Mock,
+    mocked_current_queue: mock.Mock,
 ) -> "Future[None]":
   minimum_iterations = 10
-  mocked_queue.get.return_value.type = TaskType.NON_SCHEDULED
+  mocked_current_queue.get.return_value.type = TaskType.NON_SCHEDULED
 
   executor = ThreadPoolExecutor()
   future = executor.submit(queue_worker_instance.start)
   executor.shutdown(wait=False)
 
   while True:
-    if mocked_queue.get.call_count > minimum_iterations:  # pragma: no cover
+    if (
+        mocked_current_queue.get.call_count > minimum_iterations
+    ):  # pragma: no cover
       return future

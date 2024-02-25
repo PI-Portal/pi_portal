@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 from pi_portal import config
 from pi_portal.modules.mixins import write_unarchived_log_file
 from pi_portal.modules.tasks import enums
-from pi_portal.modules.tasks.queue.bases.router_base import TaskRouterBase
 from pi_portal.modules.tasks.task import non_scheduled
 from pi_portal.modules.tasks.workers.cron_jobs.bases import cron_job_base
 
@@ -13,6 +12,7 @@ if TYPE_CHECKING:  # pragma: no cover
   import logging
 
   from pi_portal.modules.tasks.registration.registry import TaskRegistry
+  from pi_portal.modules.tasks.scheduler import TaskScheduler
 
 
 class CronJob(cron_job_base.CronJobBase[non_scheduled.Args]):
@@ -36,7 +36,7 @@ class CronJob(cron_job_base.CronJobBase[non_scheduled.Args]):
   def _args(self) -> non_scheduled.Args:
     return non_scheduled.Args()
 
-  def _hook_submit(self, router: TaskRouterBase) -> None:
+  def _hook_submit(self, scheduler: "TaskScheduler") -> None:
     """Cron implementation."""
 
     self.isolated_logger.log.info(

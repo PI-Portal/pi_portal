@@ -26,38 +26,39 @@ class TestCronWorker:
       "WARNING - None - Scheduler - None - Cron scheduler is starting ...\n"
   )
 
-  def test_initialize__cron_jobs(
+  def test_initialize__scheduler(
       self,
       cron_worker_instance: cron_worker.CronWorker,
-      mocked_task_registry_cron_jobs: List[mock.Mock],
-      mocked_worker_logger: logging.Logger,
-      mocked_task_registry: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
   ) -> None:
-    for index, mocked_cron_job in enumerate(mocked_task_registry_cron_jobs):
-      mocked_cron_job.CronJobClass.assert_called_once_with(
-          mocked_worker_logger,
-          mocked_task_registry,
-      )
-      assert cron_worker_instance.jobs[index] == \
-          mocked_cron_job.CronJobClass.return_value
+    assert cron_worker_instance.scheduler == mocked_task_scheduler
 
   def test_initialize__logger(
       self,
       cron_worker_instance: cron_worker.CronWorker,
-      mocked_worker_logger: logging.Logger,
+      mocked_task_scheduler: mock.Mock,
   ) -> None:
-    assert cron_worker_instance.log == mocked_worker_logger
+    assert cron_worker_instance.log == mocked_task_scheduler.log
     assert isinstance(
         cron_worker_instance.log,
         logging.Logger,
     )
 
-  def test_initialize__task_router(
+  def test_initialize__cron_jobs(
       self,
       cron_worker_instance: cron_worker.CronWorker,
-      mocked_task_router: mock.Mock,
+      mocked_task_registry_cron_jobs: List[mock.Mock],
   ) -> None:
-    assert cron_worker_instance.router == mocked_task_router
+    assert cron_worker_instance.scheduler.registry.cron_jobs == (
+        mocked_task_registry_cron_jobs
+    )
+    for index, mocked_cron_job in enumerate(mocked_task_registry_cron_jobs):
+      mocked_cron_job.CronJobClass.assert_called_once_with(
+          cron_worker_instance.log,
+          cron_worker_instance.scheduler.registry,
+      )
+      assert cron_worker_instance.jobs[index] == \
+          mocked_cron_job.CronJobClass.return_value
 
   def test_initialize__inheritance(
       self,
@@ -219,7 +220,7 @@ class TestCronWorker:
   def test_start__two_runs__schedules_a_job__calls_schedule(
       self,
       cron_worker_instance_two_runs: cron_worker.CronWorker,
-      mocked_task_router: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       mocked_task_registry_cron_jobs: List[mock.Mock],
   ) -> None:
     cron_worker_instance_two_runs.jobs = mocked_task_registry_cron_jobs
@@ -229,7 +230,7 @@ class TestCronWorker:
       cron_worker_instance_two_runs.start()
 
     mocked_task_registry_cron_jobs[1].schedule.assert_called_once_with(
-        mocked_task_router
+        mocked_task_scheduler
     )
 
   def test_start__two_runs__schedules_a_job__calls_sleep(
@@ -319,7 +320,7 @@ class TestCronWorker:
   def test_start__two_runs__schedules_a_job__exception__calls_schedule(
       self,
       cron_worker_instance_two_runs: cron_worker.CronWorker,
-      mocked_task_router: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       mocked_task_registry_cron_jobs: List[mock.Mock],
   ) -> None:
     cron_worker_instance_two_runs.jobs = mocked_task_registry_cron_jobs
@@ -329,7 +330,7 @@ class TestCronWorker:
       cron_worker_instance_two_runs.start()
 
     mocked_task_registry_cron_jobs[1].schedule.assert_called_once_with(
-        mocked_task_router
+        mocked_task_scheduler
     )
 
   def test_start__two_runs__schedules_a_job__exception__calls_sleep(
