@@ -4,9 +4,7 @@
 from unittest import mock
 
 import pytest
-from pi_portal.modules.integrations.s3 import client
-
-CLIENT_MODULE = client.__name__
+from pi_portal.modules.integrations.archival.aws import client
 
 
 @pytest.fixture
@@ -20,10 +18,13 @@ def mocked_bucket_name() -> str:
 
 
 @pytest.fixture
-def s3_client_instance(
+def aws_archival_client_instance(
     mocked_boto: mock.Mock,
     mocked_bucket_name: str,
     monkeypatch: pytest.MonkeyPatch,
 ) -> client.S3BucketClient:
-  monkeypatch.setattr(CLIENT_MODULE + ".boto3", mocked_boto)
+  monkeypatch.setattr(
+      client.__name__ + ".boto3",
+      mocked_boto,
+  )
   return client.S3BucketClient(mocked_bucket_name)
