@@ -145,7 +145,7 @@ def setup_chat_processor_mocks(
 
   def setup() -> None:
     monkeypatch.setattr(
-        chat_client.__name__ + ".ChatClientMixin.chat_client_class",
+        chat_client.__name__ + ".ChatClient",
         mocked_chat_client,
     )
 

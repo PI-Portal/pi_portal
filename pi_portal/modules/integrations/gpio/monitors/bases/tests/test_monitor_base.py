@@ -65,7 +65,7 @@ class TestGPIOMonitorBase:
     assert concrete_gpio_monitor_instance.chat_client == (
         mocked_chat_client.return_value
     )
-    mocked_chat_client.assert_called_once_with()
+    mocked_chat_client.assert_called_once_with(propagate_exceptions=False)
 
   def test_start__single_run__changes_only__has_changed__updates_gpio_state(
       self,

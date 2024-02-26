@@ -39,11 +39,11 @@ class TestChatUploadSnapshotProcessor:
   ) -> None:
     assert isinstance(
         chat_upload_snapshot_instance,
-        processor_base.TaskProcessorBase,
+        chat_client.ChatClientMixin,
     )
     assert isinstance(
         chat_upload_snapshot_instance,
-        chat_client.ChatClientMixin,
+        processor_base.TaskProcessorBase,
     )
 
   @pytest.mark.parametrize(

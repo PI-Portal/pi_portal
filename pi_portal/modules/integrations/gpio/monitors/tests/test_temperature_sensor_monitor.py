@@ -47,16 +47,6 @@ class TestTemperatureSensorMonitor:
         mocked_rpi_module.GPIO.BCM
     )
 
-  def test_initialize__slack_client(
-      self,
-      temperature_sensor_monitor_instance: TemperatureSensorMonitor,
-      mocked_chat_client: mock.Mock,
-  ) -> None:
-    assert temperature_sensor_monitor_instance.chat_client == (
-        mocked_chat_client.return_value
-    )
-    mocked_chat_client.assert_called_once_with()
-
   @pytest.mark.parametrize(
       "scenario",
       [

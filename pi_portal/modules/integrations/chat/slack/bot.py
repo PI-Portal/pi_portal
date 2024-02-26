@@ -35,7 +35,7 @@ class SlackBot(ChatBotBase[TypeUserConfigChatSlack]):
         token=self.configuration.settings['SLACK_BOT_TOKEN'],
     )
     self.channel_id = self.configuration.settings['SLACK_CHANNEL_ID']
-    self.chat_client = SlackClient()
+    self.chat_client = SlackClient(propagate_exceptions=False)
     self.web_socket = SocketModeHandler(
         self.app,
         self.configuration.settings['SLACK_APP_TOKEN'],

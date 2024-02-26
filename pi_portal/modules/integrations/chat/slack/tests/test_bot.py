@@ -67,7 +67,7 @@ class TestSlackBot:
       mocked_slack_client: mock.Mock,
   ) -> None:
     assert slack_bot_instance.chat_client == mocked_slack_client.return_value
-    mocked_slack_client.assert_called_once_with()
+    mocked_slack_client.assert_called_once_with(propagate_exceptions=False)
 
   def test_initialize__inheritance(
       self,
