@@ -79,6 +79,62 @@ class TestServiceClient:
         mocked_unix_stream_http_client.return_value.post.return_value
     )
 
+  @pytest.mark.parametrize("message", ["red!", "blue!"])
+  def test_chat_send_message__sends_correct_api_request(
+      self,
+      task_scheduler_service_client_instance: TaskSchedulerServiceClient,
+      mocked_unix_stream_http_client: mock.Mock,
+      message: str,
+  ) -> None:
+    # pylint: disable=duplicate-code
+    expected_payload = {
+        "type":
+            TaskType.CHAT_SEND_MESSAGE.value,
+        "args": {
+            "message": message,
+        },
+        "priority":
+            TaskPriority.EXPRESS.value,
+        "on_failure":
+            [
+                {
+                    "type": TaskType.CHAT_SEND_MESSAGE.value,
+                    "args":
+                        {
+                            "message":
+                                (
+                                    task_scheduler_service_client_instance.
+                                    deferred_message + message
+                                ),
+                        },
+                    "priority": TaskPriority.EXPRESS.value,
+                    "retry_after": 300,
+                }
+            ]
+    }
+
+    task_scheduler_service_client_instance.chat_send_message(message)
+
+    mocked_unix_stream_http_client.return_value.post.assert_called_once_with(
+        "/schedule/",
+        expected_payload,
+    )
+
+  def test_chat_send_message__returns_expected_response(
+      self,
+      task_scheduler_service_client_instance: TaskSchedulerServiceClient,
+      mocked_unix_stream_http_client: mock.Mock,
+  ) -> None:
+    mocked_message = "red!"
+
+    response = task_scheduler_service_client_instance.chat_send_message(
+        message=mocked_message
+    )
+
+    assert response == (
+        mocked_unix_stream_http_client.return_value.post.return_value
+    )
+
   @pytest.mark.parametrize(
       "path,description",
       [

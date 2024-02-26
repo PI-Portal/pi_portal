@@ -57,15 +57,15 @@ class TestGPIOMonitorBase:
         mocked_rpi_module.GPIO.BCM
     )
 
-  def test_initialize__chat_client(
+  def test_initialize__task_scheduler_client(
       self,
       concrete_gpio_monitor_instance: TypeGenericGpioMonitor,
-      mocked_chat_client: mock.Mock,
+      mocked_task_scheduler_client: mock.Mock,
   ) -> None:
-    assert concrete_gpio_monitor_instance.chat_client == (
-        mocked_chat_client.return_value
+    assert concrete_gpio_monitor_instance.task_client == (
+        mocked_task_scheduler_client.return_value
     )
-    mocked_chat_client.assert_called_once_with(propagate_exceptions=False)
+    mocked_task_scheduler_client.assert_called_once_with()
 
   def test_start__single_run__changes_only__has_changed__updates_gpio_state(
       self,

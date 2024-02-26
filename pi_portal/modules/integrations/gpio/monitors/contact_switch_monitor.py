@@ -3,6 +3,7 @@
 from enum import Enum
 
 from pi_portal import config
+from pi_portal.modules.integrations.chat.service_config import ChatConfig
 from pi_portal.modules.integrations.gpio.components import contact_switch
 from pi_portal.modules.integrations.gpio.monitors.bases import monitor_base
 
@@ -45,11 +46,11 @@ class ContactSwitchMonitor(
         }
     )
     chat_message = (
-        f"{self.chat_client.configuration.emoji_alert} "
+        f"{ChatConfig.emoji_alert} "
         f"The {gpio_pin.pin_name} was {self._state_name(gpio_pin)}!"
     )
 
-    self.chat_client.send_message(chat_message)
+    self.task_client.chat_send_message(chat_message)
 
   def _state_name(self, gpio_pin: contact_switch.ContactSwitch) -> str:
     return SwitchState(gpio_pin.current_state == self.open).name
