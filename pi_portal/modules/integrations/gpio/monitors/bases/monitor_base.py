@@ -34,7 +34,7 @@ class GPIOMonitorBase(
 
   def __init__(self, gpio_pins: Sequence[TypeGenericGpio]) -> None:
     self.configure_logger()
-    self.chat_client = ChatClient()
+    self.chat_client = ChatClient(propagate_exceptions=False)
     self.gpio_pins = gpio_pins
     self.hook_setup_gpio()
 

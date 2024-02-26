@@ -20,6 +20,10 @@ TypeIntegrationConfig = TypeVar(
 )
 
 
+class ChatClientError(Exception):
+  """Raised when the chat client implementation encounters an error."""
+
+
 class ChatClientBase(
     write_archived_log_file.ArchivedLogFileWriter,
     Generic[TypeIntegrationConfig],
@@ -30,8 +34,9 @@ class ChatClientBase(
   log_file_path = config.LOG_FILE_CHAT_CLIENT
   logger_name = "client"
 
-  def __init__(self) -> None:
+  def __init__(self, propagate_exceptions: bool) -> None:
     self.configure_logger()
+    self.propagate_exceptions = propagate_exceptions
 
   @abc.abstractmethod
   def send_message(self, message: str) -> None:
@@ -40,6 +45,7 @@ class ChatClientBase(
     Implementations must handle raised exceptions and log errors appropriately.
 
     :param message: The message to send to chat.
+    :raises: :class:`ChatClientError`
     """
 
   @abc.abstractmethod
@@ -50,4 +56,5 @@ class ChatClientBase(
 
     :param file_name: The path to upload to the chat server.
     :param description: A description of the file being uploaded.
+    :raises: :class:`ChatClientError`
     """

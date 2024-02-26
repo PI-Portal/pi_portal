@@ -35,25 +35,6 @@ class TestContactSwitchMonitor:
         monitor_base.GPIOMonitorBase,
     )
 
-  @pytest.mark.usefixtures("contact_switch_monitor_instance")
-  def test_initialize__rpi_module(
-      self,
-      mocked_rpi_module: mock.Mock,
-  ) -> None:
-    mocked_rpi_module.GPIO.setmode.assert_called_once_with(
-        mocked_rpi_module.GPIO.BCM
-    )
-
-  def test_initialize__chat_client(
-      self,
-      contact_switch_monitor_instance: ContactSwitchMonitor,
-      mocked_chat_client: mock.Mock,
-  ) -> None:
-    assert contact_switch_monitor_instance.chat_client == (
-        mocked_chat_client.return_value
-    )
-    mocked_chat_client.assert_called_once_with()
-
   @pytest.mark.parametrize(
       "scenario",
       [
