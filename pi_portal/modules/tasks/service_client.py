@@ -17,11 +17,46 @@ class TaskSchedulerServiceClient:
 
   http_client: UnixStreamHttpClient
   deferred_message = "** Deferred! ** "
+  camera_snapshot_failure_message = (
+      "An error occurred while requesting a snapshot!"
+  )
 
   def __init__(self) -> None:
     self.http_client = UnixStreamHttpClient(
         config.PI_PORTAL_TASK_MANAGER_SOCKET
     )
+
+  def camera_snapshot(
+      self,
+      camera: int,
+  ) -> UnixStreamHttpResponse:
+    """Schedule a camera snapshot from the specified camera.
+
+    :param camera: The camera identifier to request the snapshot from.
+    :returns: A response from the task scheduler API.
+    """
+    payload = {
+        "type":
+            TaskType.MOTION_SNAPSHOT.value,
+        "args": {
+            "camera": camera,
+        },
+        "priority":
+            TaskPriority.EXPRESS.value,
+        "on_failure":
+            [
+                {
+                    "type": TaskType.CHAT_SEND_MESSAGE.value,
+                    "args": {
+                        "message": self.camera_snapshot_failure_message,
+                    },
+                    "priority": TaskPriority.EXPRESS.value,
+                    "retry_after": 300,
+                }
+            ]
+    }
+
+    return self.http_client.post("/schedule/", payload)
 
   def chat_upload_snapshot(
       self,
