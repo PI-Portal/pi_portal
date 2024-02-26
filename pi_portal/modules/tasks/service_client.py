@@ -58,6 +58,39 @@ class TaskSchedulerServiceClient:
 
     return self.http_client.post("/schedule/", payload)
 
+  def chat_send_message(
+      self,
+      message: str,
+  ) -> UnixStreamHttpResponse:
+    """Send a message to the chat client via the API.
+
+    :param message: The message you wish to send.
+    :returns: A response from the task scheduler API.
+    """
+
+    payload = {
+        "type":
+            TaskType.CHAT_SEND_MESSAGE.value,
+        "args": {
+            "message": message,
+        },
+        "priority":
+            TaskPriority.EXPRESS.value,
+        "on_failure":
+            [
+                {
+                    "type": TaskType.CHAT_SEND_MESSAGE.value,
+                    "args": {
+                        "message": self.deferred_message + message,
+                    },
+                    "priority": TaskPriority.EXPRESS.value,
+                    "retry_after": 300,
+                }
+            ]
+    }
+
+    return self.http_client.post("/schedule/", payload)
+
   def chat_upload_snapshot(
       self,
       path: str,
