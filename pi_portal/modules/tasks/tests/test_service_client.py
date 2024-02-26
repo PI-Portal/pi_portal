@@ -23,6 +23,62 @@ class TestServiceClient:
         config.PI_PORTAL_TASK_MANAGER_SOCKET
     )
 
+  @pytest.mark.parametrize("camera", [0, 1])
+  def test_camera_snapshot__sends_correct_api_request(
+      self,
+      task_scheduler_service_client_instance: TaskSchedulerServiceClient,
+      mocked_unix_stream_http_client: mock.Mock,
+      camera: int,
+  ) -> None:
+    # pylint: disable=duplicate-code
+    expected_payload = {
+        "type":
+            TaskType.MOTION_SNAPSHOT.value,
+        "args": {
+            "camera": camera,
+        },
+        "priority":
+            TaskPriority.EXPRESS.value,
+        "on_failure":
+            [
+                {
+                    "type": TaskType.CHAT_SEND_MESSAGE.value,
+                    "args":
+                        {
+                            "message":
+                                (
+                                    task_scheduler_service_client_instance.
+                                    camera_snapshot_failure_message
+                                ),
+                        },
+                    "priority": TaskPriority.EXPRESS.value,
+                    "retry_after": 300,
+                }
+            ]
+    }
+
+    task_scheduler_service_client_instance.camera_snapshot(camera)
+
+    mocked_unix_stream_http_client.return_value.post.assert_called_once_with(
+        "/schedule/",
+        expected_payload,
+    )
+
+  def test_camera_snapshot__returns_expected_response(
+      self,
+      task_scheduler_service_client_instance: TaskSchedulerServiceClient,
+      mocked_unix_stream_http_client: mock.Mock,
+  ) -> None:
+    mocked_camera = 1
+
+    response = task_scheduler_service_client_instance.camera_snapshot(
+        camera=mocked_camera
+    )
+
+    assert response == (
+        mocked_unix_stream_http_client.return_value.post.return_value
+    )
+
   @pytest.mark.parametrize(
       "path,description",
       [
