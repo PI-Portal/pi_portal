@@ -16,6 +16,7 @@ from .. import (
     command_temperature,
     command_uptime,
 )
+from ..mixins import task_scheduler_client
 
 
 @pytest.fixture
@@ -24,7 +25,7 @@ def mocked_linux_module() -> mock.Mock:
 
 
 @pytest.fixture
-def mocked_motion_client() -> mock.Mock:
+def mocked_task_scheduler_client() -> mock.Mock:
   return mock.Mock()
 
 
@@ -83,13 +84,13 @@ def restart_command_instance(
 @pytest.fixture
 def snapshot_command_instance(
     mocked_chat_bot: mock.Mock,
-    mocked_motion_client: mock.Mock,
+    mocked_task_scheduler_client: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
     setup_process_command_mocks: Callable[[], None],
 ) -> command_snapshot.SnapshotCommand:
   monkeypatch.setattr(
-      command_snapshot.__name__ + ".motion_client.MotionClient",
-      mocked_motion_client,
+      task_scheduler_client.__name__ + ".TaskSchedulerServiceClient",
+      mocked_task_scheduler_client,
   )
   setup_process_command_mocks()
   return command_snapshot.SnapshotCommand(mocked_chat_bot)
