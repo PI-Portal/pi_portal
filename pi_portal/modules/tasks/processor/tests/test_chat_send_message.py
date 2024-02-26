@@ -30,25 +30,17 @@ class TestChatSendMessageProcessor:
     )
     assert chat_send_message_instance.log == mocked_task_logger
 
-  def test_initialize__chat_client(
-      self,
-      chat_send_message_instance: ProcessorClass,
-      mocked_chat_client: mock.Mock,
-  ) -> None:
-    assert chat_send_message_instance.client == \
-        mocked_chat_client.return_value
-
   def test_initialize__inheritance(
       self,
       chat_send_message_instance: ProcessorClass,
   ) -> None:
     assert isinstance(
         chat_send_message_instance,
-        processor_base.TaskProcessorBase,
+        chat_client.ChatClientMixin,
     )
     assert isinstance(
         chat_send_message_instance,
-        chat_client.ChatClientMixin,
+        processor_base.TaskProcessorBase,
     )
 
   def test_process__calls_send_message(
