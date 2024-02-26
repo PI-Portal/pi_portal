@@ -5,6 +5,7 @@ from unittest import mock
 
 import pytest
 from pi_portal import config
+from pi_portal.modules.integrations.chat import service_config
 from ..bases import monitor_base
 from ..contact_switch_monitor import ContactSwitchMonitor, SwitchState
 from .conftest import ContactSwitchScenario, generate_switch_scenario_ids
@@ -70,11 +71,11 @@ class TestContactSwitchMonitor:
       ],
       ids=generate_switch_scenario_ids,
   )
-  def test_hook_log_state__vary_gpio_and_state__calls_chat_client(
+  def test_hook_log_state__vary_gpio_and_state__calls_task_client(
       self,
       contact_switch_monitor_instance: ContactSwitchMonitor,
       mocked_gpio_pins: List[mock.Mock],
-      mocked_chat_client: mock.Mock,
+      mocked_task_scheduler_client: mock.Mock,
       scenario: ContactSwitchScenario,
   ) -> None:
     mocked_gpio_pins[0].current_state = scenario.state
@@ -84,7 +85,8 @@ class TestContactSwitchMonitor:
 
     contact_switch_monitor_instance.hook_log_state(mocked_gpio_pins[0])
 
-    mocked_chat_client.return_value.send_message.assert_called_once_with(
-        str(mocked_chat_client.return_value.configuration.emoji_alert) + " "
-        f"The {scenario.name} was {expected_state_str}!"
-    )
+    mocked_task_scheduler_client.return_value.\
+        chat_send_message.assert_called_once_with(
+            service_config.ChatConfig.emoji_alert + " "
+            f"The {scenario.name} was {expected_state_str}!"
+        )
