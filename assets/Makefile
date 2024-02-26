@@ -2,7 +2,7 @@
 
 SHELL := /bin/bash
 
-.PHONY: help fmt lint md sectest build-docs build-wheel coverage format-python format-shell format-toml lint-markdown lint-dockerfile lint-docstrings lint-python lint-shell lint-workflows lint-yaml release security-bandit security-leaks security-safety spelling-markdown test types
+.PHONY: help fmt lint md sectest build-docs build-wheel clean coverage format-python format-shell format-toml lint-markdown lint-dockerfile lint-docstrings lint-python lint-shell lint-workflows lint-yaml release security-bandit security-leaks security-safety spelling-markdown test types
 
 export PROJECT_NAME = pi_portal
 export GIT_ROOT = $(shell git rev-parse --show-toplevel)
@@ -35,6 +35,7 @@ help:
 	@echo "Please use \`dev <target>' where <target> is one of"
 	@echo "  build-docs        to build the documentation"
 	@echo "  build-wheel       to build the wheel"
+	@echo "  clean             to clean __pycache__ content"
 	@echo "  coverage          to run coverage"
 	@echo "  format-python     to format Python files"
 	@echo "  format-shell      to format shell scripts"
@@ -73,6 +74,11 @@ build-wheel:
 	@echo "Building wheel ..."
 	@echo "COMMAND: poetry build -f wheel"
 	@poetry build -f wheel
+	@echo "Done."
+
+clean:
+	@echo "Cleaning __pycache__ content ..."
+	@$(call p, "find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete")
 	@echo "Done."
 
 coverage:
