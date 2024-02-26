@@ -1,30 +1,18 @@
 """Chat CLI Snapshot command."""
 
-from typing import TYPE_CHECKING
-
 from pi_portal.modules.configuration import state
-from pi_portal.modules.integrations.motion import client as motion_client
 from pi_portal.modules.system.supervisor_config import (
     ProcessList,
     ProcessStatus,
 )
 from .bases.process_command import ChatProcessCommandBase
-
-if TYPE_CHECKING:  # pragma: no cover
-  from pi_portal.modules.integrations.chat import TypeChatBot
+from .mixins.task_scheduler_client import TaskSchedulerClientMixin
 
 
-class SnapshotCommand(ChatProcessCommandBase):
-  """Chat CLI command to take a snapshot with the camera.
-
-  :param bot: The configured chatbot in use.
-  """
+class SnapshotCommand(TaskSchedulerClientMixin, ChatProcessCommandBase):
+  """Chat CLI command to take a snapshot with the camera."""
 
   process_name = ProcessList.CAMERA
-
-  def __init__(self, bot: "TypeChatBot"):
-    super().__init__(bot)
-    self.motion_client = motion_client.MotionClient(bot.log)
 
   def hook_invoker(self) -> None:
     """Check if the camera is available, and then take a snapshot."""
@@ -40,7 +28,4 @@ class SnapshotCommand(ChatProcessCommandBase):
   def _do_snapshot(self) -> None:
     user_config = state.State().user_config
     for camera_index, _ in enumerate(user_config["MOTION"]["CAMERAS"]):
-      try:
-        self.motion_client.take_snapshot(camera=camera_index)
-      except motion_client.MotionException:
-        self.notifier.notify_error()
+      self.task_client.camera_snapshot(camera=camera_index)
