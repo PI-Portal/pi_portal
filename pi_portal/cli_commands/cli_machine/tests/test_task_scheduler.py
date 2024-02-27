@@ -15,13 +15,16 @@ class TestTaskSchedulerCommand:
       self,
       task_scheduler_command_instance: task_scheduler.TaskSchedulerCommand,
   ) -> None:
-    assert isinstance(task_scheduler_command_instance, command.CommandBase)
     assert isinstance(
         task_scheduler_command_instance,
         state.CommandManagedStateMixin,
     )
+    assert isinstance(
+        task_scheduler_command_instance,
+        command.CommandBase,
+    )
 
-  def test_invoke__calls(
+  def test_invoke__starts_task_scheduler(
       self,
       task_scheduler_command_instance: task_scheduler.TaskSchedulerCommand,
       mocked_uvicorn: mock.Mock,
