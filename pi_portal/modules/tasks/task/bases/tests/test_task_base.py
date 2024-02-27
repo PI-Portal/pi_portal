@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Type
 
 import pytest
 from pi_portal.modules.tasks.conftest import MockGenericTaskArgs
-from pi_portal.modules.tasks.enums import TaskPriority, TaskType
+from pi_portal.modules.tasks.enums import RoutingLabel, TaskType
 from .. import task_fields, task_result
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -15,7 +15,7 @@ if TYPE_CHECKING:  # pragma: no cover
 class TestTaskBase:
   """Test the TaskBase class."""
 
-  def test_initialize__default_priority__attributes(
+  def test_initialize__defaults__attributes(
       self,
       concrete_task_base_instance: "task_base.TypeGenericTask",
       mocked_generic_task_args: MockGenericTaskArgs,
@@ -24,7 +24,6 @@ class TestTaskBase:
     assert concrete_task_base_instance.completed is None
     assert isinstance(concrete_task_base_instance.created, datetime)
     assert concrete_task_base_instance.id is None
-    assert concrete_task_base_instance.priority is TaskPriority.STANDARD
     assert concrete_task_base_instance.ok is None
     assert concrete_task_base_instance.on_success == []
     assert concrete_task_base_instance.on_failure == []
@@ -34,37 +33,11 @@ class TestTaskBase:
     assert concrete_task_base_instance.result.cause is None
     assert concrete_task_base_instance.result.value is None
     assert concrete_task_base_instance.retry_after == 0
+    assert concrete_task_base_instance.routing_label == (
+        RoutingLabel.PI_PORTAL_CONTROL
+    )
     assert concrete_task_base_instance.scheduled is None
     assert concrete_task_base_instance.type == TaskType.BASE
-
-  @pytest.mark.parametrize("priority", list(TaskPriority))
-  def test_initialize__vary_priority__attributes(
-      self,
-      concrete_task_base_class: "Type[task_base.TypeGenericTask]",
-      mocked_generic_task_args: MockGenericTaskArgs,
-      priority: TaskPriority,
-  ) -> None:
-    prioritized_task_base_instance = concrete_task_base_class(
-        mocked_generic_task_args,
-        priority=priority,
-    )
-
-    assert prioritized_task_base_instance.args == mocked_generic_task_args
-    assert prioritized_task_base_instance.completed is None
-    assert isinstance(prioritized_task_base_instance.created, datetime)
-    assert prioritized_task_base_instance.id is None
-    assert prioritized_task_base_instance.priority is priority
-    assert prioritized_task_base_instance.ok is None
-    assert prioritized_task_base_instance.on_success == []
-    assert prioritized_task_base_instance.on_failure == []
-    assert isinstance(
-        prioritized_task_base_instance.result, task_result.TaskResult
-    )
-    assert prioritized_task_base_instance.result.cause is None
-    assert prioritized_task_base_instance.result.value is None
-    assert prioritized_task_base_instance.retry_after == 0
-    assert prioritized_task_base_instance.scheduled is None
-    assert prioritized_task_base_instance.type == TaskType.BASE
 
   @pytest.mark.parametrize("retry_after", [-1, 1])
   def test_initialize__vary_retry__attributes(
@@ -82,7 +55,6 @@ class TestTaskBase:
     assert task_base_instance.completed is None
     assert isinstance(task_base_instance.created, datetime)
     assert task_base_instance.id is None
-    assert task_base_instance.priority is TaskPriority.STANDARD
     assert task_base_instance.ok is None
     assert task_base_instance.on_success == []
     assert task_base_instance.on_failure == []
@@ -90,6 +62,34 @@ class TestTaskBase:
     assert task_base_instance.result.cause is None
     assert task_base_instance.result.value is None
     assert task_base_instance.retry_after is retry_after
+    assert task_base_instance.routing_label == (RoutingLabel.PI_PORTAL_CONTROL)
+    assert task_base_instance.scheduled is None
+    assert task_base_instance.type == TaskType.BASE
+
+  @pytest.mark.parametrize("routing_label", list(RoutingLabel))
+  def test_initialize__vary_routing_label__attributes(
+      self,
+      concrete_task_base_class: "Type[task_base.TypeGenericTask]",
+      mocked_generic_task_args: MockGenericTaskArgs,
+      routing_label: RoutingLabel,
+  ) -> None:
+    task_base_instance = concrete_task_base_class(
+        mocked_generic_task_args,
+        routing_label=routing_label,
+    )
+
+    assert task_base_instance.args == mocked_generic_task_args
+    assert task_base_instance.completed is None
+    assert isinstance(task_base_instance.created, datetime)
+    assert task_base_instance.id is None
+    assert task_base_instance.ok is None
+    assert task_base_instance.on_success == []
+    assert task_base_instance.on_failure == []
+    assert isinstance(task_base_instance.result, task_result.TaskResult)
+    assert task_base_instance.result.cause is None
+    assert task_base_instance.result.value is None
+    assert task_base_instance.retry_after == 0
+    assert task_base_instance.routing_label == routing_label
     assert task_base_instance.scheduled is None
     assert task_base_instance.type == TaskType.BASE
 

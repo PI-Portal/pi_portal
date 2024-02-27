@@ -27,7 +27,7 @@ class TestQueueBase:
 
     assert mocked_stream.getvalue() == (
         f"DEBUG - {mocked_task.id} - "
-        f"{concrete_queue_base_instance.priority.value} - "
+        f"{concrete_queue_base_instance.routing_label.value} - "
         f"Ack: '{mocked_task}'!\n"
     )
 
@@ -54,7 +54,7 @@ class TestQueueBase:
 
     assert mocked_stream.getvalue() == (
         f"DEBUG - {mocked_task.id} - "
-        f"{concrete_queue_base_instance.priority.value} - "
+        f"{concrete_queue_base_instance.routing_label.value} - "
         f"Dequeued: '{mocked_task}'!\n"
     )
 
@@ -116,7 +116,7 @@ class TestQueueBase:
 
     assert mocked_stream.getvalue() == (
         f"DEBUG - {mocked_task.id} - "
-        f"{concrete_queue_base_instance.priority.value} - "
+        f"{concrete_queue_base_instance.routing_label.value} - "
         f"Enqueued: '{mocked_task}'!\n"
     )
 
@@ -152,7 +152,7 @@ class TestQueueBase:
 
     assert mocked_stream.getvalue() == (
         f"DEBUG - {mocked_task.id} - "
-        f"{concrete_queue_base_instance.priority.value} - "
+        f"{concrete_queue_base_instance.routing_label.value} - "
         f"Retried: '{mocked_task}'!\n"
     )
 

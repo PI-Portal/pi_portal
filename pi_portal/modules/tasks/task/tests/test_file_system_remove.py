@@ -20,6 +20,7 @@ class TestFileSystemRemove(GenericTaskModuleTest):
   expected_api_enabled = False
   expected_arg_class = file_system_remove.Args
   expected_return_type = None
+  expected_routing_label = enums.RoutingLabel.FILE_SYSTEM
   expected_type = enums.TaskType.FILE_SYSTEM_REMOVE
   mock_args = file_system_remove.Args(
       path=os.path.join(config.PATH_QUEUE_VIDEO_UPLOAD, "file1")

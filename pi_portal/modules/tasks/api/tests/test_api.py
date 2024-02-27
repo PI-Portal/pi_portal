@@ -6,7 +6,8 @@ from unittest import mock
 import pytest
 from fastapi.encoders import jsonable_encoder
 from fastapi.testclient import TestClient
-from pi_portal.modules.tasks.enums import TaskPriority, TaskType
+from pi_portal.modules.tasks.config import ROUTING_MATRIX
+from pi_portal.modules.tasks.enums import RoutingLabel, TaskType
 from pi_portal.modules.tasks.registration.registry import TaskRegistry
 from pi_portal.modules.tasks.task.serializers.task_serializer import (
     SerializedTask,
@@ -61,7 +62,7 @@ class TestApi:
       "request_scenario",
       enabled_tasks__valid_payloads__creation_request_scenarios,
   )
-  def test_request__enabled__valid_payload__vary_task__def_priority__enqueues(
+  def test_request__enabled__valid_payload__vary_task__def_label__enqueues(
       self,
       test_client: TestClient,
       mocked_task_router: mock.Mock,
@@ -85,22 +86,22 @@ class TestApi:
         registered_task.ArgClass,
     )
     assert asdict(created_task.args) == request_scenario["args"]
-    assert created_task.priority == TaskPriority.STANDARD
+    assert created_task.routing_label == ROUTING_MATRIX[created_task.type]
 
-  @pytest.mark.parametrize("priority", list(TaskPriority))
+  @pytest.mark.parametrize("routing_label", list(RoutingLabel))
   @pytest.mark.parametrize(
       "request_scenario",
       enabled_tasks__valid_payloads__creation_request_scenarios,
   )
-  def test_request__enabled__valid_payload__vary_task__vary_priority__enqueues(
+  def test_request__enabled__valid_payload__vary_task__vary_label__enqueues(
       self,
       test_client: TestClient,
       mocked_task_router: mock.Mock,
       task_registry: TaskRegistry,
       request_scenario: TypedTaskCreationRequestParameters,
-      priority: TaskPriority,
+      routing_label: RoutingLabel,
   ) -> None:
-    request_scenario["priority"] = priority.value
+    request_scenario["routing_label"] = routing_label.value
 
     test_client.post(
         "/schedule/",
@@ -119,7 +120,7 @@ class TestApi:
         registered_task.ArgClass,
     )
     assert asdict(created_task.args) == request_scenario["args"]
-    assert created_task.priority == priority
+    assert created_task.routing_label == routing_label
 
   @pytest.mark.parametrize(
       "request_scenario",

@@ -3,6 +3,18 @@
 import enum
 
 
+class RoutingLabel(enum.Enum):
+  """Labels for task routing."""
+
+  PI_PORTAL_CONTROL = "PI_PORTAL_CONTROL"
+  ARCHIVAL = "ARCHIVAL"
+  CAMERA = "CAMERA"
+  CHAT_SEND_MESSAGE = "CHAT_SEND_MESSAGE"
+  CHAT_UPLOAD_SNAPSHOT = "CHAT_UPLOAD_SNAPSHOT"
+  CHAT_UPLOAD_VIDEO = "CHAT_UPLOAD_VIDEO"
+  FILE_SYSTEM = "FILE_SYSTEM"
+
+
 class TaskType(enum.Enum):
   """Pi Portal schedulable task types."""
 
@@ -18,13 +30,6 @@ class TaskType(enum.Enum):
   MOTION_SNAPSHOT = "MOTION_SNAPSHOT"
   NON_SCHEDULED = "NON_SCHEDULED"
   QUEUE_MAINTENANCE = "QUEUE_MAINTENANCE"
-
-
-class TaskPriority(enum.Enum):
-  """Priorities for task routing."""
-
-  EXPRESS = "EXPRESS"
-  STANDARD = "STANDARD"
 
 
 class TaskManifests(enum.Enum):

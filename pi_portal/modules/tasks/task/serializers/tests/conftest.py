@@ -1,7 +1,7 @@
 """Test fixtures for the task scheduler api module tests."""
 # pylint: disable=redefined-outer-name,unused-import
 
-from typing import Any, Dict, List, NamedTuple
+from typing import NamedTuple
 
 import pytest
 from pi_portal.modules.tasks.conftest import MockGenericTaskArgs
@@ -11,16 +11,6 @@ from pi_portal.modules.tasks.task.bases.tests.conftest import (
     concrete_task_base_class,
     concrete_task_base_instance,
 )
-from typing_extensions import NotRequired, TypedDict
-
-
-class TypedTaskParameters(TypedDict):
-  type: str
-  args: Dict[str, Any]
-  priority: str
-  retry_on_error: NotRequired[bool]
-  on_failure: NotRequired[List["TypedTaskParameters"]]
-  on_success: NotRequired[List["TypedTaskParameters"]]
 
 
 class ClonedTasksScenario(NamedTuple):
