@@ -29,6 +29,7 @@ class TestIDCommand:
   ) -> None:
     id_command_instance.invoke()
 
-    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
-        f"ID: {test_state.log_uuid}"
-    )
+    mocked_chat_bot.task_scheduler_client.\
+        chat_send_message.assert_called_once_with(
+          f"ID: {test_state.log_uuid}"
+        )
