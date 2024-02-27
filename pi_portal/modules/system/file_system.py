@@ -2,6 +2,7 @@
 
 import os
 import shutil
+import time
 
 
 class FileSystem:
@@ -11,6 +12,7 @@ class FileSystem:
   """
 
   path: str
+  poll_interval: float = 0.5
 
   def __init__(self, path: str) -> None:
     self.path = path
@@ -42,3 +44,9 @@ class FileSystem:
     """
 
     os.chmod(self.path, int(mode, 8))
+
+  def wait_until_exists(self) -> None:
+    """Wait until the specified file path exists."""
+
+    while not os.path.exists(self.path):
+      time.sleep(self.poll_interval)

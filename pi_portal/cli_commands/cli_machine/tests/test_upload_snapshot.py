@@ -22,10 +22,12 @@ class TestUploadSnapshotCommand:
       upload_snapshot_command_instance: upload_snapshot.UploadSnapshotCommand,
   ) -> None:
     assert isinstance(
-        upload_snapshot_command_instance, file_command.FileCommandBase
+        upload_snapshot_command_instance,
+        state.CommandManagedStateMixin,
     )
     assert isinstance(
-        upload_snapshot_command_instance, state.CommandManagedStateMixin
+        upload_snapshot_command_instance,
+        file_command.FileCommandBase,
     )
 
   def test_invoke__calls(

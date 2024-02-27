@@ -22,10 +22,12 @@ class TestUploadVideoCommand:
       upload_video_command_instance: upload_video.UploadVideoCommand,
   ) -> None:
     assert isinstance(
-        upload_video_command_instance, file_command.FileCommandBase
+        upload_video_command_instance,
+        state.CommandManagedStateMixin,
     )
     assert isinstance(
-        upload_video_command_instance, state.CommandManagedStateMixin
+        upload_video_command_instance,
+        file_command.FileCommandBase,
     )
 
   def test_invoke__calls(

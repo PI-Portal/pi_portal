@@ -10,7 +10,7 @@ class TaskSchedulerCommand(
     command.CommandBase,
     state.CommandManagedStateMixin,
 ):
-  """Machine CLI command to start the task scheduler service."""
+  """CLI command to start the task scheduler service."""
 
   def invoke(self) -> None:
     """Invoke the command."""
