@@ -38,9 +38,10 @@ class TestTemperatureCommand:
 
     temperature_command_instance.invoke()
 
-    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
-        "No sensors configured."
-    )
+    mocked_chat_bot.task_scheduler_client. \
+        chat_send_message.assert_called_once_with(
+          "No sensors configured."
+        )
 
   def test_invoke__one_sensor__one_type__no_results__sends_correct_message(
       self,
@@ -63,9 +64,10 @@ class TestTemperatureCommand:
 
     temperature_command_instance.invoke()
 
-    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
-        "Kitchen: not yet measured"
-    )
+    mocked_chat_bot.task_scheduler_client. \
+        chat_send_message.assert_called_once_with(
+          "Kitchen: not yet measured"
+        )
 
   def test_invoke__one_sensor__one_type__results__sends_correct_message(
       self,
@@ -88,9 +90,10 @@ class TestTemperatureCommand:
 
     temperature_command_instance.invoke()
 
-    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
-        "Kitchen: 20°C, 40% humidity"
-    )
+    mocked_chat_bot.task_scheduler_client. \
+        chat_send_message.assert_called_once_with(
+          "Kitchen: 20°C, 40% humidity"
+        )
 
   def test_invoke__two_sensors__one_type__results__sends_correct_message(
       self,
@@ -118,10 +121,11 @@ class TestTemperatureCommand:
 
     temperature_command_instance.invoke()
 
-    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
-        ("Bedroom: 19°C, 39% humidity\n"
-         "Kitchen: 20°C, 40% humidity")
-    )
+    mocked_chat_bot.task_scheduler_client. \
+        chat_send_message.assert_called_once_with(
+          "Bedroom: 19°C, 39% humidity\n"
+          "Kitchen: 20°C, 40% humidity"
+        )
 
   def test_invoke__two_sensors__two_types__results__sends_correct_message(
       self,
@@ -152,7 +156,8 @@ class TestTemperatureCommand:
 
     temperature_command_instance.invoke()
 
-    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
-        ("Kitchen: 20°C, 40% humidity\n"
-         "Kitchen: 21°C, 41% humidity")
-    )
+    mocked_chat_bot.task_scheduler_client. \
+        chat_send_message.assert_called_once_with(
+          "Kitchen: 20°C, 40% humidity\n"
+          "Kitchen: 21°C, 41% humidity"
+        )

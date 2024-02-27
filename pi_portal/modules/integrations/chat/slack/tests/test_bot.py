@@ -61,14 +61,6 @@ class TestSlackBot:
         slack_user_config['SLACK_APP_TOKEN'],
     )
 
-  def test_initialize__slack_client(
-      self,
-      slack_bot_instance: bot.SlackBot,
-      mocked_slack_client: mock.Mock,
-  ) -> None:
-    assert slack_bot_instance.chat_client == mocked_slack_client.return_value
-    mocked_slack_client.assert_called_once_with(propagate_exceptions=False)
-
   def test_initialize__inheritance(
       self,
       slack_bot_instance: bot.SlackBot,
@@ -125,13 +117,14 @@ class TestSlackBot:
   def test_start__sends_chat_message(
       self,
       slack_bot_instance: bot.SlackBot,
-      mocked_slack_client: mock.Mock,
+      mocked_task_scheduler_client: mock.Mock,
   ) -> None:
     slack_bot_instance.start()
 
-    mocked_slack_client.return_value.send_message.assert_called_once_with(
-        "I've rebooted!  Now listening for commands...",
-    )
+    mocked_task_scheduler_client.return_value.\
+        chat_send_message.assert_called_once_with(
+          "I've rebooted!  Now listening for commands...",
+        )
 
   def test_start__bolt_app__calls_start(
       self,

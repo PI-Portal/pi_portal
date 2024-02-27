@@ -5,9 +5,6 @@ from unittest import mock
 import pytest
 from pi_portal.modules.configuration import state
 from pi_portal.modules.integrations.chat.cli.commands import SnapshotCommand
-from pi_portal.modules.integrations.chat.cli.commands.mixins import (
-    task_scheduler_client,
-)
 from pi_portal.modules.system.supervisor_config import ProcessList
 from ..bases import process_command
 
@@ -28,10 +25,6 @@ class TestSnapshotCommand:
   ) -> None:
     assert isinstance(
         snapshot_command_instance,
-        task_scheduler_client.TaskSchedulerClientMixin,
-    )
-    assert isinstance(
-        snapshot_command_instance,
         process_command.ChatProcessCommandBase,
     )
 
@@ -40,7 +33,7 @@ class TestSnapshotCommand:
       self,
       snapshot_command_instance: SnapshotCommand,
       mocked_supervisor_process: mock.Mock,
-      mocked_task_scheduler_client: mock.Mock,
+      mocked_chat_bot: mock.Mock,
       test_state: state.State,
       camera_count: int,
   ) -> None:
@@ -55,7 +48,7 @@ class TestSnapshotCommand:
     snapshot_command_instance.invoke()
 
     assert (
-        mocked_task_scheduler_client.return_value.camera_snapshot.mock_calls ==
+        mocked_chat_bot.task_scheduler_client.camera_snapshot.mock_calls ==
         expected_calls
     )
 
@@ -69,8 +62,7 @@ class TestSnapshotCommand:
 
     snapshot_command_instance.invoke()
 
-    mocked_task_scheduler_client.return_value.camera_snapshot.assert_not_called(
-    )
+    mocked_task_scheduler_client.camera_snapshot.assert_not_called()
 
   def test_invoke__process_not_running__sends_notification(
       self,
@@ -82,6 +74,7 @@ class TestSnapshotCommand:
 
     snapshot_command_instance.invoke()
 
-    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
-        "Please `arm` the camera first ..."
-    )
+    mocked_chat_bot.task_scheduler_client. \
+        chat_send_message.assert_called_once_with(
+          "Please `arm` the camera first ..."
+        )

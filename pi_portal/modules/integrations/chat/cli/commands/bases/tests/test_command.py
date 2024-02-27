@@ -34,14 +34,14 @@ class TestChatCommandBase:
   def test_initialize__notifier(
       self,
       concrete_command_instance: command.ChatCommandBase,
-      mocked_chat_client: mock.Mock,
+      mocked_task_scheduler_client: mock.Mock,
   ) -> None:
     assert isinstance(
         concrete_command_instance.notifier,
         notifier.ChatCLINotifier,
     )
-    assert concrete_command_instance.notifier.chat_client == (
-        mocked_chat_client
+    assert concrete_command_instance.notifier.task_scheduler_client == (
+        mocked_task_scheduler_client
     )
 
   def test_invoke__raises_exception(

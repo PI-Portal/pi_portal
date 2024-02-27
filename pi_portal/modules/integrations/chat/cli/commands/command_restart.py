@@ -9,5 +9,5 @@ class RestartCommand(ChatCommandBase):
   def invoke(self) -> None:
     """Restart the chat CLI bot."""
 
-    self.chatbot.chat_client.send_message("Rebooting myself ...")
+    self.chatbot.task_scheduler_client.chat_send_message("Rebooting myself ...")
     self.chatbot.halt()

@@ -17,11 +17,6 @@ def mocked_chat_bot_implementation() -> mock.Mock:
 
 
 @pytest.fixture
-def mocked_chat_client() -> mock.Mock:
-  return mock.Mock()
-
-
-@pytest.fixture
 def mocked_chat_client_implementation() -> mock.Mock:
   return mock.Mock()
 
@@ -50,6 +45,11 @@ def mocked_get_available_commands() -> mock.Mock:
 
 
 @pytest.fixture
+def mocked_task_scheduler() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
 def mocked_user_config() -> Mapping[str, str]:
   return {"mocked": "config"}
 
@@ -57,7 +57,6 @@ def mocked_user_config() -> Mapping[str, str]:
 @pytest.fixture
 def concrete_chat_bot_class(
     mocked_chat_bot_implementation: mock.Mock,
-    mocked_chat_client: mock.Mock,
     mocked_chat_config: mock.Mock,
 ) -> Type[bot.TypeChatBot]:
 
@@ -72,7 +71,6 @@ def concrete_chat_bot_class(
     def __init__(self) -> None:
       super().__init__()
       self.configuration = mocked_chat_config
-      self.chat_client = mocked_chat_client
 
   return ConcreteBot
 
@@ -83,6 +81,7 @@ def concrete_chat_bot_instance(
     mocked_chat_cli_handler: mock.Mock,
     mocked_chat_logger: logging.Logger,
     mocked_get_available_commands: mock.Mock,
+    mocked_task_scheduler: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> bot.TypeChatBot:
 
@@ -94,6 +93,11 @@ def concrete_chat_bot_instance(
   monkeypatch.setattr(
       bot.__name__ + ".cli.get_available_commands",
       mocked_get_available_commands,
+  )
+
+  monkeypatch.setattr(
+      bot.__name__ + ".TaskSchedulerServiceClient",
+      mocked_task_scheduler,
   )
 
   instance = concrete_chat_bot_class()

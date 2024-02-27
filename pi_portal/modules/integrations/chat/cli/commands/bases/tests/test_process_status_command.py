@@ -46,13 +46,13 @@ class TestChatProcessStatusCommandBase:
   def test_initialize__notifier(
       self,
       concrete_process_status_command_instance: ChatProcessStatusCommandBase,
-      mocked_chat_client: mock.Mock,
       mocked_cli_notifier: mock.Mock,
+      mocked_task_scheduler_client: mock.Mock,
   ) -> None:
     assert concrete_process_status_command_instance.notifier == (
         mocked_cli_notifier.return_value
     )
-    mocked_cli_notifier.assert_called_once_with(mocked_chat_client)
+    mocked_cli_notifier.assert_called_once_with(mocked_task_scheduler_client)
 
   def test_initialize__supervisor_process(
       self,

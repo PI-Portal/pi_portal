@@ -34,7 +34,7 @@ class UptimeCommand(ChatCommandBase):
     except Exception:  # pylint: disable=broad-exception-caught
       self.notifier.notify_error()
     else:
-      self.chatbot.chat_client.send_message(
+      self.chatbot.task_scheduler_client.chat_send_message(
           f"System Uptime > {linux_uptime}\n"
           f"Bot Uptime > {bot_uptime_command.result}\n"
           "Contact Switch Monitor Uptime > "

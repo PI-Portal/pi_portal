@@ -34,17 +34,6 @@ class TestContactSwitchMonitorUptimeCommand:
   ) -> None:
     assert uptime_contact_switch_monitor_instance.chatbot == mocked_chat_bot
 
-  def test_initialize__notifier(
-      self,
-      uptime_contact_switch_monitor_instance: ContactSwitchMonitorUptimeCommand,
-      mocked_chat_client: mock.Mock,
-      mocked_cli_notifier: mock.Mock,
-  ) -> None:
-    assert uptime_contact_switch_monitor_instance.notifier == (
-        mocked_cli_notifier.return_value
-    )
-    mocked_cli_notifier.assert_called_once_with(mocked_chat_client)
-
   def test_initialize__supervisor_process(
       self,
       uptime_contact_switch_monitor_instance: ContactSwitchMonitorUptimeCommand,

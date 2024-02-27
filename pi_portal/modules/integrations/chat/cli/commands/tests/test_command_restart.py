@@ -25,9 +25,10 @@ class TestRestartCommand:
   ) -> None:
     restart_command_instance.invoke()
 
-    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
-        "Rebooting myself ..."
-    )
+    mocked_chat_bot.task_scheduler_client.\
+        chat_send_message.assert_called_once_with(
+          "Rebooting myself ..."
+        )
 
   def test_invoke__halts_chat_bot(
       self,

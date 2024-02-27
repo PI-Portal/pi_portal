@@ -3,41 +3,44 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover
-  from pi_portal.modules.integrations.chat import TypeChatClient
+  from pi_portal.modules.tasks.service_client import TaskSchedulerServiceClient
 
 
 class ChatCLINotifier:
   """Notifier for the chat CLI.
 
-  :param client: The configured chat client to use.
+  :param task_scheduler_client: The configured task scheduler client to use.
   """
 
-  def __init__(self, client: "TypeChatClient") -> None:
-    self.chat_client = client
+  def __init__(
+      self,
+      task_scheduler_client: "TaskSchedulerServiceClient",
+  ) -> None:
+    self.task_scheduler_client = task_scheduler_client
 
   def notify_already_start(self) -> None:
     """Report that the service is already up."""
 
-    self.chat_client.send_message("Already running ...")
+    self.task_scheduler_client.chat_send_message("Already running ...")
 
   def notify_already_stop(self) -> None:
     """Report that the service is already down."""
 
-    self.chat_client.send_message("Already stopped ...")
+    self.task_scheduler_client.chat_send_message("Already stopped ...")
 
   def notify_error(self) -> None:
     """Report that an error has occurred."""
 
-    self.chat_client.send_message(
+    self.task_scheduler_client.chat_send_message(
         "An internal error occurred ... you better take a look."
     )
 
   def notify_start(self) -> None:
     """Report that the service is starting."""
 
-    self.chat_client.send_message("Starting ...")
+    self.task_scheduler_client.chat_send_message("Starting ...")
 
   def notify_stop(self) -> None:
     """Report that the service is stopping."""
 
-    self.chat_client.send_message("Shutting down ...")
+    self.task_scheduler_client.chat_send_message("Shutting down ...")

@@ -42,25 +42,29 @@ class TestUptimeCommand:
   ) -> None:
     uptime_command_instance.invoke()
 
-    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
-        "System Uptime > "
-        f"{mocked_linux_module.uptime.return_value}\n"
-        "Bot Uptime > " +
-        str(mocked_uptime_subcommands['BotUptimeCommand'].return_value.result) +
-        "\n"
-        "Contact Switch Monitor Uptime > " + str(
-            mocked_uptime_subcommands['ContactSwitchMonitorUptimeCommand'].
-            return_value.result
-        ) + "\n"
-        "Task Scheduler Uptime > " + str(
-            mocked_uptime_subcommands['TaskSchedulerUptimeCommand'].
-            return_value.result
-        ) + "\n"
-        "Temperature Monitor Uptime > " + str(
-            mocked_uptime_subcommands['TempMonitorUptimeCommand'].return_value.
-            result
+    mocked_chat_bot.task_scheduler_client. \
+        chat_send_message.assert_called_once_with(
+            "System Uptime > "
+            f"{mocked_linux_module.uptime.return_value}\n"
+            "Bot Uptime > " +
+            str(
+              mocked_uptime_subcommands['BotUptimeCommand'].
+              return_value.result
+            ) +
+            "\n"
+            "Contact Switch Monitor Uptime > " + str(
+                mocked_uptime_subcommands['ContactSwitchMonitorUptimeCommand'].
+                return_value.result
+            ) + "\n"
+            "Task Scheduler Uptime > " + str(
+                mocked_uptime_subcommands['TaskSchedulerUptimeCommand'].
+                return_value.result
+            ) + "\n"
+            "Temperature Monitor Uptime > " + str(
+                mocked_uptime_subcommands['TempMonitorUptimeCommand'].
+                return_value.result
+            )
         )
-    )
 
   def test_invoke__linux_uptime_error__calls_expected_processes(
       self,
@@ -87,7 +91,7 @@ class TestUptimeCommand:
     uptime_command_instance.invoke()
 
     mocked_cli_notifier.return_value.notify_error.assert_called_once_with()
-    mocked_chat_bot.chat_client.send_message.assert_not_called()
+    mocked_chat_bot.task_scheduler_client.chat_send_message.assert_not_called()
 
   @pytest.mark.parametrize(
       "error_class,expected_calls", [
@@ -137,4 +141,4 @@ class TestUptimeCommand:
     uptime_command_instance.invoke()
 
     mocked_cli_notifier.return_value.notify_error.assert_called_once_with()
-    mocked_chat_bot.chat_client.send_message.assert_not_called()
+    mocked_chat_bot.task_scheduler_client.chat_send_message.assert_not_called()

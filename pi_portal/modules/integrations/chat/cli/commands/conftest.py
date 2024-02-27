@@ -14,14 +14,14 @@ def mocked_cli_notifier() -> mock.Mock:
 
 
 @pytest.fixture
-def mocked_chat_bot(mocked_chat_client: mock.Mock) -> mock.Mock:
+def mocked_chat_bot(mocked_task_scheduler_client: mock.Mock) -> mock.Mock:
   instance = mock.Mock()
-  instance.chat_client = mocked_chat_client
+  instance.task_scheduler_client = mocked_task_scheduler_client
   return instance
 
 
 @pytest.fixture
-def mocked_chat_client() -> mock.Mock:
+def mocked_task_scheduler_client() -> mock.Mock:
   return mock.Mock()
 
 

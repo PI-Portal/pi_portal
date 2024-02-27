@@ -18,7 +18,7 @@ def mocked_chat_bot() -> mock.Mock:
 
 
 @pytest.fixture
-def mocked_chat_client() -> mock.Mock:
+def mocked_task_scheduler_client() -> mock.Mock:
   return mock.Mock()
 
 
@@ -41,6 +41,6 @@ def cli_command_handler_instance(
 
 @pytest.fixture
 def cli_notifier_instance(
-    mocked_chat_client: mock.Mock,
+    mocked_task_scheduler_client: mock.Mock,
 ) -> notifier.ChatCLINotifier:
-  return notifier.ChatCLINotifier(mocked_chat_client)
+  return notifier.ChatCLINotifier(mocked_task_scheduler_client)

@@ -10,7 +10,6 @@ from pi_portal.modules.integrations.chat.bases.bot import ChatBotBase
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from typing_extensions import TypedDict
-from .client import SlackClient
 from .config import SlackIntegrationConfiguration
 
 
@@ -24,7 +23,6 @@ class TypeSlackBoltEvent(TypedDict):
 class SlackBot(ChatBotBase[TypeUserConfigChatSlack]):
   """Slack implementation of a chatbot."""
 
-  chat_client: SlackClient
   configuration: SlackIntegrationConfiguration
 
   def __init__(self) -> None:
@@ -35,7 +33,6 @@ class SlackBot(ChatBotBase[TypeUserConfigChatSlack]):
         token=self.configuration.settings['SLACK_BOT_TOKEN'],
     )
     self.channel_id = self.configuration.settings['SLACK_CHANNEL_ID']
-    self.chat_client = SlackClient(propagate_exceptions=False)
     self.web_socket = SocketModeHandler(
         self.app,
         self.configuration.settings['SLACK_APP_TOKEN'],
@@ -63,7 +60,7 @@ class SlackBot(ChatBotBase[TypeUserConfigChatSlack]):
 
       self.handle_event(event)
 
-    self.chat_client.send_message(
+    self.task_scheduler_client.chat_send_message(
         "I've rebooted!  Now listening for commands..."
     )
     self.log.warning("Chat Bot process has started.")
