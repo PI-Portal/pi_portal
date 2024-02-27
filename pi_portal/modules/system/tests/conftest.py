@@ -16,42 +16,6 @@ from .. import (
 
 
 @pytest.fixture
-def file_security_instance(
-    mocked_file_path: str,
-    mocked_hashlib_sha256: mock.Mock,
-    mocked_open_read_binary: mock.Mock,
-    monkeypatch: pytest.MonkeyPatch,
-) -> file_security.FileSecurity:
-  monkeypatch.setattr(
-      file_security.__name__ + ".sha256",
-      mocked_hashlib_sha256,
-  )
-  monkeypatch.setattr(
-      "builtins.open",
-      mocked_open_read_binary,
-  )
-  return file_security.FileSecurity(mocked_file_path)
-
-
-@pytest.fixture
-def file_system_instance(
-    mocked_file_path: str,
-    mocked_os: mock.Mock,
-    mocked_shutil: mock.Mock,
-    monkeypatch: pytest.MonkeyPatch,
-) -> file_system.FileSystem:
-  monkeypatch.setattr(
-      file_system.__name__ + ".os",
-      mocked_os,
-  )
-  monkeypatch.setattr(
-      file_system.__name__ + ".shutil",
-      mocked_shutil,
-  )
-  return file_system.FileSystem(mocked_file_path)
-
-
-@pytest.fixture
 def mocked_binary_data() -> bytes:
   return b"mocked_binary_data"
 
@@ -94,6 +58,11 @@ def mocked_shutil() -> mock.Mock:
 
 
 @pytest.fixture
+def mocked_sleep() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
 def mocked_supervisor_client() -> mock.Mock:
   return mock.Mock()
 
@@ -101,6 +70,47 @@ def mocked_supervisor_client() -> mock.Mock:
 @pytest.fixture
 def mocked_supervisor_server() -> mock.Mock:
   return mock.Mock()
+
+
+@pytest.fixture
+def file_security_instance(
+    mocked_file_path: str,
+    mocked_hashlib_sha256: mock.Mock,
+    mocked_open_read_binary: mock.Mock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> file_security.FileSecurity:
+  monkeypatch.setattr(
+      file_security.__name__ + ".sha256",
+      mocked_hashlib_sha256,
+  )
+  monkeypatch.setattr(
+      "builtins.open",
+      mocked_open_read_binary,
+  )
+  return file_security.FileSecurity(mocked_file_path)
+
+
+@pytest.fixture
+def file_system_instance(
+    mocked_file_path: str,
+    mocked_os: mock.Mock,
+    mocked_shutil: mock.Mock,
+    mocked_sleep: mock.Mock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> file_system.FileSystem:
+  monkeypatch.setattr(
+      file_system.__name__ + ".os",
+      mocked_os,
+  )
+  monkeypatch.setattr(
+      file_system.__name__ + ".shutil",
+      mocked_shutil,
+  )
+  monkeypatch.setattr(
+      file_system.__name__ + ".time.sleep",
+      mocked_sleep,
+  )
+  return file_system.FileSystem(mocked_file_path)
 
 
 @pytest.fixture

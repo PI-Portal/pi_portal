@@ -4,7 +4,7 @@ from unittest import mock
 
 from pi_portal.cli_commands.bases import command
 from pi_portal.cli_commands.cli_machine import temperature_monitor
-from pi_portal.cli_commands.mixins import state
+from pi_portal.cli_commands.mixins import require_task_scheduler, state
 
 
 class TestTemperatureMonitorCommand:
@@ -15,12 +15,30 @@ class TestTemperatureMonitorCommand:
       temperature_monitor_command_instance: temperature_monitor.
       TemperatureMonitorCommand,
   ) -> None:
-    assert isinstance(temperature_monitor_command_instance, command.CommandBase)
     assert isinstance(
-        temperature_monitor_command_instance, state.CommandManagedStateMixin
+        temperature_monitor_command_instance,
+        require_task_scheduler.CommandTaskSchedulerMixin,
+    )
+    assert isinstance(
+        temperature_monitor_command_instance,
+        state.CommandManagedStateMixin,
+    )
+    assert isinstance(
+        temperature_monitor_command_instance,
+        command.CommandBase,
     )
 
-  def test_invoke__calls(
+  def test_invoke__waits_for_task_scheduler(
+      self,
+      temperature_monitor_command_instance: temperature_monitor.
+      TemperatureMonitorCommand,
+      mocked_require_task_scheduler: mock.Mock,
+  ) -> None:
+    temperature_monitor_command_instance.invoke()
+
+    mocked_require_task_scheduler.assert_called_once_with()
+
+  def test_invoke__starts_temperature_sensor_monitor(
       self,
       temperature_monitor_command_instance: temperature_monitor.
       TemperatureMonitorCommand,
