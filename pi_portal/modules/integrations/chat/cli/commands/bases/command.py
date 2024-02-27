@@ -17,5 +17,5 @@ class ChatCommandBase(command.CommandBase, abc.ABC):
   """
 
   def __init__(self, bot: "TypeChatBot") -> None:
-    self.notifier = ChatCLINotifier(bot.chat_client)
+    self.notifier = ChatCLINotifier(bot.task_scheduler_client)
     self.chatbot = bot

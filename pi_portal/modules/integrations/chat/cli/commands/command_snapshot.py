@@ -6,10 +6,9 @@ from pi_portal.modules.system.supervisor_config import (
     ProcessStatus,
 )
 from .bases.process_command import ChatProcessCommandBase
-from .mixins.task_scheduler_client import TaskSchedulerClientMixin
 
 
-class SnapshotCommand(TaskSchedulerClientMixin, ChatProcessCommandBase):
+class SnapshotCommand(ChatProcessCommandBase):
   """Chat CLI command to take a snapshot with the camera."""
 
   process_name = ProcessList.CAMERA
@@ -20,7 +19,9 @@ class SnapshotCommand(TaskSchedulerClientMixin, ChatProcessCommandBase):
     if self._is_camera_running():
       self._do_snapshot()
     else:
-      self.chatbot.chat_client.send_message("Please `arm` the camera first ...")
+      self.chatbot.task_scheduler_client.chat_send_message(
+          "Please `arm` the camera first ..."
+      )
 
   def _is_camera_running(self) -> bool:
     return self.process.status_in([ProcessStatus.RUNNING])
@@ -28,4 +29,4 @@ class SnapshotCommand(TaskSchedulerClientMixin, ChatProcessCommandBase):
   def _do_snapshot(self) -> None:
     user_config = state.State().user_config
     for camera_index, _ in enumerate(user_config["MOTION"]["CAMERAS"]):
-      self.task_client.camera_snapshot(camera=camera_index)
+      self.chatbot.task_scheduler_client.camera_snapshot(camera=camera_index)

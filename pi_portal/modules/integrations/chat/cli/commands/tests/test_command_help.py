@@ -27,6 +27,7 @@ class TestHelpCommand:
 
     help_command_instance.invoke()
 
-    mocked_chat_bot.chat_client.send_message.assert_called_once_with(
-        f"Available Commands: {', '.join(mocked_chat_bot.command_list)}"
-    )
+    mocked_chat_bot.task_scheduler_client.\
+        chat_send_message.assert_called_once_with(
+          f"Available Commands: {', '.join(mocked_chat_bot.command_list)}"
+        )
