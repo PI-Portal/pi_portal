@@ -7,14 +7,15 @@ from .. import file_system
 class TestFileSystem:
   """Test the FileSystem class."""
 
-  def test__intialize__attributes(
+  def test_intialize__attributes(
       self,
       file_system_instance: file_system.FileSystem,
       mocked_file_path: str,
   ) -> None:
     assert file_system_instance.path == mocked_file_path
+    assert file_system_instance.poll_interval == 0.5
 
-  def test__create__directory__calls_makedirs(
+  def test_create__directory__calls_makedirs(
       self,
       file_system_instance: file_system.FileSystem,
       mocked_os: mock.Mock,
@@ -26,7 +27,7 @@ class TestFileSystem:
         exist_ok=True,
     )
 
-  def test__create__file__writes_file(
+  def test_create__file__writes_file(
       self,
       file_system_instance: file_system.FileSystem,
       mocked_os: mock.Mock,
@@ -39,7 +40,7 @@ class TestFileSystem:
     )
     mocked_os.close.assert_called_once_with(mocked_os.open.return_value)
 
-  def test__ownership__changes_ownership(
+  def test_ownership__changes_ownership(
       self,
       file_system_instance: file_system.FileSystem,
       mocked_shutil: mock.Mock,
@@ -55,7 +56,7 @@ class TestFileSystem:
         mock_group,
     )
 
-  def test__permissions__changes_permissions(
+  def test_permissions__changes_permissions(
       self,
       file_system_instance: file_system.FileSystem,
       mocked_os: mock.Mock,
@@ -68,3 +69,30 @@ class TestFileSystem:
         file_system_instance.path,
         int(mock_permissions, 8),
     )
+
+  def test_wait_until_exists__calls_exists(
+      self,
+      file_system_instance: file_system.FileSystem,
+      mocked_os: mock.Mock,
+  ) -> None:
+    mocked_os.path.exists.side_effect = [False, False, True]
+
+    file_system_instance.wait_until_exists()
+
+    assert mocked_os.path.exists.mock_calls == [
+        mock.call(file_system_instance.path),
+    ] * 3
+
+  def test_wait_until_exists__calls_sleep(
+      self,
+      file_system_instance: file_system.FileSystem,
+      mocked_os: mock.Mock,
+      mocked_sleep: mock.Mock,
+  ) -> None:
+    mocked_os.path.exists.side_effect = [False, False, True]
+
+    file_system_instance.wait_until_exists()
+
+    assert mocked_sleep.mock_calls == [
+        mock.call(file_system_instance.poll_interval),
+    ] * 2
