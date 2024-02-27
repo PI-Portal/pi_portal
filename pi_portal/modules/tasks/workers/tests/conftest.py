@@ -10,7 +10,7 @@ from unittest import mock
 
 import pytest
 from pi_portal.modules.tasks.conftest import Interrupt
-from pi_portal.modules.tasks.enums import TaskPriority, TaskType
+from pi_portal.modules.tasks.enums import RoutingLabel, TaskType
 from pi_portal.modules.tasks.task.bases import task_args_base, task_base
 from pi_portal.modules.tasks.workers import (
     cron_worker,
@@ -77,14 +77,6 @@ def create_queue_worker_scenario_mocks(
     )
 
   return creator
-
-
-@pytest.fixture
-def mocked_current_queue(
-    mocked_task_router_queues: Dict[TaskPriority, mock.Mock],
-    queue_worker_instance: queue_worker.QueueWorker,
-) -> mock.Mock:
-  return mocked_task_router_queues[queue_worker_instance.priority]
 
 
 @pytest.fixture
@@ -182,7 +174,7 @@ def queue_worker_instance(
   )
   return queue_worker.QueueWorker(
       mocked_task_scheduler,
-      TaskPriority.STANDARD,
+      RoutingLabel.ARCHIVAL,
   )
 
 
@@ -218,10 +210,10 @@ def queue_worker_processing_sequence(
 @pytest.fixture
 def queue_worker_running(
     queue_worker_instance: queue_worker.QueueWorker,
-    mocked_current_queue: mock.Mock,
+    mocked_task_scheduler: mock.Mock,
 ) -> "Future[None]":
   minimum_iterations = 10
-  mocked_current_queue.get.return_value.type = TaskType.NON_SCHEDULED
+  mocked_task_scheduler.router.get.return_value.type = TaskType.NON_SCHEDULED
 
   executor = ThreadPoolExecutor()
   future = executor.submit(queue_worker_instance.start)
@@ -229,6 +221,6 @@ def queue_worker_running(
 
   while True:
     if (
-        mocked_current_queue.get.call_count > minimum_iterations
+        mocked_task_scheduler.router.get.call_count > minimum_iterations
     ):  # pragma: no cover
       return future

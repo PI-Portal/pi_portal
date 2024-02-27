@@ -8,7 +8,7 @@ from typing import Dict, List
 from unittest import mock
 
 import pytest
-from pi_portal.modules.tasks.enums import TaskPriority, TaskType
+from pi_portal.modules.tasks.enums import RoutingLabel, TaskType
 from pi_portal.modules.tasks.task.bases import task_args_base
 
 
@@ -45,7 +45,7 @@ def mocked_generic_task_args() -> MockGenericTaskArgs:
 
 @pytest.fixture
 def mocked_task_router(
-    mocked_task_router_queues: Dict[TaskPriority, mock.Mock]
+    mocked_task_router_queues: Dict[RoutingLabel, mock.Mock]
 ) -> mock.Mock:
   mocked_router = mock.Mock()
   mocked_router.return_value.queues = mocked_task_router_queues
@@ -53,10 +53,10 @@ def mocked_task_router(
 
 
 @pytest.fixture
-def mocked_task_router_queues() -> Dict[TaskPriority, mock.Mock]:
-  mocked_queues: Dict[TaskPriority, mock.Mock] = {}
-  for priority in TaskPriority:
-    mocked_queues[priority] = mock.Mock()
+def mocked_task_router_queues() -> Dict[RoutingLabel, mock.Mock]:
+  mocked_queues: Dict[RoutingLabel, mock.Mock] = {}
+  for routing_label in RoutingLabel:
+    mocked_queues[routing_label] = mock.Mock()
   return mocked_queues
 
 

@@ -48,8 +48,6 @@ class TestDeadManSwitchCronJob:
     assert dead_man_switch_cron_job_instance.quiet is True
     assert dead_man_switch_cron_job_instance.type == \
         enums.TaskType.NON_SCHEDULED
-    assert dead_man_switch_cron_job_instance.priority == \
-        enums.TaskPriority.STANDARD
 
   def test_initialize__inheritance(
       self,

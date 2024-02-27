@@ -9,7 +9,7 @@ from pi_portal.modules.system.socket.unix_stream_http_client import (
     UnixStreamHttpClient,
     UnixStreamHttpResponse,
 )
-from pi_portal.modules.tasks.enums import TaskPriority, TaskType
+from pi_portal.modules.tasks.enums import TaskType
 
 
 class TaskSchedulerServiceClient:
@@ -41,8 +41,6 @@ class TaskSchedulerServiceClient:
         "args": {
             "camera": camera,
         },
-        "priority":
-            TaskPriority.EXPRESS.value,
         "on_failure":
             [
                 {
@@ -50,7 +48,6 @@ class TaskSchedulerServiceClient:
                     "args": {
                         "message": self.camera_snapshot_failure_message,
                     },
-                    "priority": TaskPriority.EXPRESS.value,
                     "retry_after": 300,
                 }
             ]
@@ -74,8 +71,6 @@ class TaskSchedulerServiceClient:
         "args": {
             "message": message,
         },
-        "priority":
-            TaskPriority.EXPRESS.value,
         "on_failure":
             [
                 {
@@ -83,7 +78,6 @@ class TaskSchedulerServiceClient:
                     "args": {
                         "message": self.deferred_message + message,
                     },
-                    "priority": TaskPriority.EXPRESS.value,
                     "retry_after": 300,
                 }
             ]
@@ -111,8 +105,6 @@ class TaskSchedulerServiceClient:
             "description": description,
             "path": path
         },
-        "priority":
-            TaskPriority.EXPRESS.value,
         "on_failure":
             [
                 {
@@ -122,7 +114,6 @@ class TaskSchedulerServiceClient:
                             "description": self.deferred_message + description,
                             "path": path
                         },
-                    "priority": TaskPriority.EXPRESS.value,
                     "retry_after": 300,
                 }
             ]
@@ -150,8 +141,6 @@ class TaskSchedulerServiceClient:
             "description": description,
             "path": path,
         },
-        "priority":
-            TaskPriority.EXPRESS.value,
         "on_failure":
             [
                 {
@@ -161,7 +150,6 @@ class TaskSchedulerServiceClient:
                             "description": self.deferred_message + description,
                             "path": path,
                         },
-                    "priority": TaskPriority.EXPRESS.value,
                     "retry_after": 300,
                 }
             ]
@@ -201,7 +189,6 @@ class TaskSchedulerServiceClient:
             "destination": destination,
             "source": source
         },
-        "priority": TaskPriority.STANDARD.value,
     }
 
     return self.http_client.post("/schedule/", payload)

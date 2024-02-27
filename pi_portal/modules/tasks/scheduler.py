@@ -21,7 +21,7 @@ if TYPE_CHECKING:  # pragma: no cover
       TaskManifestBase,
   )
   from pi_portal.modules.tasks.workers.bases.worker_base import WorkerBase
-  from .enums import TaskPriority
+  from .enums import RoutingLabel
 
 
 class TaskScheduler(write_archived_log_file.ArchivedLogFileWriter):
@@ -50,8 +50,8 @@ class TaskScheduler(write_archived_log_file.ArchivedLogFileWriter):
 
     self._create_cron_worker()
     self._create_failed_task_worker()
-    for priority, count in QUEUE_WORKER_CONFIGURATION.items():
-      self._create_queue_worker_pool(count, priority)
+    for routing_label, count in QUEUE_WORKER_CONFIGURATION.items():
+      self._create_queue_worker_pool(count, routing_label)
 
     with ThreadPoolExecutor(max_workers=len(self.managed_workers)) as executor:
       for worker in self.managed_workers:
@@ -78,18 +78,18 @@ class TaskScheduler(write_archived_log_file.ArchivedLogFileWriter):
     self.managed_workers.append(FailedTaskWorker(self))
 
   def _create_queue_worker_pool(
-      self, count: int, priority: "TaskPriority"
+      self, count: int, routing_label: "RoutingLabel"
   ) -> None:
     self.log.warning(
         "Creating the '%s' queue worker pool ...",
-        priority.value,
-        extra={"queue": priority.value}
+        routing_label.value,
+        extra={"queue": routing_label.value}
     )
     for _ in range(0, count):
-      self.managed_workers.append(self._create_queue_worker(priority))
+      self.managed_workers.append(self._create_queue_worker(routing_label))
 
-  def _create_queue_worker(self, priority: "TaskPriority") -> QueueWorker:
-    return QueueWorker(self, priority)
+  def _create_queue_worker(self, routing_label: "RoutingLabel") -> QueueWorker:
+    return QueueWorker(self, routing_label)
 
   def halt(self) -> None:
     """Gracefully shutdown the scheduler."""
@@ -108,7 +108,7 @@ class TaskScheduler(write_archived_log_file.ArchivedLogFileWriter):
     task_class = self.registry.tasks[TaskType.NON_SCHEDULED].TaskClass
     arg_class = self.registry.tasks[TaskType.NON_SCHEDULED].ArgClass
 
-    for priority, count in QUEUE_WORKER_CONFIGURATION.items():
+    for routing_label, count in QUEUE_WORKER_CONFIGURATION.items():
       for _ in range(0, count):
-        task = task_class(args=arg_class(), priority=priority)
+        task = task_class(args=arg_class(), routing_label=routing_label)
         self.router.put(task)

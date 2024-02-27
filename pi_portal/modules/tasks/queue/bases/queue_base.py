@@ -6,21 +6,25 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING, NamedTuple
 
 if TYPE_CHECKING:  # pragma: no cover
-  from pi_portal.modules.tasks.enums import TaskPriority
+  from pi_portal.modules.tasks.enums import RoutingLabel
   from pi_portal.modules.tasks.task.bases.task_base import TypeGenericTask
 
 
 class QueueBase(abc.ABC):
   """An abstract queue base class to wrap around implementations."""
 
-  __slots__ = ("log", "priority")
+  __slots__ = ("log", "routing_label")
 
-  def __init__(self, log: logging.Logger, priority: "TaskPriority") -> None:
+  def __init__(
+      self,
+      log: logging.Logger,
+      routing_label: "RoutingLabel",
+  ) -> None:
     """:param log:  A logger instance.
-    :param priority: The priority of this queue.
+    :param routing_label: The routing label of this queue.
     """
     self.log = log
-    self.priority = priority
+    self.routing_label = routing_label
 
   @abc.abstractmethod
   def _ack(self, task: "TypeGenericTask") -> None:
@@ -57,7 +61,7 @@ class QueueBase(abc.ABC):
         task,
         extra={
             "task": task.id,
-            "queue": self.priority.value,
+            "queue": self.routing_label.value,
         },
     )
 
@@ -72,7 +76,7 @@ class QueueBase(abc.ABC):
         task,
         extra={
             "task": task.id,
-            "queue": self.priority.value,
+            "queue": self.routing_label.value,
         },
     )
     return task
@@ -100,7 +104,7 @@ class QueueBase(abc.ABC):
         task,
         extra={
             "task": task.id,
-            "queue": self.priority.value,
+            "queue": self.routing_label.value,
         },
     )
 
@@ -118,7 +122,7 @@ class QueueBase(abc.ABC):
         task,
         extra={
             "task": task.id,
-            "queue": self.priority.value,
+            "queue": self.routing_label.value,
         }
     )
 

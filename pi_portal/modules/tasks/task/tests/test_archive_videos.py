@@ -15,6 +15,7 @@ class TestArchiveVideos(GenericTaskModuleTest):
   expected_api_enabled = False
   expected_arg_class = archive_videos.Args
   expected_return_type = None
+  expected_routing_label = enums.RoutingLabel.ARCHIVAL
   expected_type = enums.TaskType.ARCHIVE_VIDEOS
   mock_args = archive_videos.Args(partition_name="mock_partition")
   module = archive_videos

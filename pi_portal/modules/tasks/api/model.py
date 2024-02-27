@@ -1,8 +1,9 @@
 """API models."""
 
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 
-from pi_portal.modules.tasks.enums import TaskPriority, TaskType
+from pi_portal.modules.tasks.config import ROUTING_MATRIX
+from pi_portal.modules.tasks.enums import RoutingLabel, TaskType
 from pi_portal.modules.tasks.registration.registry_factory import (
     RegistryFactory,
 )
@@ -19,18 +20,21 @@ class TaskCreationRequestModel(BaseModel):
 
   _args: "TaskArgsBase" = PrivateAttr()
   _instance: "TaskBase[TaskArgsBase, Any]" = PrivateAttr()
+  _default_routing_label: "RoutingLabel" = PrivateAttr()
   _registered_tasks: "Dict[TaskType, RegisteredTask]" = PrivateAttr()
 
   type: "TaskType"
   args: Dict[str, Any]
   on_failure: List["TaskCreationRequestModel"] = []
   on_success: List["TaskCreationRequestModel"] = []
-  priority: "TaskPriority" = Field(default=TaskPriority.STANDARD)
   retry_after: int = Field(default=0)
+  routing_label: "Optional[RoutingLabel]" = Field(default=None)
 
   def model_post_init(self, __context: Any) -> None:
     """Complete model initialization."""
     self._init_registry()
+    if not self.routing_label:
+      self.routing_label = ROUTING_MATRIX[self.type]
 
   def _init_registry(self) -> None:
     registry = RegistryFactory().create()
@@ -66,7 +70,7 @@ class TaskCreationRequestModel(BaseModel):
     task_class = self._registered_tasks[self.type].TaskClass
     self._instance = task_class(
         args=self._args,
-        priority=self.priority,
+        routing_label=self.routing_label,
         retry_after=self.retry_after,
     )
 

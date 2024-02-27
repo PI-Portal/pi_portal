@@ -7,7 +7,7 @@ from unittest import mock
 
 import pytest
 from pi_portal.modules import tasks
-from pi_portal.modules.tasks.enums import TaskPriority
+from pi_portal.modules.tasks.enums import RoutingLabel
 from pi_portal.modules.tasks.queue.bases.queue_base import QueueMetrics
 from .. import persist_queue
 from .conftest import (
@@ -26,19 +26,16 @@ class TestQueue:
       "raw": True,
   }
 
-  @pytest.mark.parametrize(
-      "priority",
-      list(TaskPriority),
-  )
-  def test_initialize__attributes(
+  @pytest.mark.parametrize("routing_label", list(RoutingLabel))
+  def test_initialize__vary_label__attributes(
       self,
       persist_queue_instance_class: Type[persist_queue.Queue],
       mocked_queue_logger: logging.Logger,
-      priority: TaskPriority,
+      routing_label: RoutingLabel,
   ) -> None:
     persist_queue_instance = persist_queue_instance_class(
         mocked_queue_logger,
-        priority=priority,
+        routing_label=routing_label,
     )
 
     assert persist_queue_instance.timeout == 2
@@ -47,24 +44,21 @@ class TestQueue:
         os.path.join(
             os.path.dirname(tasks.__file__),
             "db",
-            priority.value,
+            routing_label.value,
         )
     )
     assert persist_queue_instance.log == mocked_queue_logger
 
-  @pytest.mark.parametrize(
-      "priority",
-      list(TaskPriority),
-  )
-  def test_initialize__creates_path(
+  @pytest.mark.parametrize("routing_label", list(RoutingLabel))
+  def test_initialize__vary_label__creates_path(
       self,
       persist_queue_instance_class: Type[persist_queue.Queue],
       mocked_os_makedirs: mock.Mock,
-      priority: TaskPriority,
+      routing_label: RoutingLabel,
   ) -> None:
     persist_queue_instance = persist_queue_instance_class(
         mock.Mock(),
-        priority=priority,
+        routing_label=routing_label,
     )
 
     mocked_os_makedirs.assert_called_once_with(
@@ -73,19 +67,16 @@ class TestQueue:
         exist_ok=True,
     )
 
-  @pytest.mark.parametrize(
-      "priority",
-      list(TaskPriority),
-  )
-  def test_initialize__creates_vendor_queue(
+  @pytest.mark.parametrize("routing_label", list(RoutingLabel))
+  def test_initialize__vary_label__creates_vendor_queue(
       self,
       persist_queue_instance_class: Type[persist_queue.Queue],
       mocked_queue_implementation: mock.Mock,
-      priority: TaskPriority,
+      routing_label: RoutingLabel,
   ) -> None:
     persist_queue_instance = persist_queue_instance_class(
         mock.Mock(),
-        priority=priority,
+        routing_label=routing_label,
     )
 
     mocked_queue_implementation.assert_called_once_with(
@@ -234,7 +225,7 @@ class TestQueue:
       mocked_raw_task: TypeMockRawTask,
       mocked_stream: StringIO,
   ) -> None:
-    priority = persist_queue_instance_standard.priority.value
+    label = persist_queue_instance_standard.routing_label.value
     mocked_queue_implementation.return_value.get.side_effect = [
         AttributeError,
         mocked_raw_task,
@@ -243,10 +234,10 @@ class TestQueue:
     persist_queue_instance_standard.get()
 
     assert mocked_stream.getvalue() == (
-        f"ERROR - None - {priority} - Fatal error during deserialization!\n"
-        f"ERROR - None - {priority} - "
+        f"ERROR - None - {label} - Fatal error during deserialization!\n"
+        f"ERROR - None - {label} - "
         "To restore service the queue is being cleared. Tasks have been lost!\n"
-        f"DEBUG - {mocked_raw_task['pqid']} - {priority} - Dequeued: "
+        f"DEBUG - {mocked_raw_task['pqid']} - {label} - Dequeued: "
         f"'{mocked_raw_task['data']}'!\n"
     )
 

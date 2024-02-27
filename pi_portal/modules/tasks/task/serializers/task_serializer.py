@@ -7,7 +7,7 @@ from pi_portal.modules.tasks.task.bases.task_base import TaskFields
 from pi_portal.modules.tasks.task.bases.task_result import TaskResult
 
 if TYPE_CHECKING:  # pragma: no cover
-  from pi_portal.modules.tasks.enums import TaskType
+  from pi_portal.modules.tasks.enums import RoutingLabel, TaskType
   from pi_portal.modules.tasks.task.bases.task_args_base import TaskArgsBase
   from pi_portal.modules.tasks.task.bases.task_base import TaskBase
 

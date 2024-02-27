@@ -7,7 +7,7 @@ from unittest import mock
 import pytest
 from pi_portal.modules.python.futures import wait_cm
 from pi_portal.modules.tasks.conftest import Interrupt
-from pi_portal.modules.tasks.enums import TaskManifests, TaskPriority, TaskType
+from pi_portal.modules.tasks.enums import RoutingLabel, TaskManifests, TaskType
 from pi_portal.modules.tasks.workers.bases.worker_base import WorkerBase
 from .. import queue_worker
 from .conftest import (
@@ -30,10 +30,11 @@ class TestQueueWorker:
       mocked_task_scheduler: mock.Mock,
   ) -> None:
     assert queue_worker_instance.do_not_process == [TaskType.NON_SCHEDULED]
-    assert queue_worker_instance.priority == TaskPriority.STANDARD
     assert queue_worker_instance.failed_task_manifest == (
         mocked_task_scheduler.manifests[TaskManifests.FAILED_TASKS]
     )
+    assert queue_worker_instance.routing_label == RoutingLabel.ARCHIVAL
+    assert queue_worker_instance.router == mocked_task_scheduler.router
 
   def test_initialize__logger(
       self,
@@ -44,15 +45,6 @@ class TestQueueWorker:
     assert isinstance(
         queue_worker_instance.log,
         logging.Logger,
-    )
-
-  def test_initialize__queue(
-      self,
-      queue_worker_instance: queue_worker.QueueWorker,
-      mocked_task_scheduler: mock.Mock,
-  ) -> None:
-    assert queue_worker_instance.queue == (
-        mocked_task_scheduler.router.queues[TaskPriority.STANDARD]
     )
 
   def test_initialize__registry(
@@ -81,8 +73,8 @@ class TestQueueWorker:
       queue_worker_instance.start()
 
     assert mocked_stream.getvalue() == (
-        f"WARNING - None - None - {queue_worker_instance.priority.value} - "
-        f"Worker thread has started ...\n"
+        f"WARNING - None - None - {queue_worker_instance.routing_label.value} "
+        f"- Worker thread has started ...\n"
     )
 
   def test_start__mocked_consumer__calls_consumer(
@@ -111,13 +103,13 @@ class TestQueueWorker:
   def test_consumer__processing_sequence__non_scheduled_task(
       self,
       create_queue_worker_scenario_mocks: TypeQueueWorkerMocksCreator,
-      mocked_current_queue: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       queue_worker_processing_sequence: mock.Mock,
       scenario: TaskScenario,
   ) -> None:
     scenario_mocks = create_queue_worker_scenario_mocks(scenario.task_type)
     task = scenario_mocks.task(args=scenario.task_args)
-    mocked_current_queue.get.return_value = task
+    mocked_task_scheduler.router.get.return_value = task
 
     scenario_mocks.instance.consumer()
 
@@ -138,13 +130,13 @@ class TestQueueWorker:
   def test_consumer__processing_sequence__scheduled_task(
       self,
       create_queue_worker_scenario_mocks: TypeQueueWorkerMocksCreator,
-      mocked_current_queue: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       queue_worker_processing_sequence: mock.Mock,
       scenario: TaskScenario,
   ) -> None:
     scenario_mocks = create_queue_worker_scenario_mocks(scenario.task_type)
     task = scenario_mocks.task(args=scenario.task_args)
-    mocked_current_queue.get.return_value = task
+    mocked_task_scheduler.router.get.return_value = task
 
     scenario_mocks.instance.consumer()
 
@@ -159,6 +151,37 @@ class TestQueueWorker:
       "scenario",
       [
           TaskScenario(
+              task_type=TaskType.CHAT_UPLOAD_VIDEO,
+              task_args=MockTaskArgs(path="/mock/path1"),
+              ok=None,
+          ),
+          TaskScenario(
+              task_type=TaskType.FILE_SYSTEM_REMOVE,
+              task_args=MockTaskArgs(path="/mock/path2"),
+              ok=None,
+          ),
+      ],
+  )
+  def test_consumer__vary_tasks__calls_router_get(
+      self,
+      create_queue_worker_scenario_mocks: TypeQueueWorkerMocksCreator,
+      mocked_task_scheduler: mock.Mock,
+      scenario: TaskScenario,
+  ) -> None:
+    scenario_mocks = create_queue_worker_scenario_mocks(scenario.task_type)
+    task = scenario_mocks.task(args=scenario.task_args)
+    mocked_task_scheduler.router.get.return_value = task
+
+    scenario_mocks.instance.consumer()
+
+    mocked_task_scheduler.router.get.assert_called_once_with(
+        routing_label=scenario_mocks.instance.routing_label
+    )
+
+  @pytest.mark.parametrize(
+      "scenario",
+      [
+          TaskScenario(
               task_type=TaskType.NON_SCHEDULED,
               task_args=MockTaskArgs(path="/mock/path1"),
               ok=None,
@@ -168,12 +191,12 @@ class TestQueueWorker:
   def test_consumer__non_scheduled_task__does_not_get_processed(
       self,
       create_queue_worker_scenario_mocks: TypeQueueWorkerMocksCreator,
-      mocked_current_queue: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       scenario: TaskScenario,
   ) -> None:
     scenario_mocks = create_queue_worker_scenario_mocks(scenario.task_type)
     task = scenario_mocks.task(args=scenario.task_args)
-    mocked_current_queue.get.return_value = task
+    mocked_task_scheduler.router.get.return_value = task
     mocked_process_class = scenario_mocks.mocked_processor.ProcessorClass
 
     scenario_mocks.instance.consumer()
@@ -190,19 +213,19 @@ class TestQueueWorker:
           ),
       ],
   )
-  def test_consumer__non_scheduled_task__calls_queue_ack(
+  def test_consumer__non_scheduled_task__calls_router_ack(
       self,
       create_queue_worker_scenario_mocks: TypeQueueWorkerMocksCreator,
-      mocked_current_queue: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       scenario: TaskScenario,
   ) -> None:
     scenario_mocks = create_queue_worker_scenario_mocks(scenario.task_type)
     task = scenario_mocks.task(args=scenario.task_args)
-    mocked_current_queue.get.return_value = task
+    mocked_task_scheduler.router.get.return_value = task
 
     scenario_mocks.instance.consumer()
 
-    mocked_current_queue.ack.assert_called_once_with(task)
+    mocked_task_scheduler.router.ack.assert_called_once_with(task)
 
   @pytest.mark.parametrize(
       "scenario",
@@ -222,12 +245,12 @@ class TestQueueWorker:
   def test_consumer__vary_tasks__creates_correct_processor_class(
       self,
       create_queue_worker_scenario_mocks: TypeQueueWorkerMocksCreator,
-      mocked_current_queue: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       scenario: TaskScenario,
   ) -> None:
     scenario_mocks = create_queue_worker_scenario_mocks(scenario.task_type)
     task = scenario_mocks.task(args=scenario.task_args)
-    mocked_current_queue.get.return_value = task
+    mocked_task_scheduler.router.get.return_value = task
     mocked_process_class = scenario_mocks.mocked_processor.ProcessorClass
 
     scenario_mocks.instance.consumer()
@@ -266,10 +289,10 @@ class TestQueueWorker:
           ),
       ],
   )
-  def test_consumer__vary_tasks__vary_ok__vary_retry__calls_queue_ack(
+  def test_consumer__vary_tasks__vary_ok__vary_retry__calls_router_ack(
       self,
       create_queue_worker_scenario_mocks: TypeQueueWorkerMocksCreator,
-      mocked_current_queue: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       scenario: RetryScenario,
   ) -> None:
     scenario_mocks = create_queue_worker_scenario_mocks(scenario.task_type)
@@ -277,13 +300,13 @@ class TestQueueWorker:
     task.ok = scenario.ok
     task.completed = task.completed
     task.retry_after = scenario.retry_after
-    mocked_current_queue.get.return_value = task
+    mocked_task_scheduler.router.get.return_value = task
     mocked_process_class = scenario_mocks.mocked_processor.ProcessorClass
 
     scenario_mocks.instance.consumer()
 
     mocked_process_class.assert_called_once_with(scenario_mocks.instance.log)
-    mocked_current_queue.ack.assert_called_once_with(task)
+    mocked_task_scheduler.router.ack.assert_called_once_with(task)
 
   @pytest.mark.parametrize(
       "scenario",
@@ -303,7 +326,7 @@ class TestQueueWorker:
   def test_consumer__vary_tasks__vary_ok__vary_retry__on_success_sub_tasks(
       self,
       create_queue_worker_scenario_mocks: TypeQueueWorkerMocksCreator,
-      mocked_current_queue: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       scenario: TaskScenario,
   ) -> None:
     scenario_mocks = create_queue_worker_scenario_mocks(scenario.task_type)
@@ -312,19 +335,19 @@ class TestQueueWorker:
     task.ok = scenario.ok
     task.retry_after = 0
     setattr(task, "on_success", sub_task_mocks)
-    mocked_current_queue.get.return_value = task
+    mocked_task_scheduler.router.get.return_value = task
     mocked_process_class = scenario_mocks.mocked_processor.ProcessorClass
 
     scenario_mocks.instance.consumer()
 
     mocked_process_class.assert_called_once_with(scenario_mocks.instance.log)
-    called = mocked_current_queue.put.mock_calls == list(
+    called = mocked_task_scheduler.router.put.mock_calls == list(
         map(
             mock.call,
             sub_task_mocks,
         )
     )
-    not_called = mocked_current_queue.put.call_count == 0
+    not_called = mocked_task_scheduler.router.put.call_count == 0
     assert called is scenario.ok
     assert not_called is not scenario.ok
 
@@ -346,7 +369,7 @@ class TestQueueWorker:
   def test_consumer__vary_tasks__vary_ok__vary_retry__on_failure_sub_tasks(
       self,
       create_queue_worker_scenario_mocks: TypeQueueWorkerMocksCreator,
-      mocked_current_queue: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       scenario: TaskScenario,
   ) -> None:
     scenario_mocks = create_queue_worker_scenario_mocks(scenario.task_type)
@@ -355,19 +378,19 @@ class TestQueueWorker:
     task.ok = scenario.ok
     task.retry_after = 0
     setattr(task, "on_failure", sub_task_mocks)
-    mocked_current_queue.get.return_value = task
+    mocked_task_scheduler.router.get.return_value = task
     mocked_process_class = scenario_mocks.mocked_processor.ProcessorClass
 
     scenario_mocks.instance.consumer()
 
     mocked_process_class.assert_called_once_with(scenario_mocks.instance.log)
-    called = mocked_current_queue.put.mock_calls == list(
+    called = mocked_task_scheduler.router.put.mock_calls == list(
         map(
             mock.call,
             sub_task_mocks,
         )
     )
-    not_called = mocked_current_queue.put.call_count == 0
+    not_called = mocked_task_scheduler.router.put.call_count == 0
     assert called is not scenario.ok
     assert not_called is scenario.ok
 
@@ -393,7 +416,7 @@ class TestQueueWorker:
   def test_consumer__vary_tasks__vary_ok__vary_sub_tasks__sets_result_cause(
       self,
       create_queue_worker_scenario_mocks: TypeQueueWorkerMocksCreator,
-      mocked_current_queue: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       scenario: TaskScenario,
       completion_attribute: str,
   ) -> None:
@@ -403,7 +426,7 @@ class TestQueueWorker:
     task.ok = scenario.ok
     task.retry_after = 0
     setattr(task, completion_attribute, sub_task_mocks)
-    mocked_current_queue.get.return_value = task
+    mocked_task_scheduler.router.get.return_value = task
 
     scenario_mocks.instance.consumer()
 
@@ -449,14 +472,14 @@ class TestQueueWorker:
       self,
       create_queue_worker_scenario_mocks: TypeQueueWorkerMocksCreator,
       mocked_failed_task_manifest: mock.Mock,
-      mocked_current_queue: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       scenario: RetryScenario,
   ) -> None:
     scenario_mocks = create_queue_worker_scenario_mocks(scenario.task_type)
     task = scenario_mocks.task(args=scenario.task_args)
     task.ok = scenario.ok
     task.retry_after = scenario.retry_after
-    mocked_current_queue.get.return_value = task
+    mocked_task_scheduler.router.get.return_value = task
     mocked_process_class = scenario_mocks.mocked_processor.ProcessorClass
 
     scenario_mocks.instance.consumer()
@@ -499,7 +522,7 @@ class TestQueueWorker:
   def test_consumer__vary_tasks__vary_ok__vary_retry__logging(
       self,
       create_queue_worker_scenario_mocks: TypeQueueWorkerMocksCreator,
-      mocked_current_queue: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
       mocked_stream: StringIO,
       scenario: RetryScenario,
   ) -> None:
@@ -507,15 +530,15 @@ class TestQueueWorker:
     task = scenario_mocks.task(args=scenario.task_args)
     task.ok = scenario.ok
     task.retry_after = scenario.retry_after
-    mocked_current_queue.get.return_value = task
+    mocked_task_scheduler.router.get.return_value = task
 
     scenario_mocks.instance.consumer()
 
     has_no_retry_logging = mocked_stream.getvalue() == ""
     has_retry_logging = mocked_stream.getvalue() == (
         f"DEBUG - {task.id} - None - "
-        f"{scenario_mocks.instance.priority.value} - Failed task '{task}' will "
-        f"be rescheduled in {scenario.retry_after} second(s).\n"
+        f"{scenario_mocks.instance.routing_label.value} - Failed task '{task}' "
+        f"will be rescheduled in {scenario.retry_after} second(s).\n"
     )
     assert has_no_retry_logging is (scenario.ok or scenario.retry_after < 1)
     assert has_retry_logging is (not scenario.ok and scenario.retry_after > 0)
@@ -530,10 +553,10 @@ class TestQueueWorker:
       queue_worker_instance.halt()
 
     assert mocked_stream.getvalue() == (
-        f"WARNING - None - None - {queue_worker_instance.priority.value} - "
-        f"Worker thread has started ...\n"
-        f"WARNING - None - None - {queue_worker_instance.priority.value} - "
-        f"Worker thread has exited!\n"
+        f"WARNING - None - None - {queue_worker_instance.routing_label.value} "
+        f"- Worker thread has started ...\n"
+        f"WARNING - None - None - {queue_worker_instance.routing_label.value} "
+        f"- Worker thread has exited!\n"
     )
 
   def test_halt__scheduler_is_running__stops_all_threads(
@@ -548,9 +571,9 @@ class TestQueueWorker:
       self,
       queue_worker_instance: queue_worker.QueueWorker,
       queue_worker_running: "Future[None]",
-      mocked_current_queue: mock.Mock,
+      mocked_task_scheduler: mock.Mock,
   ) -> None:
     with wait_cm(queue_worker_running):
       queue_worker_instance.halt()
 
-    assert mocked_current_queue.get.call_count > 10
+    assert mocked_task_scheduler.router.get.call_count > 10

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Type
 
 import pytest
 from pi_portal.modules.tasks import enums, schema
+from pi_portal.modules.tasks.config import ROUTING_MATRIX
 
 if TYPE_CHECKING:  # pragma: no cover
   from pi_portal.modules.tasks.task.bases.task_args_base import TaskArgsBase
@@ -29,25 +30,39 @@ class GenericTaskModuleTest:
     assert self.module.Task == self.module.Task
     assert self.module.TaskType == self.expected_type
 
-  def test_import__task__default_priority__attributes(self) -> None:
+  def test_import__task__defaults__attributes(self) -> None:
     instance = self.module.Task(self.mock_args)
 
     assert instance.args == self.mock_args
-    assert instance.type == self.expected_type
-    assert instance.priority == enums.TaskPriority.STANDARD
     assert instance.retry_after == 0
+    assert instance.routing_label == ROUTING_MATRIX[self.expected_type]
+    assert instance.type == self.expected_type
 
-  @pytest.mark.parametrize("priority", list(enums.TaskPriority))
-  def test_import__task__vary_priority__attributes(
+  @pytest.mark.parametrize("retry_after", [0, 1])
+  def test_import__task__vary_retry_after__attributes(
       self,
-      priority: enums.TaskPriority,
+      retry_after: int,
   ) -> None:
     instance = self.module.Task(
         self.mock_args,
-        priority=priority,
+        retry_after=retry_after,
     )
 
     assert instance.args == self.mock_args
     assert instance.type == self.expected_type
-    assert instance.priority == priority
+    assert instance.retry_after == retry_after
+    assert instance.routing_label == ROUTING_MATRIX[self.expected_type]
+
+  @pytest.mark.parametrize("routing_label", list(enums.RoutingLabel))
+  def test_import__task__vary_routing_label__attributes(
+      self, routing_label: enums.RoutingLabel
+  ) -> None:
+    instance = self.module.Task(
+        self.mock_args,
+        routing_label=routing_label,
+    )
+
+    assert instance.args == self.mock_args
+    assert instance.type == self.expected_type
     assert instance.retry_after == 0
+    assert instance.routing_label == routing_label

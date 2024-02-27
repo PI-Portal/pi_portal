@@ -33,8 +33,8 @@ from .. import lifespan, router, security, server
 class TypedTaskCreationRequestParameters(TypedDict):
   type: str
   args: Dict[str, Any]
-  priority: NotRequired[str]
   retry_after: NotRequired[int]
+  routing_label: NotRequired[str]
   on_failure: NotRequired[List["TypedTaskCreationRequestParameters"]]
   on_success: NotRequired[List["TypedTaskCreationRequestParameters"]]
 

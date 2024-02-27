@@ -28,8 +28,6 @@ class TestQueueMetricsCronJob:
     assert queue_metrics_cron_job_instance.quiet is True
     assert queue_metrics_cron_job_instance.type == \
         enums.TaskType.NON_SCHEDULED
-    assert queue_metrics_cron_job_instance.priority == \
-        enums.TaskPriority.STANDARD
 
   def test_initialize__inheritance(
       self,
@@ -56,7 +54,7 @@ class TestQueueMetricsCronJob:
       mocked_stream: StringIO,
   ) -> None:
     mocked_task_scheduler.router.queues = {
-        priority: mock.Mock() for priority in enums.TaskPriority
+        routing_label: mock.Mock() for routing_label in enums.RoutingLabel
     }
 
     queue_metrics_cron_job_instance.schedule(mocked_task_scheduler)
@@ -65,12 +63,12 @@ class TestQueueMetricsCronJob:
         [
             self.log_message.format(
                 task=None,
-                queue=priority.value,
+                queue=routing_label.value,
                 metrics=(
-                    mocked_task_scheduler.router.queues[priority].metrics.
+                    mocked_task_scheduler.router.queues[routing_label].metrics.
                     return_value._asdict.return_value
                 )
-            ) for priority in enums.TaskPriority
+            ) for routing_label in enums.RoutingLabel
         ]
     )
 
@@ -80,7 +78,7 @@ class TestQueueMetricsCronJob:
       mocked_task_scheduler: mock.Mock,
   ) -> None:
     mocked_task_scheduler.router.queues = {
-        priority: mock.Mock() for priority in enums.TaskPriority
+        routing_label: mock.Mock() for routing_label in enums.RoutingLabel
     }
 
     queue_metrics_cron_job_instance.schedule(mocked_task_scheduler)

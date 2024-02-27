@@ -6,7 +6,7 @@ from typing import Dict, Type, cast
 from unittest import mock
 
 import pytest
-from pi_portal.modules.tasks.enums import TaskPriority
+from pi_portal.modules.tasks.enums import RoutingLabel
 from pi_portal.modules.tasks.task.bases.task_base import TypeGenericTask
 from .. import queue_base, router_base
 
@@ -22,11 +22,11 @@ def mocked_queue_implementation() -> mock.Mock:
 
 
 @pytest.fixture
-def mocked_priority_queues() -> Dict[TaskPriority, mock.Mock]:
-  priority_queues: Dict[TaskPriority, mock.Mock] = {}
-  for priority in TaskPriority:
-    priority_queues[priority] = mock.Mock()
-  return priority_queues
+def mocked_routed_queues() -> Dict[RoutingLabel, mock.Mock]:
+  routing_labels: Dict[RoutingLabel, mock.Mock] = {}
+  for routing_label in RoutingLabel:
+    routing_labels[routing_label] = mock.Mock()
+  return routing_labels
 
 
 @pytest.fixture
@@ -67,19 +67,19 @@ def concrete_queue_base_instance(
 ) -> queue_base.QueueBase:
   return concrete_queue_base_class(
       mocked_queue_logger,
-      priority=TaskPriority.STANDARD,
+      routing_label=RoutingLabel.ARCHIVAL,
   )
 
 
 @pytest.fixture
 def concrete_task_router_base_class(
-    mocked_priority_queues: Dict[TaskPriority, queue_base.QueueBase],
+    mocked_routed_queues: Dict[RoutingLabel, queue_base.QueueBase],
 ) -> Type[router_base.TaskRouterBase]:
 
   class ConcreteRouter(router_base.TaskRouterBase):
 
     def __init__(self, _: logging.Logger) -> None:
-      self.queues = mocked_priority_queues
+      self.queues = mocked_routed_queues
 
   return ConcreteRouter
 

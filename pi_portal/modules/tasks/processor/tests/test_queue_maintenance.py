@@ -4,7 +4,7 @@ import logging
 from io import StringIO
 from unittest import mock
 
-from pi_portal.modules.tasks.enums import TaskPriority, TaskType
+from pi_portal.modules.tasks.enums import RoutingLabel, TaskType
 from pi_portal.modules.tasks.processor.bases import processor_base
 from pi_portal.modules.tasks.processor.queue_maintenance import ProcessorClass
 
@@ -54,7 +54,7 @@ class TestQueueMaintenanceProcessor:
       mocked_queue_no_args_task: mock.Mock,
   ) -> None:
     mocked_task_router.return_value.queues = {
-        priority: mock.Mock() for priority in TaskPriority
+        routing_label: mock.Mock() for routing_label in RoutingLabel
     }
 
     queue_maintenance_instance.process(mocked_queue_no_args_task)
@@ -63,9 +63,10 @@ class TestQueueMaintenanceProcessor:
         self.log_message_prefix.format(task=mocked_queue_no_args_task) +
         "".join(
             [
-                self.log_message_maintenance.
-                format(task=mocked_queue_no_args_task, queue=priority.value)
-                for priority in TaskPriority
+                self.log_message_maintenance.format(
+                    task=mocked_queue_no_args_task,
+                    queue=routing_label.value,
+                ) for routing_label in RoutingLabel
             ]
         ) + self.log_message_suffix.format(task=mocked_queue_no_args_task)
     )
@@ -78,7 +79,7 @@ class TestQueueMaintenanceProcessor:
       mocked_task_logger: logging.Logger,
   ) -> None:
     mocked_task_router.return_value.queues = {
-        priority: mock.Mock() for priority in TaskPriority
+        routing_label: mock.Mock() for routing_label in RoutingLabel
     }
 
     queue_maintenance_instance.process(mocked_queue_no_args_task)

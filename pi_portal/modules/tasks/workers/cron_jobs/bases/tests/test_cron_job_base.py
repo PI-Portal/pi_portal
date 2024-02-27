@@ -3,7 +3,7 @@ import logging
 from unittest import mock
 
 import pytest
-from pi_portal.modules.tasks.enums import TaskPriority, TaskType
+from pi_portal.modules.tasks.enums import TaskType
 from .. import cron_job_base
 from .conftest import TypeConcreteJobInstance
 
@@ -59,28 +59,18 @@ class TestCronJobBase:
     assert concrete_cron_job_base_instance.time_remaining == \
            concrete_cron_job_base_instance.interval
 
-  @pytest.mark.parametrize("priority", list(TaskPriority))
-  def test_schedule__vary_priority__creates_correct_task(
+  def test_schedule__default_retry_after__creates_correct_task(
       self,
       concrete_cron_job_base_instance: TypeConcreteJobInstance,
       mocked_task_scheduler: mock.Mock,
       mocked_task_registry: mock.Mock,
-      monkeypatch: pytest.MonkeyPatch,
-      priority: TaskPriority,
   ) -> None:
-    monkeypatch.setattr(
-        concrete_cron_job_base_instance,
-        "priority",
-        priority,
-    )
-
     concrete_cron_job_base_instance.schedule(mocked_task_scheduler)
 
     mocked_task_registry.tasks[concrete_cron_job_base_instance.type].\
         TaskClass.assert_called_once_with(
             # pylint: disable=protected-access
             args=concrete_cron_job_base_instance._args(),
-            priority=priority,
             retry_after=concrete_cron_job_base_instance.retry_after,
         )
 
@@ -105,7 +95,6 @@ class TestCronJobBase:
         TaskClass.assert_called_once_with(
         # pylint: disable=protected-access
         args=concrete_cron_job_base_instance._args(),
-        priority=concrete_cron_job_base_instance.priority,
         retry_after=retry_after,
       )
 

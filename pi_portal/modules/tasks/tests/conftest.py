@@ -8,12 +8,12 @@ from unittest import mock
 import pytest
 from pi_portal.modules import tasks
 from pi_portal.modules.configuration.tests.fixtures import mock_state
-from pi_portal.modules.tasks.enums import TaskPriority
+from pi_portal.modules.tasks.enums import RoutingLabel
 from .. import scheduler, service, service_client
 
-MOCKED_CONFIG: Dict[TaskPriority, int] = {
-    TaskPriority.STANDARD: 2,
-    TaskPriority.EXPRESS: 2,
+MOCKED_CONFIG: Dict[RoutingLabel, int] = {
+    RoutingLabel.PI_PORTAL_CONTROL: 2,
+    RoutingLabel.ARCHIVAL: 2,
 }
 
 

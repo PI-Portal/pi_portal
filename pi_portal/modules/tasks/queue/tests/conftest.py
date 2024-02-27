@@ -6,7 +6,7 @@ from typing import Callable, List, NamedTuple, Type, TypedDict
 from unittest import mock
 
 import pytest
-from pi_portal.modules.tasks.enums import TaskPriority
+from pi_portal.modules.tasks.enums import RoutingLabel
 from .. import persist_queue, persist_queue_router
 
 TypeMetricsScenarioCreator = Callable[["MetricsScenario"], None]
@@ -40,8 +40,8 @@ def mocked_os_scandir() -> mock.Mock:
 
 
 @pytest.fixture
-def mocked_priority_queues() -> List[mock.Mock]:
-  return [mock.Mock()] * len(TaskPriority)
+def mocked_routed_queues() -> List[mock.Mock]:
+  return [mock.Mock()] * len(RoutingLabel)
 
 
 @pytest.fixture
@@ -59,9 +59,9 @@ def mocked_raw_task(mocked_task: mock.Mock,) -> TypeMockRawTask:
 
 @pytest.fixture
 def mocked_router_queue(
-    mocked_priority_queues: List[mock.Mock],
+    mocked_routed_queues: List[mock.Mock],
 ) -> List[mock.Mock]:
-  return mock.Mock(side_effect=mocked_priority_queues)
+  return mock.Mock(side_effect=mocked_routed_queues)
 
 
 @pytest.fixture
@@ -103,7 +103,7 @@ def persist_queue_instance_standard(
 ) -> persist_queue.Queue:
   return persist_queue_instance_class(
       mocked_queue_logger,
-      priority=TaskPriority.STANDARD,
+      routing_label=RoutingLabel.ARCHIVAL,
   )
 
 

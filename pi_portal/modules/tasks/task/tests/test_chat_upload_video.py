@@ -20,6 +20,7 @@ class TestChatUploadVideo(GenericTaskModuleTest):
   expected_api_enabled = True
   expected_arg_class = chat_upload_video.Args
   expected_return_type = None
+  expected_routing_label = enums.RoutingLabel.CHAT_UPLOAD_VIDEO
   expected_type = enums.TaskType.CHAT_UPLOAD_VIDEO
   mock_args = chat_upload_video.Args(
       description="Test file number 1.",

@@ -4,8 +4,6 @@ import abc
 import logging
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from pi_portal.modules.tasks.enums import TaskPriority
-
 if TYPE_CHECKING:  # pragma: no cover
   from pi_portal.modules.tasks.enums import TaskType
   from pi_portal.modules.tasks.registration.registry import TaskRegistry
@@ -32,7 +30,6 @@ class CronJobBase(Generic[TypeTaskArguments_co], abc.ABC):
 
   interval: int
   name: str
-  priority: TaskPriority = TaskPriority.STANDARD
   type: "TaskType"
   quiet = False
   retry_after = 0
@@ -69,7 +66,6 @@ class CronJobBase(Generic[TypeTaskArguments_co], abc.ABC):
     task_class = self.registered_task.TaskClass
     task = task_class(
         args=self._args(),
-        priority=self.priority,
         retry_after=self.retry_after,
     )
     scheduler.router.put(task)

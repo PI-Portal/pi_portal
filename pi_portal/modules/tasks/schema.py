@@ -7,7 +7,7 @@ if TYPE_CHECKING:  # pragma: no cover
   from pi_portal.modules.tasks.workers.cron_jobs.bases.cron_job_base import (
       CronJobBase,
   )
-  from .enums import TaskType
+  from .enums import RoutingLabel, TaskType
   from .processor.bases.processor_base import TaskProcessorBase
   from .task.bases.task_args_base import TaskArgsBase
   from .task.bases.task_base import TypeGenericTask
