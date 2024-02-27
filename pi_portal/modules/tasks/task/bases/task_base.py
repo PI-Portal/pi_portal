@@ -1,8 +1,9 @@
 """TaskBase class."""
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Generic, List, TypeVar
+from typing import TYPE_CHECKING, Generic, List, Optional, TypeVar
 
-from pi_portal.modules.tasks.enums import TaskPriority, TaskType
+from pi_portal.modules.tasks.config import ROUTING_MATRIX
+from pi_portal.modules.tasks.enums import RoutingLabel, TaskType
 from typing_extensions import TypeAlias
 from .task_fields import TaskFields
 from .task_result import TaskResult
@@ -47,12 +48,12 @@ class TaskBase(
   def __init__(
       self,
       args: "TypeTaskArguments_co",
-      priority: "TaskPriority" = TaskPriority.STANDARD,
       retry_after: int = 0,
+      routing_label: "Optional[RoutingLabel]" = None
   ) -> None:
     """:param args: The arguments used by this task instance.
-    :param priority: Sets the routing priority for this task.
     :param retry_after: A positive value in seconds will retry a failed task.
+    :param routing_label: Override the routing matrix for this task.
     """
     self.args = args
     self.completed = None
@@ -61,10 +62,12 @@ class TaskBase(
     self.ok = None
     self.on_success = []
     self.on_failure = []
-    self.priority = priority
     self.result = TaskResult[TypeTaskResult]()
     self.retry_after = retry_after
     self.scheduled = None
+    if not routing_label:
+      routing_label = ROUTING_MATRIX[self.type]
+    self.routing_label = routing_label
 
   def __str__(self) -> str:
     return f"Task(id:{self.id}, type:{self.type.value})"

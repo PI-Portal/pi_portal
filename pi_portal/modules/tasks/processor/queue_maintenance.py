@@ -25,13 +25,13 @@ class ProcessorClass(
       ],
   ) -> queue_maintenance.ReturnType:
     router = TaskRouter(self.log)
-    for priority, queue in router.queues.items():
+    for routing_label, queue in router.queues.items():
       self.log.warning(
           "Performing maintenance on the '%s' task queue ...",
-          priority.value,
+          routing_label.value,
           extra={
               "task": task.id,
-              "queue": priority.value
+              "queue": routing_label.value
           },
       )
       queue.maintenance()

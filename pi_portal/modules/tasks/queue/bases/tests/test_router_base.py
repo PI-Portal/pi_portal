@@ -4,7 +4,7 @@ from typing import Dict
 from unittest import mock
 
 import pytest
-from pi_portal.modules.tasks.enums import TaskPriority
+from pi_portal.modules.tasks.enums import RoutingLabel
 from .. import router_base
 
 
@@ -15,82 +15,84 @@ class TestTaskRouterBase:
       self,
       concrete_task_router_base_instance: router_base.TaskRouterBase,
   ) -> None:
-    for priority in TaskPriority:
-      assert priority in concrete_task_router_base_instance.queues
+    for routing_label in RoutingLabel:
+      assert routing_label in concrete_task_router_base_instance.queues
 
-  @pytest.mark.parametrize("priority", list(TaskPriority))
-  def test_ack__vary_priority__selects_correct_queue(
+  @pytest.mark.parametrize("routing_label", list(RoutingLabel))
+  def test_ack__vary_label__selects_correct_queue(
       self,
       concrete_task_router_base_instance: router_base.TaskRouterBase,
-      mocked_priority_queues: Dict[TaskPriority, mock.Mock],
+      mocked_routed_queues: Dict[RoutingLabel, mock.Mock],
       mocked_task: mock.Mock,
-      priority: TaskPriority,
+      routing_label: RoutingLabel,
   ) -> None:
-    mocked_task.priority = priority
+    mocked_task.routing_label = routing_label
 
     concrete_task_router_base_instance.ack(mocked_task)
 
-    mocked_priority_queues[priority].ack.assert_called_once_with(mocked_task)
+    mocked_routed_queues[routing_label].ack.assert_called_once_with(mocked_task)
 
-  @pytest.mark.parametrize("priority", list(TaskPriority))
-  def test_get__vary_priority__selects_correct_queue(
+  @pytest.mark.parametrize("routing_label", list(RoutingLabel))
+  def test_get__vary_label__selects_correct_queue(
       self,
       concrete_task_router_base_instance: router_base.TaskRouterBase,
-      mocked_priority_queues: Dict[TaskPriority, mock.Mock],
-      priority: TaskPriority,
+      mocked_routed_queues: Dict[RoutingLabel, mock.Mock],
+      routing_label: RoutingLabel,
   ) -> None:
-    result = concrete_task_router_base_instance.get(priority)
+    result = concrete_task_router_base_instance.get(routing_label)
 
-    mocked_priority_queues[priority].get.assert_called_once_with()
-    assert result == mocked_priority_queues[priority].get.return_value
+    mocked_routed_queues[routing_label].get.assert_called_once_with()
+    assert result == mocked_routed_queues[routing_label].get.return_value
 
-  @pytest.mark.parametrize("priority", list(TaskPriority))
-  def test_maintenance__vary_priority__selects_correct_queue(
+  @pytest.mark.parametrize("routing_label", list(RoutingLabel))
+  def test_maintenance__vary_label__selects_correct_queue(
       self,
       concrete_task_router_base_instance: router_base.TaskRouterBase,
-      mocked_priority_queues: Dict[TaskPriority, mock.Mock],
-      priority: TaskPriority,
+      mocked_routed_queues: Dict[RoutingLabel, mock.Mock],
+      routing_label: RoutingLabel,
   ) -> None:
-    concrete_task_router_base_instance.maintenance(priority)
+    concrete_task_router_base_instance.maintenance(routing_label)
 
-    mocked_priority_queues[priority].maintenance.assert_called_once_with()
+    mocked_routed_queues[routing_label].maintenance.assert_called_once_with()
 
-  @pytest.mark.parametrize("priority", list(TaskPriority))
-  def test_metrics__vary_priority__selects_correct_queue(
+  @pytest.mark.parametrize("routing_label", list(RoutingLabel))
+  def test_metrics__vary_label__selects_correct_queue(
       self,
       concrete_task_router_base_instance: router_base.TaskRouterBase,
-      mocked_priority_queues: Dict[TaskPriority, mock.Mock],
-      priority: TaskPriority,
+      mocked_routed_queues: Dict[RoutingLabel, mock.Mock],
+      routing_label: RoutingLabel,
   ) -> None:
-    result = concrete_task_router_base_instance.metrics(priority)
+    result = concrete_task_router_base_instance.metrics(routing_label)
 
-    mocked_priority_queues[priority].metrics.assert_called_once_with()
-    assert result == mocked_priority_queues[priority].metrics.return_value
+    mocked_routed_queues[routing_label].metrics.assert_called_once_with()
+    assert result == mocked_routed_queues[routing_label].metrics.return_value
 
-  @pytest.mark.parametrize("priority", list(TaskPriority))
-  def test_put__vary_priority__selects_correct_queue(
+  @pytest.mark.parametrize("routing_label", list(RoutingLabel))
+  def test_put__vary_label__selects_correct_queue(
       self,
       concrete_task_router_base_instance: router_base.TaskRouterBase,
-      mocked_priority_queues: Dict[TaskPriority, mock.Mock],
+      mocked_routed_queues: Dict[RoutingLabel, mock.Mock],
       mocked_task: mock.Mock,
-      priority: TaskPriority,
+      routing_label: RoutingLabel,
   ) -> None:
-    mocked_task.priority = priority
+    mocked_task.routing_label = routing_label
 
     concrete_task_router_base_instance.put(mocked_task)
 
-    mocked_priority_queues[priority].put.assert_called_once_with(mocked_task)
+    mocked_routed_queues[routing_label].put.assert_called_once_with(mocked_task)
 
-  @pytest.mark.parametrize("priority", list(TaskPriority))
-  def test_retry__vary_priority__selects_correct_queue(
+  @pytest.mark.parametrize("routing_label", list(RoutingLabel))
+  def test_retry__vary_label__selects_correct_queue(
       self,
       concrete_task_router_base_instance: router_base.TaskRouterBase,
-      mocked_priority_queues: Dict[TaskPriority, mock.Mock],
+      mocked_routed_queues: Dict[RoutingLabel, mock.Mock],
       mocked_task: mock.Mock,
-      priority: TaskPriority,
+      routing_label: RoutingLabel,
   ) -> None:
-    mocked_task.priority = priority
+    mocked_task.routing_label = routing_label
 
     concrete_task_router_base_instance.retry(mocked_task)
 
-    mocked_priority_queues[priority].retry.assert_called_once_with(mocked_task)
+    mocked_routed_queues[routing_label].retry.assert_called_once_with(
+        mocked_task
+    )

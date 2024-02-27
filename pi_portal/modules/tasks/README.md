@@ -28,11 +28,13 @@ Tasks are "scheduled" by being sent to one of the persistent queues, which are i
 
 ### Routers
 
-Tasks have a [priority](./enums.py) property that allows them to be routed by an implementation of [RouterBase](./queue/bases/router_base.py).  The router will send each task to the correct queue for it's configured priority.  
+Tasks have a [routing label](./enums.py) property that allows them to be routed by an implementation of [RouterBase](./queue/bases/router_base.py).  The router will send each task to the correct queue for it's configured routing label.
+
+Each [task type](./enums.py) has a [default routing label](./config.py) which can optionally be overridden during creation.
 
 ### Workers
 
-Each queue priority will have one or more implementations of [WorkerBase](./workers/bases/worker_base.py) consuming tasks from the queue and instantiating processors to do the actual task work.  
+The queue associated with each routing label will have one or more implementations of [WorkerBase](./workers/bases/worker_base.py) consuming tasks from the queue and instantiating processors to do the actual task work.  
 
 There is also a separate [WorkerBase](./workers/bases/worker_base.py) implementation that runs a set of [cron jobs](./workers/cron_jobs) at specific intervals of time.  This worker does no task processing, but rather creates tasks to send to the queues for processing.
 

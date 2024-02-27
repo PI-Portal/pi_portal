@@ -2,7 +2,7 @@
 
 import logging
 
-from pi_portal.modules.tasks.enums import TaskPriority
+from pi_portal.modules.tasks.enums import RoutingLabel
 from .bases.router_base import TaskRouterBase
 from .persist_queue import Queue
 
@@ -15,5 +15,5 @@ class TaskRouter(TaskRouterBase):
 
   def __init__(self, log: logging.Logger) -> None:
     self.queues = {}
-    for priority in TaskPriority:
-      self.queues[priority] = Queue(log, priority=priority)
+    for routing_label in RoutingLabel:
+      self.queues[routing_label] = Queue(log, routing_label=routing_label)
