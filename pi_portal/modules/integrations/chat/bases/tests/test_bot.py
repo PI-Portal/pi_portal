@@ -15,11 +15,9 @@ class TestChatBotBase:
   def test_initialize__attributes(
       self,
       concrete_chat_bot_instance: TypeChatBot,
-      mocked_chat_client: mock.Mock,
       mocked_chat_config: mock.Mock,
       mocked_chat_logger: logging.Logger,
   ) -> None:
-    assert concrete_chat_bot_instance.chat_client == mocked_chat_client
     assert concrete_chat_bot_instance.configuration == mocked_chat_config
     assert concrete_chat_bot_instance.logger_name == "bot"
     assert concrete_chat_bot_instance.log_file_path == config.LOG_FILE_CHAT_BOT
@@ -33,6 +31,16 @@ class TestChatBotBase:
     assert concrete_chat_bot_instance.command_list == (
         mocked_get_available_commands.return_value
     )
+
+  def test_initialize__task_scheduler_client(
+      self,
+      concrete_chat_bot_instance: TypeChatBot,
+      mocked_task_scheduler: mock.Mock,
+  ) -> None:
+    assert concrete_chat_bot_instance.task_scheduler_client == (
+        mocked_task_scheduler.return_value
+    )
+    mocked_task_scheduler.assert_called_once_with()
 
   def test_initialize__inheritance(
       self,

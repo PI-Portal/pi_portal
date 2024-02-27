@@ -5,6 +5,7 @@ from typing import Callable, List
 from unittest import mock
 
 import pytest
+from pi_portal.modules.integrations.chat.bases import bot as base_bot
 from pi_portal.modules.integrations.chat.slack import bot, client, config
 
 TypeSlackClientCreator = Callable[[bool], client.SlackClient]
@@ -61,7 +62,7 @@ def mocked_slack_bolt_socket_handler() -> mock.Mock:
 
 
 @pytest.fixture
-def mocked_slack_client() -> mock.Mock:
+def mocked_task_scheduler_client() -> mock.Mock:
   return mock.Mock()
 
 
@@ -71,7 +72,7 @@ def slack_bot_instance(
     mocked_os_module: mock.Mock,
     mocked_slack_bolt_app: mock.Mock,
     mocked_slack_bolt_socket_handler: mock.Mock,
-    mocked_slack_client: mock.Mock,
+    mocked_task_scheduler_client: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> bot.SlackBot:
   monkeypatch.setattr(
@@ -87,8 +88,8 @@ def slack_bot_instance(
       mocked_slack_bolt_socket_handler,
   )
   monkeypatch.setattr(
-      bot.__name__ + ".SlackClient",
-      mocked_slack_client,
+      base_bot.__name__ + ".TaskSchedulerServiceClient",
+      mocked_task_scheduler_client,
   )
   instance = bot.SlackBot()
   instance.log = mocked_chat_logger

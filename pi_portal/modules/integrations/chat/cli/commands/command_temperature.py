@@ -29,4 +29,6 @@ class TemperatureCommand(ChatCommandBase):
             message_line += "not yet measured"
           multiline_message.append(message_line)
 
-    self.chatbot.chat_client.send_message("\n".join(multiline_message),)
+    self.chatbot.task_scheduler_client.chat_send_message(
+        "\n".join(multiline_message)
+    )
