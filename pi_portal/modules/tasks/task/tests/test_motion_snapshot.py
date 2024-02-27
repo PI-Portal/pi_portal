@@ -13,6 +13,7 @@ class TestMotionSnapshot(GenericTaskModuleTest):
   expected_api_enabled = True
   expected_arg_class = motion_snapshot.Args
   expected_return_type = None
+  expected_routing_label = enums.RoutingLabel.CAMERA
   expected_type = enums.TaskType.MOTION_SNAPSHOT
   mock_args = motion_snapshot.Args(camera=2)
   module = motion_snapshot

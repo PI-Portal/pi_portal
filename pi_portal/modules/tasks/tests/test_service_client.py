@@ -4,7 +4,7 @@ from unittest import mock
 
 import pytest
 from pi_portal import config
-from pi_portal.modules.tasks.enums import TaskPriority, TaskType
+from pi_portal.modules.tasks.enums import TaskType
 from pi_portal.modules.tasks.service_client import TaskSchedulerServiceClient
 
 
@@ -37,8 +37,6 @@ class TestServiceClient:
         "args": {
             "camera": camera,
         },
-        "priority":
-            TaskPriority.EXPRESS.value,
         "on_failure":
             [
                 {
@@ -51,7 +49,6 @@ class TestServiceClient:
                                     camera_snapshot_failure_message
                                 ),
                         },
-                    "priority": TaskPriority.EXPRESS.value,
                     "retry_after": 300,
                 }
             ]
@@ -93,8 +90,6 @@ class TestServiceClient:
         "args": {
             "message": message,
         },
-        "priority":
-            TaskPriority.EXPRESS.value,
         "on_failure":
             [
                 {
@@ -107,7 +102,6 @@ class TestServiceClient:
                                     deferred_message + message
                                 ),
                         },
-                    "priority": TaskPriority.EXPRESS.value,
                     "retry_after": 300,
                 }
             ]
@@ -167,8 +161,6 @@ class TestServiceClient:
             "description": description,
             "path": path,
         },
-        "priority":
-            TaskPriority.EXPRESS.value,
         "on_failure":
             [
                 {
@@ -182,7 +174,6 @@ class TestServiceClient:
                                 ),
                             "path": path
                         },
-                    "priority": TaskPriority.EXPRESS.value,
                     "retry_after": 300,
                 }
             ]
@@ -242,8 +233,6 @@ class TestServiceClient:
             "description": description,
             "path": path,
         },
-        "priority":
-            TaskPriority.EXPRESS.value,
         "on_failure":
             [
                 {
@@ -257,7 +246,6 @@ class TestServiceClient:
                                 ),
                             "path": path
                         },
-                    "priority": TaskPriority.EXPRESS.value,
                     "retry_after": 300,
                 }
             ]
@@ -299,7 +287,6 @@ class TestServiceClient:
             "destination": mocked_destination,
             "source": mocked_source
         },
-        "priority": TaskPriority.STANDARD.value,
     }
 
     task_scheduler_service_client_instance.file_system_copy(

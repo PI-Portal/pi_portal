@@ -11,7 +11,7 @@ from typing_extensions import TypedDict
 from .bases.queue_base import QueueBase, QueueMetrics
 
 if TYPE_CHECKING:  # pragma: no cover
-  from pi_portal.modules.tasks.enums import TaskPriority
+  from pi_portal.modules.tasks.enums import RoutingLabel
   from pi_portal.modules.tasks.task.bases.task_base import TypeGenericTask
 
 
@@ -38,10 +38,10 @@ class Queue(QueueBase):
   def __init__(
       self,
       log: logging.Logger,
-      priority: "TaskPriority",
+      routing_label: "RoutingLabel",
   ) -> None:
-    super().__init__(log, priority)
-    self._path = os.path.join(self._db_path, priority.value)
+    super().__init__(log, routing_label)
+    self._path = os.path.join(self._db_path, routing_label.value)
     self._initialize()
 
   def _initialize(self) -> None:
@@ -72,7 +72,7 @@ class Queue(QueueBase):
           "Fatal error during deserialization!",
           extra={
               "task": None,
-              'queue': self.priority.value
+              'queue': self.routing_label.value
           },
       )
       self.log.error(
@@ -80,7 +80,7 @@ class Queue(QueueBase):
           "Tasks have been lost!",
           extra={
               "task": None,
-              'queue': self.priority.value
+              'queue': self.routing_label.value
           },
       )
       shutil.rmtree(self._path)

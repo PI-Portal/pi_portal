@@ -1,8 +1,9 @@
 """A task to archive a folder of log files."""
 
-from typing import Any, Dict, Tuple, Type, cast
+from typing import Any, Dict, Optional, Tuple, Type, cast
 
-from pi_portal.modules.tasks.enums import TaskPriority, TaskType
+from pi_portal.modules.tasks.config import ROUTING_MATRIX
+from pi_portal.modules.tasks.enums import RoutingLabel, TaskType
 from pi_portal.modules.tasks.task.bases.task_args_base import TaskArgsBase
 
 
@@ -37,10 +38,12 @@ class MetaTask(type):
   def __call__(
       cls: "MetaTask",
       args: "TaskArgsBase",
-      priority: "TaskPriority" = TaskPriority.STANDARD,
       retry_after: int = 0,
+      routing_label: "Optional[RoutingLabel]" = None
   ) -> "MetaTask":
+    if routing_label is None:
+      routing_label = ROUTING_MATRIX[getattr(cls, "type")]
     return cast(
         MetaTask,
-        type.__call__(cls, args, priority, retry_after),
+        type.__call__(cls, args, retry_after, routing_label),
     )

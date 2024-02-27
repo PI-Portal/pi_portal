@@ -27,15 +27,15 @@ class CronJob(cron_job_base.CronJobBase[non_scheduled.Args]):
   def _hook_submit(self, scheduler: "TaskScheduler") -> None:
     """Cron implementation."""
 
-    for priority, queue in scheduler.router.queues.items():
+    for routing_label, queue in scheduler.router.queues.items():
       metrics = queue.metrics()
 
       self.log.info(
           "Metrics for the '%s' task queue.",
-          priority.value,
+          routing_label.value,
           extra={
               "cron": self.name,
               "metrics": metrics._asdict(),
-              "queue": priority.value,
+              "queue": routing_label.value,
           },
       )

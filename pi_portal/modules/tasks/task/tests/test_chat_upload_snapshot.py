@@ -20,6 +20,7 @@ class TestChatUploadSnapshot(GenericTaskModuleTest):
   expected_api_enabled = True
   expected_arg_class = chat_upload_snapshot.Args
   expected_return_type = None
+  expected_routing_label = enums.RoutingLabel.CHAT_UPLOAD_SNAPSHOT
   expected_type = enums.TaskType.CHAT_UPLOAD_SNAPSHOT
   mock_args = chat_upload_snapshot.Args(
       description="Test file number 1.",

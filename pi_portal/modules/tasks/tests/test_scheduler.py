@@ -23,9 +23,10 @@ class TestTaskScheduler:
   ) + "".join(
       [
           (
-              "WARNING - None - {priority.value} - "
-              "Creating the '{priority.value}' queue worker pool ...\n"
-          ).format(priority=priority) for priority in MOCKED_CONFIG
+              "WARNING - None - {routing_label.value} - "
+              "Creating the '{routing_label.value}' queue worker pool ...\n"
+          ).format(routing_label=routing_label)
+          for routing_label in MOCKED_CONFIG
       ]
   )
 
@@ -97,8 +98,8 @@ class TestTaskScheduler:
     mocked_manifest_factory.create.assert_called_once_with(
         TaskManifests.FAILED_TASKS
     )
-    assert task_scheduler_instance.manifests[TaskManifests.FAILED_TASKS
-                                            ] == (mocked_manifests[0])
+    assert task_scheduler_instance.manifests[TaskManifests.FAILED_TASKS] == \
+        mocked_manifests[0]
     assert len(task_scheduler_instance.manifests) == 1
 
   def test_start__creates_and_starts_cron_worker(
@@ -130,11 +131,11 @@ class TestTaskScheduler:
 
     task_scheduler_instance.start()
 
-    for priority, count in MOCKED_CONFIG.items():
+    for routing_label, count in MOCKED_CONFIG.items():
       expected_worker_init_calls += [
           mock.call(
               task_scheduler_instance,
-              priority,
+              routing_label,
           ),
       ] * count
     assert mocked_worker_queue.mock_calls == (
@@ -218,9 +219,12 @@ class TestTaskScheduler:
     task_scheduler_instance.halt()
 
     index = 0
-    for priority, count in MOCKED_CONFIG.items():
+    for routing_label, count in MOCKED_CONFIG.items():
       for call in task_class.mock_calls[index:count]:
-        assert call == mock.call(args=arg_class.return_value, priority=priority)
+        assert call == mock.call(
+            args=arg_class.return_value,
+            routing_label=routing_label,
+        )
       index += count
 
   def test_halt__scheduler_has_started__routes_all_tasks(
