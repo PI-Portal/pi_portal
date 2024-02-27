@@ -13,6 +13,7 @@ class TestNonScheduled(GenericTaskModuleTest):
   expected_api_enabled = False
   expected_arg_class = non_scheduled.Args
   expected_return_type = None
+  expected_routing_label = enums.RoutingLabel.PI_PORTAL_CONTROL
   expected_type = enums.TaskType.NON_SCHEDULED
   mock_args = non_scheduled.Args()
   module = non_scheduled

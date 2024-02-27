@@ -20,8 +20,6 @@ class TestQueueMaintenanceCronJob:
     assert queue_maintenance_cron_job_instance.quiet is False
     assert queue_maintenance_cron_job_instance.type == \
         enums.TaskType.QUEUE_MAINTENANCE
-    assert queue_maintenance_cron_job_instance.priority == \
-        enums.TaskPriority.STANDARD
 
   def test_initialize__inheritance(
       self,

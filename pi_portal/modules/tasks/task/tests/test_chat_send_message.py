@@ -13,6 +13,7 @@ class TestChatSendMessage(GenericTaskModuleTest):
   expected_api_enabled = True
   expected_arg_class = chat_send_message.Args
   expected_return_type = None
+  expected_routing_label = enums.RoutingLabel.CHAT_SEND_MESSAGE
   expected_type = enums.TaskType.CHAT_SEND_MESSAGE
   mock_args = chat_send_message.Args(message="This is a test message.")
   module = chat_send_message

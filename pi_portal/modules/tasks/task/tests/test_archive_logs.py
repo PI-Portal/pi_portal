@@ -15,6 +15,7 @@ class TestArchiveLogs(GenericTaskModuleTest):
   expected_api_enabled = False
   expected_arg_class = archive_logs.Args
   expected_return_type = None
+  expected_routing_label = enums.RoutingLabel.ARCHIVAL
   expected_type = enums.TaskType.ARCHIVE_LOGS
   mock_args = archive_logs.Args(partition_name="mock_partition")
   module = archive_logs

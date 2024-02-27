@@ -5,7 +5,7 @@ from pi_portal.modules.tasks.enums import TaskManifests, TaskType
 from .bases import worker_base
 
 if TYPE_CHECKING:  # pragma: no cover
-  from pi_portal.modules.tasks.enums import TaskPriority
+  from pi_portal.modules.tasks.enums import RoutingLabel
   from pi_portal.modules.tasks.scheduler import TaskScheduler
   from pi_portal.modules.tasks.task.bases.task_base import TypeGenericTask
 
@@ -13,17 +13,17 @@ if TYPE_CHECKING:  # pragma: no cover
 class QueueWorker(worker_base.WorkerBase):
   """Queue worker for the task scheduler.
 
-  :param priority: The priority of this queue worker.
   :param scheduler: A task scheduler instance
+  :param routing_label: The routing label used by this queue worker.
   """
 
   __slots__ = (
       "_is_running",
       "failed_task_manifest",
       "log",
-      "priority",
-      "queue",
       "registry",
+      "router",
+      "routing_label",
   )
 
   do_not_process = [TaskType.NON_SCHEDULED]
@@ -31,14 +31,14 @@ class QueueWorker(worker_base.WorkerBase):
   def __init__(
       self,
       scheduler: "TaskScheduler",
-      priority: "TaskPriority",
+      routing_label: "RoutingLabel",
   ) -> None:
     self._is_running = True
     self.failed_task_manifest = scheduler.manifests[TaskManifests.FAILED_TASKS]
     self.log = scheduler.log
-    self.priority = priority
-    self.queue = scheduler.router.queues[priority]
     self.registry = scheduler.registry
+    self.router = scheduler.router
+    self.routing_label = routing_label
 
   def start(self) -> None:
     """Maintain a continuous flow of tasks to the worker thread."""
@@ -46,7 +46,7 @@ class QueueWorker(worker_base.WorkerBase):
     self.log.warning(
         "Worker thread has started ...",
         extra={
-            "queue": self.priority.value,
+            "queue": self.routing_label.value,
         },
     )
 
@@ -56,14 +56,14 @@ class QueueWorker(worker_base.WorkerBase):
     self.log.warning(
         "Worker thread has exited!",
         extra={
-            "queue": self.priority.value,
+            "queue": self.routing_label.value,
         },
     )
 
   def consumer(self) -> None:
     """Fetch the next task from the queue and process it."""
 
-    task = self.queue.get()
+    task = self.router.get(routing_label=self.routing_label)
     if self._should_task_be_processed(task):
       self._do_task_processing(task)
       self._do_task_ack(task)
@@ -81,26 +81,26 @@ class QueueWorker(worker_base.WorkerBase):
     processor_instance.process(task)
 
   def _do_task_ack(self, task: "TypeGenericTask") -> None:
-    self.queue.ack(task)
+    self.router.ack(task)
 
   def _do_task_success(self, task: "TypeGenericTask") -> None:
     if task.ok:
       for success_task in task.on_success:
         success_task.result.cause = task.result
-        self.queue.put(success_task)
+        self.router.put(success_task)
 
   def _do_task_failure(self, task: "TypeGenericTask") -> None:
     if not task.ok:
       for failure_task in task.on_failure:
         failure_task.result.cause = task.result
-        self.queue.put(failure_task)
+        self.router.put(failure_task)
       if task.retry_after > 0:
         self.log.debug(
             "Failed task '%s' will be rescheduled in %s second(s).",
             task,
             task.retry_after,
             extra={
-                "queue": self.priority.value,
+                "queue": self.routing_label.value,
                 "task": task.id,
             },
         )
