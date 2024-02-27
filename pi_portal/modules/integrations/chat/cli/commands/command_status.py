@@ -15,4 +15,6 @@ class StatusCommand(ChatProcessStatusCommandBase):
     """Report if the camera is running or not."""
 
     super().hook_invoker()
-    self.chatbot.chat_client.send_message(f"Status: {self.result}")
+    self.chatbot.task_scheduler_client.chat_send_message(
+        f"Status: {self.result}"
+    )
