@@ -13,6 +13,7 @@ class TestQueueMaintenance(GenericTaskModuleTest):
   expected_api_enabled = False
   expected_arg_class = queue_maintenance.Args
   expected_return_type = None
+  expected_routing_label = enums.RoutingLabel.PI_PORTAL_CONTROL
   expected_type = enums.TaskType.QUEUE_MAINTENANCE
   mock_args = queue_maintenance.Args()
   module = queue_maintenance

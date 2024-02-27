@@ -21,8 +21,6 @@ class TestArchiveLogsCronJob:
     assert archive_logs_cron_job_instance.quiet is False
     assert archive_logs_cron_job_instance.type == \
         enums.TaskType.ARCHIVE_LOGS
-    assert archive_logs_cron_job_instance.priority == \
-        enums.TaskPriority.STANDARD
 
   def test_initialize__inheritance(
       self,

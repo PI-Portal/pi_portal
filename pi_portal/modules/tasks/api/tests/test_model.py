@@ -5,7 +5,8 @@ from typing import Any, cast
 
 import pytest
 from pi_portal import config
-from pi_portal.modules.tasks.enums import TaskPriority, TaskType
+from pi_portal.modules.tasks.config import ROUTING_MATRIX
+from pi_portal.modules.tasks.enums import RoutingLabel, TaskType
 from pi_portal.modules.tasks.task import chat_upload_snapshot, motion_snapshot
 from typing_extensions import Unpack
 from .. import model
@@ -43,10 +44,10 @@ class TestTaskCreationRequestModel:
       "args": {
           "camera": 1
       },
-      "priority":
-          "EXPRESS",
       "retry_after":
           3600,
+      "routing_label":
+          "ARCHIVAL",
       "on_failure":
           [
               {
@@ -61,8 +62,8 @@ class TestTaskCreationRequestModel:
                                   "snapshot.jpg",
                               )
                       },
-                  "priority": "STANDARD",
                   "retry_after": 300,
+                  "routing_label": "CAMERA",
               }
           ],
       "on_success":
@@ -72,8 +73,8 @@ class TestTaskCreationRequestModel:
                   "args": {
                       "camera": 2
                   },
-                  "priority": "EXPRESS",
                   "retry_after": 0,
+                  "routing_label": "CHAT_SEND_MESSAGE",
               }
           ],
   }
@@ -81,10 +82,10 @@ class TestTaskCreationRequestModel:
   def test_initialize__default_values__attributes(self) -> None:
     instance = JsonInputModelShim(**self.params_with_defaults)
 
-    assert instance.priority is TaskPriority.STANDARD
     assert instance.type is TaskType(self.params_with_defaults["type"])
     assert instance.args == self.params_with_defaults["args"]
     assert instance.retry_after == 0
+    assert instance.routing_label is ROUTING_MATRIX[instance.type]
     assert len(instance.on_failure) == 0
     assert len(instance.on_success) == 0
 
@@ -112,12 +113,12 @@ class TestTaskCreationRequestModel:
   def test_initialize__nested_values__attributes__valid_base_args(self) -> None:
     instance = JsonInputModelShim(**self.params_with_nested_values)
 
-    assert instance.priority is TaskPriority(
-        self.params_with_nested_values["priority"]
-    )
     assert instance.type is TaskType(self.params_with_nested_values["type"])
     assert instance.args == self.params_with_nested_values["args"]
     assert instance.retry_after is self.params_with_nested_values["retry_after"]
+    assert instance.routing_label is RoutingLabel(
+        self.params_with_nested_values["routing_label"]
+    )
     assert len(instance.on_failure) == 1
     assert len(instance.on_failure) == 1
 
@@ -157,10 +158,12 @@ class TestTaskCreationRequestModel:
     instance = JsonInputModelShim(**self.params_with_nested_values).\
         on_failure[0]
 
-    assert instance.priority is TaskPriority(nested_params["priority"])
-    assert instance.type is TaskType(nested_params["type"])
+    assert instance.type == TaskType(nested_params["type"])
     assert instance.args == nested_params["args"]
     assert instance.retry_after is nested_params["retry_after"]
+    assert instance.routing_label == (
+        RoutingLabel(nested_params["routing_label"])
+    )
     assert len(instance.on_failure) == 0
     assert len(instance.on_failure) == 0
 
@@ -200,10 +203,12 @@ class TestTaskCreationRequestModel:
     instance = JsonInputModelShim(**self.params_with_nested_values).\
         on_success[0]
 
-    assert instance.priority is TaskPriority(nested_params["priority"])
     assert instance.type is TaskType(nested_params["type"])
     assert instance.args == nested_params["args"]
     assert instance.retry_after is nested_params["retry_after"]
+    assert instance.routing_label == (
+        RoutingLabel(nested_params["routing_label"])
+    )
     assert len(instance.on_failure) == 0
     assert len(instance.on_failure) == 0
 
@@ -241,12 +246,12 @@ class TestTaskCreationRequestModel:
     assert isinstance(task_instance, motion_snapshot.Task)
     assert isinstance(task_instance.args, motion_snapshot.Args)
 
-    assert task_instance.priority is TaskPriority.STANDARD
     assert task_instance.type is TaskType(self.params_with_defaults["type"])
     assert task_instance.args.camera == (
         self.params_with_defaults["args"]["camera"]
     )
     assert task_instance.retry_after == 0
+    assert task_instance.routing_label == (ROUTING_MATRIX[task_instance.type])
     assert len(task_instance.on_failure) == 0
     assert len(task_instance.on_success) == 0
 
@@ -258,9 +263,6 @@ class TestTaskCreationRequestModel:
     assert isinstance(task_instance, motion_snapshot.Task)
     assert isinstance(task_instance.args, motion_snapshot.Args)
 
-    assert task_instance.priority is TaskPriority(
-        self.params_with_nested_values["priority"]
-    )
     assert task_instance.type is TaskType(
         self.params_with_nested_values["type"]
     )
@@ -269,6 +271,9 @@ class TestTaskCreationRequestModel:
     )
     assert task_instance.retry_after is (
         self.params_with_nested_values["retry_after"]
+    )
+    assert task_instance.routing_label == (
+        RoutingLabel(self.params_with_nested_values["routing_label"])
     )
     assert len(task_instance.on_failure) == 1
     assert len(task_instance.on_failure) == 1
@@ -283,10 +288,12 @@ class TestTaskCreationRequestModel:
     assert isinstance(nested_instance, chat_upload_snapshot.Task)
     assert isinstance(nested_instance.args, chat_upload_snapshot.Args)
 
-    assert nested_instance.priority is TaskPriority(nested_params["priority"])
     assert nested_instance.type is TaskType(nested_params["type"])
     assert nested_instance.args.path == nested_params["args"]["path"]
     assert nested_instance.retry_after is nested_params["retry_after"]
+    assert nested_instance.routing_label == (
+        RoutingLabel(nested_params["routing_label"])
+    )
     assert len(nested_instance.on_failure) == 0
     assert len(nested_instance.on_failure) == 0
 
@@ -300,9 +307,11 @@ class TestTaskCreationRequestModel:
     assert isinstance(nested_instance, motion_snapshot.Task)
     assert isinstance(nested_instance.args, motion_snapshot.Args)
 
-    assert nested_instance.priority is TaskPriority(nested_params["priority"])
     assert nested_instance.type is TaskType(nested_params["type"])
     assert nested_instance.args.camera == nested_params["args"]["camera"]
     assert nested_instance.retry_after is nested_params["retry_after"]
+    assert nested_instance.routing_label == (
+        RoutingLabel(nested_params["routing_label"])
+    )
     assert len(nested_instance.on_failure) == 0
     assert len(nested_instance.on_failure) == 0
