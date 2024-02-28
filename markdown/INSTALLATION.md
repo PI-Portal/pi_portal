@@ -101,20 +101,20 @@ Steps:
    tar xvzf filebeat-linux-[x-x-x]-[architecture].tar.gz -C /usr/bin
    ```
 
-5. Install the Python build dependencies. (Commands and exact package names vary by distribution.)
+5. Install the Python build dependencies. (Commands and exact package names vary by distribution.)<!-- markdown-link-check-disable -->
    - [bash](https://packages.debian.org/bookworm/bash)
    - [build-essential](https://packages.debian.org/bookworm/build-essential)
    - [libffi-dev](https://packages.debian.org/bookworm/libffi-dev)
    - [libssl-dev](https://packages.debian.org/bookworm/libssl-dev)
    - [python3](https://packages.debian.org/bookworm/python3-minimal) (Versions 3.8 through 3.11 are supported.)
-   - [python3-dev](https://packages.debian.org/bookworm/python3-dev) (Versions 3.8 through 3.11 are supported.)
+   - [python3-dev](https://packages.debian.org/bookworm/python3-dev) (Versions 3.8 through 3.11 are supported.)<!-- markdown-link-check-enable -->
    - Note: you may also need to install packages such as `python3-venv` and `python3-pip` if they aren't included in your distribution's core `python3` package.
-6. Install the runtime dependencies. (Commands and exact package names vary by distribution.)
+6. Install the runtime dependencies. (Commands and exact package names vary by distribution.)<!-- markdown-link-check-disable -->
    - [ca-certificates](https://packages.debian.org/bookworm/ca-certificates)
    - [libgpiod2](https://packages.debian.org/bookworm/libgpiod2)
-   - [libsqlite3-0](https://packages.debian.org/buster/libsqlite3-0)
+   - [libsqlite3-0](https://packages.debian.org/bookworm/libsqlite3-0)
    - [motion](https://packages.debian.org/bookworm/motion)
-   - [supervisor](https://packages.debian.org/bookworm/supervisor)
+   - [supervisor](https://packages.debian.org/bookworm/supervisor)<!-- markdown-link-check-enable -->
 7. It would be prudent to stop any services launched for motion or supervisor at this point.  
    - The installer will attempt this as well, but your distribution may have an unknown init system.
 8. Create the pi_portal user:
