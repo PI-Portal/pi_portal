@@ -30,6 +30,7 @@ http|HTTP
 ivars
 json|JSON
 logz.io
+lts
 makefile
 metaclass
 mixin
@@ -48,6 +49,7 @@ syslog
 systemd
 testcase
 typecheck
+ubuntu
 uid
 url
 uuid
