@@ -7,6 +7,7 @@ PI_PORTAL_INSTALL_LOCATION = os.getenv(
     "/opt/venvs/pi_portal",
 )
 
+PI_PORTAL_TASK_MANAGER_CONCURRENCY_LIMIT = 10
 PI_PORTAL_TASK_MANAGER_SOCKET = os.path.join(
     PI_PORTAL_INSTALL_LOCATION,
     "socket",
