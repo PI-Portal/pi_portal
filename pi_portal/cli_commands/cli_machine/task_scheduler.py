@@ -21,5 +21,5 @@ class TaskSchedulerCommand(
         uds=config.PI_PORTAL_TASK_MANAGER_SOCKET,
         reload=False,
         workers=1,
-        limit_concurrency=2,
+        limit_concurrency=config.PI_PORTAL_TASK_MANAGER_CONCURRENCY_LIMIT,
     )
