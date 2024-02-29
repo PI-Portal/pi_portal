@@ -29,7 +29,7 @@ class TestStepRenderTemplates:
       mocked_system: mock.Mock,
   ) -> None:
     mocked_system.return_value = 0
-    camera_config = test_state.user_config["MOTION"]["CAMERAS"]
+    camera_config = test_state.user_config["CAMERA"]["MOTION"]["CAMERAS"]
     expected_log_messages = ""
     for camera in camera_config:
       expected_log_messages += \
@@ -57,7 +57,7 @@ class TestStepRenderTemplates:
       step_configure_motion_instance: StepConfigureMotion,
       test_state: state.State,
   ) -> None:
-    camera_config = test_state.user_config["MOTION"]["CAMERAS"]
+    camera_config = test_state.user_config["CAMERA"]["MOTION"]["CAMERAS"]
     motion_template_count = len(motion_templates)
     assert step_configure_motion_instance.templates == \
            motion_templates
@@ -72,7 +72,7 @@ class TestStepRenderTemplates:
       step_configure_motion_instance: StepConfigureMotion,
       test_state: state.State,
   ) -> None:
-    camera_config = test_state.user_config["MOTION"]["CAMERAS"]
+    camera_config = test_state.user_config["CAMERA"]["MOTION"]["CAMERAS"]
     motion_template_count = len(motion_templates)
 
     step_configure_motion_instance.generate_camera_templates()

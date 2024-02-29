@@ -65,6 +65,44 @@ def mock_user_state_creator() -> state.TypeUserConfig:
                               },
                       }
               },
+          "CAMERA":
+              {
+                  "MOTION":
+                      {
+                          "AUTHENTICATION":
+                              {
+                                  "USERNAME": MOCK_MOTION_AUTH_USERNAME,
+                                  "PASSWORD": MOCK_MOTION_AUTH_PASSWORD
+                              },
+                          "CAMERAS":
+                              [
+                                  {
+                                      "DEVICE": MOCK_MOTION_CAMERA_DEVICE,
+                                      "IMAGE":
+                                          {
+                                              "FRAME_RATE": 5,
+                                              "WIDTH": 320,
+                                              "HEIGHT": 240,
+                                              "AUTO_BRIGHTNESS": "off",
+                                              "BRIGHTNESS": 100,
+                                              "CONTRAST": 0,
+                                              "SATURATION": 100,
+                                              "HUE": 0
+                                          }
+                                  }
+                              ],
+                          "DETECTION": {
+                              "THRESHOLD": 1250,
+                              "EVENT_GAP": 60
+                          },
+                          "MOVIES": {
+                              "LOCATE_MOTION_MODE": "on"
+                          },
+                          "SNAPSHOTS": {
+                              "QUALITY": 75
+                          }
+                      },
+              },
           "CHAT":
               {
                   "SLACK":
@@ -86,41 +124,6 @@ def mock_user_state_creator() -> state.TypeUserConfig:
                   "LOGZ_IO_TOKEN": MOCK_LOGZ_IO_TOKEN,
               }
           },
-          "MOTION":
-              {
-                  "AUTHENTICATION":
-                      {
-                          "USERNAME": MOCK_MOTION_AUTH_USERNAME,
-                          "PASSWORD": MOCK_MOTION_AUTH_PASSWORD
-                      },
-                  "CAMERAS":
-                      [
-                          {
-                              "DEVICE": MOCK_MOTION_CAMERA_DEVICE,
-                              "IMAGE":
-                                  {
-                                      "FRAME_RATE": 5,
-                                      "WIDTH": 320,
-                                      "HEIGHT": 240,
-                                      "AUTO_BRIGHTNESS": "off",
-                                      "BRIGHTNESS": 100,
-                                      "CONTRAST": 0,
-                                      "SATURATION": 100,
-                                      "HUE": 0
-                                  }
-                          }
-                      ],
-                  "DETECTION": {
-                      "THRESHOLD": 1250,
-                      "EVENT_GAP": 60
-                  },
-                  "MOVIES": {
-                      "LOCATE_MOTION_MODE": "on"
-                  },
-                  "SNAPSHOTS": {
-                      "QUALITY": 75
-                  }
-              },
           "SWITCHES": {
               "CONTACT_SWITCHES": [{
                   "NAME": "Front",
