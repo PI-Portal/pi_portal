@@ -23,7 +23,7 @@ class TestFileSystemMove(GenericTaskModuleTest):
   expected_routing_label = enums.RoutingLabel.FILE_SYSTEM
   expected_type = enums.TaskType.FILE_SYSTEM_MOVE
   mock_args = file_system_move.Args(
-      source=os.path.join(config.PATH_MOTION_CONTENT, "file1"),
+      source=os.path.join(config.PATH_CAMERA_CONTENT, "file1"),
       destination=os.path.join(config.PATH_QUEUE_VIDEO_UPLOAD, "file1"),
   )
   module = file_system_move
@@ -36,7 +36,7 @@ class TestFileSystemMove(GenericTaskModuleTest):
 
   def test_import__args_class__whitelist(self) -> None:
     assert file_system_move.Args.file_system_arg_restrictions == {
-        "source": [config.PATH_MOTION_CONTENT],
+        "source": [config.PATH_CAMERA_CONTENT],
         "destination":
             [
                 config.PATH_QUEUE_LOG_UPLOAD,

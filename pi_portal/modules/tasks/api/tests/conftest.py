@@ -15,13 +15,13 @@ from pi_portal.modules.tasks.registration import registry, registry_factory
 from pi_portal.modules.tasks.task import (
     archive_logs,
     archive_videos,
+    camera_snapshot,
     chat_send_message,
     chat_upload_snapshot,
     chat_upload_video,
     file_system_copy,
     file_system_move,
     file_system_remove,
-    motion_snapshot,
     non_scheduled,
     queue_maintenance,
 )
@@ -46,6 +46,10 @@ class InvalidArg(task_args_base.TaskArgsBase):
 
 enabled_tasks__valid_payloads__creation_request_scenarios = [
     TypedTaskCreationRequestParameters(
+      type=camera_snapshot.TaskType.value,
+      args=asdict(camera_snapshot.Args(camera=2)),
+    ),
+    TypedTaskCreationRequestParameters(
         type=chat_send_message.TaskType.value,
         args=asdict(chat_send_message.Args(message="Test message.")),
     ),
@@ -55,7 +59,7 @@ enabled_tasks__valid_payloads__creation_request_scenarios = [
             chat_upload_snapshot.Args(
                 description="A snapshot file for testing purposes.",
                 path=os.path.join(
-                    config.PATH_MOTION_CONTENT,
+                    config.PATH_CAMERA_CONTENT,
                     "file1",
                 )
             )
@@ -67,7 +71,7 @@ enabled_tasks__valid_payloads__creation_request_scenarios = [
             chat_upload_video.Args(
                 description="A video file for testing purposes.",
                 path=os.path.join(
-                    config.PATH_MOTION_CONTENT,
+                    config.PATH_CAMERA_CONTENT,
                     "file1",
                 )
             )
@@ -88,13 +92,13 @@ enabled_tasks__valid_payloads__creation_request_scenarios = [
             )
         ),
     ),
-    TypedTaskCreationRequestParameters(
-        type=motion_snapshot.TaskType.value,
-        args=asdict(motion_snapshot.Args(camera=2)),
-    ),
 ]
 
 enabled_tasks__invalid__payloads__creation_request_scenarios = [
+    TypedTaskCreationRequestParameters(
+        type=camera_snapshot.TaskType.value,
+        args=asdict(InvalidArg(invalid_arg="invalid_args")),
+    ),
     TypedTaskCreationRequestParameters(
         type=chat_send_message.TaskType.value,
         args=asdict(InvalidArg(invalid_arg="invalid_args")),
@@ -109,10 +113,6 @@ enabled_tasks__invalid__payloads__creation_request_scenarios = [
     ),
     TypedTaskCreationRequestParameters(
         type=file_system_copy.TaskType.value,
-        args=asdict(InvalidArg(invalid_arg="invalid_args")),
-    ),
-    TypedTaskCreationRequestParameters(
-        type=motion_snapshot.TaskType.value,
         args=asdict(InvalidArg(invalid_arg="invalid_args")),
     ),
 ]
@@ -131,7 +131,7 @@ disabled_tasks__valid_payloads__creation_request_scenarios = [
         args=asdict(
             file_system_move.Args(
                 source=os.path.join(
-                    config.PATH_MOTION_CONTENT,
+                    config.PATH_CAMERA_CONTENT,
                     "file1",
                 ),
                 destination=os.path.join(
