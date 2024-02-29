@@ -7,17 +7,17 @@ from unittest import mock
 
 import pytest
 from pi_portal.modules.tasks.processor.bases import processor_base
-from pi_portal.modules.tasks.processor.mixins import chat_client
+from pi_portal.modules.tasks.processor.mixins import camera_client, chat_client
 from .. import (
     archive_logs,
     archive_videos,
+    camera_snapshot,
     chat_send_message,
     chat_upload_snapshot,
     chat_upload_video,
     file_system_copy,
     file_system_move,
     file_system_remove,
-    motion_snapshot,
     queue_maintenance,
 )
 
@@ -30,6 +30,11 @@ class BooleanScenario(NamedTuple):
 class MutableBooleanScenario(NamedTuple):
   side_effect: Tuple[bool, bool]
   expected: bool
+
+
+@pytest.fixture
+def mocked_camera_client() -> mock.Mock:
+  return mock.Mock()
 
 
 @pytest.fixture
@@ -85,12 +90,7 @@ def mocked_file_system_remove() -> mock.Mock:
 
 
 @pytest.fixture
-def mocked_motion_client() -> mock.Mock:
-  return mock.Mock()
-
-
-@pytest.fixture
-def mocked_motion_snapshot_task() -> mock.Mock:
+def mocked_camera_snapshot_task() -> mock.Mock:
   mock_task = mock.Mock()
   mock_task.args.camera = 2
   mock_task.on_failure = []
@@ -138,6 +138,21 @@ def mocked_shutil() -> mock.Mock:
 
 
 @pytest.fixture
+def setup_camera_processor_mocks(
+    mocked_camera_client: mock.Mock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> Callable[[], None]:
+
+  def setup() -> None:
+    monkeypatch.setattr(
+        camera_client.__name__ + ".CameraClient",
+        mocked_camera_client,
+    )
+
+  return setup
+
+
+@pytest.fixture
 def setup_chat_processor_mocks(
     mocked_chat_client: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
@@ -164,6 +179,21 @@ def archive_videos_task_processor_instance(
     mocked_task_logger: logging.Logger
 ) -> archive_videos.ProcessorClass:
   return archive_videos.ProcessorClass(mocked_task_logger)
+
+
+@pytest.fixture
+def camera_snapshot_instance(
+    mocked_recover: mock.Mock,
+    mocked_task_logger: logging.Logger,
+    setup_camera_processor_mocks: Callable[[], None],
+    monkeypatch: pytest.MonkeyPatch,
+) -> camera_snapshot.ProcessorClass:
+  monkeypatch.setattr(
+      processor_base.__name__ + ".TaskProcessorBase.recover",
+      mocked_recover,
+  )
+  setup_camera_processor_mocks()
+  return camera_snapshot.ProcessorClass(mocked_task_logger)
 
 
 @pytest.fixture
@@ -277,24 +307,6 @@ def file_system_remove_instance(
       mocked_recover,
   )
   return file_system_remove.ProcessorClass(mocked_task_logger)
-
-
-@pytest.fixture
-def motion_snapshot_instance(
-    mocked_motion_client: mock.Mock,
-    mocked_recover: mock.Mock,
-    mocked_task_logger: logging.Logger,
-    monkeypatch: pytest.MonkeyPatch,
-) -> motion_snapshot.ProcessorClass:
-  monkeypatch.setattr(
-      motion_snapshot.__name__ + ".MotionClient",
-      mocked_motion_client,
-  )
-  monkeypatch.setattr(
-      processor_base.__name__ + ".TaskProcessorBase.recover",
-      mocked_recover,
-  )
-  return motion_snapshot.ProcessorClass(mocked_task_logger)
 
 
 @pytest.fixture
