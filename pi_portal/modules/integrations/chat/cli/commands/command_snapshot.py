@@ -28,5 +28,7 @@ class SnapshotCommand(ChatProcessCommandBase):
 
   def _do_snapshot(self) -> None:
     user_config = state.State().user_config
-    for camera_index, _ in enumerate(user_config["MOTION"]["CAMERAS"]):
+    for camera_index, _ in enumerate(
+        user_config["CAMERA"]["MOTION"]["CAMERAS"]
+    ):
       self.chatbot.task_scheduler_client.camera_snapshot(camera=camera_index)
