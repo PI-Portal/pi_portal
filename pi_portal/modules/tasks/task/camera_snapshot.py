@@ -1,4 +1,4 @@
-"""A task to take a snapshot with motion."""
+"""A task to take a camera snapshot."""
 
 from dataclasses import dataclass
 
@@ -12,13 +12,13 @@ ApiEnabled = True
 
 @dataclass
 class Args(task_args_base.TaskArgsBase):
-  """Arguments for motion snapshot tasks."""
+  """Arguments for camera snapshot tasks."""
 
   camera: int
 
 
 ReturnType: TypeAlias = None
-TaskType = enums.TaskType.MOTION_SNAPSHOT
+TaskType = enums.TaskType.CAMERA_SNAPSHOT
 
 
 class Task(
@@ -26,4 +26,4 @@ class Task(
     metaclass=MetaTask,
     task_type=TaskType,
 ):
-  """A task to take a snapshot with motion."""
+  """A task to take a camera snapshot."""

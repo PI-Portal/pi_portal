@@ -1,28 +1,32 @@
-"""Test Motion Integration."""
+"""Test MotionClient Integration."""
 
 import logging
 from unittest import mock
 
 import pytest
 from pi_portal.modules.configuration import state
+from pi_portal.modules.integrations.camera.bases.client import (
+    CameraClientBase,
+    CameraException,
+)
+from pi_portal.modules.integrations.camera.motion import client
 from pi_portal.modules.integrations.network import http
-from .. import client as motion_client
 
 
 @pytest.mark.usefixtures("test_state")
-class TestMotion:
-  """Test the Motion class."""
+class TestMotionClient:
+  """Test the MotionClient class."""
 
   def test_initialization__attributes(
       self,
-      motion_client_instance: motion_client.MotionClient,
+      motion_client_instance: client.MotionClient,
   ) -> None:
     assert motion_client_instance.snapshot_url == \
         'http://localhost:8080/{0}/action/snapshot'
 
   def test_initialization__http_client(
       self,
-      motion_client_instance: motion_client.MotionClient,
+      motion_client_instance: client.MotionClient,
       mocked_http_client: mock.Mock,
       mocked_logger: logging.Logger,
       test_state: state.State,
@@ -35,38 +39,44 @@ class TestMotion:
         test_state.user_config["MOTION"]["AUTHENTICATION"]["PASSWORD"],
     )
 
-  def test_take_snapshot__default_camera__success(
+  def test_initialization__inheritance(
       self,
-      motion_client_instance: motion_client.MotionClient,
-      mocked_http_client: mock.Mock,
+      motion_client_instance: client.MotionClient,
   ) -> None:
-    motion_client_instance.take_snapshot()
-
-    mocked_http_client.return_value.get.assert_called_once_with(
-        motion_client_instance.snapshot_url.format(0)
+    assert isinstance(
+        motion_client_instance,
+        client.MotionClient,
+    )
+    assert isinstance(
+        motion_client_instance,
+        CameraClientBase,
     )
 
-  def test_take_snapshot__specific_camera__success(
+  @pytest.mark.parametrize("camera_id", [0, 1])
+  def test_take_snapshot__vary_camera__success(
       self,
-      motion_client_instance: motion_client.MotionClient,
+      motion_client_instance: client.MotionClient,
       mocked_http_client: mock.Mock,
+      camera_id: int,
   ) -> None:
-    motion_client_instance.take_snapshot(2)
+    motion_client_instance.take_snapshot(camera_id)
 
     mocked_http_client.return_value.get.assert_called_once_with(
-        motion_client_instance.snapshot_url.format(2)
+        motion_client_instance.snapshot_url.format(camera_id)
     )
 
-  def test_take_snapshot__default_camera__failure(
+  @pytest.mark.parametrize("camera_id", [0, 1])
+  def test_take_snapshot__vary_camera__failure(
       self,
-      motion_client_instance: motion_client.MotionClient,
+      motion_client_instance: client.MotionClient,
       mocked_http_client: mock.Mock,
+      camera_id: int,
   ) -> None:
     mocked_http_client.return_value.get.side_effect = http.HttpClientError
 
-    with pytest.raises(motion_client.MotionException):
-      motion_client_instance.take_snapshot()
+    with pytest.raises(CameraException):
+      motion_client_instance.take_snapshot(camera_id)
 
     mocked_http_client.return_value.get.assert_called_once_with(
-        motion_client_instance.snapshot_url.format(0)
+        motion_client_instance.snapshot_url.format(camera_id)
     )

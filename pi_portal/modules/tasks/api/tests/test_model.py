@@ -7,7 +7,7 @@ import pytest
 from pi_portal import config
 from pi_portal.modules.tasks.config import ROUTING_MATRIX
 from pi_portal.modules.tasks.enums import RoutingLabel, TaskType
-from pi_portal.modules.tasks.task import chat_upload_snapshot, motion_snapshot
+from pi_portal.modules.tasks.task import camera_snapshot, chat_upload_snapshot
 from typing_extensions import Unpack
 from .. import model
 from .conftest import TypedTaskCreationRequestParameters
@@ -27,54 +27,54 @@ class TestTaskCreationRequestModel:
   """Tests for the TaskCreationRequestModel class."""
 
   params_with_defaults: TypedTaskCreationRequestParameters = {
-      "type": "MOTION_SNAPSHOT",
+      "type": TaskType.CAMERA_SNAPSHOT.value,
       "args": {
           "camera": 1
       },
   }
 
   params_with_disabled_task: TypedTaskCreationRequestParameters = {
-      "type": "NON_SCHEDULED",
+      "type": TaskType.NON_SCHEDULED.value,
       "args": {},
   }
 
   params_with_nested_values: TypedTaskCreationRequestParameters = {
       "type":
-          "MOTION_SNAPSHOT",
+          TaskType.CAMERA_SNAPSHOT.value,
       "args": {
           "camera": 1
       },
       "retry_after":
           3600,
       "routing_label":
-          "ARCHIVAL",
+          RoutingLabel.ARCHIVAL.value,
       "on_failure":
           [
               {
-                  "type": "CHAT_UPLOAD_SNAPSHOT",
+                  "type": TaskType.CHAT_UPLOAD_SNAPSHOT.value,
                   "args":
                       {
                           "description":
                               "A snapshot for testing purposes.",
                           "path":
                               os.path.join(
-                                  config.PATH_MOTION_CONTENT,
+                                  config.PATH_CAMERA_CONTENT,
                                   "snapshot.jpg",
                               )
                       },
                   "retry_after": 300,
-                  "routing_label": "CAMERA",
+                  "routing_label": RoutingLabel.CAMERA.value,
               }
           ],
       "on_success":
           [
               {
-                  "type": "MOTION_SNAPSHOT",
+                  "type": TaskType.CAMERA_SNAPSHOT.value,
                   "args": {
                       "camera": 2
                   },
                   "retry_after": 0,
-                  "routing_label": "CHAT_SEND_MESSAGE",
+                  "routing_label": RoutingLabel.CHAT_SEND_MESSAGE.value,
               }
           ],
   }
@@ -98,7 +98,7 @@ class TestTaskCreationRequestModel:
 
     assert str(exc.value).splitlines()[1].startswith(
         "  Value error, the args provided do not match task type: "
-        "MOTION_SNAPSHOT."
+        f"{TaskType.CAMERA_SNAPSHOT.value}."
     )
 
   def test_initialize__default_values__disabled_task(self) -> None:
@@ -107,7 +107,7 @@ class TestTaskCreationRequestModel:
 
     assert str(exc.value).splitlines()[1].startswith(
         "  Value error, the specified task type is not enabled: "
-        "NON_SCHEDULED."
+        f"{TaskType.NON_SCHEDULED.value}."
     )
 
   def test_initialize__nested_values__attributes__valid_base_args(self) -> None:
@@ -133,7 +133,7 @@ class TestTaskCreationRequestModel:
 
     assert str(exc.value).splitlines()[1].startswith(
         "  Value error, the args provided do not match task type: "
-        "MOTION_SNAPSHOT."
+        f"{TaskType.CAMERA_SNAPSHOT.value}."
     )
 
   def test_initialize__nested_values__attributes__disabled_base_task_type(
@@ -147,7 +147,7 @@ class TestTaskCreationRequestModel:
 
     assert str(exc.value).splitlines()[1].startswith(
         "  Value error, the specified task type is not enabled: "
-        "NON_SCHEDULED."
+        f"{TaskType.NON_SCHEDULED.value}."
     )
 
   def test_initialize__nested_values__attributes__valid_on_failure_args(
@@ -178,7 +178,7 @@ class TestTaskCreationRequestModel:
 
     assert str(exc.value).splitlines()[2].startswith(
         "  Value error, the args provided do not match task type: "
-        "CHAT_UPLOAD_SNAPSHOT"
+        f"{TaskType.CHAT_UPLOAD_SNAPSHOT.value}."
     )
 
   def test_initialize__nested_values__attributes__disabled_on_failure_task_type(
@@ -192,7 +192,7 @@ class TestTaskCreationRequestModel:
 
     assert str(exc.value).splitlines()[2].startswith(
         "  Value error, the specified task type is not enabled: "
-        "NON_SCHEDULED."
+        f"{TaskType.NON_SCHEDULED.value}."
     )
 
   def test_initialize__nested_values__attributes__valid_on_success_args(
@@ -223,7 +223,7 @@ class TestTaskCreationRequestModel:
 
     assert str(exc.value).splitlines()[2].startswith(
         "  Value error, the args provided do not match task type: "
-        "MOTION_SNAPSHOT."
+        f"{TaskType.CAMERA_SNAPSHOT.value}."
     )
 
   def test_initialize__nested_values__attributes__disabled_on_success_task_type(
@@ -237,14 +237,14 @@ class TestTaskCreationRequestModel:
 
     assert str(exc.value).splitlines()[2].startswith(
         "  Value error, the specified task type is not enabled: "
-        "NON_SCHEDULED."
+        f"{TaskType.NON_SCHEDULED.value}."
     )
 
   def test_as_task__default_values__attributes(self) -> None:
     task_instance = JsonInputModelShim(**self.params_with_defaults).as_task()
 
-    assert isinstance(task_instance, motion_snapshot.Task)
-    assert isinstance(task_instance.args, motion_snapshot.Args)
+    assert isinstance(task_instance, camera_snapshot.Task)
+    assert isinstance(task_instance.args, camera_snapshot.Args)
 
     assert task_instance.type is TaskType(self.params_with_defaults["type"])
     assert task_instance.args.camera == (
@@ -260,8 +260,8 @@ class TestTaskCreationRequestModel:
         JsonInputModelShim(**self.params_with_nested_values).as_task()
     )
 
-    assert isinstance(task_instance, motion_snapshot.Task)
-    assert isinstance(task_instance.args, motion_snapshot.Args)
+    assert isinstance(task_instance, camera_snapshot.Task)
+    assert isinstance(task_instance.args, camera_snapshot.Args)
 
     assert task_instance.type is TaskType(
         self.params_with_nested_values["type"]
@@ -304,8 +304,8 @@ class TestTaskCreationRequestModel:
         JsonInputModelShim(**self.params_with_nested_values). \
         on_success[0].as_task()
 
-    assert isinstance(nested_instance, motion_snapshot.Task)
-    assert isinstance(nested_instance.args, motion_snapshot.Args)
+    assert isinstance(nested_instance, camera_snapshot.Task)
+    assert isinstance(nested_instance.args, camera_snapshot.Args)
 
     assert nested_instance.type is TaskType(nested_params["type"])
     assert nested_instance.args.camera == nested_params["args"]["camera"]

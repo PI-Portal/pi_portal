@@ -25,13 +25,13 @@ FILE_BEAT_BINARY = os.getenv("PI_PORTAL_FILEBEAT_LOCATION", "/usr/bin/filebeat")
 FILE_BEAT_CONFIG = "/etc/filebeat/filebeat.yml"
 
 LOG_FILE_BASE_FOLDER = "/var/log/pi_portal"
+LOG_FILE_CAMERA = f"{LOG_FILE_BASE_FOLDER}/pi_portal.camera.log"
 LOG_FILE_CONTACT_SWITCH_MONITOR = (
     f"{LOG_FILE_BASE_FOLDER}/pi_portal.contact_switch.log"
 )
 LOG_FILE_DEAD_MAN_SWITCH = (
     f"{LOG_FILE_BASE_FOLDER}/pi_portal.dead_man_switch.log"
 )
-LOG_FILE_MOTION = f"{LOG_FILE_BASE_FOLDER}/pi_portal.motion.log"
 LOG_FILE_TASK_SCHEDULER = f"{LOG_FILE_BASE_FOLDER}/pi_portal.tasks.log"
 LOG_FILE_CHAT_BOT = f"{LOG_FILE_BASE_FOLDER}/pi_portal.chat_bot.log"
 LOG_FILE_CHAT_CLIENT = f"{LOG_FILE_BASE_FOLDER}/pi_portal.chat_client.log"
@@ -41,7 +41,8 @@ LOG_FILE_TEMPERATURE_MONITOR = (
 
 LOG_PREFIX_SUPERVISOR = "/var/log/supervisor/supervisor"
 
-PATH_MOTION_CONTENT = "/var/lib/motion"
+PATH_CAMERA_BINARY = "/usr/bin/motion"
+PATH_CAMERA_CONTENT = "/var/lib/motion"
 PATH_QUEUE_LOG_UPLOAD = os.path.join(
     PI_PORTAL_INSTALL_LOCATION,
     "queue_logs",
