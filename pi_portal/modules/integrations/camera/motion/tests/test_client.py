@@ -31,12 +31,13 @@ class TestMotionClient:
       mocked_logger: logging.Logger,
       test_state: state.State,
   ) -> None:
+    camera_config = test_state.user_config["CAMERA"]
     assert motion_client_instance.http_client == \
         mocked_http_client.return_value
     mocked_http_client.assert_called_once_with(mocked_logger)
     mocked_http_client.return_value.set_basic_auth.assert_called_once_with(
-        test_state.user_config["MOTION"]["AUTHENTICATION"]["USERNAME"],
-        test_state.user_config["MOTION"]["AUTHENTICATION"]["PASSWORD"],
+        camera_config["MOTION"]["AUTHENTICATION"]["USERNAME"],
+        camera_config["MOTION"]["AUTHENTICATION"]["PASSWORD"],
     )
 
   def test_initialization__inheritance(
