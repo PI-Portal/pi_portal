@@ -25,7 +25,7 @@ class StepConfigureMotion(render_templates_step.RenderTemplateStepBase):
 
     user_config = state.State().user_config
 
-    for index0, camera in enumerate(user_config["MOTION"]["CAMERAS"]):
+    for index0, camera in enumerate(user_config['CAMERA']["MOTION"]["CAMERAS"]):
       index = index0 + 1
       self.log.info(
           "Creating template for '%s' ...",

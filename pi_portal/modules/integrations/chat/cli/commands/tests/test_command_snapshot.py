@@ -38,8 +38,8 @@ class TestSnapshotCommand:
       camera_count: int,
   ) -> None:
     mocked_supervisor_process.return_value.status_in.return_value = True
-    test_state.user_config["MOTION"]["CAMERAS"] = (
-        test_state.user_config["MOTION"]["CAMERAS"] * camera_count
+    test_state.user_config["CAMERA"]["MOTION"]["CAMERAS"] = (
+        test_state.user_config["CAMERA"]["MOTION"]["CAMERAS"] * camera_count
     )
     expected_calls = [
         mock.call(camera=index) for index in range(0, camera_count)

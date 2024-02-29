@@ -19,10 +19,11 @@ class MotionClient(CameraClientBase):
 
   def __init__(self, log: logging.Logger) -> None:
     super().__init__(log)
+    motion_config = self.current_state.user_config["CAMERA"]["MOTION"]
     self.http_client = http.HttpClient(self.log)
     self.http_client.set_basic_auth(
-        self.current_state.user_config["MOTION"]["AUTHENTICATION"]["USERNAME"],
-        self.current_state.user_config["MOTION"]["AUTHENTICATION"]["PASSWORD"],
+        motion_config["AUTHENTICATION"]["USERNAME"],
+        motion_config["AUTHENTICATION"]["PASSWORD"],
     )
 
   def take_snapshot(self, camera: int) -> None:

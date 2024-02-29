@@ -9,22 +9,22 @@ from jsonschema.validators import validator_for
 from pi_portal.modules.mixins import read_json_file
 from typing_extensions import TypedDict
 from .types.archival_config_type import TypeUserConfigArchival
+from .types.camera_config_types import TypeUserConfigCamera
 from .types.chat_config_type import TypeUserConfigChat
 from .types.gpio_config_type import (
     TypeUserConfigSwitches,
     TypeUserConfigTemperatureSensors,
 )
 from .types.logs_config_type import TypeUserConfigLogs
-from .types.motion_config_types import TypeUserConfigMotion
 
 
 class TypeUserConfig(TypedDict):
   """Typed representation of user configuration."""
 
   ARCHIVAL: "TypeUserConfigArchival"
+  CAMERA: "TypeUserConfigCamera"
   CHAT: "TypeUserConfigChat"
   LOGS: "TypeUserConfigLogs"
-  MOTION: "TypeUserConfigMotion"
   SWITCHES: "TypeUserConfigSwitches"
   TEMPERATURE_SENSORS: "TypeUserConfigTemperatureSensors"
 

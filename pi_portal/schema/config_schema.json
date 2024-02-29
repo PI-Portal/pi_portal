@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "Pi Portal Config File Schema v1.8",
+  "description": "Pi Portal Config File Schema v1.9",
   "definitions": {
     "constantOnOff": {
       "type": "string",
@@ -130,157 +130,170 @@
         }
       ]
     },
-    "MOTION": {
-      "description": "Motion image capture configuration.",
+    "CAMERA": {
+      "description": "Camera configuration.",
       "type": "object",
       "properties": {
-        "AUTHENTICATION": {
-          "description": "Localhost http authentication for camera control.",
+        "MOTION": {
+          "description": "Motion image capture configuration.",
           "type": "object",
           "properties": {
-            "USERNAME": {
-              "description": "The authentication username.",
-              "type": "string"
-            },
-            "PASSWORD": {
-              "description": "The authentication password.",
-              "type": "string"
-            }
-          },
-          "required": [
-            "USERNAME",
-            "PASSWORD"
-          ]
-        },
-        "CAMERAS": {
-          "description": "Configuration for each hardware camera.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "DEVICE": {
-                "description": "The video device your camera is mounted as.",
-                "pattern": "^/dev/video[0-9]+$",
-                "type": "string"
+            "AUTHENTICATION": {
+              "description": "Localhost http authentication for camera control.",
+              "type": "object",
+              "properties": {
+                "USERNAME": {
+                  "description": "The authentication username.",
+                  "type": "string"
+                },
+                "PASSWORD": {
+                  "description": "The authentication password.",
+                  "type": "string"
+                }
               },
-              "IMAGE": {
-                "description": "The image configuration settings for your camera.",
+              "required": [
+                "USERNAME",
+                "PASSWORD"
+              ]
+            },
+            "CAMERAS": {
+              "description": "Configuration for each hardware camera.",
+              "type": "array",
+              "items": {
                 "type": "object",
                 "properties": {
-                  "FRAME_RATE": {
-                    "description": "Maximum number of frames to be captured per second. (0=disable)",
-                    "maximum": 100,
-                    "minimum": 2,
-                    "type": "number"
+                  "DEVICE": {
+                    "description": "The video device your camera is mounted as.",
+                    "pattern": "^/dev/video[0-9]+$",
+                    "type": "string"
                   },
-                  "WIDTH": {
-                    "description": "Image width (pixels). Valid range: Camera dependent.",
-                    "type": "number"
-                  },
-                  "HEIGHT": {
-                    "description": "Image height (pixels). Valid range: Camera dependent.",
-                    "type": "number"
-                  },
-                  "AUTO_BRIGHTNESS": {
-                    "description": "Let motion regulate the brightness of a video device.",
-                    "$ref": "#/definitions/constantOnOff"
-                  },
-                  "BRIGHTNESS": {
-                    "description": "Set the initial brightness of a video device.  This is the average value if AUTO_BRIGHTNESS is enabled.",
-                    "maximum": 255,
-                    "minimum": 0,
-                    "type": "number"
-                  },
-                  "CONTRAST": {
-                    "description": "Set the contrast of a video device.  0 is disabled.",
-                    "maximum": 255,
-                    "minimum": 0,
-                    "type": "number"
-                  },
-                  "SATURATION": {
-                    "description": "Set the saturation of a video device.  0 is disabled.",
-                    "maximum": 255,
-                    "minimum": 0,
-                    "type": "number"
-                  },
-                  "HUE": {
-                    "description": "Set the hue of a video device (NTSC feature). 0 is disabled.",
-                    "maximum": 255,
-                    "minimum": 0,
-                    "type": "number"
+                  "IMAGE": {
+                    "description": "The image configuration settings for your camera.",
+                    "type": "object",
+                    "properties": {
+                      "FRAME_RATE": {
+                        "description": "Maximum number of frames to be captured per second. (0=disable)",
+                        "maximum": 100,
+                        "minimum": 2,
+                        "type": "number"
+                      },
+                      "WIDTH": {
+                        "description": "Image width (pixels). Valid range: Camera dependent.",
+                        "type": "number"
+                      },
+                      "HEIGHT": {
+                        "description": "Image height (pixels). Valid range: Camera dependent.",
+                        "type": "number"
+                      },
+                      "AUTO_BRIGHTNESS": {
+                        "description": "Let motion regulate the brightness of a video device.",
+                        "$ref": "#/definitions/constantOnOff"
+                      },
+                      "BRIGHTNESS": {
+                        "description": "Set the initial brightness of a video device.  This is the average value if AUTO_BRIGHTNESS is enabled.",
+                        "maximum": 255,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "CONTRAST": {
+                        "description": "Set the contrast of a video device.  0 is disabled.",
+                        "maximum": 255,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "SATURATION": {
+                        "description": "Set the saturation of a video device.  0 is disabled.",
+                        "maximum": 255,
+                        "minimum": 0,
+                        "type": "number"
+                      },
+                      "HUE": {
+                        "description": "Set the hue of a video device (NTSC feature). 0 is disabled.",
+                        "maximum": 255,
+                        "minimum": 0,
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "FRAME_RATE",
+                      "WIDTH",
+                      "HEIGHT",
+                      "AUTO_BRIGHTNESS",
+                      "BRIGHTNESS",
+                      "CONTRAST",
+                      "SATURATION",
+                      "HUE"
+                    ]
                   }
                 },
                 "required": [
-                  "FRAME_RATE",
-                  "WIDTH",
-                  "HEIGHT",
-                  "AUTO_BRIGHTNESS",
-                  "BRIGHTNESS",
-                  "CONTRAST",
-                  "SATURATION",
-                  "HUE"
+                  "DEVICE",
+                  "IMAGE"
                 ]
               }
             },
-            "required": [
-              "DEVICE",
-              "IMAGE"
-            ]
-          }
-        },
-        "DETECTION": {
-          "description": "General motion detection configuration.",
-          "type": "object",
-          "properties": {
-            "THRESHOLD": {
-              "description": "Threshold for number of changed pixels in an image that triggers motion detection.",
-              "type": "number"
+            "DETECTION": {
+              "description": "General motion detection configuration.",
+              "type": "object",
+              "properties": {
+                "THRESHOLD": {
+                  "description": "Threshold for number of changed pixels in an image that triggers motion detection.",
+                  "type": "number"
+                },
+                "EVENT_GAP": {
+                  "description": "The seconds of no motion detection that triggers the end of an event.",
+                  "type": "number"
+                }
+              },
+              "required": [
+                "THRESHOLD",
+                "EVENT_GAP"
+              ]
             },
-            "EVENT_GAP": {
-              "description": "The seconds of no motion detection that triggers the end of an event.",
-              "type": "number"
+            "MOVIES": {
+              "description": "Recorded movie configuration.",
+              "type": "object",
+              "properties": {
+                "LOCATE_MOTION_MODE": {
+                  "description": "Locate and draw a box around the moving object.",
+                  "$ref": "#/definitions/constantOnOff"
+                }
+              },
+              "required": [
+                "LOCATE_MOTION_MODE"
+              ]
+            },
+            "SNAPSHOTS": {
+              "description": "Snapshot image configuration.",
+              "type": "object",
+              "properties": {
+                "QUALITY": {
+                  "description": "The quality (in percent) to be used by the jpeg and webp compression.",
+                  "maximum": 100,
+                  "minimum": 0,
+                  "type": "number"
+                }
+              },
+              "required": [
+                "QUALITY"
+              ]
             }
           },
           "required": [
-            "THRESHOLD",
-            "EVENT_GAP"
-          ]
-        },
-        "MOVIES": {
-          "description": "Recorded movie configuration.",
-          "type": "object",
-          "properties": {
-            "LOCATE_MOTION_MODE": {
-              "description": "Locate and draw a box around the moving object.",
-              "$ref": "#/definitions/constantOnOff"
-            }
-          },
-          "required": [
-            "LOCATE_MOTION_MODE"
-          ]
-        },
-        "SNAPSHOTS": {
-          "description": "Snapshot image configuration.",
-          "type": "object",
-          "properties": {
-            "QUALITY": {
-              "description": "The quality (in percent) to be used by the jpeg and webp compression.",
-              "maximum": 100,
-              "minimum": 0,
-              "type": "number"
-            }
-          },
-          "required": [
-            "QUALITY"
+            "AUTHENTICATION",
+            "CAMERAS",
+            "DETECTION",
+            "MOVIES",
+            "SNAPSHOTS"
           ]
         }
       },
-      "required": [
-        "AUTHENTICATION",
-        "CAMERAS",
-        "DETECTION",
-        "MOVIES",
-        "SNAPSHOTS"
+      "anyOf": [
+        {
+          "required": [
+            "MOTION"
+          ]
+        }
       ]
     },
     "SWITCHES": {
@@ -346,9 +359,9 @@
   },
   "required": [
     "ARCHIVAL",
+    "CAMERA",
     "CHAT",
     "LOGS",
-    "MOTION",
     "SWITCHES",
     "TEMPERATURE_SENSORS"
   ]
