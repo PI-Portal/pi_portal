@@ -5,7 +5,7 @@ import logging
 from unittest import mock
 
 import pytest
-from .. import client as motion_client
+from pi_portal.modules.integrations.camera.motion import client as motion_client
 
 
 @pytest.fixture

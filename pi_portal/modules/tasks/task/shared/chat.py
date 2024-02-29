@@ -16,7 +16,7 @@ class ChatUploadTaskArgs(
 ):
   """Arguments for chat upload tasks."""
 
-  file_system_arg_restrictions = {"path": [config.PATH_MOTION_CONTENT]}
+  file_system_arg_restrictions = {"path": [config.PATH_CAMERA_CONTENT]}
 
   description: str
   path: str

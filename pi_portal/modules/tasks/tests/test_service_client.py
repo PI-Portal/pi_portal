@@ -33,7 +33,7 @@ class TestServiceClient:
     # pylint: disable=duplicate-code
     expected_payload = {
         "type":
-            TaskType.MOTION_SNAPSHOT.value,
+            TaskType.CAMERA_SNAPSHOT.value,
         "args": {
             "camera": camera,
         },

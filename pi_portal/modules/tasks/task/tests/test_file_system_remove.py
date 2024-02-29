@@ -37,7 +37,7 @@ class TestFileSystemRemove(GenericTaskModuleTest):
     assert file_system_remove.Args.file_system_arg_restrictions == {
         "path":
             [
-                config.PATH_MOTION_CONTENT,
+                config.PATH_CAMERA_CONTENT,
                 config.PATH_QUEUE_LOG_UPLOAD,
                 config.PATH_QUEUE_VIDEO_UPLOAD,
             ]

@@ -24,7 +24,7 @@ class TestChatUploadSnapshot(GenericTaskModuleTest):
   expected_type = enums.TaskType.CHAT_UPLOAD_SNAPSHOT
   mock_args = chat_upload_snapshot.Args(
       description="Test file number 1.",
-      path=os.path.join(config.PATH_MOTION_CONTENT, "file1")
+      path=os.path.join(config.PATH_CAMERA_CONTENT, "file1")
   )
   module = chat_upload_snapshot
 
@@ -36,7 +36,7 @@ class TestChatUploadSnapshot(GenericTaskModuleTest):
 
   def test_import__args_class__whitelist_attributes(self) -> None:
     assert chat_upload_snapshot.Args.file_system_arg_restrictions == {
-        "path": [config.PATH_MOTION_CONTENT]
+        "path": [config.PATH_CAMERA_CONTENT]
     }
 
   def test_import__args_class__initialize_with_invalid_args(self) -> None:

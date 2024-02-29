@@ -19,7 +19,7 @@ class Args(ArgFileSystemRestrictionMixin, task_args_base.TaskArgsBase):
   """Arguments for file system move tasks."""
 
   file_system_arg_restrictions = {
-      "source": [config.PATH_MOTION_CONTENT],
+      "source": [config.PATH_CAMERA_CONTENT],
       "destination":
           [
               config.PATH_QUEUE_LOG_UPLOAD,
