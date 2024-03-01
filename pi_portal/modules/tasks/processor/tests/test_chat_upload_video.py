@@ -160,7 +160,7 @@ class TestChatUploadVideoProcessor:
             mock.call(
                 source=mocked_chat_file_task.args.path,
                 destination=os.path.join(
-                    config.PATH_QUEUE_VIDEO_UPLOAD,
+                    config.PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD,
                     os.path.basename(mocked_chat_file_task.args.path),
                 )
             )
@@ -171,7 +171,7 @@ class TestChatUploadVideoProcessor:
             mock.call(
                 source=mocked_chat_file_task.args.path,
                 destination=os.path.join(
-                    config.PATH_QUEUE_VIDEO_UPLOAD,
+                    config.PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD,
                     recovery_file_path,
                 )
             )
