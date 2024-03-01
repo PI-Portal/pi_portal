@@ -30,7 +30,7 @@ class ProcessorClass(
       ],
   ) -> chat_upload_video.ReturnType:
     archival_path = os.path.join(
-        config.PATH_QUEUE_VIDEO_UPLOAD,
+        config.PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD,
         os.path.basename(task.args.path),
     )
     exists_source = os.path.exists(task.args.path)
@@ -57,7 +57,7 @@ class ProcessorClass(
   def _recovery_archival_path(self, path: str) -> str:
     name, ext = os.path.splitext(os.path.basename(path))
     recovery_archival_path = os.path.join(
-        config.PATH_QUEUE_VIDEO_UPLOAD,
+        config.PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD,
         name + self.recovery_archival_suffix + ext
     )
     return recovery_archival_path

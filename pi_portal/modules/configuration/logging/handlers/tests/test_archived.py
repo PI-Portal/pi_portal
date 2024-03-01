@@ -28,7 +28,7 @@ class TestRotatingFileHandlerArchived:
     assert archived_rotating_file_handler_instance.maxBytes == \
         10000000  # type: ignore[comparison-overlap]
     assert archived_rotating_file_handler_instance.\
-        post_rotation_queue_folder == config.PATH_QUEUE_LOG_UPLOAD
+        post_rotation_queue_folder == config.PATH_ARCHIVAL_QUEUE_LOG_UPLOAD
 
   def test__initialize__inheritance(
       self,
@@ -45,7 +45,7 @@ class TestRotatingFileHandlerArchived:
   ) -> None:
     file_name = archived_rotating_file_handler_instance.archival_filename()
 
-    assert os.path.dirname(file_name) == config.PATH_QUEUE_LOG_UPLOAD
+    assert os.path.dirname(file_name) == config.PATH_ARCHIVAL_QUEUE_LOG_UPLOAD
 
   def test__archival_filename__correct_suffix(
       self,

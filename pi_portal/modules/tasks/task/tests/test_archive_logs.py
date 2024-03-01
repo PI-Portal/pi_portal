@@ -21,7 +21,9 @@ class TestArchiveLogs(GenericTaskModuleTest):
   module = archive_logs
 
   def test_import__args_class__attributes(self) -> None:
-    assert archive_logs.Args.archival_path == config.PATH_QUEUE_LOG_UPLOAD
+    assert archive_logs.Args.archival_path == (
+        config.PATH_ARCHIVAL_QUEUE_LOG_UPLOAD
+    )
 
   def test_import__args_class__inheritance(self) -> None:
     assert issubclass(

@@ -22,8 +22,8 @@ class Args(ArgFileSystemRestrictionMixin, task_args_base.TaskArgsBase):
       "path":
           [
               config.PATH_CAMERA_CONTENT,
-              config.PATH_QUEUE_LOG_UPLOAD,
-              config.PATH_QUEUE_VIDEO_UPLOAD,
+              config.PATH_ARCHIVAL_QUEUE_LOG_UPLOAD,
+              config.PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD,
           ]
   }
 

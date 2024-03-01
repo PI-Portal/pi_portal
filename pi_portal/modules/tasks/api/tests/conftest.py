@@ -86,7 +86,7 @@ enabled_tasks__valid_payloads__creation_request_scenarios = [
                     "file1",
                 ),
                 destination=os.path.join(
-                    config.PATH_QUEUE_LOG_UPLOAD,
+                    config.PATH_ARCHIVAL_QUEUE_LOG_UPLOAD,
                     "file1",
                 ),
             )
@@ -135,7 +135,7 @@ disabled_tasks__valid_payloads__creation_request_scenarios = [
                     "file1",
                 ),
                 destination=os.path.join(
-                    config.PATH_QUEUE_VIDEO_UPLOAD,
+                    config.PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD,
                     "file1",
                 ),
             )
@@ -146,7 +146,7 @@ disabled_tasks__valid_payloads__creation_request_scenarios = [
         args=asdict(
             file_system_remove.Args(
                 path=os.path.join(
-                    config.PATH_QUEUE_VIDEO_UPLOAD,
+                    config.PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD,
                     "file2",
                 )
             )

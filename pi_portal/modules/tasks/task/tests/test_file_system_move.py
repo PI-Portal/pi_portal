@@ -24,7 +24,9 @@ class TestFileSystemMove(GenericTaskModuleTest):
   expected_type = enums.TaskType.FILE_SYSTEM_MOVE
   mock_args = file_system_move.Args(
       source=os.path.join(config.PATH_CAMERA_CONTENT, "file1"),
-      destination=os.path.join(config.PATH_QUEUE_VIDEO_UPLOAD, "file1"),
+      destination=os.path.join(
+          config.PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD, "file1"
+      ),
   )
   module = file_system_move
 
@@ -39,8 +41,8 @@ class TestFileSystemMove(GenericTaskModuleTest):
         "source": [config.PATH_CAMERA_CONTENT],
         "destination":
             [
-                config.PATH_QUEUE_LOG_UPLOAD,
-                config.PATH_QUEUE_VIDEO_UPLOAD,
+                config.PATH_ARCHIVAL_QUEUE_LOG_UPLOAD,
+                config.PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD,
             ]
     }
 

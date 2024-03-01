@@ -20,7 +20,7 @@ class Args(ArgFileSystemRestrictionMixin, task_args_base.TaskArgsBase):
 
   file_system_arg_restrictions = {
       "source": [config.LOG_FILE_BASE_FOLDER],
-      "destination": [config.PATH_QUEUE_LOG_UPLOAD,]
+      "destination": [config.PATH_ARCHIVAL_QUEUE_LOG_UPLOAD,]
   }
 
   source: str

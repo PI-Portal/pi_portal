@@ -24,7 +24,7 @@ class TestFileSystemCopy(GenericTaskModuleTest):
   expected_type = enums.TaskType.FILE_SYSTEM_COPY
   mock_args = file_system_copy.Args(
       source=os.path.join(config.LOG_FILE_BASE_FOLDER, "file1"),
-      destination=os.path.join(config.PATH_QUEUE_LOG_UPLOAD, "file1"),
+      destination=os.path.join(config.PATH_ARCHIVAL_QUEUE_LOG_UPLOAD, "file1"),
   )
   module = file_system_copy
 
@@ -37,7 +37,7 @@ class TestFileSystemCopy(GenericTaskModuleTest):
   def test_import__args_class__whitelist(self) -> None:
     assert file_system_copy.Args.file_system_arg_restrictions == {
         "source": [config.LOG_FILE_BASE_FOLDER],
-        "destination": [config.PATH_QUEUE_LOG_UPLOAD,]
+        "destination": [config.PATH_ARCHIVAL_QUEUE_LOG_UPLOAD,]
     }
 
   def test_import__args_class__initialize_with_invalid_args(self) -> None:

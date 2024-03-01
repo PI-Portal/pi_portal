@@ -21,7 +21,9 @@ class TestArchiveVideos(GenericTaskModuleTest):
   module = archive_videos
 
   def test_import__args_class__attributes(self) -> None:
-    assert archive_videos.Args.archival_path == config.PATH_QUEUE_VIDEO_UPLOAD
+    assert archive_videos.Args.archival_path == (
+        config.PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD
+    )
 
   def test_import__args_class__inheritance(self) -> None:
     assert issubclass(

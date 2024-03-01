@@ -50,7 +50,7 @@ class TestArchiveVideosTaskProcessor:
   ) -> None:
     base_name = "video.mp4"
     archival_name = os.path.join(
-        config.PATH_QUEUE_LOG_UPLOAD,
+        config.PATH_ARCHIVAL_QUEUE_LOG_UPLOAD,
         base_name,
     )
 
