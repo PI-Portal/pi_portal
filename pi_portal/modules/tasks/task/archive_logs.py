@@ -16,7 +16,7 @@ ApiEnabled = False
 class Args(archive.ArchivalTaskArgs):
   """Arguments for log archival tasks."""
 
-  archival_path = config.PATH_QUEUE_LOG_UPLOAD
+  archival_path = config.PATH_ARCHIVAL_QUEUE_LOG_UPLOAD
 
 
 ReturnType: TypeAlias = None

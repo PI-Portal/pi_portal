@@ -41,16 +41,16 @@ LOG_FILE_TEMPERATURE_MONITOR = (
 
 LOG_PREFIX_SUPERVISOR = "/var/log/supervisor/supervisor"
 
-PATH_CAMERA_BINARY = "/usr/bin/motion"
-PATH_CAMERA_CONTENT = "/var/lib/motion"
-PATH_QUEUE_LOG_UPLOAD = os.path.join(
+PATH_ARCHIVAL_QUEUE_LOG_UPLOAD = os.path.join(
     PI_PORTAL_INSTALL_LOCATION,
     "queue_logs",
 )
-PATH_QUEUE_VIDEO_UPLOAD = os.path.join(
+PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD = os.path.join(
     PI_PORTAL_INSTALL_LOCATION,
     "queue_videos",
 )
+PATH_CAMERA_BINARY = "/usr/bin/motion"
+PATH_CAMERA_CONTENT = "/var/lib/motion"
 PATH_SUPERVISOR_SOCKET = "/var/run/supervisor.sock"
 PATH_TASKS_SERVICE_DATABASES = os.path.join(
     os.path.dirname(__file__),

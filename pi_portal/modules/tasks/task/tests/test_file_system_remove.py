@@ -23,7 +23,7 @@ class TestFileSystemRemove(GenericTaskModuleTest):
   expected_routing_label = enums.RoutingLabel.FILE_SYSTEM
   expected_type = enums.TaskType.FILE_SYSTEM_REMOVE
   mock_args = file_system_remove.Args(
-      path=os.path.join(config.PATH_QUEUE_VIDEO_UPLOAD, "file1")
+      path=os.path.join(config.PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD, "file1")
   )
   module = file_system_remove
 
@@ -38,8 +38,8 @@ class TestFileSystemRemove(GenericTaskModuleTest):
         "path":
             [
                 config.PATH_CAMERA_CONTENT,
-                config.PATH_QUEUE_LOG_UPLOAD,
-                config.PATH_QUEUE_VIDEO_UPLOAD,
+                config.PATH_ARCHIVAL_QUEUE_LOG_UPLOAD,
+                config.PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD,
             ]
     }
 

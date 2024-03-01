@@ -12,7 +12,7 @@ from .bases.rotation import RotatingFileHandlerBase
 class RotatingFileHandlerArchived(RotatingFileHandlerBase):
   """Rotating file handler that adds post rotation archival."""
 
-  post_rotation_queue_folder = config.PATH_QUEUE_LOG_UPLOAD
+  post_rotation_queue_folder = config.PATH_ARCHIVAL_QUEUE_LOG_UPLOAD
 
   def rotate(self, source: str, dest: str) -> None:
     """Perform the log rotation.

@@ -52,7 +52,7 @@ class TestArchiveLogsTaskProcessor:
     timestamp = datetime.now().replace(tzinfo=timezone.utc)
     lof_file_name = "mock.log"
     archival_name = os.path.join(
-        config.PATH_QUEUE_LOG_UPLOAD,
+        config.PATH_ARCHIVAL_QUEUE_LOG_UPLOAD,
         f"{timestamp.isoformat()}_{lof_file_name}",
     )
 
