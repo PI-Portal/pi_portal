@@ -16,7 +16,7 @@ ApiEnabled = False
 class Args(archive.ArchivalTaskArgs):
   """Arguments for video archival tasks."""
 
-  archival_path = config.PATH_QUEUE_VIDEO_UPLOAD
+  archival_path = config.PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD
 
 
 ReturnType: TypeAlias = None

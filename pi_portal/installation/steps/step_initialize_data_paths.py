@@ -11,8 +11,8 @@ class StepInitializeDataPaths(base_step.StepBase):
   """Initialize data storage directories."""
 
   data_paths = [
-      config.PATH_QUEUE_LOG_UPLOAD,
-      config.PATH_QUEUE_VIDEO_UPLOAD,
+      config.PATH_ARCHIVAL_QUEUE_LOG_UPLOAD,
+      config.PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD,
   ]
 
   def invoke(self) -> None:
