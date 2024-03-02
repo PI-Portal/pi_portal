@@ -20,54 +20,57 @@ class TestArchivalTaskProcessorBaseClass:
 
   logging__mutex_locked__no_files = "\n".join(
       [
-          "DEBUG - {task} - Processing '{type}' ...",
-          "INFO - {task} - Mutex is locked, aborting '{type}' cron run ...",
-          "DEBUG - {task} - Completed '{type}'!",
+          "DEBUG - {id} - Processing: '{task}' ...",
+          "INFO - {id} - Mutex is locked, aborting '{task}' cron run ...",
+          "DEBUG - {id} - Completed: '{task}'!",
+          "DEBUG - {id} - Task Timing: '{task}'.",
       ]
   ) + "\n"
 
   logging__no_mutex__no_files = "\n".join(
       [
-          "DEBUG - {task} - Processing '{type}' ...",
-          "DEBUG - {task} - Completed '{type}'!",
+          "DEBUG - {id} - Processing: '{task}' ...",
+          "DEBUG - {id} - Completed: '{task}'!",
+          "DEBUG - {id} - Task Timing: '{task}'.",
       ]
   ) + "\n"
 
   logging__no_mutex__files = "\n".join(
       [
-          "DEBUG - {task} - Processing '{type}' ...",
-          "DEBUG - {task} - Uploading '/1/file1' -> 'file1' ...",
-          "DEBUG - {task} - Removing '/1/file1' ...",
-          "DEBUG - {task} - Uploading '/2/file2' -> 'file2' ...",
-          "DEBUG - {task} - Removing '/2/file2' ...",
-          "DEBUG - {task} - Uploading '/3/file3' -> 'file3' ...",
-          "DEBUG - {task} - Removing '/3/file3' ...",
-          "DEBUG - {task} - Completed '{type}'!",
+          "DEBUG - {id} - Processing: '{task}' ...",
+          "DEBUG - {id} - Uploading '/1/file1' -> 'file1' ...",
+          "DEBUG - {id} - Removing '/1/file1' ...",
+          "DEBUG - {id} - Uploading '/2/file2' -> 'file2' ...",
+          "DEBUG - {id} - Removing '/2/file2' ...",
+          "DEBUG - {id} - Uploading '/3/file3' -> 'file3' ...",
+          "DEBUG - {id} - Removing '/3/file3' ...",
+          "DEBUG - {id} - Completed: '{task}'!",
+          "DEBUG - {id} - Task Timing: '{task}'.",
       ]
   ) + "\n"
 
   logging__no_mutex__files__exception1 = "\n".join(
       [
-          "DEBUG - {task} - Processing '{type}' ...",
-          "DEBUG - {task} - Uploading '/1/file1' -> 'file1' ...",
-          "DEBUG - {task} - Removing '/1/file1' ...",
-          "DEBUG - {task} - Uploading '/2/file2' -> 'file2' ...",
-          "ERROR - {task} - Failed to upload '/2/file2' ...",
-          "ERROR - {task} - Failed: '{type}'!",
-          "ERROR - {task} - Exception",
+          "DEBUG - {id} - Processing: '{task}' ...",
+          "DEBUG - {id} - Uploading '/1/file1' -> 'file1' ...",
+          "DEBUG - {id} - Removing '/1/file1' ...",
+          "DEBUG - {id} - Uploading '/2/file2' -> 'file2' ...",
+          "ERROR - {id} - Failed to upload '/2/file2' ...",
+          "ERROR - {id} - Failed: '{task}'!",
+          "ERROR - {id} - Exception",
       ]
   ) + "\n"
 
   logging__no_mutex__files__exception2 = "\n".join(
       [
-          "DEBUG - {task} - Processing '{type}' ...",
-          "DEBUG - {task} - Uploading '/1/file1' -> 'file1' ...",
-          "DEBUG - {task} - Removing '/1/file1' ...",
-          "DEBUG - {task} - Uploading '/2/file2' -> 'file2' ...",
-          "DEBUG - {task} - Removing '/2/file2' ...",
-          "ERROR - {task} - Failed to remove '/2/file2' ...",
-          "ERROR - {task} - Failed: '{type}'!",
-          "ERROR - {task} - Exception",
+          "DEBUG - {id} - Processing: '{task}' ...",
+          "DEBUG - {id} - Uploading '/1/file1' -> 'file1' ...",
+          "DEBUG - {id} - Removing '/1/file1' ...",
+          "DEBUG - {id} - Uploading '/2/file2' -> 'file2' ...",
+          "DEBUG - {id} - Removing '/2/file2' ...",
+          "ERROR - {id} - Failed to remove '/2/file2' ...",
+          "ERROR - {id} - Failed: '{task}'!",
+          "ERROR - {id} - Exception",
       ]
   ) + "\n"
 
@@ -201,8 +204,8 @@ class TestArchivalTaskProcessorBaseClass:
     archival_processor_instance.disk_queue_class = \
         mock.Mock(return_value=[])
     values = {
-        "type": mocked_archival_task,
-        "task": mocked_archival_task.id,
+        "task": mocked_archival_task,
+        "id": mocked_archival_task.id,
     }
 
     archival_processor_instance.process(mocked_archival_task)
@@ -325,8 +328,8 @@ class TestArchivalTaskProcessorBaseClass:
       mocked_stream: StringIO,
   ) -> None:
     logging_values = {
-        "type": mocked_archival_task,
-        "task": mocked_archival_task.id,
+        "task": mocked_archival_task,
+        "id": mocked_archival_task.id,
     }
 
     archival_processor_instance_with_files.process(mocked_archival_task)
@@ -347,15 +350,17 @@ class TestArchivalTaskProcessorBaseClass:
         None
     ]
     logging_values = {
-        "type": mocked_archival_task,
-        "task": mocked_archival_task.id,
+        "task": mocked_archival_task,
+        "id": mocked_archival_task.id,
     }
 
     archival_processor_instance_with_files.process(mocked_archival_task)
 
-    assert mocked_stream.getvalue() == \
-        self.logging__no_mutex__files__exception1.format(**logging_values) + \
-        traceback.get_traceback(mocked_archival_task.result.value)
+    assert mocked_stream.getvalue() == (
+        self.logging__no_mutex__files__exception1.format(**logging_values) +
+        traceback.get_traceback(mocked_archival_task.result.value) +
+        "DEBUG - {id} - Task Timing: '{task}'.\n".format(**logging_values)
+    )
 
   def test_process__mutex_unlocked__files__logging__exception2(
       self,
@@ -366,8 +371,8 @@ class TestArchivalTaskProcessorBaseClass:
   ) -> None:
     mocked_os_remove.side_effect = [None, OSError, None]
     logging_values = {
-        "type": mocked_archival_task,
-        "task": mocked_archival_task.id,
+        "task": mocked_archival_task,
+        "id": mocked_archival_task.id,
     }
 
     archival_processor_instance_with_files.process(mocked_archival_task)
@@ -377,5 +382,5 @@ class TestArchivalTaskProcessorBaseClass:
         traceback.get_traceback(mocked_archival_task.result.value).replace(
             "builtins.OSError",
             "OSError",
-        )
+        ) + "DEBUG - {id} - Task Timing: '{task}'.\n".format(**logging_values)
     )
