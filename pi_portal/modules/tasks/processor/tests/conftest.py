@@ -43,59 +43,44 @@ def mocked_chat_client() -> mock.Mock:
 
 
 @pytest.fixture
-def mocked_chat_file_task() -> mock.Mock:
-  mock_task = mock.Mock()
-  mock_task.args.path = "/mock/path.mp4"
-  mock_task.on_failure = []
-  mock_task.on_success = []
-  return mock_task
+def mocked_chat_file_task(mocked_base_task: mock.Mock) -> mock.Mock:
+  mocked_base_task.args.path = "/mock/path.mp4"
+  return mocked_base_task
 
 
 @pytest.fixture
-def mocked_chat_message_task() -> mock.Mock:
-  mock_task = mock.Mock()
-  mock_task.args.message = "Test message!"
-  mock_task.on_failure = []
-  mock_task.on_success = []
-  return mock_task
+def mocked_chat_message_task(mocked_base_task: mock.Mock) -> mock.Mock:
+  mocked_base_task.args.message = "Test message!"
+  return mocked_base_task
 
 
 @pytest.fixture
-def mocked_file_system_move() -> mock.Mock:
+def mocked_file_system_move_task_module() -> mock.Mock:
   return mock.Mock()
 
 
 @pytest.fixture
-def mocked_file_system_path_task() -> mock.Mock:
-  mock_task = mock.Mock()
-  mock_task.args.path = "/mock/path.mp4"
-  mock_task.on_failure = []
-  mock_task.on_success = []
-  return mock_task
+def mocked_file_system_path_task(mocked_base_task: mock.Mock) -> mock.Mock:
+  mocked_base_task.args.path = "/mock/path.mp4"
+  return mocked_base_task
 
 
 @pytest.fixture
-def mocked_file_system_src_dst_task() -> mock.Mock:
-  mock_task = mock.Mock()
-  mock_task.args.source = "/mock1/path.mp4"
-  mock_task.args.destination = "/mock2/path.mp4"
-  mock_task.on_failure = []
-  mock_task.on_success = []
-  return mock_task
+def mocked_file_system_src_dst_task(mocked_base_task: mock.Mock) -> mock.Mock:
+  mocked_base_task.args.source = "/mock1/path.mp4"
+  mocked_base_task.args.destination = "/mock2/path.mp4"
+  return mocked_base_task
 
 
 @pytest.fixture
-def mocked_file_system_remove() -> mock.Mock:
+def mocked_file_system_remove_task_module() -> mock.Mock:
   return mock.Mock()
 
 
 @pytest.fixture
-def mocked_camera_snapshot_task() -> mock.Mock:
-  mock_task = mock.Mock()
-  mock_task.args.camera = 2
-  mock_task.on_failure = []
-  mock_task.on_success = []
-  return mock_task
+def mocked_camera_snapshot_task(mocked_base_task: mock.Mock) -> mock.Mock:
+  mocked_base_task.args.camera = 2
+  return mocked_base_task
 
 
 @pytest.fixture
@@ -120,11 +105,8 @@ def mocked_os(
 
 
 @pytest.fixture
-def mocked_queue_no_args_task() -> mock.Mock:
-  mock_task = mock.Mock()
-  mock_task.on_failure = []
-  mock_task.on_success = []
-  return mock_task
+def mocked_queue_no_args_task(mocked_base_task: mock.Mock) -> mock.Mock:
+  return mocked_base_task
 
 
 @pytest.fixture
@@ -207,7 +189,7 @@ def chat_send_message_instance(
 
 @pytest.fixture
 def chat_upload_snapshot_instance(
-    mocked_file_system_remove: mock.Mock,
+    mocked_file_system_remove_task_module: mock.Mock,
     mocked_os: mock.Mock,
     mocked_recover: mock.Mock,
     mocked_task_logger: logging.Logger,
@@ -216,7 +198,7 @@ def chat_upload_snapshot_instance(
 ) -> chat_upload_snapshot.ProcessorClass:
   monkeypatch.setattr(
       chat_upload_snapshot.__name__ + ".file_system_remove",
-      mocked_file_system_remove,
+      mocked_file_system_remove_task_module,
   )
   monkeypatch.setattr(
       chat_upload_snapshot.__name__ + ".os",
@@ -232,7 +214,7 @@ def chat_upload_snapshot_instance(
 
 @pytest.fixture
 def chat_upload_video_instance(
-    mocked_file_system_move: mock.Mock,
+    mocked_file_system_move_task_module: mock.Mock,
     mocked_os_path_exists: mock.Mock,
     mocked_recover: mock.Mock,
     mocked_task_logger: logging.Logger,
@@ -241,7 +223,7 @@ def chat_upload_video_instance(
 ) -> chat_upload_video.ProcessorClass:
   monkeypatch.setattr(
       chat_upload_video.__name__ + ".file_system_move",
-      mocked_file_system_move,
+      mocked_file_system_move_task_module,
   )
   monkeypatch.setattr(
       chat_upload_video.__name__ + ".os.path.exists",

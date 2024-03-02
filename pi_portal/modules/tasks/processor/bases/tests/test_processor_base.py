@@ -1,7 +1,7 @@
 """Test the TaskProcessorBase class."""
 
 from dataclasses import asdict
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from io import StringIO
 from unittest import mock
 
@@ -19,6 +19,26 @@ class TestTaskProcessorBase:
   ) -> None:
     assert concrete_task_processor_base_instance.type == TaskType.BASE
 
+  def test_log_timings__logging(
+      self,
+      concrete_task_processor_base_instance_with_timings: TypeConcreteProcessor,
+      mocked_stream: StringIO,
+      mocked_task: mock.Mock,
+  ) -> None:
+    mocked_task.completed = datetime.now(tz=timezone.utc)
+    mocked_processing_time_started = (
+        mocked_task.completed - timedelta(minutes=15)
+    )
+    concrete_task_processor_base_instance_with_timings.log_timings(
+        mocked_processing_time_started,
+        mocked_task,
+    )
+
+    assert mocked_stream.getvalue() == (
+        f"DEBUG - {mocked_task.id} - Task Timing: '{mocked_task}'. - "
+        "900.0 - 900.0 - 3600.0\n"
+    )
+
   def test_process__success__logging(
       self,
       concrete_task_processor_base_instance: TypeConcreteProcessor,
@@ -28,8 +48,9 @@ class TestTaskProcessorBase:
     concrete_task_processor_base_instance.process(mocked_task)
 
     assert mocked_stream.getvalue() == (
-        f"DEBUG - {mocked_task.id} - Processing '{mocked_task}' ...\n"
-        f"DEBUG - {mocked_task.id} - Completed '{mocked_task}'!\n"
+        f"DEBUG - {mocked_task.id} - Processing: '{mocked_task}' ...\n"
+        f"DEBUG - {mocked_task.id} - Completed: '{mocked_task}'!\n"
+        f"DEBUG - {mocked_task.id} - Task Timing: '{mocked_task}'.\n"
     )
 
   def test_process__success__updates_task(
@@ -67,10 +88,11 @@ class TestTaskProcessorBase:
     concrete_task_processor_base_instance.process(mocked_task)
 
     assert mocked_stream.getvalue() == (
-        f"DEBUG - {mocked_task.id} - Processing '{mocked_task}' ...\n"
+        f"DEBUG - {mocked_task.id} - Processing: '{mocked_task}' ...\n"
         f"ERROR - {mocked_task.id} - Failed: '{mocked_task}'!\n"
         f"ERROR - {mocked_task.id} - Exception\n" +
-        traceback.get_traceback(mocked_task.result.value)
+        traceback.get_traceback(mocked_task.result.value) +
+        f"DEBUG - {mocked_task.id} - Task Timing: '{mocked_task}'.\n"
     )
 
   def test_process__failure__updates_task(
@@ -108,7 +130,5 @@ class TestTaskProcessorBase:
   ) -> None:
     concrete_task_processor_base_instance.recover(mocked_task)
 
-    assert mocked_stream.getvalue() == (
-        f"WARNING - {mocked_task.id} - Recovered partially finished "
-        f"'{mocked_task}'!\n"
-    )
+    assert mocked_stream.getvalue() == \
+        f"WARNING - {mocked_task.id} - Recovered: '{mocked_task}'!\n"

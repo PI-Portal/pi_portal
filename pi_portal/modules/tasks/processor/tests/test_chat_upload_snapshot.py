@@ -110,7 +110,7 @@ class TestChatUploadSnapshotProcessor:
       self,
       chat_upload_snapshot_instance: ProcessorClass,
       mocked_chat_file_task: mock.Mock,
-      mocked_file_system_remove: mock.Mock,
+      mocked_file_system_remove_task_module: mock.Mock,
       mocked_os_path_exists: mock.Mock,
       scenario: BooleanScenario,
   ) -> None:
@@ -119,20 +119,26 @@ class TestChatUploadSnapshotProcessor:
     chat_upload_snapshot_instance.process(mocked_chat_file_task)
 
     created = mocked_chat_file_task.on_success == \
-        [mocked_file_system_remove.Task.return_value]
+        [mocked_file_system_remove_task_module.Task.return_value]
     args_created = (
-        mocked_file_system_remove.Args.mock_calls == [
+        mocked_file_system_remove_task_module.Args.mock_calls == [
             mock.call(path=mocked_chat_file_task.args.path)
         ]
     )
     task_created = (
-        mocked_file_system_remove.Task.mock_calls == [
-            mock.call(args=mocked_file_system_remove.Args.return_value)
+        mocked_file_system_remove_task_module.Task.mock_calls == [
+            mock.call(
+                args=mocked_file_system_remove_task_module.Args.return_value
+            )
         ]
     )
     not_created = not created
-    not_args_created = mocked_file_system_remove.Args.call_count == 0
-    not_task_created = mocked_file_system_remove.Task.call_count == 0
+    not_args_created = (
+        mocked_file_system_remove_task_module.Args.call_count == 0
+    )
+    not_task_created = (
+        mocked_file_system_remove_task_module.Task.call_count == 0
+    )
     assert created is scenario.expected
     assert args_created is scenario.expected
     assert task_created is scenario.expected

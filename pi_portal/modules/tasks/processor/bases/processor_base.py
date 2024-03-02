@@ -2,7 +2,7 @@
 import abc
 import logging
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Generic
+from typing import TYPE_CHECKING, Generic, Optional, cast
 
 from pi_portal.modules.tasks.task.bases.task_base import (
     TaskBase,
@@ -46,8 +46,10 @@ class TaskProcessorBase(Generic[TypeTaskArguments_co, TypeTaskResult], abc.ABC):
     :param task: The task to process.
     """
 
+    processing_start_time = datetime.now(tz=timezone.utc)
+
     self.log.debug(
-        "Processing '%s' ...",
+        "Processing: '%s' ...",
         task,
         extra={
             "task": task.id,
@@ -57,7 +59,7 @@ class TaskProcessorBase(Generic[TypeTaskArguments_co, TypeTaskResult], abc.ABC):
       task.ok = True
       task.result.value = self._process(task)
       self.log.debug(
-          "Completed '%s'!",
+          "Completed: '%s'!",
           task,
           extra={
               "task": task.id,
@@ -66,6 +68,7 @@ class TaskProcessorBase(Generic[TypeTaskArguments_co, TypeTaskResult], abc.ABC):
     except Exception as exc:  # pylint: disable=broad-exception-caught
       task.ok = False
       task.result.value = exc
+      task.completed = datetime.now(tz=timezone.utc)
       self.log.error(
           "Failed: '%s'!",
           task,
@@ -80,6 +83,50 @@ class TaskProcessorBase(Generic[TypeTaskArguments_co, TypeTaskResult], abc.ABC):
       )
     finally:
       task.completed = datetime.now(tz=timezone.utc)
+      self.log_timings(processing_start_time, task)
+
+  def log_timings(
+      self,
+      processing_start_time: datetime,
+      task: "TaskBase[TypeTaskArguments_co, TypeTaskResult]",
+  ) -> None:
+    """Log a task's timing data with respect to it's processing start time.
+
+    :param processing_start_time: The time at which processing began.
+    :param task: The task to log timing data for.
+    """
+
+    self.log.debug(
+        "Task Timing: '%s'.",
+        task,
+        extra={
+            "task":
+                task.id,
+            "processing_time":
+                self._timing_two_decimal_precision(
+                    processing_start_time,
+                    task.completed,
+                ),
+            "scheduled_time":
+                self._timing_two_decimal_precision(
+                    task.scheduled,
+                    processing_start_time,
+                ),
+            "total_time":
+                self._timing_two_decimal_precision(
+                    task.created,
+                    task.completed,
+                )
+        },
+    )
+
+  def _timing_two_decimal_precision(
+      self,
+      start_time: Optional[datetime],
+      end_time: Optional[datetime],
+  ) -> float:
+    timing = cast(datetime, end_time) - cast(datetime, start_time)
+    return round(timing.total_seconds(), 2)
 
   def recover(
       self,
@@ -90,8 +137,6 @@ class TaskProcessorBase(Generic[TypeTaskArguments_co, TypeTaskResult], abc.ABC):
     :param task: The task to process.
     """
 
-    self.log.warning(
-        "Recovered partially finished '%s'!", task, extra={
-            "task": task.id,
-        }
-    )
+    self.log.warning("Recovered: '%s'!", task, extra={
+        "task": task.id,
+    })

@@ -29,13 +29,13 @@ def mocked_archival_client_class() -> mock.Mock:
 
 @pytest.fixture
 def mocked_archival_task(
+    mocked_base_task: mock.Mock,
     mocked_archival_task_args: archive_videos.Args,
     mocked_task_type: TaskType,
 ) -> mock.Mock:
-  task = mock.Mock()
-  task.args = mocked_archival_task_args
-  task.type = mocked_task_type
-  return task
+  mocked_base_task.args = mocked_archival_task_args
+  mocked_base_task.type = mocked_task_type
+  return mocked_base_task
 
 
 @pytest.fixture
@@ -55,13 +55,26 @@ def mocked_os_remove() -> mock.Mock:
 
 @pytest.fixture
 def mocked_task(
+    mocked_base_task: mock.Mock,
     mocked_generic_task_args: MockGenericTaskArgs,
     mocked_task_type: TaskType,
 ) -> mock.Mock:
-  task = mock.Mock()
-  task.args = mocked_generic_task_args
-  task.type = mocked_task_type
-  return task
+  mocked_base_task.args = mocked_generic_task_args
+  mocked_base_task.type = mocked_task_type
+  return mocked_base_task
+
+
+@pytest.fixture
+def mocked_task_timing_logger(
+    mocked_task_logger: logging.Logger
+) -> logging.Logger:
+  mocked_task_logger.handlers[0].setFormatter(
+      logging.Formatter(
+          '%(levelname)s - %(task)s - %(message)s - %(processing_time)s - '
+          '%(scheduled_time)s - %(total_time)s'
+      )
+  )
+  return mocked_task_logger
 
 
 @pytest.fixture
@@ -159,3 +172,11 @@ def concrete_task_processor_base_instance(
     mocked_task_logger: logging.Logger,
 ) -> TypeConcreteProcessor:
   return concrete_task_processor_base_class(mocked_task_logger)
+
+
+@pytest.fixture
+def concrete_task_processor_base_instance_with_timings(
+    concrete_task_processor_base_class: Type[TypeConcreteProcessor],
+    mocked_task_timing_logger: logging.Logger,
+) -> TypeConcreteProcessor:
+  return concrete_task_processor_base_class(mocked_task_timing_logger)
