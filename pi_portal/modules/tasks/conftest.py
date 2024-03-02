@@ -18,7 +18,15 @@ class Interrupt(Exception):
 
 class TaskLoggingFilter(logging.Filter):
 
-  optional_fields = ["cron", "queue", "task", "metrics"]
+  optional_fields = [
+      "cron",
+      "queue",
+      "task",
+      "metrics",
+      "processing_time",
+      "scheduled_time",
+      "total_time",
+  ]
 
   def filter(self, record: logging.LogRecord) -> bool:
     for field_name in self.optional_fields:

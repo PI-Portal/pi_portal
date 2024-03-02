@@ -12,12 +12,15 @@ from pi_portal.modules.tasks.processor.queue_maintenance import ProcessorClass
 class TestQueueMaintenanceProcessor:
   """Test the QueueMaintenanceProcessor class."""
 
-  log_message_prefix = "DEBUG - {task.id} - None - Processing '{task}' ...\n"
+  log_message_prefix = "DEBUG - {task.id} - None - Processing: '{task}' ...\n"
   log_message_maintenance = (
       "WARNING - {task.id} - {queue} - "
       "Performing maintenance on the '{queue}' task queue ...\n"
   )
-  log_message_suffix = "DEBUG - {task.id} - None - Completed '{task}'!\n"
+  log_message_suffix = (
+      "DEBUG - {task.id} - None - Completed: '{task}'!\n"
+      "DEBUG - {task.id} - None - Task Timing: '{task}'.\n"
+  )
 
   def test_initialize__attributes(
       self,

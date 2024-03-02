@@ -118,7 +118,7 @@ class TestChatUploadVideoProcessor:
       chat_upload_video_instance: ProcessorClass,
       mocked_chat_file_task: mock.Mock,
       mocked_os_path_exists: mock.Mock,
-      mocked_file_system_move: mock.Mock,
+      mocked_file_system_move_task_module: mock.Mock,
       scenario: MutableBooleanScenario,
   ) -> None:
     mocked_os_path_exists.side_effect = scenario.side_effect
@@ -127,7 +127,7 @@ class TestChatUploadVideoProcessor:
 
     task_attached = (
         mocked_chat_file_task.on_success == [
-            mocked_file_system_move.Task.return_value
+            mocked_file_system_move_task_module.Task.return_value
         ]
     )
     no_next_task_created = not task_attached
@@ -146,7 +146,7 @@ class TestChatUploadVideoProcessor:
       chat_upload_video_instance: ProcessorClass,
       mocked_chat_file_task: mock.Mock,
       mocked_os_path_exists: mock.Mock,
-      mocked_file_system_move: mock.Mock,
+      mocked_file_system_move_task_module: mock.Mock,
       scenario: MutableBooleanScenario,
   ) -> None:
     mocked_os_path_exists.side_effect = scenario.side_effect
@@ -156,7 +156,7 @@ class TestChatUploadVideoProcessor:
     chat_upload_video_instance.process(mocked_chat_file_task)
 
     standard_args = (
-        mocked_file_system_move.Args.mock_calls == [
+        mocked_file_system_move_task_module.Args.mock_calls == [
             mock.call(
                 source=mocked_chat_file_task.args.path,
                 destination=os.path.join(
@@ -167,7 +167,7 @@ class TestChatUploadVideoProcessor:
         ]
     )
     recovery_args = (
-        mocked_file_system_move.Args.mock_calls == [
+        mocked_file_system_move_task_module.Args.mock_calls == [
             mock.call(
                 source=mocked_chat_file_task.args.path,
                 destination=os.path.join(
