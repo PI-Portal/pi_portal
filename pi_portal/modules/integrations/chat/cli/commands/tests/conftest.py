@@ -24,11 +24,6 @@ def mocked_linux_module() -> mock.Mock:
 
 
 @pytest.fixture
-def mocked_temperature_log_file_reader() -> mock.Mock:
-  return mock.Mock()
-
-
-@pytest.fixture
 def mocked_uptime_subcommands() -> Dict[str, mock.Mock]:
   return {
       "BotUptimeCommand": mock.Mock(),
@@ -96,14 +91,7 @@ def status_command_instance(
 @pytest.fixture
 def temperature_command_instance(
     mocked_chat_bot: mock.Mock,
-    mocked_temperature_log_file_reader: mock.Mock,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> command_temperature.TemperatureCommand:
-  monkeypatch.setattr(
-      command_temperature.__name__ +
-      ".temperature_monitor_logfile.TemperatureMonitorLogFileReader",
-      mocked_temperature_log_file_reader,
-  )
   return command_temperature.TemperatureCommand(mocked_chat_bot)
 
 

@@ -13,6 +13,7 @@ from .. import (
     archive_videos,
     camera_snapshot,
     chat_send_message,
+    chat_send_temperature_reading,
     chat_upload_snapshot,
     chat_upload_video,
     file_system_copy,
@@ -51,6 +52,12 @@ def mocked_chat_file_task(mocked_base_task: mock.Mock) -> mock.Mock:
 @pytest.fixture
 def mocked_chat_message_task(mocked_base_task: mock.Mock) -> mock.Mock:
   mocked_base_task.args.message = "Test message!"
+  return mocked_base_task
+
+
+@pytest.fixture
+def mocked_chat_temperature_task(mocked_base_task: mock.Mock) -> mock.Mock:
+  mocked_base_task.args.header = "Test header:"
   return mocked_base_task
 
 
@@ -111,6 +118,11 @@ def mocked_queue_no_args_task(mocked_base_task: mock.Mock) -> mock.Mock:
 
 @pytest.fixture
 def mocked_recover() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
+def mocked_temperature_log_file_reader() -> mock.Mock:
   return mock.Mock()
 
 
@@ -185,6 +197,22 @@ def chat_send_message_instance(
 ) -> chat_send_message.ProcessorClass:
   setup_chat_processor_mocks()
   return chat_send_message.ProcessorClass(mocked_task_logger)
+
+
+@pytest.fixture
+def chat_send_temperature_reading_instance(
+    mocked_task_logger: logging.Logger,
+    mocked_temperature_log_file_reader: mock.Mock,
+    setup_chat_processor_mocks: Callable[[], None],
+    monkeypatch: pytest.MonkeyPatch,
+) -> chat_send_temperature_reading.ProcessorClass:
+  setup_chat_processor_mocks()
+  monkeypatch.setattr(
+      chat_send_temperature_reading.__name__ +
+      ".temperature_monitor_logfile.TemperatureMonitorLogFileReader",
+      mocked_temperature_log_file_reader,
+  )
+  return chat_send_temperature_reading.ProcessorClass(mocked_task_logger)
 
 
 @pytest.fixture
