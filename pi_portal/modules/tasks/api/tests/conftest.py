@@ -46,8 +46,8 @@ class InvalidArg(task_args_base.TaskArgsBase):
 
 enabled_tasks__valid_payloads__creation_request_scenarios = [
     TypedTaskCreationRequestParameters(
-      type=camera_snapshot.TaskType.value,
-      args=asdict(camera_snapshot.Args(camera=2)),
+        type=camera_snapshot.TaskType.value,
+        args=asdict(camera_snapshot.Args(camera=2)),
     ),
     TypedTaskCreationRequestParameters(
         type=chat_send_message.TaskType.value,
