@@ -21,6 +21,7 @@ ROUTING_MATRIX: DefaultDict[TaskType, RoutingLabel] = defaultdict(
         TaskType.ARCHIVE_VIDEOS: RoutingLabel.ARCHIVAL,
         TaskType.CAMERA_SNAPSHOT: RoutingLabel.CAMERA,
         TaskType.CHAT_SEND_MESSAGE: RoutingLabel.CHAT_SEND_MESSAGE,
+        TaskType.CHAT_SEND_TEMPERATURE_READING: RoutingLabel.CHAT_SEND_MESSAGE,
         TaskType.CHAT_UPLOAD_SNAPSHOT: RoutingLabel.CHAT_UPLOAD_SNAPSHOT,
         TaskType.CHAT_UPLOAD_VIDEO: RoutingLabel.CHAT_UPLOAD_VIDEO,
         TaskType.FILE_SYSTEM_COPY: RoutingLabel.FILE_SYSTEM,
