@@ -23,6 +23,7 @@ class RegistryFactory:
       "archive_videos",
       "camera_snapshot",
       "chat_send_message",
+      "chat_send_temperature_reading",
       "chat_upload_snapshot",
       "chat_upload_video",
       "file_system_copy",
