@@ -17,6 +17,7 @@ from pi_portal.modules.tasks.task import (
     archive_videos,
     camera_snapshot,
     chat_send_message,
+    chat_send_temperature_reading,
     chat_upload_snapshot,
     chat_upload_video,
     file_system_copy,
@@ -52,6 +53,10 @@ enabled_tasks__valid_payloads__creation_request_scenarios = [
     TypedTaskCreationRequestParameters(
         type=chat_send_message.TaskType.value,
         args=asdict(chat_send_message.Args(message="Test message.")),
+    ),
+    TypedTaskCreationRequestParameters(
+        type=chat_send_temperature_reading.TaskType.value,
+        args=asdict(chat_send_temperature_reading.Args(header="Test header:")),
     ),
     TypedTaskCreationRequestParameters(
         type=chat_upload_snapshot.TaskType.value,
@@ -101,6 +106,10 @@ enabled_tasks__invalid__payloads__creation_request_scenarios = [
     ),
     TypedTaskCreationRequestParameters(
         type=chat_send_message.TaskType.value,
+        args=asdict(InvalidArg(invalid_arg="invalid_args")),
+    ),
+    TypedTaskCreationRequestParameters(
+        type=chat_send_temperature_reading.TaskType.value,
         args=asdict(InvalidArg(invalid_arg="invalid_args")),
     ),
     TypedTaskCreationRequestParameters(

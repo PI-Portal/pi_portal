@@ -129,6 +129,57 @@ class TestServiceClient:
         mocked_unix_stream_http_client.return_value.post.return_value
     )
 
+  def test_chat_send_temperature_reading__sends_correct_api_request(
+      self,
+      task_scheduler_service_client_instance: TaskSchedulerServiceClient,
+      mocked_unix_stream_http_client: mock.Mock,
+  ) -> None:
+    # pylint: disable=duplicate-code
+    header = "Latest temperature readings:"
+
+    expected_payload = {
+        "type":
+            TaskType.CHAT_SEND_TEMPERATURE_READING.value,
+        "args": {
+            "header": header,
+        },
+        "on_failure":
+            [
+                {
+                    "type": TaskType.CHAT_SEND_TEMPERATURE_READING.value,
+                    "args":
+                        {
+                            "header":
+                                (
+                                    task_scheduler_service_client_instance.
+                                    deferred_message + header
+                                ),
+                        },
+                    "retry_after": 300,
+                }
+            ]
+    }
+
+    task_scheduler_service_client_instance.chat_send_temperature_reading()
+
+    mocked_unix_stream_http_client.return_value.post.assert_called_once_with(
+        "/schedule/",
+        expected_payload,
+    )
+
+  def test_chat_send_temperature_reading__returns_expected_response(
+      self,
+      task_scheduler_service_client_instance: TaskSchedulerServiceClient,
+      mocked_unix_stream_http_client: mock.Mock,
+  ) -> None:
+    response = (
+        task_scheduler_service_client_instance.chat_send_temperature_reading()
+    )
+
+    assert response == (
+        mocked_unix_stream_http_client.return_value.post.return_value
+    )
+
   @pytest.mark.parametrize(
       "path,description",
       [

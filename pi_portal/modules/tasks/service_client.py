@@ -85,6 +85,33 @@ class TaskSchedulerServiceClient:
 
     return self.http_client.post("/schedule/", payload)
 
+  def chat_send_temperature_reading(self,) -> UnixStreamHttpResponse:
+    """Send the latest temperature reading to the chat client via the API.
+
+    :returns: A response from the task scheduler API.
+    """
+    header = "Latest temperature readings:"
+
+    payload = {
+        "type":
+            TaskType.CHAT_SEND_TEMPERATURE_READING.value,
+        "args": {
+            "header": header
+        },
+        "on_failure":
+            [
+                {
+                    "type": TaskType.CHAT_SEND_TEMPERATURE_READING.value,
+                    "args": {
+                        "header": self.deferred_message + header,
+                    },
+                    "retry_after": 300,
+                }
+            ]
+    }
+
+    return self.http_client.post("/schedule/", payload)
+
   def chat_upload_snapshot(
       self,
       path: str,
