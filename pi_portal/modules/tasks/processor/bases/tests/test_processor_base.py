@@ -5,9 +5,10 @@ from datetime import datetime
 from io import StringIO
 from unittest import mock
 
+import pytest
 from pi_portal.modules.python import traceback
 from pi_portal.modules.tasks.enums import TaskType
-from .conftest import TypeConcreteProcessor
+from .conftest import TimingScenario, TypeConcreteProcessor, TypeTimingSetup
 
 
 class TestTaskProcessorBase:
@@ -19,6 +20,55 @@ class TestTaskProcessorBase:
   ) -> None:
     assert concrete_task_processor_base_instance.type == TaskType.BASE
 
+  @pytest.mark.parametrize(
+      "scenario",
+      [
+          TimingScenario(
+              creation_time=datetime(
+                  year=2000, month=3, day=1, hour=11, minute=10
+              ),
+              completion_time=datetime(
+                  year=2000, month=3, day=1, hour=11, minute=15
+              ),
+              processing_start_time=datetime(
+                  year=2000, month=3, day=1, hour=11, minute=11
+              ),
+          ),
+          TimingScenario(
+              creation_time=datetime(
+                  year=2000, month=3, day=1, hour=10, minute=10
+              ),
+              completion_time=datetime(
+                  year=2000, month=3, day=1, hour=11, minute=15
+              ),
+              processing_start_time=datetime(
+                  year=2000, month=3, day=1, hour=10, minute=30
+              ),
+          )
+      ],
+  )
+  def test_log_timings__logging(
+      self,
+      concrete_task_processor_base_instance_with_timings: TypeConcreteProcessor,
+      mocked_stream: StringIO,
+      mocked_task: mock.Mock,
+      scenario: TimingScenario,
+      setup_task_timing: TypeTimingSetup,
+  ) -> None:
+    expected = setup_task_timing(scenario)
+
+    concrete_task_processor_base_instance_with_timings.log_timings(
+        scenario.processing_start_time,
+        mocked_task,
+    )
+
+    assert mocked_stream.getvalue() == (
+        f"DEBUG - {mocked_task.id} - Task Timing: '{mocked_task}'. - "
+        f"{expected.processing_time} - "
+        f"{expected.scheduled_time} - "
+        f"{expected.total_time}\n"
+    )
+
   def test_process__success__logging(
       self,
       concrete_task_processor_base_instance: TypeConcreteProcessor,
@@ -28,8 +78,9 @@ class TestTaskProcessorBase:
     concrete_task_processor_base_instance.process(mocked_task)
 
     assert mocked_stream.getvalue() == (
-        f"DEBUG - {mocked_task.id} - Processing '{mocked_task}' ...\n"
-        f"DEBUG - {mocked_task.id} - Completed '{mocked_task}'!\n"
+        f"DEBUG - {mocked_task.id} - Processing: '{mocked_task}' ...\n"
+        f"DEBUG - {mocked_task.id} - Completed: '{mocked_task}'!\n"
+        f"DEBUG - {mocked_task.id} - Task Timing: '{mocked_task}'.\n"
     )
 
   def test_process__success__updates_task(
@@ -67,10 +118,11 @@ class TestTaskProcessorBase:
     concrete_task_processor_base_instance.process(mocked_task)
 
     assert mocked_stream.getvalue() == (
-        f"DEBUG - {mocked_task.id} - Processing '{mocked_task}' ...\n"
+        f"DEBUG - {mocked_task.id} - Processing: '{mocked_task}' ...\n"
         f"ERROR - {mocked_task.id} - Failed: '{mocked_task}'!\n"
         f"ERROR - {mocked_task.id} - Exception\n" +
-        traceback.get_traceback(mocked_task.result.value)
+        traceback.get_traceback(mocked_task.result.value) +
+        f"DEBUG - {mocked_task.id} - Task Timing: '{mocked_task}'.\n"
     )
 
   def test_process__failure__updates_task(
@@ -108,7 +160,5 @@ class TestTaskProcessorBase:
   ) -> None:
     concrete_task_processor_base_instance.recover(mocked_task)
 
-    assert mocked_stream.getvalue() == (
-        f"WARNING - {mocked_task.id} - Recovered partially finished "
-        f"'{mocked_task}'!\n"
-    )
+    assert mocked_stream.getvalue() == \
+        f"WARNING - {mocked_task.id} - Recovered: '{mocked_task}'!\n"
