@@ -43,6 +43,8 @@ override_dh_fixperms:
 	find debian/$(PACKAGE)${PI_PORTAL_INSTALL_LOCATION}                                     \
 	    -type d                                                                             \
 	    -exec chmod 750 {} \;
+	chmod -R o=-                                                                            \
+		debian/$(PACKAGE)${PI_PORTAL_INSTALL_LOCATION}
 	chmod 750                                                                               \
 	    debian/$(PACKAGE)/usr/bin/filebeat                                                  \
 	    debian/$(PACKAGE)/usr/bin/portal
