@@ -2,6 +2,7 @@
 
 from typing import List
 
+from pi_portal import config
 from pi_portal.installation.templates import config_file, motion_templates
 from pi_portal.modules.configuration import state
 from .bases import render_templates_step
@@ -35,7 +36,7 @@ class StepConfigureMotion(render_templates_step.RenderTemplateStepBase):
           source='motion/camera.conf',
           destination=f'/etc/motion/camera{index}.conf',
           permissions="600",
-          user="root",
+          user=config.PI_PORTAL_USER,
       )
       camera_config_file.context["CAMERA"] = camera
       camera_config_file.context["CAMERA"]["NAME"] = f"CAMERA-{index}"

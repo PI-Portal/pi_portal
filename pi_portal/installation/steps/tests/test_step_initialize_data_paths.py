@@ -64,6 +64,8 @@ class TestStepInitializeDataPaths:
     assert step_initialize_data_paths_instance.data_paths == [
         config.PATH_ARCHIVAL_QUEUE_LOG_UPLOAD,
         config.PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD,
+        config.PATH_CAMERA_CONTENT,
+        config.PATH_FILEBEAT_CONTENT,
         config.PATH_TASKS_SERVICE_DATABASES,
     ]
 
