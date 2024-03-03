@@ -51,6 +51,7 @@ testcase
 typecheck
 ubuntu
 uid
+umask
 url
 uuid
 virtualenv
