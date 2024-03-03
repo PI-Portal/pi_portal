@@ -13,20 +13,22 @@ common_templates: List[ConfileFileTemplate] = [
     ),
     ConfileFileTemplate(
         source='supervisor/supervisord.conf',
-        destination='/etc/supervisor/supervisord.conf',
+        destination=config.PATH_SUPERVISOR_CONFIG,
     ),
 ]
 
 logzio_templates: List[ConfileFileTemplate] = [
     ConfileFileTemplate(
         source='logzio/filebeat.yml',
-        destination='/etc/filebeat/filebeat.yml',
+        destination=config.PATH_FILEBEAT_CONFIG,
+        user=config.PI_PORTAL_USER,
     ),
 ]
 
 motion_templates: List[ConfileFileTemplate] = [
     ConfileFileTemplate(
         source='motion/motion.conf',
-        destination='/etc/motion/motion.conf',
+        destination=config.PATH_CAMERA_CONFIG,
+        user=config.PI_PORTAL_USER,
     ),
 ]
