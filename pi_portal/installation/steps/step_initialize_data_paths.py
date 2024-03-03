@@ -13,6 +13,7 @@ class StepInitializeDataPaths(base_step.StepBase):
   data_paths = [
       config.PATH_ARCHIVAL_QUEUE_LOG_UPLOAD,
       config.PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD,
+      config.PATH_TASKS_SERVICE_DATABASES,
   ]
 
   def invoke(self) -> None:

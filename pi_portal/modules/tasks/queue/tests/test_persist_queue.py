@@ -6,7 +6,7 @@ from typing import Any, Dict, Type
 from unittest import mock
 
 import pytest
-from pi_portal.modules import tasks
+from pi_portal import config
 from pi_portal.modules.tasks.enums import RoutingLabel
 from pi_portal.modules.tasks.queue.bases.queue_base import QueueMetrics
 from .. import persist_queue
@@ -42,8 +42,7 @@ class TestQueue:
     # pylint: disable=protected-access
     assert persist_queue_instance._path == (
         os.path.join(
-            os.path.dirname(tasks.__file__),
-            "db",
+            config.PATH_TASKS_SERVICE_DATABASES,
             routing_label.value,
         )
     )

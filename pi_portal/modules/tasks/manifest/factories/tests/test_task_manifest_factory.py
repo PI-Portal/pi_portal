@@ -3,7 +3,7 @@
 import os
 from unittest import mock
 
-from pi_portal.modules import tasks
+from pi_portal import config
 from pi_portal.modules.tasks.enums import TaskManifests
 from ..task_manifest_factory import TaskManifestFactory
 
@@ -28,7 +28,10 @@ class TestTaskManifestFactory:
     return_value = task_manifest_factory_class.create(mock_manifest)
 
     mocked_vendor_class.assert_called_once_with(
-        os.path.join(os.path.dirname(tasks.__file__), "db", "manifests"),
+        os.path.join(
+            config.PATH_TASKS_SERVICE_DATABASES,
+            "manifests",
+        ),
         mock_manifest.value,
     )
     assert return_value == mocked_vendor_class.return_value
@@ -44,7 +47,10 @@ class TestTaskManifestFactory:
     return_value = task_manifest_factory_class.create(mock_manifest)
 
     mocked_vendor_class.assert_called_once_with(
-        os.path.join(os.path.dirname(tasks.__file__), "db", "manifests"),
+        os.path.join(
+            config.PATH_TASKS_SERVICE_DATABASES,
+            "manifests",
+        ),
         mock_manifest.value,
     )
     assert return_value == mocked_vendor_class.return_value

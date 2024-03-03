@@ -53,9 +53,7 @@ PATH_CAMERA_BINARY = "/usr/bin/motion"
 PATH_CAMERA_CONTENT = "/var/lib/motion"
 PATH_SUPERVISOR_SOCKET = "/var/run/supervisor.sock"
 PATH_TASKS_SERVICE_DATABASES = os.path.join(
-    os.path.dirname(__file__),
-    "modules",
-    "tasks",
+    PI_PORTAL_INSTALL_LOCATION,
     "db",
 )
 PATH_USER_CONFIG = "/etc/pi_portal/config.json"
