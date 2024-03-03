@@ -1,5 +1,7 @@
 # yamllint disable rule:braces
 ---
+path.home: {{ PATH_FILEBEAT_CONTENT }}
+
 filebeat.inputs:
 
   - type: log
@@ -59,7 +61,7 @@ filebeat.inputs:
     ignore_older: 12h
 
 # For version 7 and higher
-filebeat.registry.path: /var/lib/filebeat
+filebeat.registry.path: {{ PATH_FILEBEAT_CONTENT }}
 
 # The following processors are to ensure compatibility with version 7
 processors:
