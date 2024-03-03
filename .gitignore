@@ -168,5 +168,3 @@ packaging/docker/dist
 .cicd-tools/boxes/*
 !.cicd-tools/boxes/bootstrap
 
-# Task Database
-pi_portal/modules/tasks/db
