@@ -4,16 +4,19 @@ set -eo pipefail
 
 PACKAGE_USER="pi_portal"
 
-gpio_access() {
+groups() {
   if grep -q gpio /etc/group; then
     usermod -a -G gpio "${PACKAGE_USER}"
+  fi
+  if grep -q video /etc/group; then
+    usermod -a -G video "${PACKAGE_USER}"
   fi
 }
 
 permissions() {
   local FILEPATH
 
-  FILEPATH_LIST=("/opt/venvs/pi_portal" "/usr/bin/portal" "/var/lib/motion")
+  FILEPATH_LIST=("/opt/venvs/pi_portal" "/usr/bin/filebeat" "/usr/bin/portal" "/var/lib/motion")
 
   for FILEPATH in "${FILEPATH_LIST[@]}"; do
     chown -R "${PACKAGE_USER}":"${PACKAGE_USER}" "${FILEPATH}"
@@ -28,8 +31,8 @@ users() {
 
 main() {
   users
+  groups
   permissions
-  gpio_access
 }
 
 main "$@"

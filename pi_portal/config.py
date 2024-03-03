@@ -21,9 +21,6 @@ CRON_INTERVAL_QUEUE_MAINTENANCE = 60 * 5
 CRON_INTERVAL_QUEUE_METRICS = 60 * 30
 CRON_INTERVAL_VIDEO_UPLOAD = 60 * 10
 
-FILE_BEAT_BINARY = os.getenv("PI_PORTAL_FILEBEAT_LOCATION", "/usr/bin/filebeat")
-FILE_BEAT_CONFIG = "/etc/filebeat/filebeat.yml"
-
 LOG_FILE_BASE_FOLDER = "/var/log/pi_portal"
 LOG_FILE_CAMERA = f"{LOG_FILE_BASE_FOLDER}/pi_portal.camera.log"
 LOG_FILE_CONTACT_SWITCH_MONITOR = (
@@ -50,7 +47,15 @@ PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD = os.path.join(
     "queue_videos",
 )
 PATH_CAMERA_BINARY = "/usr/bin/motion"
+PATH_CAMERA_CONFIG = "/etc/motion/motion.conf"
 PATH_CAMERA_CONTENT = "/var/lib/motion"
+PATH_FILEBEAT_BINARY = os.getenv(
+    "PI_PORTAL_FILEBEAT_LOCATION",
+    "/usr/bin/filebeat",
+)
+PATH_FILEBEAT_CONFIG = "/etc/filebeat/filebeat.yml"
+PATH_FILEBEAT_CONTENT = "/var/lib/filebeat"
+PATH_SUPERVISOR_CONFIG = "/etc/supervisor/supervisord.conf"
 PATH_SUPERVISOR_SOCKET = "/var/run/supervisor.sock"
 PATH_TASKS_SERVICE_DATABASES = os.path.join(
     PI_PORTAL_INSTALL_LOCATION,

@@ -5,8 +5,10 @@ from io import StringIO
 from unittest import mock
 
 import pytest
+from pi_portal import config
 from pi_portal.installation.templates import config_file, motion_templates
 from pi_portal.modules.configuration import state
+from ..bases import base_step, render_templates_step
 from ..step_configure_motion import StepConfigureMotion
 
 
@@ -20,6 +22,19 @@ class TestStepRenderTemplates:
   ) -> None:
     assert isinstance(step_configure_motion_instance.log, logging.Logger)
     assert step_configure_motion_instance.templates == motion_templates
+
+  def test__initialize__inheritance(
+      self,
+      step_configure_motion_instance: StepConfigureMotion,
+  ) -> None:
+    assert isinstance(
+        step_configure_motion_instance,
+        base_step.StepBase,
+    )
+    assert isinstance(
+        step_configure_motion_instance,
+        render_templates_step.RenderTemplateStepBase,
+    )
 
   def test__invoke__success__logging(
       self,
@@ -87,7 +102,7 @@ class TestStepRenderTemplates:
       )
       assert template.destination == f'/etc/motion/camera{index}.conf'
       assert template.permissions == "600"
-      assert template.user == "root"
+      assert template.user == config.PI_PORTAL_USER
       assert template.context["CAMERA"] == camera_config[index0]
       assert template.context["CAMERA"]["NAME"] == f"CAMERA-{index}"
       assert template.context["CAMERA"]["ID"] == index
