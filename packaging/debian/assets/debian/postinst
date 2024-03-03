@@ -11,10 +11,13 @@ gpio_access() {
 }
 
 permissions() {
-  chown -R "${PACKAGE_USER}":"${PACKAGE_USER}"                         \
-    /opt/venvs/pi_portal                                               \
-    /usr/bin/portal                                                    \
-    /var/lib/motion
+  local FILEPATH
+
+  FILEPATH_LIST=("/opt/venvs/pi_portal" "/usr/bin/portal" "/var/lib/motion")
+
+  for FILEPATH in "${FILEPATH_LIST[@]}"; do
+    chown -R "${PACKAGE_USER}":"${PACKAGE_USER}" "${FILEPATH}"
+  done
 }
 
 users() {

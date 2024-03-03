@@ -145,6 +145,7 @@ Steps:
     source /opt/venvs/pi_portal/bin/activate
     pip install ./pi_portal-x.x.x-py3-none-any.whl
     chown -R pi_portal:pi_portal /opt/venvs/pi_portal
+    chmod -R o=- /opt/venvs/pi_portal
     ```
 
     - You can customize the location by setting an [environment variable](../pi_portal/config.py).
