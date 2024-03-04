@@ -50,6 +50,7 @@ systemd
 testcase
 typecheck
 ubuntu
+udevadm
 uid
 umask
 url
