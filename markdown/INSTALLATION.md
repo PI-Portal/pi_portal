@@ -30,7 +30,8 @@ Steps:
 1. Create a configuration file based on your Slack Bot and GPIOs.
 2. Identify the GPIO device.  On Raspberry PI OS this is `/dev/gpiomem`.
 3. Identify the video devices of your webcams.  Usually this is `/dev/video0` or similar.
-4. Install the container as a service:
+4. Find your [timezone identifier](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
+5. Install the container as a service:
 
    ```shell
    docker run \
@@ -38,11 +39,12 @@ Steps:
      --restart unless-stopped \
      --device [your_gpio_device_name] \
      --device [your_webcam_device_name] \
+     -e TZ=[your_timezone_identifier] \
      -v ${PWD}/[your_config_file.json]:/config.json \
      ghcr.io/pi-portal/pi-portal:latest
    ```
 
-5. Log into Slack and start interacting with your camera and sensors.
+6. Log into Slack and start interacting with your camera and sensors.
 
 **Important Note**:
 - Any user who is a member of the `docker` group will have full access to the container!
@@ -72,27 +74,45 @@ Steps:
    ```
 
 3. Visit the pi_portal [latest release page](https://github.com/PI-Portal/pi_portal/releases/latest) and download the corresponding Debian package.
-4. Install the Debian package:
+4. Assume root privileges:
 
    ```shell
-   sudo apt update
-   sudo apt install ./pi-portal_x.x.x-[architecture]_[distribution].deb
+   sudo su
    ```
 
-5. Create a configuration file based on your Slack Bot and GPIOs.
-6. Install your configuration file:
+5. Install the Debian package:
 
    ```shell
-   sudo portal install_config [your_config_file.json]
+   # as root
+   apt update
+   apt install ./pi-portal_x.x.x-[architecture]_[distribution].deb
    ```
 
-7. Test your installation:
+6. Create a configuration file based on your Slack Bot and GPIOs.
+7. Find your [timezone identifier](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).  This may already be configured on your system, check the value of the TZ environment variable.
+8. Install your configuration file:
 
    ```shell
-   sudo portal version
+   # as root
+   export TZ=[your_timezone_identifier] # If necessary ...
+   portal install_config [your_config_file.json]
    ```
 
-8. Log into Slack and start interacting with your camera and sensors.
+9. Test your installation:
+
+   ```shell
+   # as root
+   portal version
+   ```
+
+10. Drop root privileges:
+
+    ```shell
+    # as root
+    exit
+    ```
+
+11. Log into Slack and start interacting with your camera and sensors.
 
 ## Installation Method 3: Other Linux Distributions
 
@@ -135,7 +155,8 @@ Steps:
    - [libgpiod2](https://packages.debian.org/bookworm/libgpiod2)
    - [libsqlite3-0](https://packages.debian.org/bookworm/libsqlite3-0)
    - [motion](https://packages.debian.org/bookworm/motion)
-   - [supervisor](https://packages.debian.org/bookworm/supervisor)<!-- markdown-link-check-enable -->
+   - [supervisor](https://packages.debian.org/bookworm/supervisor)
+   - [tzdata](https://packages.debian.org/bookworm/tzdata)<!-- markdown-link-check-enable -->
 7. It would be prudent to stop any services launched for motion or supervisor at this point.  
    - The installer will attempt this as well, but your distribution may have an incompatible init system.
 8. Create the pi_portal user:
@@ -179,26 +200,28 @@ Steps:
     ```
 
     - It's possible to change the location by setting an [environment variable](../pi_portal/config.py).
-13. While still acting as root, install your configuration file:
+13. Find your [timezone identifier](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).  This may already be configured on your system, check the value of the TZ environment variable.
+14. While still acting as root, install your configuration file:
 
     ```shell
     # as root
+    export TZ=[your_timezone_identifier] # If necessary ...
     pi_portal install_config [your_config_file.json]
     ```
 
-14. Confirm your installation was successful:
+15. Confirm your installation was successful:
 
     ```shell
     # as root
     portal version
     ```
 
-15. Drop root privileges:
+16. Drop root privileges:
 
     ```shell
     # as root
     exit
     ```
 
-16. You may need to manually start the supervisor service if the installer doesn't recognize your init system.
-17. Log into Slack and start interacting with your camera and sensors.
+17. You may need to manually start the supervisor service if the installer doesn't recognize your init system.
+18. Log into Slack and start interacting with your camera and sensors.
