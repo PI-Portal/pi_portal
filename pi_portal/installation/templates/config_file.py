@@ -36,9 +36,12 @@ class ConfileFileTemplate:
   def update_context(self) -> None:
     """Update the context dictionary with user config and static config."""
 
-    self.context.update({
-        "USER_CONFIG": self.state.user_config,
-    })
+    self.context.update(
+        {
+            "USER_CONFIG": self.state.user_config,
+            "TZ": os.getenv("TZ", "UTC")
+        }
+    )
 
     for setting in dir(config):
       if not setting.startswith("__"):

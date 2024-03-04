@@ -26,6 +26,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # hadolint ignore=DL3027
 RUN apt-get update \
     && apt install --no-install-recommends -y \
+      tzdata \
       ./pi_portal.deb \
     && rm pi_portal.deb \
     && rm -rf /var/lib/apt/lists/*

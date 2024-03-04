@@ -1,6 +1,8 @@
 """JsonFormatter class."""
 
 import logging
+from datetime import datetime
+from time import struct_time
 from typing import Any, Dict, Optional
 
 from pythonjsonlogger import jsonlogger
@@ -15,6 +17,17 @@ class JsonFormatter(jsonlogger.JsonFormatter):
   def __init__(self, trace_id: str, *args: Any, **kwargs: Any) -> None:
     super().__init__(*args, **kwargs)
     self.trace_id = trace_id
+
+  @staticmethod
+  # pylint: disable=unused-argument
+  def converter(*args: Optional[float]) -> struct_time:
+    """Convert logging times to the current UTC time.
+
+    :param args: The logger's local time is discarded.
+    :returns: A time struct of the current UTC time.
+    """
+
+    return datetime.utcnow().timetuple()
 
   def add_fields(
       self,
