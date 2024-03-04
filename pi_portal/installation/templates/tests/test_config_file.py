@@ -1,9 +1,11 @@
 """Test the ConfileFileTemplate class."""
 
+import os
 from contextlib import closing
 from io import StringIO
 from unittest import mock
 
+import pytest
 from pi_portal import config
 from pi_portal.modules.configuration import state
 from .. import config_file
@@ -24,21 +26,50 @@ class TestConfigFileTemplate:
     assert config_file_template.source == mocked_source_file
     assert config_file_template.destination == mocked_destination_file
 
-  def test__update_context__stores_updated_context(
+  def test__update_context__default_tz__stores_updated_context(
       self,
       test_state: state.State,
       config_file_template: config_file.ConfileFileTemplate,
   ) -> None:
-    expected_values = {
-        "USER_CONFIG": test_state.user_config,
-    }
-    for setting in dir(config):
-      if not setting.startswith("__"):
-        expected_values[setting] = getattr(config, setting)
+    with mock.patch.dict(
+        os.environ,
+        clear=True,
+    ):
+      expected_values = {
+          "USER_CONFIG": test_state.user_config,
+          "TZ": "UTC",
+      }
+      for setting in dir(config):
+        if not setting.startswith("__"):
+          expected_values[setting] = getattr(config, setting)
 
-    config_file_template.update_context()
+      config_file_template.update_context()
 
-    assert config_file_template.context == expected_values
+      assert config_file_template.context == expected_values
+
+  @pytest.mark.parametrize("tz_name", ["UTC", "EST"])
+  def test__update_context__vary_tz__stores_updated_context(
+      self,
+      test_state: state.State,
+      config_file_template: config_file.ConfileFileTemplate,
+      tz_name: str,
+  ) -> None:
+    with mock.patch.dict(
+        os.environ,
+        {"TZ": tz_name},
+        clear=True,
+    ):
+      expected_values = {
+          "USER_CONFIG": test_state.user_config,
+          "TZ": tz_name,
+      }
+      for setting in dir(config):
+        if not setting.startswith("__"):
+          expected_values[setting] = getattr(config, setting)
+
+      config_file_template.update_context()
+
+      assert config_file_template.context == expected_values
 
   @mock.patch(CONFIG_FILE_MODULE + ".JinjaTemplate")
   @mock.patch(CONFIG_FILE_MODULE + ".open")
