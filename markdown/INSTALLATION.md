@@ -2,49 +2,70 @@
 
 There are a variety of ways to get up and running with pi_portal depending on the linux distribution you're running.
 
-On older Raspberry Pi hardware you should give the supervisor processes plenty of time to startup.  Once they are fully loaded any excessive CPU usage should drop off.
+## General Notes and Troubleshooting Tips
 
-## Supervisord Warning
+### USB Webcams
+
+This might save someone some trouble ...
+
+In some cases unplugging and then reconnecting USB web cameras may renumber the devices.  This changes  their hardware device name.  Since the pi_portal configuration needs to match the hardware device names, this can occasionally cause problems.  
+
+For reliability, it's recommended to avoid these types of disconnections while using the application.  If this scenario does occur, restarting your Raspberry Pi will restore the original device numbering.
+
+### Supervisord
 
 Pi Portal makes heavy use of [supervisord](http://supervisord.org/) to manage processes.
 
 If you have custom configuration for supervisord you will encounter problems during install and uninstall.  Deploying Pi Portal as a docker container is strongly recommended in these types of scenarios.
 
-## Docker Container
+### Older Hardware
 
-This is probably the simplest approach, but requires [installing docker](https://docs.docker.com/engine/install/raspberry-pi-os/):
+On older Raspberry Pi hardware you should give the supervisor processes plenty of time to startup.  Once they are fully loaded any excessive CPU usage should drop off.
+
+## Installation Method 1: Docker Container
+
+This is probably the simplest approach, but requires [installing docker](https://docs.docker.com/engine/install/raspberry-pi-os/). It's recommended to use a Raspberry PI OS docker host to eliminate possible problems with GPIO or video hardware access inside the container.
 
 Steps:
 1. Create a configuration file based on your Slack Bot and GPIOs.
-2. Install the container as a service:
+2. Identify the GPIO device.  On Raspberry PI OS this is `/dev/gpiomem`.
+3. Identify the video devices of your webcams.  Usually this is `/dev/video0` or similar.
+4. Install the container as a service:
 
    ```shell
    docker run \
      -d \
      --restart unless-stopped \
-     --device /dev/gpiomem \
-     --device /dev/video0 \
+     --device [your_gpio_device_name] \
+     --device [your_webcam_device_name] \
      -v ${PWD}/[your_config_file.json]:/config.json \
      ghcr.io/pi-portal/pi-portal:latest
    ```
 
-3. Log into Slack and start interacting with your camera and sensors.
+5. Log into Slack and start interacting with your camera and sensors.
 
 **Important Note**:
-- Anyone user who is a member of the `docker` group will have full access to the container!
+- Any user who is a member of the `docker` group will have full access to the container!
+- This includes snapshots, videos and credentials you've installed.
 
-## Raspberry PI OS
+**Other Operating Systems**:
+- You will run into problems if your linux distribution is missing the `gpio` or `video` groups:
+  - The docker image expects the GPIO hardware (usually `/dev/gpiomem`) to belong to the `gpio` group.
+  - The docker image also expects the video hardware (usually `/dev/video0`) to belong to the `video` group.
+- For this reason it's recommended to run the container on a Raspberry PI OS system.  It's possible to add these groups via [udevadm](https://manpages.ubuntu.com/manpages/jammy/man8/udevadm.8.html), but keep in mind this will complicate your deployment.
+
+## Installation Method 2: Raspberry PI OS
 
 The pi_portal Debian packages are also fairly straightforward to install:
 
 Steps:
-1. Identify your CPU architecture
+1. Identify your CPU architecture:
 
    ```shell
    uname -m
    ```
 
-2. Identify the underlying Debian version of your Raspberry Pi OS install:
+2. Identify the underlying Debian version of your Raspberry PI OS install:
 
    ```shell
    cat /etc/os-release
@@ -55,7 +76,7 @@ Steps:
 
    ```shell
    sudo apt update
-   sudo apt install ./pi-portal-x.x.x-[architecture]-[distribution].deb
+   sudo apt install ./pi-portal_x.x.x-[architecture]_[distribution].deb
    ```
 
 5. Create a configuration file based on your Slack Bot and GPIOs.
@@ -73,12 +94,12 @@ Steps:
 
 8. Log into Slack and start interacting with your camera and sensors.
 
-## Other Linux Distributions
+## Installation Method 3: Other Linux Distributions
 
 You'll need to roll up your sleeves a little bit when installing pi_portal manually, but it's not that hard ...
 
 Steps:
-1. Identify your CPU architecture
+1. Identify your CPU architecture:
 
    ```shell
    uname -m
@@ -116,7 +137,7 @@ Steps:
    - [motion](https://packages.ubuntu.com/jammy/motion)
    - [supervisor](https://packages.ubuntu.com/jammy/supervisor)
 7. It would be prudent to stop any services launched for motion or supervisor at this point.  
-   - The installer will attempt this as well, but your distribution may have an unknown init system.
+   - The installer will attempt this as well, but your distribution may have an incompatible init system.
 8. Create the pi_portal user:
 
    ```shell
@@ -124,8 +145,8 @@ Steps:
    useradd pi_portal --no-create-home -s /bin/false -l
    ```
 
-9. Take a minute and determine what the `gpio` group is on your system:
-   - This a linux group that is added to `/dev/gpiomem` or similar to allow non-root access to the hardware.
+9. Take a minute and determine what the `gpio` system group is on your system:
+   - This linux system group is added to `/dev/gpiomem` or similarly named devices to allow non-root access to GPIO hardware.
    - The user `pi_portal` needs to be a member of this group.
 
    ```shell
@@ -133,10 +154,19 @@ Steps:
    usermod -a -G gpio pi_portal
    ```
 
-   This group may be named differently, or may not even exist at all (requiring you to also create it manually).
+   This group may be named differently, or may not exist at all.  Creating this group yourself is possible, via [udevadm](https://manpages.ubuntu.com/manpages/jammy/man8/udevadm.8.html).
+10. Repeat this same process and identify what the `video` group is on your system:
+    - This linux system group allows non-root access to video hardware.
+    - The user `pi_portal` needs to be a member of this group.
 
-10. Create a configuration file based on your Slack Bot and GPIOs.
-11. Install the pi_portal wheel:
+    ```shell
+    # as root
+    usermod -a -G video pi_portal
+    ```
+
+    This group may be named differently, or may not exist at all.  Creating this group yourself is possible, via [udevadm](https://manpages.ubuntu.com/manpages/jammy/man8/udevadm.8.html).
+11. Create a configuration file based on your Slack Bot and GPIOs.
+12. Install the pi_portal wheel:
 
     ```shell
     # as root
@@ -148,27 +178,27 @@ Steps:
     chmod -R o=- /opt/venvs/pi_portal
     ```
 
-    - You can customize the location by setting an [environment variable](../pi_portal/config.py).
-12. While still acting as root, install your configuration file:
+    - It's possible to change the location by setting an [environment variable](../pi_portal/config.py).
+13. While still acting as root, install your configuration file:
 
     ```shell
     # as root
     pi_portal install_config [your_config_file.json]
     ```
 
-13. Confirm you install was successful:
+14. Confirm your installation was successful:
 
     ```shell
     # as root
     portal version
     ```
 
-14. Drop root privileges:
+15. Drop root privileges:
 
     ```shell
     # as root
     exit
     ```
 
-15. You may need to manually start the supervisor service if the installer doesn't recognize your init system.
-16. Log into Slack and start interacting with your camera and sensors.
+16. You may need to manually start the supervisor service if the installer doesn't recognize your init system.
+17. Log into Slack and start interacting with your camera and sensors.
