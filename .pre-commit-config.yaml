@@ -111,6 +111,17 @@ repos:
         require_serial: true
   - repo: local
     hooks:
+      - id: conflict-markers
+        name: "conflict-markers"
+        entry: git
+        args:
+          - --no-pager
+          - diff
+          - --cached
+          - --check
+        language: system
+        pass_filenames: false
+        require_serial: true
       - id: lint-python
         name: "lint-python"
         language: system
