@@ -23,3 +23,4 @@ class ProcessStatus(Enum):
   SHUTDOWN = 'SHUTDOWN'
   STARTING = 'STARTING'
   STOPPED = 'STOPPED'
+  STOPPING = 'STOPPING'
