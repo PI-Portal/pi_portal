@@ -30,7 +30,8 @@ Steps:
 1. Create a configuration file based on your Slack Bot and GPIOs.
 2. Identify the GPIO device.  On Raspberry PI OS this is `/dev/gpiomem`.
 3. Identify the video devices of your webcams.  Usually this is `/dev/video0` or similar.
-4. Install the container as a service:
+4. Find your [timezone identifier](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
+5. Install the container as a service:
 
    ```shell
    docker run \
@@ -38,11 +39,12 @@ Steps:
      --restart unless-stopped \
      --device [your_gpio_device_name] \
      --device [your_webcam_device_name] \
+     -e TZ=[your_timezone_identifier] \
      -v ${PWD}/[your_config_file.json]:/config.json \
      ghcr.io/pi-portal/pi-portal:latest
    ```
 
-5. Log into Slack and start interacting with your camera and sensors.
+6. Log into Slack and start interacting with your camera and sensors.
 
 **Important Note**:
 - Any user who is a member of the `docker` group will have full access to the container!
