@@ -48,6 +48,6 @@ Step 7: Invite Your Bot to the Channel you wish to use
 - Go to the Slack app proper, and select "View Channel Details" on the channel you wish to add the bot too.
 - Select the "Integrations" tab, and "add apps".
 - Select your app from the drop-down menu and click its "Install" button.
-- Select the "About" tab and at the very bottom you'll find the channel's "Slack ID".
+- Select the "About" tab and at the bottom you'll find the channel's "Slack ID".
 - Copy and paste it into your pi_portal configuration for the key marked "SLACK_CHANNEL_ID".
 - While you're at it, update your pi_portal configuration for the key marked "SLACK_CHANNEL" with the regular name of your channel.

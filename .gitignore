@@ -170,3 +170,7 @@ packaging/docker/dist
 
 # Task Database
 pi_portal/modules/tasks/db
+
+# Vale
+.vale
+!.vale/Vocab

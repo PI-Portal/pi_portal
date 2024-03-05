@@ -12,7 +12,9 @@ Please use at your own risk.
 
 [Project Documentation](https://pi-portal.readthedocs.io/)
 
+<!-- vale off -->
 ## Master Branch Builds
+<!-- vale on -->
 - [![pi_portal-github-workflow-push](https://github.com/PI-Portal/pi_portal/actions/workflows/workflow-push.yml/badge.svg?branch=master)](https://github.com/PI-Portal/pi_portal/actions/workflows/workflow-push.yml)
 
 ## Production Branch Builds
@@ -29,14 +31,15 @@ Please use at your own risk.
    - These are available cheaply on ebay, Amazon or at your local electronics store.
    - Some examples can be found [here](https://www.burglaryalarmsystem.com/category/magnetic-contact.html).
 3. Temperature monitors.
-   - Currently, only the DHT11 is supported, but it's very trivial to add support for the DHT22.
+   - Currently, only the DHT11 is supported, but it's trivial to add support for the DHT22.
+   - Currently, only the DHT11 is supported, but it's trivial to add support for the DHT22.
    - You can find out more about these sensors [here](https://learn.adafruit.com/dht).
 4. Wiring between the switches, temperature monitors and the Raspberry Pi's GPIO connectors.
    - Find out more about the Pi's GPIO [here](https://projects.raspberrypi.org/en/projects/physical-computing).
    - Female [jump wires](https://en.wikipedia.org/wiki/Jump_wire) make installing the connections pretty painless. I spliced them to the ends of modular cables (i.e. phone cables) for longer runs.
    - Edit the [config.json](config.json) file to customize your pin outs and integrations.
 5. A USB camera or webcam that's compatible with [motion](https://motion-project.github.io/).
-   - [Many](https://www.lavrsen.dk/foswiki/bin/view/Motion/WorkingDevices) webcams are compatible, and easy to find.
+   - [Many](https://www.lavrsen.dk/foswiki/bin/view/Motion/WorkingDevices) webcams are compatible and widely available.
 
 ### Python
 
