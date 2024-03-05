@@ -1,5 +1,5 @@
 {
-  "ci_commit_spelling_rev_range": "HEAD..06796ebbc3bbac11045ec0c6c507bdf5149a1a0c",
+  "ci_commit_spelling_rev_range": "06796ebbc3bbac11045ec0c6c507bdf5149a1a0c..HEAD",
   "ci_commitizen_rev_range": "HEAD",
   "ci_concurrency_limit": 4,
   "ci_debian_distributions": [
@@ -23,8 +23,15 @@
     "- download the matching filebeat tarball",
     "- download either the Python wheel or source distribution tarball"
   ],
-  "ci_python_versions": ["3.8", "3.9", "3.10", "3.11"],
-  "ci_python_default_version": ["3.8"],
+  "ci_python_versions": [
+    "3.8",
+    "3.9",
+    "3.10",
+    "3.11"
+  ],
+  "ci_python_default_version": [
+    "3.8"
+  ],
   "ci_trufflehog_extra_scan_args": "--debug",
   "ci_verbose_notifications": false
 }

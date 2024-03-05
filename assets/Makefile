@@ -2,7 +2,7 @@
 
 SHELL := /bin/bash
 
-.PHONY: help fmt lint md sectest build-docs build-wheel clean coverage format-python format-shell format-toml lint-markdown lint-dockerfile lint-docstrings lint-python lint-shell lint-workflows lint-yaml release security-bandit security-leaks security-safety spelling-markdown test types
+.PHONY: help fmt lint md sectest build-docs build-wheel clean coverage format-python format-shell format-toml lint-markdown lint-dockerfile lint-docstrings lint-python lint-shell lint-workflows lint-yaml release security-bandit security-leaks security-safety spelling-add spelling-sync spelling-markdown test types
 
 export PROJECT_NAME = pi_portal
 export GIT_ROOT = $(shell git rev-parse --show-toplevel)
@@ -51,6 +51,8 @@ help:
 	@echo "  security-bandit   to check security practices"
 	@echo "  security-leaks    to check for credential leaks"
 	@echo "  security-safety   to check dependencies"
+	@echo "  spelling-add      to add a regex to the ignore patterns"
+	@echo "  spelling-sync     to synchronize vale packages"
 	@echo "  spelling-markdown to spellcheck markdown files"
 	@echo "  test              to run tests"
 	@echo "  types             to check typing"
@@ -153,6 +155,15 @@ security-safety:
 	@echo "Checking all dependencies ..."
 	@$(call p, "pip freeze | safety check --stdin")
 	@echo "Done."
+
+spelling-add:
+	@echo "Adding word ..."
+	@echo "${MAKE_ARGS}" >> ".vale/Vocab/${PROJECT_NAME}/accept.txt"
+	@sort -u -o ".vale/Vocab/${PROJECT_NAME}/accept.txt" ".vale/Vocab/${PROJECT_NAME}/accept.txt"
+
+spelling-sync:
+	@echo "Synchronizing vale ..."
+	@$(call p, "pre-commit run --hook-stage manual spelling-vale-synchronize --verbose")
 
 spelling-markdown:
 	@echo "Checking markdown spelling ..."

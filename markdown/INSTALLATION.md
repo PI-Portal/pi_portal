@@ -6,7 +6,7 @@ There are a variety of ways to get up and running with pi_portal depending on th
 
 ### USB Webcams
 
-This might save someone some trouble ...
+This might save someone some trouble…
 
 In some cases unplugging and then reconnecting USB web cameras may renumber the devices.  This changes  their hardware device name.  Since the pi_portal configuration needs to match the hardware device names, this can occasionally cause problems.  
 
@@ -98,7 +98,7 @@ Steps:
 
 ## Installation Method 3: Other Linux Distributions
 
-You'll need to roll up your sleeves a little bit when installing pi_portal manually, but it's not that hard ...
+You'll need to roll up your sleeves a little bit when installing pi_portal manually, but it's not that hard…
 
 Steps:
 1. Identify your CPU architecture:
