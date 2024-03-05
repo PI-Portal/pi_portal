@@ -168,3 +168,6 @@ packaging/docker/dist
 .cicd-tools/boxes/*
 !.cicd-tools/boxes/bootstrap
 
+# Vale
+.vale/*
+!.vale/Vocab
