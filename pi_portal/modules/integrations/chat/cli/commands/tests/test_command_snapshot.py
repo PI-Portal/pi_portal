@@ -52,6 +52,21 @@ class TestSnapshotCommand:
         expected_calls
     )
 
+  def test_invoke__process_is_running__sends_notification(
+      self,
+      snapshot_command_instance: SnapshotCommand,
+      mocked_supervisor_process: mock.Mock,
+      mocked_chat_bot: mock.Mock,
+  ) -> None:
+    mocked_supervisor_process.return_value.status_in.return_value = True
+
+    snapshot_command_instance.invoke()
+
+    mocked_chat_bot.task_scheduler_client. \
+        chat_send_message.assert_called_once_with(
+          "Processing snapshot request ..."
+        )
+
   def test_invoke__process_not_running__does_not_take_snapshot(
       self,
       snapshot_command_instance: SnapshotCommand,
