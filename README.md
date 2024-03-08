@@ -1,6 +1,13 @@
 # pi_portal
 
-Raspberry PI Door Logger
+[![cicd-tools](https://img.shields.io/badge/ci/cd:-cicd_tools-blue)](https://github.com/cicd-tools-org/cicd-tools)
+
+| Branch                                                                                                                                                                                                                 | Build                                                                                                                                                                                                             |
+|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [main](https://github.com/pi-portal/pi_portal/tree/main)                                                                                                                                                               | [![pi_portal-github-workflow-push](https://github.com/pi-portal/pi_portal/actions/workflows/workflow-push.yml/badge.svg?branch=main)](https://github.com/pi-portal/pi_portal/actions/workflows/workflow-push.yml) |
+| [dev](https://github.com/pi-portal/pi_portal/tree/dev)                                                                                                                                                                 | [![pi_portal-github-workflow-push](https://github.com/pi-portal/pi_portal/actions/workflows/workflow-push.yml/badge.svg?branch=dev)](https://github.com/pi-portal/pi_portal/actions/workflows/workflow-push.yml)  |
+
+## A Raspberry PI Door Logger
 
 - Put a contact switch on doors and windows to generate logs, alarms and notifications with your Raspberry PI.
 - Connect a WebCam and view snapshots and motion activated videos over Slack.
@@ -11,14 +18,6 @@ This is a hobby solution, no warranty or guarantee of any kind is made.
 Please use at your own risk.
 
 [Project Documentation](https://pi-portal.readthedocs.io/)
-
-<!-- vale off -->
-## Master Branch Builds
-<!-- vale on -->
-- [![pi_portal-github-workflow-push](https://github.com/PI-Portal/pi_portal/actions/workflows/workflow-push.yml/badge.svg?branch=master)](https://github.com/PI-Portal/pi_portal/actions/workflows/workflow-push.yml)
-
-## Production Branch Builds
-- [![pi_portal-github-workflow-push](https://github.com/PI-Portal/pi_portal/actions/workflows/workflow-push.yml/badge.svg?branch=production)](https://github.com/PI-Portal/pi_portal/actions/workflows/workflow-push.yml)
 
 ## Requirements
 
