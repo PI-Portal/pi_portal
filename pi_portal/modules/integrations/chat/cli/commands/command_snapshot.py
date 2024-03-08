@@ -17,6 +17,9 @@ class SnapshotCommand(ChatProcessCommandBase):
     """Check if the camera is available, and then take a snapshot."""
 
     if self._is_camera_running():
+      self.chatbot.task_scheduler_client.chat_send_message(
+          "Processing snapshot request ..."
+      )
       self._do_snapshot()
     else:
       self.chatbot.task_scheduler_client.chat_send_message(
