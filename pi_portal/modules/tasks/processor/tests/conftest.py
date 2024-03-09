@@ -149,6 +149,7 @@ def setup_camera_processor_mocks(
 @pytest.fixture
 def setup_chat_processor_mocks(
     mocked_chat_client: mock.Mock,
+    mocked_recover: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> Callable[[], None]:
 
@@ -157,28 +158,41 @@ def setup_chat_processor_mocks(
         chat_client.__name__ + ".ChatClient",
         mocked_chat_client,
     )
+    monkeypatch.setattr(
+        processor_base.__name__ + ".TaskProcessorBase.recover",
+        mocked_recover,
+    )
 
   return setup
 
 
 @pytest.fixture
 def archive_logs_task_processor_instance(
-    mocked_task_logger: logging.Logger
+    mocked_task_logger: logging.Logger,
+    mocked_task_router: mock.Mock,
 ) -> archive_logs.ProcessorClass:
-  return archive_logs.ProcessorClass(mocked_task_logger)
+  return archive_logs.ProcessorClass(
+      mocked_task_logger,
+      mocked_task_router,
+  )
 
 
 @pytest.fixture
 def archive_videos_task_processor_instance(
-    mocked_task_logger: logging.Logger
+    mocked_task_logger: logging.Logger,
+    mocked_task_router: mock.Mock,
 ) -> archive_videos.ProcessorClass:
-  return archive_videos.ProcessorClass(mocked_task_logger)
+  return archive_videos.ProcessorClass(
+      mocked_task_logger,
+      mocked_task_router,
+  )
 
 
 @pytest.fixture
 def camera_snapshot_instance(
     mocked_recover: mock.Mock,
     mocked_task_logger: logging.Logger,
+    mocked_task_router: mock.Mock,
     setup_camera_processor_mocks: Callable[[], None],
     monkeypatch: pytest.MonkeyPatch,
 ) -> camera_snapshot.ProcessorClass:
@@ -187,21 +201,29 @@ def camera_snapshot_instance(
       mocked_recover,
   )
   setup_camera_processor_mocks()
-  return camera_snapshot.ProcessorClass(mocked_task_logger)
+  return camera_snapshot.ProcessorClass(
+      mocked_task_logger,
+      mocked_task_router,
+  )
 
 
 @pytest.fixture
 def chat_send_message_instance(
     mocked_task_logger: logging.Logger,
+    mocked_task_router: mock.Mock,
     setup_chat_processor_mocks: Callable[[], None],
 ) -> chat_send_message.ProcessorClass:
   setup_chat_processor_mocks()
-  return chat_send_message.ProcessorClass(mocked_task_logger)
+  return chat_send_message.ProcessorClass(
+      mocked_task_logger,
+      mocked_task_router,
+  )
 
 
 @pytest.fixture
 def chat_send_temperature_reading_instance(
     mocked_task_logger: logging.Logger,
+    mocked_task_router: mock.Mock,
     mocked_temperature_log_file_reader: mock.Mock,
     setup_chat_processor_mocks: Callable[[], None],
     monkeypatch: pytest.MonkeyPatch,
@@ -212,15 +234,18 @@ def chat_send_temperature_reading_instance(
       ".temperature_monitor_logfile.TemperatureMonitorLogFileReader",
       mocked_temperature_log_file_reader,
   )
-  return chat_send_temperature_reading.ProcessorClass(mocked_task_logger)
+  return chat_send_temperature_reading.ProcessorClass(
+      mocked_task_logger,
+      mocked_task_router,
+  )
 
 
 @pytest.fixture
 def chat_upload_snapshot_instance(
     mocked_file_system_remove_task_module: mock.Mock,
     mocked_os: mock.Mock,
-    mocked_recover: mock.Mock,
     mocked_task_logger: logging.Logger,
+    mocked_task_router: mock.Mock,
     setup_chat_processor_mocks: Callable[[], None],
     monkeypatch: pytest.MonkeyPatch,
 ) -> chat_upload_snapshot.ProcessorClass:
@@ -232,20 +257,19 @@ def chat_upload_snapshot_instance(
       chat_upload_snapshot.__name__ + ".os",
       mocked_os,
   )
-  monkeypatch.setattr(
-      processor_base.__name__ + ".TaskProcessorBase.recover",
-      mocked_recover,
-  )
   setup_chat_processor_mocks()
-  return chat_upload_snapshot.ProcessorClass(mocked_task_logger)
+  return chat_upload_snapshot.ProcessorClass(
+      mocked_task_logger,
+      mocked_task_router,
+  )
 
 
 @pytest.fixture
 def chat_upload_video_instance(
     mocked_file_system_move_task_module: mock.Mock,
     mocked_os_path_exists: mock.Mock,
-    mocked_recover: mock.Mock,
     mocked_task_logger: logging.Logger,
+    mocked_task_router: mock.Mock,
     setup_chat_processor_mocks: Callable[[], None],
     monkeypatch: pytest.MonkeyPatch,
 ) -> chat_upload_video.ProcessorClass:
@@ -257,25 +281,28 @@ def chat_upload_video_instance(
       chat_upload_video.__name__ + ".os.path.exists",
       mocked_os_path_exists,
   )
-  monkeypatch.setattr(
-      processor_base.__name__ + ".TaskProcessorBase.recover",
-      mocked_recover,
-  )
   setup_chat_processor_mocks()
-  return chat_upload_video.ProcessorClass(mocked_task_logger)
+  return chat_upload_video.ProcessorClass(
+      mocked_task_logger,
+      mocked_task_router,
+  )
 
 
 @pytest.fixture
 def file_system_copy_instance(
     mocked_shutil: mock.Mock,
     mocked_task_logger: logging.Logger,
+    mocked_task_router: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> file_system_copy.ProcessorClass:
   monkeypatch.setattr(
       file_system_copy.__name__ + ".shutil",
       mocked_shutil,
   )
-  return file_system_copy.ProcessorClass(mocked_task_logger)
+  return file_system_copy.ProcessorClass(
+      mocked_task_logger,
+      mocked_task_router,
+  )
 
 
 @pytest.fixture
@@ -284,6 +311,7 @@ def file_system_move_instance(
     mocked_recover: mock.Mock,
     mocked_shutil: mock.Mock,
     mocked_task_logger: logging.Logger,
+    mocked_task_router: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> file_system_move.ProcessorClass:
   monkeypatch.setattr(
@@ -298,7 +326,10 @@ def file_system_move_instance(
       file_system_move.__name__ + ".shutil",
       mocked_shutil,
   )
-  return file_system_move.ProcessorClass(mocked_task_logger)
+  return file_system_move.ProcessorClass(
+      mocked_task_logger,
+      mocked_task_router,
+  )
 
 
 @pytest.fixture
@@ -306,6 +337,7 @@ def file_system_remove_instance(
     mocked_os: mock.Mock,
     mocked_recover: mock.Mock,
     mocked_task_logger: logging.Logger,
+    mocked_task_router: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> file_system_remove.ProcessorClass:
   monkeypatch.setattr(
@@ -316,22 +348,23 @@ def file_system_remove_instance(
       processor_base.__name__ + ".TaskProcessorBase.recover",
       mocked_recover,
   )
-  return file_system_remove.ProcessorClass(mocked_task_logger)
+  return file_system_remove.ProcessorClass(
+      mocked_task_logger,
+      mocked_task_router,
+  )
 
 
 @pytest.fixture
 def queue_maintenance_instance(
-    mocked_task_router: mock.Mock,
     mocked_task_logger: logging.Logger,
-    monkeypatch: pytest.MonkeyPatch,
+    mocked_task_router: mock.Mock,
 ) -> queue_maintenance.ProcessorClass:
-  monkeypatch.setattr(
-      queue_maintenance.__name__ + ".TaskRouter",
-      mocked_task_router,
-  )
   queue_formatter = logging.Formatter(
       '%(levelname)s - %(task)s - %(queue)s - %(message)s',
       validate=False,
   )
   mocked_task_logger.handlers[0].formatter = queue_formatter
-  return queue_maintenance.ProcessorClass(mocked_task_logger)
+  return queue_maintenance.ProcessorClass(
+      mocked_task_logger,
+      mocked_task_router,
+  )

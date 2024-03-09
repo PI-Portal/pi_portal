@@ -17,8 +17,10 @@ class TestTaskProcessorBase:
   def test_initialize__attributes(
       self,
       concrete_task_processor_base_instance: TypeConcreteProcessor,
+      mocked_task_router: mock.Mock,
   ) -> None:
     assert concrete_task_processor_base_instance.type == TaskType.BASE
+    assert concrete_task_processor_base_instance.router == mocked_task_router
 
   @pytest.mark.parametrize(
       "scenario",

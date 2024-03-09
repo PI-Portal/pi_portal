@@ -257,7 +257,10 @@ class TestQueueWorker:
 
     assert scenario_mocks.instance.registry.processors[scenario.task_type] == \
         scenario_mocks.mocked_processor
-    mocked_process_class.assert_called_once_with(scenario_mocks.instance.log)
+    mocked_process_class.assert_called_once_with(
+        scenario_mocks.instance.log,
+        scenario_mocks.instance.router,
+    )
     mocked_process_class.return_value.process.assert_called_once_with(task)
 
   @pytest.mark.parametrize(
@@ -305,7 +308,10 @@ class TestQueueWorker:
 
     scenario_mocks.instance.consumer()
 
-    mocked_process_class.assert_called_once_with(scenario_mocks.instance.log)
+    mocked_process_class.assert_called_once_with(
+        scenario_mocks.instance.log,
+        scenario_mocks.instance.router,
+    )
     mocked_task_scheduler.router.ack.assert_called_once_with(task)
 
   @pytest.mark.parametrize(
@@ -340,7 +346,10 @@ class TestQueueWorker:
 
     scenario_mocks.instance.consumer()
 
-    mocked_process_class.assert_called_once_with(scenario_mocks.instance.log)
+    mocked_process_class.assert_called_once_with(
+        scenario_mocks.instance.log,
+        scenario_mocks.instance.router,
+    )
     called = mocked_task_scheduler.router.put.mock_calls == list(
         map(
             mock.call,
@@ -383,7 +392,10 @@ class TestQueueWorker:
 
     scenario_mocks.instance.consumer()
 
-    mocked_process_class.assert_called_once_with(scenario_mocks.instance.log)
+    mocked_process_class.assert_called_once_with(
+        scenario_mocks.instance.log,
+        scenario_mocks.instance.router,
+    )
     called = mocked_task_scheduler.router.put.mock_calls == list(
         map(
             mock.call,
@@ -484,7 +496,10 @@ class TestQueueWorker:
 
     scenario_mocks.instance.consumer()
 
-    mocked_process_class.assert_called_once_with(scenario_mocks.instance.log)
+    mocked_process_class.assert_called_once_with(
+        scenario_mocks.instance.log,
+        scenario_mocks.instance.router,
+    )
     called = mocked_failed_task_manifest.add.mock_calls == [mock.call(task)]
     not_called = mocked_failed_task_manifest.add.mock_calls == []
     assert called is (not scenario.ok and scenario.retry_after > 0)

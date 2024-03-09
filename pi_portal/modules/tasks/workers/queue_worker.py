@@ -77,7 +77,7 @@ class QueueWorker(worker_base.WorkerBase):
 
   def _do_task_processing(self, task: "TypeGenericTask") -> None:
     processor_class = self.registry.processors[task.type].ProcessorClass
-    processor_instance = processor_class(self.log)
+    processor_instance = processor_class(self.log, self.router)
     processor_instance.process(task)
 
   def _do_task_ack(self, task: "TypeGenericTask") -> None:
