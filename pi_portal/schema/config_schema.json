@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "Pi Portal Config File Schema v1.9",
+  "description": "Pi Portal Config File Schema v1.10",
   "definitions": {
     "constantOnOff": {
       "type": "string",
@@ -85,6 +85,10 @@
             "SLACK_CHANNEL_ID": {
               "type": "string",
               "description": "The ID of the slack channel.  Can be found at the bottom of the dialogue for 'View Channel Details > About'."
+            },
+            "SLACK_FILE_TRANSFER_TIMEOUT": {
+              "type": "integer",
+              "description": "The number of seconds to wait before timing out a file transfer."
             }
           },
           "required": [
@@ -92,7 +96,8 @@
             "SLACK_APP_TOKEN",
             "SLACK_BOT_TOKEN",
             "SLACK_CHANNEL",
-            "SLACK_CHANNEL_ID"
+            "SLACK_CHANNEL_ID",
+            "SLACK_FILE_TRANSFER_TIMEOUT"
           ]
         }
       },

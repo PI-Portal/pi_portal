@@ -17,3 +17,4 @@ class TypeUserConfigChatSlack(TypedDict):
   SLACK_BOT_TOKEN: str
   SLACK_CHANNEL: str
   SLACK_CHANNEL_ID: str
+  SLACK_FILE_TRANSFER_TIMEOUT: int

@@ -34,9 +34,8 @@ class ChatClientBase(
   log_file_path = config.LOG_FILE_CHAT_CLIENT
   logger_name = "client"
 
-  def __init__(self, propagate_exceptions: bool) -> None:
+  def __init__(self) -> None:
     self.configure_logger()
-    self.propagate_exceptions = propagate_exceptions
 
   @abc.abstractmethod
   def send_message(self, message: str) -> None:
