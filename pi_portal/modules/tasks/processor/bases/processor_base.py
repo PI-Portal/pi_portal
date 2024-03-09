@@ -12,6 +12,7 @@ from pi_portal.modules.tasks.task.bases.task_base import (
 
 if TYPE_CHECKING:  # pragma: no cover
   from pi_portal.modules.tasks.enums import TaskType
+  from pi_portal.modules.tasks.queue import TaskRouter
 
 
 class TaskProcessorBase(Generic[TypeTaskArguments_co, TypeTaskResult], abc.ABC):
@@ -20,12 +21,16 @@ class TaskProcessorBase(Generic[TypeTaskArguments_co, TypeTaskResult], abc.ABC):
   :param log: A logger instance.
   """
 
-  __slots__ = ("log",)
+  __slots__ = (
+      "log",
+      "router",
+  )
 
   type: "TaskType"
 
-  def __init__(self, log: logging.Logger) -> None:
+  def __init__(self, log: logging.Logger, router: "TaskRouter") -> None:
     self.log = log
+    self.router = router
 
   @abc.abstractmethod
   def _process(

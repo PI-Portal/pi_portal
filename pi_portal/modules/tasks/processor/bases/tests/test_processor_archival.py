@@ -78,11 +78,13 @@ class TestArchivalTaskProcessorBaseClass:
       self,
       archival_processor_instance: ArchivalTaskProcessorBaseClass,
       mocked_mutex: mock.Mock,
+      mocked_task_router: mock.Mock,
   ) -> None:
     assert archival_processor_instance.disk_queue_class == \
         queue.DiskQueueIterator
     assert archival_processor_instance.type == TaskType.BASE
     assert archival_processor_instance.mutex == mocked_mutex
+    assert archival_processor_instance.router == mocked_task_router
 
   def test_initialize__archival_client(
       self,
