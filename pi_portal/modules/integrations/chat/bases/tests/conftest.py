@@ -2,13 +2,11 @@
 # pylint: disable=redefined-outer-name
 
 import logging
-from typing import Callable, Mapping, Type
+from typing import Mapping, Type
 from unittest import mock
 
 import pytest
 from .. import bot, client, config
-
-TypeClientCreator = Callable[[bool], client.TypeChatClient]
 
 
 @pytest.fixture
@@ -113,8 +111,8 @@ def concrete_chat_client_class(
 
   class ConcreteClient(client.ChatClientBase[Mapping[str, str]]):
 
-    def __init__(self, propagate_exceptions: bool) -> None:
-      super().__init__(propagate_exceptions)
+    def __init__(self) -> None:
+      super().__init__()
       self.configuration = mocked_chat_config
 
     def send_file(self, file_name: str, description: str) -> None:
@@ -127,19 +125,13 @@ def concrete_chat_client_class(
 
 
 @pytest.fixture
-def concrete_chat_client_creator(
+def concrete_chat_client_instance(
     concrete_chat_client_class: Type[client.TypeChatClient],
     mocked_chat_logger: logging.Logger,
-) -> Callable[[bool], client.TypeChatClient]:
-
-  def create(propagate_exceptions: bool) -> client.TypeChatClient:
-    instance = concrete_chat_client_class(
-        propagate_exceptions=propagate_exceptions
-    )
-    instance.log = mocked_chat_logger
-    return instance
-
-  return create
+) -> client.TypeChatClient:
+  instance = concrete_chat_client_class()
+  instance.log = mocked_chat_logger
+  return instance
 
 
 @pytest.fixture

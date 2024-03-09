@@ -1,14 +1,12 @@
 """Test fixtures for the slack modules tests."""
 # pylint: disable=redefined-outer-name
 
-from typing import Callable, List
+from typing import List
 from unittest import mock
 
 import pytest
 from pi_portal.modules.integrations.chat.bases import bot as base_bot
 from pi_portal.modules.integrations.chat.slack import bot, client, config
-
-TypeSlackClientCreator = Callable[[bool], client.SlackClient]
 
 
 @pytest.fixture
@@ -40,19 +38,19 @@ def mocked_slack_web_client(
 
 @pytest.fixture
 def mocked_slack_web_client_instances(
-    mocked_slack_web_client_chat: mock.Mock,
     mocked_slack_web_client_files: mock.Mock,
+    mocked_slack_web_client_messages: mock.Mock,
 ) -> List[mock.Mock]:
-  return [mocked_slack_web_client_chat, mocked_slack_web_client_files]
-
-
-@pytest.fixture
-def mocked_slack_web_client_chat() -> mock.Mock:
-  return mock.Mock()
+  return [mocked_slack_web_client_messages, mocked_slack_web_client_files]
 
 
 @pytest.fixture
 def mocked_slack_web_client_files() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
+def mocked_slack_web_client_messages() -> mock.Mock:
   return mock.Mock()
 
 
@@ -125,22 +123,18 @@ def slack_bot_instance_mocked_handle_event(
 
 
 @pytest.fixture
-def slack_client_creator(
+def slack_client_instance(
     mocked_chat_logger: mock.Mock,
     mocked_slack_web_client: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
-) -> TypeSlackClientCreator:
-
-  def create(propagate_exceptions: bool) -> client.SlackClient:
-    monkeypatch.setattr(
-        client.__name__ + ".WebClient",
-        mocked_slack_web_client,
-    )
-    instance = client.SlackClient(propagate_exceptions=propagate_exceptions)
-    instance.log = mocked_chat_logger
-    return instance
-
-  return create
+) -> client.SlackClient:
+  monkeypatch.setattr(
+      client.__name__ + ".WebClient",
+      mocked_slack_web_client,
+  )
+  instance = client.SlackClient()
+  instance.log = mocked_chat_logger
+  return instance
 
 
 @pytest.fixture

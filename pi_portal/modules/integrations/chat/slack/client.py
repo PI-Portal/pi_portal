@@ -19,21 +19,21 @@ class SlackClient(ChatClientBase[TypeUserConfigChatSlack]):
   """Slack messaging client."""
 
   configuration: SlackIntegrationConfiguration
-  retries = 5
+  message_retries = 3
 
-  def __init__(self, propagate_exceptions: bool) -> None:
-    super().__init__(propagate_exceptions)
+  def __init__(self) -> None:
+    super().__init__()
     self.configuration = SlackIntegrationConfiguration()
     self.configure_logger()
     self.channel = self.configuration.settings['SLACK_CHANNEL']
     self.channel_id = self.configuration.settings['SLACK_CHANNEL_ID']
-    self.web_chat = WebClient(
+    self.web_client_messages = WebClient(
         token=self.configuration.settings['SLACK_BOT_TOKEN'],
         timeout=30,
     )
-    self.web_files = WebClient(
+    self.web_client_files = WebClient(
         token=self.configuration.settings['SLACK_BOT_TOKEN'],
-        timeout=300,
+        timeout=self.configuration.settings['SLACK_FILE_TRANSFER_TIMEOUT'],
     )
 
   def send_message(self, message: str) -> None:
@@ -44,9 +44,12 @@ class SlackClient(ChatClientBase[TypeUserConfigChatSlack]):
     """
     raised_exception: Optional[Exception] = None
 
-    for _ in range(0, self.retries):
+    for _ in range(0, self.message_retries):
       try:
-        self.web_chat.chat_postMessage(channel=self.channel, text=message)
+        self.web_client_messages.chat_postMessage(
+            channel=self.channel,
+            text=message,
+        )
         break
       except (SlackClientError, URLError) as exc:
         self.log.warning(
@@ -56,8 +59,7 @@ class SlackClient(ChatClientBase[TypeUserConfigChatSlack]):
         raised_exception = exc
     else:
       self.log.error("Failed to send message: '%s' !", message)
-      if self.propagate_exceptions and raised_exception:
-        raise ChatClientError from raised_exception
+      raise ChatClientError from raised_exception
 
   def send_file(self, file_name: str, description: str) -> None:
     """Send a file with the Slack Web client.
@@ -66,23 +68,14 @@ class SlackClient(ChatClientBase[TypeUserConfigChatSlack]):
     :param description: A description of the file being uploaded to Slack.
     :raises: :class:`ChatClientError`
     """
-    raised_exception: Optional[Exception] = None
-
-    for _ in range(0, self.retries):
-      try:
-        self.web_files.files_upload_v2(
-            channel=self.channel_id,
-            file=file_name,
-            title=description,
-        )
-        break
-      except (SlackClientError, URLError) as exc:
-        self.log.warning(
-            "Retrying failed file transmission: '%s' !",
-            file_name,
-        )
-        raised_exception = exc
-    else:
-      self.log.error("Failed to send file: '%s' !", file_name)
-      if self.propagate_exceptions and raised_exception:
-        raise ChatClientError from raised_exception
+    try:
+      self.log.debug("Starting file transfer: '%s' ...", file_name)
+      self.web_client_files.files_upload_v2(
+          channel=self.channel_id,
+          file=file_name,
+          title=description,
+      )
+      self.log.debug("File transfer: '%s' complete !", file_name)
+    except (SlackClientError, URLError) as exc:
+      self.log.error("Failed to transfer file: '%s' !", file_name)
+      raise ChatClientError from exc
