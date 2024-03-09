@@ -56,7 +56,7 @@ class TestQueueMaintenanceProcessor:
       mocked_task_router: mock.Mock,
       mocked_queue_no_args_task: mock.Mock,
   ) -> None:
-    mocked_task_router.return_value.queues = {
+    mocked_task_router.queues = {
         routing_label: mock.Mock() for routing_label in RoutingLabel
     }
 
@@ -79,14 +79,12 @@ class TestQueueMaintenanceProcessor:
       queue_maintenance_instance: ProcessorClass,
       mocked_queue_no_args_task: mock.Mock,
       mocked_task_router: mock.Mock,
-      mocked_task_logger: logging.Logger,
   ) -> None:
-    mocked_task_router.return_value.queues = {
+    mocked_task_router.queues = {
         routing_label: mock.Mock() for routing_label in RoutingLabel
     }
 
     queue_maintenance_instance.process(mocked_queue_no_args_task)
 
-    mocked_task_router.assert_called_once_with(mocked_task_logger)
-    for mocked_queue in mocked_task_router.return_value.queues.values():
+    for mocked_queue in mocked_task_router.queues.values():
       mocked_queue.maintenance.assert_called_once_with()

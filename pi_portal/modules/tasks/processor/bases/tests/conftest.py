@@ -171,6 +171,7 @@ def concrete_archival_task_processor_base_instance(
     ],
     mocked_os_remove: mock.Mock,
     mocked_task_logger: logging.Logger,
+    mocked_task_router: mock.Mock,
     setup_archival_processor_mocks: Callable[[], None],
     monkeypatch: pytest.MonkeyPatch,
 ) -> ArchivalTaskProcessorBaseClass:
@@ -179,7 +180,10 @@ def concrete_archival_task_processor_base_instance(
       mocked_os_remove,
   )
   setup_archival_processor_mocks()
-  return concrete_archival_task_processor_base_class(mocked_task_logger)
+  return concrete_archival_task_processor_base_class(
+      mocked_task_logger,
+      mocked_task_router,
+  )
 
 
 @pytest.fixture(name="archival_processor_instance_with_files")
@@ -214,13 +218,21 @@ def concrete_task_processor_base_class(
 def concrete_task_processor_base_instance(
     concrete_task_processor_base_class: Type[TypeConcreteProcessor],
     mocked_task_logger: logging.Logger,
+    mocked_task_router: mock.Mock,
 ) -> TypeConcreteProcessor:
-  return concrete_task_processor_base_class(mocked_task_logger)
+  return concrete_task_processor_base_class(
+      mocked_task_logger,
+      mocked_task_router,
+  )
 
 
 @pytest.fixture
 def concrete_task_processor_base_instance_with_timings(
     concrete_task_processor_base_class: Type[TypeConcreteProcessor],
+    mocked_task_router: mock.Mock,
     mocked_task_timing_logger: logging.Logger,
 ) -> TypeConcreteProcessor:
-  return concrete_task_processor_base_class(mocked_task_timing_logger)
+  return concrete_task_processor_base_class(
+      mocked_task_timing_logger,
+      mocked_task_router,
+  )

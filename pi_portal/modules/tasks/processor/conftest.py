@@ -15,3 +15,8 @@ def mocked_base_task() -> mock.Mock:
   base_task.on_failure = []
   base_task.on_success = []
   return base_task
+
+
+@pytest.fixture
+def mocked_task_router() -> mock.Mock:
+  return mock.Mock()
