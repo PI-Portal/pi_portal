@@ -17,6 +17,7 @@ MOCK_SLACK_CHANNEL_ID = "CHHH111"
 MOCK_SLACK_APP_SIGNING_SECRET = "MOCK_SLACK_APP_SIGNING_SECRET"
 MOCK_SLACK_APP_TOKEN = "MOCK_SLACK_APP_TOKEN"
 MOCK_SLACK_BOT_TOKEN = "secretValue"
+MOCK_SLACK_FILE_TRANSFER_TIMEOUT = 300
 MOCK_LOG_UUID = "MOCK_UUID_VALUE"
 MOCK_LOG_LEVEL = logging.DEBUG
 MOCK_MOTION_AUTH_USERNAME = "mock_username"
@@ -117,6 +118,8 @@ def mock_user_state_creator() -> state.TypeUserConfig:
                               MOCK_SLACK_CHANNEL,
                           "SLACK_CHANNEL_ID":
                               MOCK_SLACK_CHANNEL_ID,
+                          "SLACK_FILE_TRANSFER_TIMEOUT":
+                              MOCK_SLACK_FILE_TRANSFER_TIMEOUT
                       }
               },
           "LOGS": {
