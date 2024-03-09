@@ -1,6 +1,7 @@
 """Test the ChatUploadSnapshotProcessor class."""
 
 import logging
+from io import StringIO
 from unittest import mock
 
 import pytest
@@ -98,6 +99,48 @@ class TestChatUploadSnapshotProcessor:
     not_called = mocked_chat_client.return_value.send_file.call_count == 0
     assert called is scenario.expected
     assert not_called is not scenario.expected
+
+  @pytest.mark.parametrize(
+      "scenario",
+      [
+          BooleanScenario(exists=False, expected=False),
+          BooleanScenario(exists=True, expected=True),
+      ],
+  )
+  def test_process__vary_exists__logging(
+      self,
+      chat_upload_snapshot_instance: ProcessorClass,
+      mocked_chat_file_task: mock.Mock,
+      mocked_os_path_exists: mock.Mock,
+      mocked_stream: StringIO,
+      scenario: BooleanScenario,
+  ) -> None:
+    mocked_os_path_exists.return_value = scenario.exists
+    chat_snapshot_task_id = mocked_chat_file_task.id
+
+    chat_upload_snapshot_instance.process(mocked_chat_file_task)
+
+    logging_with_upload = mocked_stream.getvalue() == (
+        f"DEBUG - {chat_snapshot_task_id} - "
+        f"Processing: '{mocked_chat_file_task}' ...\n"
+        f"DEBUG - {chat_snapshot_task_id} - "
+        f"Uploading: '{mocked_chat_file_task.args.path}' -> 'CHAT' ...\n"
+        f"DEBUG - {chat_snapshot_task_id} - "
+        f"Completed: '{mocked_chat_file_task}'!\n"
+        f"DEBUG - {chat_snapshot_task_id} - "
+        f"Task Timing: '{mocked_chat_file_task}'.\n"
+    )
+    logging_without_upload = mocked_stream.getvalue() == (
+        f"DEBUG - {chat_snapshot_task_id} - "
+        f"Processing: '{mocked_chat_file_task}' ...\n"
+        f"DEBUG - {chat_snapshot_task_id} - "
+        f"Completed: '{mocked_chat_file_task}'!\n"
+        f"DEBUG - {chat_snapshot_task_id} - "
+        f"Task Timing: '{mocked_chat_file_task}'.\n"
+    )
+
+    assert logging_with_upload is scenario.exists
+    assert logging_without_upload is not scenario.exists
 
   @pytest.mark.parametrize(
       "scenario",

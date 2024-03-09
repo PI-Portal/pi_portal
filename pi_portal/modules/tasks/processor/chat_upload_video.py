@@ -42,6 +42,11 @@ class ProcessorClass(
       return
 
     if exists_source and not exists_destination:
+      self.log.debug(
+          "Uploading: '%s' -> 'CHAT' ...",
+          task.args.path,
+          extra={"task": task.id},
+      )
       self.client.send_file(task.args.path, task.args.description)
 
     if exists_destination:
