@@ -2,6 +2,7 @@
 
 import logging
 import os
+from io import StringIO
 from unittest import mock
 
 import pytest
@@ -103,6 +104,50 @@ class TestChatUploadVideoProcessor:
     not_called = mocked_chat_client.return_value.send_file.call_count == 0
     assert called is scenario.expected
     assert not_called is not scenario.expected
+
+  @pytest.mark.parametrize(
+      "scenario",
+      [
+          MutableBooleanScenario(side_effect=(False, False), expected=False),
+          MutableBooleanScenario(side_effect=(False, True), expected=False),
+          MutableBooleanScenario(side_effect=(True, False), expected=True),
+          MutableBooleanScenario(side_effect=(True, True), expected=False),
+      ],
+  )
+  def test_process__vary_src_dst_exists__logging(
+      self,
+      chat_upload_video_instance: ProcessorClass,
+      mocked_chat_file_task: mock.Mock,
+      mocked_os_path_exists: mock.Mock,
+      mocked_stream: StringIO,
+      scenario: MutableBooleanScenario,
+  ) -> None:
+    mocked_os_path_exists.side_effect = scenario.side_effect
+    chat_video_task_id = mocked_chat_file_task.id
+
+    chat_upload_video_instance.process(mocked_chat_file_task)
+
+    logging_with_upload = mocked_stream.getvalue() == (
+        f"DEBUG - {chat_video_task_id} - "
+        f"Processing: '{mocked_chat_file_task}' ...\n"
+        f"DEBUG - {chat_video_task_id} - "
+        f"Uploading: '{mocked_chat_file_task.args.path}' -> 'CHAT' ...\n"
+        f"DEBUG - {chat_video_task_id} - "
+        f"Completed: '{mocked_chat_file_task}'!\n"
+        f"DEBUG - {chat_video_task_id} - "
+        f"Task Timing: '{mocked_chat_file_task}'.\n"
+    )
+    logging_without_upload = mocked_stream.getvalue() == (
+        f"DEBUG - {chat_video_task_id} - "
+        f"Processing: '{mocked_chat_file_task}' ...\n"
+        f"DEBUG - {chat_video_task_id} - "
+        f"Completed: '{mocked_chat_file_task}'!\n"
+        f"DEBUG - {chat_video_task_id} - "
+        f"Task Timing: '{mocked_chat_file_task}'.\n"
+    )
+
+    assert logging_with_upload is scenario.expected
+    assert logging_without_upload is not scenario.expected
 
   @pytest.mark.parametrize(
       "scenario",
