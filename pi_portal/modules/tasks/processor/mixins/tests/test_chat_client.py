@@ -17,4 +17,3 @@ class TestChatClientMixin:
         concrete_chat_mixin_instance.client,
         ChatClient,
     )
-    assert concrete_chat_mixin_instance.client.propagate_exceptions is True

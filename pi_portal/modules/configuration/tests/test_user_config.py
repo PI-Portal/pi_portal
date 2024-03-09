@@ -80,6 +80,8 @@ MOCK_VALID_JSON = user_config.TypeUserConfig(
                             "... proper name of slack channel ...",
                         "SLACK_CHANNEL_ID":
                             ".. slack's ID for the channel ...",
+                        "SLACK_FILE_TRANSFER_TIMEOUT":
+                            1500,
                     },
             },
         "LOGS": {

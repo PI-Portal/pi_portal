@@ -8,5 +8,5 @@ class ChatClientMixin:
   """A chat client for chat task processors."""
 
   def __init__(self, *args: Any, **kwargs: Any) -> None:
-    self.client = ChatClient(propagate_exceptions=True)
+    self.client = ChatClient()
     super().__init__(*args, **kwargs)
