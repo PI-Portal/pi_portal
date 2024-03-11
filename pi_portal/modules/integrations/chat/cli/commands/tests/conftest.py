@@ -8,6 +8,7 @@ import pytest
 from .. import (
     command_arm,
     command_disarm,
+    command_disk,
     command_help,
     command_id,
     command_restart,
@@ -20,6 +21,11 @@ from .. import (
 
 @pytest.fixture
 def mocked_linux_module() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
+def mocked_shutil_module() -> mock.Mock:
   return mock.Mock()
 
 
@@ -49,6 +55,19 @@ def disarm_command_instance(
 ) -> command_disarm.DisarmCommand:
   setup_process_command_mocks()
   return command_disarm.DisarmCommand(mocked_chat_bot)
+
+
+@pytest.fixture
+def disk_command_instance(
+    mocked_chat_bot: mock.Mock,
+    mocked_shutil_module: mock.Mock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> command_disk.DiskCommand:
+  monkeypatch.setattr(
+      command_disk.__name__ + ".shutil",
+      mocked_shutil_module,
+  )
+  return command_disk.DiskCommand(mocked_chat_bot)
 
 
 @pytest.fixture
