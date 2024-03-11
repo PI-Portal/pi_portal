@@ -10,6 +10,9 @@
     }
   },
   "CAMERA": {
+    "DISK_SPACE_MONITOR": {
+      "THRESHOLD": 500
+    },
     "MOTION": {
       "AUTHENTICATION": {
         "USERNAME": "username",

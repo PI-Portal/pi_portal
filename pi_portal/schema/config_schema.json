@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "Pi Portal Config File Schema v1.10",
+  "description": "Pi Portal Config File Schema v1.11",
   "definitions": {
     "constantOnOff": {
       "type": "string",
@@ -139,6 +139,19 @@
       "description": "Camera configuration.",
       "type": "object",
       "properties": {
+        "DISK_SPACE_MONITOR": {
+          "description": "Disk space monitor configuration.",
+          "type": "object",
+          "properties": {
+            "THRESHOLD": {
+              "description": "The amount of free space remaining (in megabytes) that prompts the camera to shutoff.",
+              "type": "number"
+            }
+          },
+          "required": [
+            "THRESHOLD"
+          ]
+        },
         "MOTION": {
           "description": "Motion image capture configuration.",
           "type": "object",
@@ -296,6 +309,7 @@
       "anyOf": [
         {
           "required": [
+            "DISK_SPACE_MONITOR",
             "MOTION"
           ]
         }

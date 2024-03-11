@@ -9,6 +9,7 @@ class TestGetAvailableCommands:
   expected_commands = [
       'arm',
       'disarm',
+      'disk',
       'help',
       'id',
       'restart',

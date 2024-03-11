@@ -2,6 +2,7 @@
 
 from .command_arm import ArmCommand
 from .command_disarm import DisarmCommand
+from .command_disk import DiskCommand
 from .command_help import HelpCommand
 from .command_id import IDCommand
 from .command_restart import RestartCommand
