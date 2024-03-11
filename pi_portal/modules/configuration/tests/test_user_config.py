@@ -30,6 +30,9 @@ MOCK_VALID_JSON = user_config.TypeUserConfig(
             },
         "CAMERA":
             {
+                "DISK_SPACE_MONITOR": {
+                    "THRESHOLD": 100
+                },
                 "MOTION":
                     {
                         "AUTHENTICATION":

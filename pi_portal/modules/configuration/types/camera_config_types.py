@@ -6,9 +6,16 @@ from typing_extensions import TypedDict
 
 
 class TypeUserConfigCamera(TypedDict):
-  """Typed representation of motion configuration."""
+  """Typed representation of camera configuration."""
 
+  DISK_SPACE_MONITOR: "TypeUserConfigCameraDiskSpaceMonitor"
   MOTION: "TypeUserConfigCameraMotion"
+
+
+class TypeUserConfigCameraDiskSpaceMonitor(TypedDict):
+  """Typed representation of the disk space monitor configuration."""
+
+  THRESHOLD: float
 
 
 class TypeUserConfigCameraMotion(TypedDict):
