@@ -45,6 +45,11 @@ class ChatCLICommandHandler:
 
     self.handle(commands.DisarmCommand)
 
+  def command_disk(self) -> None:
+    """Report the disk space available for camera storage."""
+
+    self.handle(commands.DiskCommand)
+
   def command_help(self) -> None:
     """Report the list of valid commands."""
 
