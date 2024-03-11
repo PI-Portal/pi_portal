@@ -68,6 +68,9 @@ def mock_user_state_creator() -> state.TypeUserConfig:
               },
           "CAMERA":
               {
+                  "DISK_SPACE_MONITOR": {
+                      "THRESHOLD": 100
+                  },
                   "MOTION":
                       {
                           "AUTHENTICATION":

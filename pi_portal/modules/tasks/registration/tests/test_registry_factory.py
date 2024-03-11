@@ -36,6 +36,7 @@ class TestRegistryFactory:
         "archive_logs",
         "archive_videos",
         "dead_man_switch",
+        "disk_space",
         "manifest_metrics",
         "queue_maintenance",
         "queue_metrics",
