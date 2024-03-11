@@ -54,6 +54,15 @@ class TestChatCLICommandHandler:
 
     mocked_handler.assert_called_with(commands.DisarmCommand)
 
+  def test_disk_command(
+      self,
+      mocked_cli_command_handler_instance: handler.ChatCLICommandHandler,
+      mocked_handler: mock.Mock,
+  ) -> None:
+    mocked_cli_command_handler_instance.command_disk()
+
+    mocked_handler.assert_called_with(commands.DiskCommand)
+
   def test_help_command(
       self,
       mocked_cli_command_handler_instance: handler.ChatCLICommandHandler,
