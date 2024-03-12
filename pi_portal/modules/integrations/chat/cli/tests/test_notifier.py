@@ -39,6 +39,17 @@ class TestChatCLI:
         "Already stopped ..."
     )
 
+  def test_notify_insufficient_disk_space(
+      self,
+      cli_notifier_instance: ChatCLINotifier,
+      mocked_task_scheduler_client: mock.Mock,
+  ) -> None:
+    cli_notifier_instance.notify_insufficient_disk_space()
+
+    mocked_task_scheduler_client.chat_send_message.assert_called_once_with(
+        "There is insufficient disk space to do that right now ..."
+    )
+
   def test_notify_error(
       self,
       cli_notifier_instance: ChatCLINotifier,
