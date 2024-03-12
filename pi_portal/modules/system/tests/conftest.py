@@ -9,6 +9,7 @@ import pytest
 from .. import (
     file_security,
     file_system,
+    metrics,
     supervisor,
     supervisor_config,
     supervisor_process,
@@ -31,12 +32,12 @@ def mocked_file_path() -> str:
 
 
 @pytest.fixture
-def mocked_process() -> supervisor_config.ProcessList:
-  return supervisor_config.ProcessList.BOT
+def mocked_hashlib_sha256() -> mock.Mock:
+  return mock.Mock()
 
 
 @pytest.fixture
-def mocked_hashlib_sha256() -> mock.Mock:
+def mocked_monotonic() -> mock.Mock:
   return mock.Mock()
 
 
@@ -49,6 +50,16 @@ def mocked_open_read_binary(mocked_file_handle_binary: BytesIO) -> mock.Mock:
 
 @pytest.fixture
 def mocked_os() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
+def mocked_process() -> supervisor_config.ProcessList:
+  return supervisor_config.ProcessList.BOT
+
+
+@pytest.fixture
+def mocked_psutil() -> mock.Mock:
   return mock.Mock()
 
 
@@ -111,6 +122,23 @@ def file_system_instance(
       mocked_sleep,
   )
   return file_system.FileSystem(mocked_file_path)
+
+
+@pytest.fixture
+def metrics_instance(
+    mocked_psutil: mock.Mock,
+    mocked_monotonic: mock.Mock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> metrics.SystemMetrics:
+  monkeypatch.setattr(
+      metrics.__name__ + ".psutil",
+      mocked_psutil,
+  )
+  monkeypatch.setattr(
+      metrics.__name__ + ".time.monotonic",
+      mocked_monotonic,
+  )
+  return metrics.SystemMetrics()
 
 
 @pytest.fixture

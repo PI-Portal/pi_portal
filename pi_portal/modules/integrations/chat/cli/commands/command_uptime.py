@@ -1,6 +1,6 @@
 """Chat CLI Uptime commands."""
 
-from pi_portal.modules.system import linux
+from pi_portal.modules.system import metrics
 from .bases.command import ChatCommandBase
 from .subcommands.uptime_chat_bot import BotUptimeCommand
 from .subcommands.uptime_contact_switch_monitor import (
@@ -18,6 +18,7 @@ class UptimeCommand(ChatCommandBase):
   def invoke(self) -> None:
     """Report the uptime of the system and Pi Portal processes."""
 
+    system_metrics = metrics.SystemMetrics()
     bot_uptime_command = BotUptimeCommand(self.chatbot)
     switch_monitor_uptime_command = ContactSwitchMonitorUptimeCommand(
         self.chatbot
@@ -26,7 +27,7 @@ class UptimeCommand(ChatCommandBase):
     temp_monitor_uptime_command = TempMonitorUptimeCommand(self.chatbot)
 
     try:
-      linux_uptime = linux.uptime()
+      linux_uptime = system_metrics.uptime_naturalized()
       bot_uptime_command.invoke()
       switch_monitor_uptime_command.invoke()
       task_scheduler_uptime_command.invoke()
