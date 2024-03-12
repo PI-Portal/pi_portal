@@ -8,13 +8,17 @@ from pi_portal.modules.tasks import enums
 from pi_portal.modules.tasks.task import non_scheduled
 from .. import manifest_metrics
 from ..bases import cron_job_base
+from ..mixins import metrics_logger
 
 
 class TestManifestMetricsCronJob:
   """Test the manifest_metrics module."""
 
   log_message = (
-      "INFO - None - Manifest Metrics - {metrics} - "
+      "INFO - None - Manifest Metrics - "
+      "None - None - "
+      "{manifest} - {manifest_metrics} - "
+      "None - "
       "Metrics for the '{manifest}' task manifest.\n"
   )
 
@@ -35,6 +39,10 @@ class TestManifestMetricsCronJob:
   ) -> None:
     assert isinstance(
         manifest_metrics_cron_job_instance,
+        metrics_logger.MetricsLoggerMixin,
+    )
+    assert isinstance(
+        manifest_metrics_cron_job_instance,
         cron_job_base.CronJobBase,
     )
 
@@ -47,11 +55,11 @@ class TestManifestMetricsCronJob:
     # pylint: disable=protected-access
     assert manifest_metrics_cron_job_instance._args() == expected_args
 
-  def test_process__logging(
+  def test_process__metrics_logging(
       self,
       manifest_metrics_cron_job_instance: manifest_metrics.CronJob,
       mocked_task_scheduler: mock.Mock,
-      mocked_stream: StringIO,
+      mocked_metrics_stream: StringIO,
   ) -> None:
     mocked_task_scheduler.manifests = {
         manifest: mock.Mock() for manifest in enums.TaskManifests
@@ -59,12 +67,12 @@ class TestManifestMetricsCronJob:
 
     manifest_metrics_cron_job_instance.schedule(mocked_task_scheduler)
 
-    assert mocked_stream.getvalue() == "".join(
+    assert mocked_metrics_stream.getvalue() == "".join(
         [
             self.log_message.format(
                 manifest=manifest.value,
-                metrics=mocked_task_scheduler.manifests[manifest].metrics.
-                return_value,
+                manifest_metrics=mocked_task_scheduler.manifests[manifest].
+                metrics.return_value,
             ) for manifest in enums.TaskManifests
         ]
     )

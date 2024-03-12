@@ -20,11 +20,14 @@ class TaskLoggingFilter(logging.Filter):
 
   optional_fields = [
       "cron",
-      "queue",
-      "task",
-      "metrics",
+      "manifest",
+      "manifest_metrics",
       "processing_time",
+      "queue",
+      "queue_metrics",
       "scheduled_time",
+      "system_metrics",
+      "task",
       "total_time",
   ]
 
@@ -103,5 +106,5 @@ def mocked_task_logger(mocked_stream: StringIO) -> logging.Logger:
   )
   logger.handlers = [handler]
   logger.setLevel(logging.DEBUG)
-  logger.addFilter(TaskLoggingFilter())
+  logger.filters = [TaskLoggingFilter()]
   return logger
