@@ -1,6 +1,6 @@
 """Test SupervisorProcess class."""
 
-from typing import List
+from typing import Callable, List
 from unittest import mock
 
 import pytest
@@ -35,7 +35,121 @@ class TestSupervisorProcess:
           supervisor_config.ProcessStatus.STOPPED,
       ]
   )
-  def test_start__vary_state__calls_client_correctly(
+  def test_is_running__vary_state__returns_false(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+      test_status: supervisor_config.ProcessStatus,
+  ) -> None:
+    mocked_supervisor_client.return_value.status.return_value = test_status
+
+    result = supervisor_process_instance.is_running()
+
+    assert result is False
+
+  @pytest.mark.parametrize(
+      "test_status", [
+          supervisor_config.ProcessStatus.RUNNING,
+          supervisor_config.ProcessStatus.RESTARTING,
+          supervisor_config.ProcessStatus.STARTING,
+      ]
+  )
+  def test_is_running__vary_state__returns_true(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+      test_status: supervisor_config.ProcessStatus,
+  ) -> None:
+    mocked_supervisor_client.return_value.status.return_value = test_status
+
+    result = supervisor_process_instance.is_running()
+
+    assert result is True
+
+  @pytest.mark.parametrize(
+      "test_status", [
+          supervisor_config.ProcessStatus.FATAL,
+          supervisor_config.ProcessStatus.SHUTDOWN,
+          supervisor_config.ProcessStatus.STOPPED,
+      ]
+  )
+  def test_start_condition__vary_state__returns_true(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+      test_status: supervisor_config.ProcessStatus,
+  ) -> None:
+    mocked_supervisor_client.return_value.status.return_value = test_status
+
+    result = supervisor_process_instance.start_condition()
+
+    assert result is True
+
+  @pytest.mark.parametrize(
+      "test_status", [
+          supervisor_config.ProcessStatus.RUNNING,
+          supervisor_config.ProcessStatus.RESTARTING,
+          supervisor_config.ProcessStatus.STARTING,
+      ]
+  )
+  def test_start_condition__vary_state__returns_false(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+      test_status: supervisor_config.ProcessStatus,
+  ) -> None:
+    mocked_supervisor_client.return_value.status.return_value = test_status
+
+    result = supervisor_process_instance.start_condition()
+
+    assert result is False
+
+  @pytest.mark.parametrize(
+      "test_status", [
+          supervisor_config.ProcessStatus.FATAL,
+          supervisor_config.ProcessStatus.SHUTDOWN,
+          supervisor_config.ProcessStatus.STOPPED,
+      ]
+  )
+  def test_stop_condition__vary_state__returns_false(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+      test_status: supervisor_config.ProcessStatus,
+  ) -> None:
+    mocked_supervisor_client.return_value.status.return_value = test_status
+
+    result = supervisor_process_instance.stop_condition()
+
+    assert result is False
+
+  @pytest.mark.parametrize(
+      "test_status", [
+          supervisor_config.ProcessStatus.RUNNING,
+          supervisor_config.ProcessStatus.RESTARTING,
+          supervisor_config.ProcessStatus.STARTING,
+      ]
+  )
+  def test_stop_condition__vary_state__returns_true(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+      test_status: supervisor_config.ProcessStatus,
+  ) -> None:
+    mocked_supervisor_client.return_value.status.return_value = test_status
+
+    result = supervisor_process_instance.stop_condition()
+
+    assert result is True
+
+  @pytest.mark.parametrize(
+      "test_status", [
+          supervisor_config.ProcessStatus.FATAL,
+          supervisor_config.ProcessStatus.SHUTDOWN,
+          supervisor_config.ProcessStatus.STOPPED,
+      ]
+  )
+  def test_start__vary_stat__default_condition__calls_client_correctly(
       self,
       supervisor_process_instance: supervisor_process.SupervisorProcess,
       mocked_supervisor_client: mock.Mock,
@@ -59,7 +173,7 @@ class TestSupervisorProcess:
           supervisor_config.ProcessStatus.STARTING,
       ]
   )
-  def test_start__vary_state__raises_exception(
+  def test_start__default_condition__vary_state__raises_exception(
       self,
       supervisor_process_instance: supervisor_process.SupervisorProcess,
       mocked_supervisor_client: mock.Mock,
@@ -75,13 +189,42 @@ class TestSupervisorProcess:
     )
     mocked_supervisor_client.return_value.start.assert_not_called()
 
+  @pytest.mark.parametrize("test_condition", [lambda: True])
+  def test_start__custom_condition_true__calls_client_correctly(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+      test_condition: Callable[[], bool],
+  ) -> None:
+    supervisor_process_instance.start_condition = test_condition
+
+    supervisor_process_instance.start()
+
+    mocked_supervisor_client.return_value.start.assert_called_once_with(
+        supervisor_process_instance.process_name
+    )
+
+  @pytest.mark.parametrize("test_condition", [lambda: False])
+  def test_start__custom_condition_false__raises_exception(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+      test_condition: Callable[[], bool],
+  ) -> None:
+    supervisor_process_instance.start_condition = test_condition
+
+    with pytest.raises(supervisor_process.SupervisorProcessException):
+      supervisor_process_instance.start()
+
+    mocked_supervisor_client.return_value.start.assert_not_called()
+
   @pytest.mark.parametrize(
       "test_status", [
           supervisor_config.ProcessStatus.RUNNING,
           supervisor_config.ProcessStatus.STARTING,
       ]
   )
-  def test_stop__vary_state__calls_client_correctly(
+  def test_stop__default_condition__vary_state__calls_client_correctly(
       self,
       supervisor_process_instance: supervisor_process.SupervisorProcess,
       mocked_supervisor_client: mock.Mock,
@@ -105,7 +248,7 @@ class TestSupervisorProcess:
           supervisor_config.ProcessStatus.STOPPED,
       ]
   )
-  def test_stop__vary_state__raises_exception(
+  def test_stop__default_condition__vary_state__raises_exception(
       self,
       supervisor_process_instance: supervisor_process.SupervisorProcess,
       mocked_supervisor_client: mock.Mock,
@@ -119,6 +262,35 @@ class TestSupervisorProcess:
     mocked_supervisor_client.return_value.status.assert_called_once_with(
         supervisor_process_instance.process_name
     )
+    mocked_supervisor_client.return_value.stop.assert_not_called()
+
+  @pytest.mark.parametrize("test_condition", [lambda: True])
+  def test_stop__custom_condition_true__calls_client_correctly(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+      test_condition: Callable[[], bool],
+  ) -> None:
+    supervisor_process_instance.stop_condition = test_condition
+
+    supervisor_process_instance.stop()
+
+    mocked_supervisor_client.return_value.stop.assert_called_once_with(
+        supervisor_process_instance.process_name
+    )
+
+  @pytest.mark.parametrize("test_condition", [lambda: False])
+  def test_stop__custom_condition_false__raises_exception(
+      self,
+      supervisor_process_instance: supervisor_process.SupervisorProcess,
+      mocked_supervisor_client: mock.Mock,
+      test_condition: Callable[[], bool],
+  ) -> None:
+    supervisor_process_instance.stop_condition = test_condition
+
+    with pytest.raises(supervisor_process.SupervisorProcessException):
+      supervisor_process_instance.stop()
+
     mocked_supervisor_client.return_value.stop.assert_not_called()
 
   @pytest.mark.parametrize(

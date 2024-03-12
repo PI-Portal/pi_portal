@@ -35,6 +35,13 @@ class ChatCLINotifier:
         "An internal error occurred ... you better take a look."
     )
 
+  def notify_insufficient_disk_space(self) -> None:
+    """Report that there is insufficient disk space available.."""
+
+    self.task_scheduler_client.chat_send_message(
+        "There is insufficient disk space to do that right now ..."
+    )
+
   def notify_start(self) -> None:
     """Report that the service is starting."""
 
