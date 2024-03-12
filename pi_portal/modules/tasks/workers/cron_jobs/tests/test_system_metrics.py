@@ -53,14 +53,54 @@ class TestSystemMetricsCronJob:
   @pytest.mark.parametrize(
       "scenario", [
           SystemMetricsScenario(
-              disk_usage_free_mb=200,
+              disk_usage_percent=50,
               cpu_used_percent=20.5,
-              virtual_memory_used_percent=5.7,
+              memory_used_percent=5.7,
           ),
           SystemMetricsScenario(
-              disk_usage_free_mb=1000,
+              disk_usage_percent=25,
               cpu_used_percent=10.1,
-              virtual_memory_used_percent=60.0,
+              memory_used_percent=60.0,
+          )
+      ]
+  )
+  def test_hook_submit__calls_system_metrics(
+      self,
+      create_system_metrics_scenario: TypeSystemMetricsScenarioCreator,
+      test_state: state.State,
+      scenario: SystemMetricsScenario,
+  ) -> None:
+    scenario_mocks = create_system_metrics_scenario(scenario)
+    threshold = (
+        test_state.user_config["CAMERA"]["DISK_SPACE_MONITOR"]["THRESHOLD"]
+    )
+
+    scenario_mocks.system_metrics_cron_job_instance.schedule(
+        scenario_mocks.mocked_task_scheduler
+    )
+
+    scenario_mocks.mocked_system_metrics.assert_called_once_with()
+    scenario_mocks.mocked_system_metrics.return_value.\
+        disk_usage_threshold.assert_called_once_with(
+          config.PATH_CAMERA_CONTENT,
+          threshold,
+        )
+    scenario_mocks.mocked_system_metrics.return_value. \
+        cpu_usage.assert_called_once_with()
+    scenario_mocks.mocked_system_metrics.return_value. \
+        memory_usage.assert_called_once_with()
+
+  @pytest.mark.parametrize(
+      "scenario", [
+          SystemMetricsScenario(
+              disk_usage_percent=50,
+              cpu_used_percent=20.5,
+              memory_used_percent=5.7,
+          ),
+          SystemMetricsScenario(
+              disk_usage_percent=25,
+              cpu_used_percent=10.1,
+              memory_used_percent=60.0,
           )
       ]
   )
@@ -81,14 +121,14 @@ class TestSystemMetricsCronJob:
   @pytest.mark.parametrize(
       "scenario", [
           SystemMetricsScenario(
-              disk_usage_free_mb=200,
+              disk_usage_percent=50,
               cpu_used_percent=20.5,
-              virtual_memory_used_percent=5.7,
+              memory_used_percent=5.7,
           ),
           SystemMetricsScenario(
-              disk_usage_free_mb=1000,
+              disk_usage_percent=25,
               cpu_used_percent=10.1,
-              virtual_memory_used_percent=60.0,
+              memory_used_percent=60.0,
           )
       ]
   )
@@ -96,13 +136,9 @@ class TestSystemMetricsCronJob:
       self,
       create_system_metrics_scenario: TypeSystemMetricsScenarioCreator,
       mocked_metrics_stream: StringIO,
-      test_state: state.State,
       scenario: SystemMetricsScenario,
   ) -> None:
     scenario_mocks = create_system_metrics_scenario(scenario)
-    threshold = (
-        test_state.user_config["CAMERA"]["DISK_SPACE_MONITOR"]["THRESHOLD"]
-    )
 
     scenario_mocks.system_metrics_cron_job_instance.schedule(
         scenario_mocks.mocked_task_scheduler
@@ -112,12 +148,10 @@ class TestSystemMetricsCronJob:
         "INFO - None - System Metrics - "
         "None - None - "
         "None - None - "
-        "{'camera_disk_space_utilization': " +
-        str(round(
-            threshold / scenario.disk_usage_free_mb,
-            2,
-        ) * 100) + ", "
+        "{"
+        "'camera_disk_space_utilization': " + str(scenario.disk_usage_percent) +
+        ", "
         "'cpu_utilization': " + str(scenario.cpu_used_percent) + ", "
-        "'memory_utilization': " + str(scenario.virtual_memory_used_percent) +
-        "} - " + "Raspberry Pi system metrics.\n"
+        "'memory_utilization': " + str(scenario.memory_used_percent) + "} - "
+        "Raspberry Pi system metrics.\n"
     )

@@ -1,11 +1,10 @@
 """Periodically logs metrics for external monitoring."""
 
-import shutil
 from typing import TYPE_CHECKING, TypedDict
 
-import psutil
 from pi_portal import config
 from pi_portal.modules.configuration import state
+from pi_portal.modules.system import metrics
 from pi_portal.modules.tasks import enums
 from pi_portal.modules.tasks.task import non_scheduled
 from pi_portal.modules.tasks.workers.cron_jobs.bases import cron_job_base
@@ -37,16 +36,15 @@ class CronJob(
   def _hook_submit(self, scheduler: "TaskScheduler") -> None:
     """Cron implementation."""
 
-    camera_config = state.State().user_config["CAMERA"]
-    disk_space = round(
-        (camera_config["DISK_SPACE_MONITOR"]["THRESHOLD"] * 1000000) /
-        shutil.disk_usage(config.PATH_CAMERA_CONTENT).free,
-        2,
-    ) * 100
-    cpu = psutil.cpu_percent(interval=1, percpu=False)
-    memory = psutil.virtual_memory().percent
+    system_metrics = metrics.SystemMetrics()
 
-    print(disk_space)
+    camera_config = state.State().user_config["CAMERA"]
+    disk_space = system_metrics.disk_usage_threshold(
+        config.PATH_CAMERA_CONTENT,
+        camera_config["DISK_SPACE_MONITOR"]["THRESHOLD"],
+    )
+    cpu = system_metrics.cpu_usage()
+    memory = system_metrics.memory_usage()
 
     self.metrics_logger.log.info(
         "Raspberry Pi system metrics.",
