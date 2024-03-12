@@ -20,7 +20,7 @@ from .. import (
 
 
 @pytest.fixture
-def mocked_linux_module() -> mock.Mock:
+def mocked_system_metrics() -> mock.Mock:
   return mock.Mock()
 
 
@@ -117,7 +117,7 @@ def temperature_command_instance(
 @pytest.fixture
 def uptime_command_instance(
     mocked_chat_bot: mock.Mock,
-    mocked_linux_module: mock.Mock,
+    mocked_system_metrics: mock.Mock,
     mocked_uptime_subcommands: Dict[str, mock.Mock],
     monkeypatch: pytest.MonkeyPatch,
     setup_process_command_mocks: Callable[[], None],
@@ -128,8 +128,8 @@ def uptime_command_instance(
         mocked_class,
     )
   monkeypatch.setattr(
-      command_uptime.__name__ + ".linux",
-      mocked_linux_module,
+      command_uptime.__name__ + ".metrics.SystemMetrics",
+      mocked_system_metrics,
   )
   setup_process_command_mocks()
   return command_uptime.UptimeCommand(mocked_chat_bot)

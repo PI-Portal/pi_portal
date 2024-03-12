@@ -23,29 +23,32 @@ class TestUptimeCommand:
   def test_invoke__no_error__calls_expected_processes(
       self,
       uptime_command_instance: UptimeCommand,
-      mocked_linux_module: mock.Mock,
+      mocked_system_metrics: mock.Mock,
       mocked_uptime_subcommands: Dict[str, mock.Mock],
   ) -> None:
 
     uptime_command_instance.invoke()
 
-    mocked_linux_module.uptime.assert_called_once_with()
+    mocked_system_metrics.assert_called_once_with()
+    mocked_system_metrics.return_value.\
+        uptime_naturalized.assert_called_once_with()
     for mocked_class in mocked_uptime_subcommands.values():
       mocked_class.return_value.invoke.assert_called_once_with()
 
   def test_invoke__no_error__sends_correct_message(
       self,
       uptime_command_instance: UptimeCommand,
-      mocked_linux_module: mock.Mock,
       mocked_chat_bot: mock.Mock,
+      mocked_system_metrics: mock.Mock,
       mocked_uptime_subcommands: Dict[str, mock.Mock],
   ) -> None:
     uptime_command_instance.invoke()
 
     mocked_chat_bot.task_scheduler_client. \
         chat_send_message.assert_called_once_with(
-            "System Uptime > "
-            f"{mocked_linux_module.uptime.return_value}\n"
+            "System Uptime > " + str(
+              mocked_system_metrics.return_value.uptime_naturalized.return_value
+            ) + "\n"
             "Bot Uptime > " +
             str(
               mocked_uptime_subcommands['BotUptimeCommand'].
@@ -66,27 +69,31 @@ class TestUptimeCommand:
             )
         )
 
-  def test_invoke__linux_uptime_error__calls_expected_processes(
+  def test_invoke__system_metrics_uptime_error__calls_expected_processes(
       self,
       uptime_command_instance: UptimeCommand,
-      mocked_linux_module: mock.Mock,
+      mocked_system_metrics: mock.Mock,
       mocked_uptime_subcommands: Dict[str, mock.Mock],
   ) -> None:
-    mocked_linux_module.uptime.side_effect = Exception
+    mocked_system_metrics.return_value.uptime_naturalized.side_effect = (
+        Exception
+    )
 
     uptime_command_instance.invoke()
 
     for mocked_class in mocked_uptime_subcommands.values():
       mocked_class.return_value.uptime.assert_not_called()
 
-  def test_invoke__linux_uptime_error__sends_error_message(
+  def test_invoke__system_metrics_uptime_error__sends_error_message(
       self,
       uptime_command_instance: UptimeCommand,
       mocked_chat_bot: mock.Mock,
       mocked_cli_notifier: mock.Mock,
-      mocked_linux_module: mock.Mock,
+      mocked_system_metrics: mock.Mock,
   ) -> None:
-    mocked_linux_module.uptime.side_effect = Exception
+    mocked_system_metrics.return_value.uptime_naturalized.side_effect = (
+        Exception
+    )
 
     uptime_command_instance.invoke()
 
