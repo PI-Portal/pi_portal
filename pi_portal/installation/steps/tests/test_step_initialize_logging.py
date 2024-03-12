@@ -105,7 +105,7 @@ class TestStepInitializeLogging:
         config.LOG_FILE_CHAT_BOT,
         config.LOG_FILE_CHAT_CLIENT,
         config.LOG_FILE_CONTACT_SWITCH_MONITOR,
-        config.LOG_FILE_DEAD_MAN_SWITCH,
+        config.LOG_FILE_METRICS,
         config.LOG_FILE_TASK_SCHEDULER,
         config.LOG_FILE_TEMPERATURE_MONITOR,
     ]

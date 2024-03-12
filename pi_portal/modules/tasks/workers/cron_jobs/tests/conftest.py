@@ -2,38 +2,73 @@
 # pylint: disable=redefined-outer-name
 
 import logging
-from copy import deepcopy
-from io import StringIO
+from typing import Callable, NamedTuple
 from unittest import mock
 
 import pytest
 from .. import (
     archive_logs,
     archive_videos,
-    dead_man_switch,
     manifest_metrics,
     queue_maintenance,
     queue_metrics,
+    system_metrics,
 )
 
+TypeSystemMetricsScenarioCreator = Callable[
+    ["SystemMetricsScenario"],
+    "SystemMetricsScenarioMocks",
+]
+
+
+class SystemMetricsScenario(NamedTuple):
+  disk_usage_free_mb: float
+  cpu_used_percent: float
+  virtual_memory_used_percent: float
+
+
+class SystemMetricsScenarioMocks(NamedTuple):
+  system_metrics_cron_job_instance: system_metrics.CronJob
+  mocked_psutil_module: mock.Mock
+  mocked_shutil_module: mock.Mock
+  mocked_task_scheduler: mock.Mock
+
 
 @pytest.fixture
-def mocked_isolated_stream() -> StringIO:
-  return StringIO()
+def create_system_metrics_scenario(
+    system_metrics_cron_job_instance: system_metrics.CronJob,
+    mocked_psutil_module: mock.Mock,
+    mocked_shutil_module: mock.Mock,
+    mocked_task_scheduler: mock.Mock,
+) -> "TypeSystemMetricsScenarioCreator":
+
+  def setup(scenario: "SystemMetricsScenario") -> "SystemMetricsScenarioMocks":
+    mocked_shutil_module.disk_usage.return_value.free = (
+        scenario.disk_usage_free_mb * 1000000
+    )
+    mocked_psutil_module.cpu_percent.return_value = scenario.cpu_used_percent
+    mocked_psutil_module.virtual_memory.return_value.percent = (
+        scenario.virtual_memory_used_percent
+    )
+
+    return SystemMetricsScenarioMocks(
+        system_metrics_cron_job_instance=system_metrics_cron_job_instance,
+        mocked_psutil_module=mocked_psutil_module,
+        mocked_shutil_module=mocked_shutil_module,
+        mocked_task_scheduler=mocked_task_scheduler
+    )
+
+  return setup
+
+
+@pytest.fixture()
+def mocked_psutil_module() -> mock.Mock:
+  return mock.Mock()
 
 
 @pytest.fixture
-def mocked_isolated_worker_logger(
-    mocked_isolated_stream: StringIO,
-    mocked_task_logger: logging.Logger,
-) -> logging.Logger:
-  cloned_logger: logging.Logger = deepcopy(mocked_task_logger)
-  setattr(
-      cloned_logger.handlers[0],
-      "stream",
-      mocked_isolated_stream,
-  )
-  return cloned_logger
+def mocked_shutil_module() -> mock.Mock:
+  return mock.Mock()
 
 
 @pytest.fixture
@@ -59,50 +94,17 @@ def archive_videos_cron_job_instance(
 
 
 @pytest.fixture
-def dead_man_switch_cron_job_instance(
-    mocked_isolated_worker_logger: logging.Logger,
-    mocked_worker_logger: logging.Logger,
-    mocked_task_registry: mock.Mock,
-) -> dead_man_switch.CronJob:
-  instance = dead_man_switch.CronJob(
-      mocked_worker_logger,
-      mocked_task_registry,
-  )
-  setattr(
-      instance.isolated_logger,
-      "log",
-      mocked_isolated_worker_logger,
-  )
-  return instance
-
-
-@pytest.fixture
-def dead_man_switch_logger_instance(
-    mocked_isolated_worker_logger: logging.Logger,
-) -> dead_man_switch.DeadManSwitchLogger:
-  instance = dead_man_switch.DeadManSwitchLogger()
-  setattr(
-      instance,
-      "log",
-      mocked_isolated_worker_logger,
-  )
-  return instance
-
-
-@pytest.fixture
 def manifest_metrics_cron_job_instance(
+    mocked_metrics_logger: logging.Logger,
     mocked_worker_logger: logging.Logger,
     mocked_task_registry: mock.Mock,
 ) -> manifest_metrics.CronJob:
-  metrics_formatter = logging.Formatter(
-      '%(levelname)s - %(task)s - %(cron)s - %(metrics)s - %(message)s',
-      validate=False,
-  )
-  mocked_worker_logger.handlers[0].formatter = metrics_formatter
-  return manifest_metrics.CronJob(
+  instance = manifest_metrics.CronJob(
       mocked_worker_logger,
       mocked_task_registry,
   )
+  instance.metrics_logger.log = mocked_metrics_logger
+  return instance
 
 
 @pytest.fixture
@@ -118,18 +120,38 @@ def queue_maintenance_cron_job_instance(
 
 @pytest.fixture
 def queue_metrics_cron_job_instance(
+    mocked_metrics_logger: logging.Logger,
     mocked_worker_logger: logging.Logger,
     mocked_task_registry: mock.Mock,
 ) -> queue_metrics.CronJob:
-  metrics_formatter = logging.Formatter(
-      (
-          '%(levelname)s - %(task)s - %(cron)s - %(queue)s - '
-          '%(metrics)s - %(message)s'
-      ),
-      validate=False,
-  )
-  mocked_worker_logger.handlers[0].formatter = metrics_formatter
-  return queue_metrics.CronJob(
+  instance = queue_metrics.CronJob(
       mocked_worker_logger,
       mocked_task_registry,
   )
+  instance.metrics_logger.log = mocked_metrics_logger
+  return instance
+
+
+@pytest.fixture
+def system_metrics_cron_job_instance(
+    mocked_metrics_logger: logging.Logger,
+    mocked_worker_logger: logging.Logger,
+    mocked_psutil_module: mock.Mock,
+    mocked_shutil_module: mock.Mock,
+    mocked_task_registry: mock.Mock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> system_metrics.CronJob:
+  monkeypatch.setattr(
+      system_metrics.__name__ + ".psutil",
+      mocked_psutil_module,
+  )
+  monkeypatch.setattr(
+      system_metrics.__name__ + ".shutil",
+      mocked_shutil_module,
+  )
+  instance = system_metrics.CronJob(
+      mocked_worker_logger,
+      mocked_task_registry,
+  )
+  instance.metrics_logger.log = mocked_metrics_logger
+  return instance

@@ -35,10 +35,10 @@ class TestRegistryFactory:
         # pylint: disable=duplicate-code
         "archive_logs",
         "archive_videos",
-        "dead_man_switch",
         "manifest_metrics",
         "queue_maintenance",
         "queue_metrics",
+        "system_metrics",
     ]
 
   def test_create__once__returns_registry(

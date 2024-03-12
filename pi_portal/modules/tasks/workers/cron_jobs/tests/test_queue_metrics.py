@@ -8,13 +8,17 @@ from pi_portal.modules.tasks import enums
 from pi_portal.modules.tasks.task import non_scheduled
 from .. import queue_metrics
 from ..bases import cron_job_base
+from ..mixins import metrics_logger
 
 
 class TestQueueMetricsCronJob:
   """Test the queue_metrics module."""
 
   log_message = (
-      "INFO - None - Queue Metrics - {queue} - {metrics} - "
+      "INFO - None - Queue Metrics - "
+      "{queue} - {queue_metrics} - "
+      "None - None - "
+      "None - "
       "Metrics for the '{queue}' task queue.\n"
   )
 
@@ -35,6 +39,10 @@ class TestQueueMetricsCronJob:
   ) -> None:
     assert isinstance(
         queue_metrics_cron_job_instance,
+        metrics_logger.MetricsLoggerMixin,
+    )
+    assert isinstance(
+        queue_metrics_cron_job_instance,
         cron_job_base.CronJobBase,
     )
 
@@ -47,11 +55,11 @@ class TestQueueMetricsCronJob:
     # pylint: disable=protected-access
     assert queue_metrics_cron_job_instance._args() == expected_args
 
-  def test_process__logging(
+  def test_process__metrics_logging(
       self,
       queue_metrics_cron_job_instance: queue_metrics.CronJob,
       mocked_task_scheduler: mock.Mock,
-      mocked_stream: StringIO,
+      mocked_metrics_stream: StringIO,
   ) -> None:
     mocked_task_scheduler.router.queues = {
         routing_label: mock.Mock() for routing_label in enums.RoutingLabel
@@ -59,12 +67,12 @@ class TestQueueMetricsCronJob:
 
     queue_metrics_cron_job_instance.schedule(mocked_task_scheduler)
 
-    assert mocked_stream.getvalue() == "".join(
+    assert mocked_metrics_stream.getvalue() == "".join(
         [
             self.log_message.format(
                 task=None,
                 queue=routing_label.value,
-                metrics=(
+                queue_metrics=(
                     mocked_task_scheduler.router.queues[routing_label].metrics.
                     return_value._asdict.return_value
                 )
