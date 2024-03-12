@@ -10,3 +10,12 @@ class DisarmCommand(ChatProcessManagementCommandBase):
 
   process_name = ProcessList.CAMERA
   process_command: Literal["stop"] = "stop"
+
+  def hook_invoker(self) -> None:
+    """Manage the configured process."""
+
+    super().hook_invoker()
+    self.chatbot.task_scheduler_client.set_flag(
+        "FLAG_CAMERA_DISABLED_BY_CRON",
+        False,
+    )

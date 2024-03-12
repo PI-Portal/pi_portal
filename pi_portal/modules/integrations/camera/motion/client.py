@@ -19,7 +19,7 @@ class MotionClient(CameraClientBase):
 
   def __init__(self, log: logging.Logger) -> None:
     super().__init__(log)
-    motion_config = self.current_state.user_config["CAMERA"]["MOTION"]
+    motion_config = self.camera_config["MOTION"]
     self.http_client = http.HttpClient(self.log)
     self.http_client.set_basic_auth(
         motion_config["AUTHENTICATION"]["USERNAME"],

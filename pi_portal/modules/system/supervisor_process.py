@@ -1,7 +1,7 @@
 """SupervisorProcess class."""
 
 from datetime import datetime
-from typing import List
+from typing import Callable, List
 
 import humanize
 from pi_portal.modules.system import supervisor, supervisor_config
@@ -22,12 +22,12 @@ class SupervisorProcess:
   def __init__(self, process_name: supervisor_config.ProcessList) -> None:
     self.client = supervisor.SupervisorClient()
     self.process_name = process_name
+    self.start_condition: Callable[[], bool] = lambda: not self.is_running()
+    self.stop_condition: Callable[[], bool] = self.is_running
 
-  def start(self) -> None:
-    """Start the specified Supervisor process.
+  def is_running(self) -> bool:
+    """Return whether the process is currently in a running state."""
 
-    :raises: :class:`SupervisorProcessException`
-    """
     query = self.status_in(
         [
             supervisor_config.ProcessStatus.RUNNING,
@@ -35,7 +35,15 @@ class SupervisorProcess:
             supervisor_config.ProcessStatus.STARTING,
         ]
     )
-    if not query:
+    return query
+
+  def start(self) -> None:
+    """Start the specified Supervisor process.
+
+    :raises: :class:`SupervisorProcessException`
+    """
+
+    if self.start_condition():
       self.client.start(self.process_name)
     else:
       raise SupervisorProcessException("Already Running.")
@@ -60,14 +68,7 @@ class SupervisorProcess:
     :raises: :class:`SupervisorProcessException`
     """
 
-    query = self.status_in(
-        [
-            supervisor_config.ProcessStatus.RUNNING,
-            supervisor_config.ProcessStatus.RESTARTING,
-            supervisor_config.ProcessStatus.STARTING,
-        ]
-    )
-    if query:
+    if self.stop_condition():
       self.client.stop(self.process_name)
     else:
       raise SupervisorProcessException("Already Stopped.")
