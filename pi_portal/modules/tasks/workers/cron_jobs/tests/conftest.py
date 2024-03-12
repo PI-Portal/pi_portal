@@ -35,7 +35,7 @@ class DiskSpaceScenario(NamedTuple):
 
 class DiskSpaceScenarioMocks(NamedTuple):
   disk_space_cron_job_instance: disk_space.CronJob
-  mocked_shutil: mock.Mock
+  mocked_is_disk_space_available: mock.Mock
   mocked_supervisor_process: mock.Mock
   mocked_task_scheduler: mock.Mock
   mocked_task_scheduler_client: mock.Mock
@@ -56,22 +56,16 @@ class SystemMetricsScenarioMocks(NamedTuple):
 @pytest.fixture
 def create_disk_space_scenario(
     disk_space_cron_job_instance: disk_space.CronJob,
-    mocked_shutil: mock.Mock,
+    mocked_is_disk_space_available: mock.Mock,
     mocked_supervisor_process: mock.Mock,
     mocked_task_scheduler: mock.Mock,
     mocked_task_scheduler_client: mock.Mock,
 ) -> TypeDiskSpaceScenarioCreator:
 
   def setup(scenario: "DiskSpaceScenario") -> "DiskSpaceScenarioMocks":
-    mocked_shutil.disk_usage.return_value.free = (
-        (1000000 * disk_space_cron_job_instance.threshold_value)
-    )
+    mocked_is_disk_space_available.return_value = not scenario.low_disk_space
     mocked_supervisor_process.return_value.stop.side_effect = None
 
-    if scenario.low_disk_space:
-      mocked_shutil.disk_usage.return_value.free = (
-          (1000000 * disk_space_cron_job_instance.threshold_value) - 1
-      )
     if not scenario.camera_running:
       mocked_supervisor_process.return_value.stop.side_effect = (
           supervisor_process.SupervisorProcessException
@@ -79,7 +73,7 @@ def create_disk_space_scenario(
 
     return DiskSpaceScenarioMocks(
         disk_space_cron_job_instance=disk_space_cron_job_instance,
-        mocked_shutil=mocked_shutil,
+        mocked_is_disk_space_available=mocked_is_disk_space_available,
         mocked_supervisor_process=mocked_supervisor_process,
         mocked_task_scheduler=mocked_task_scheduler,
         mocked_task_scheduler_client=mocked_task_scheduler_client
@@ -121,7 +115,7 @@ def mocked_system_metrics() -> mock.Mock:
 
 
 @pytest.fixture
-def mocked_shutil() -> mock.Mock:
+def mocked_is_disk_space_available() -> mock.Mock:
   return mock.Mock()
 
 
@@ -160,16 +154,12 @@ def archive_videos_cron_job_instance(
 @pytest.fixture
 def disk_space_cron_job_instance(
     mocked_worker_logger: logging.Logger,
-    mocked_shutil: mock.Mock,
+    mocked_is_disk_space_available: mock.Mock,
     mocked_supervisor_process: mock.Mock,
     mocked_task_scheduler_client: mock.Mock,
     mocked_task_registry: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> disk_space.CronJob:
-  monkeypatch.setattr(
-      disk_space.__name__ + ".shutil",
-      mocked_shutil,
-  )
   monkeypatch.setattr(
       disk_space.__name__ + ".service_client.TaskSchedulerServiceClient",
       mocked_task_scheduler_client,
@@ -178,10 +168,16 @@ def disk_space_cron_job_instance(
       disk_space.__name__ + ".supervisor_process.SupervisorProcess",
       mocked_supervisor_process,
   )
-  return disk_space.CronJob(
+  instance = disk_space.CronJob(
       mocked_worker_logger,
       mocked_task_registry,
   )
+  monkeypatch.setattr(
+      instance.camera_client,
+      "is_disk_space_available",
+      mocked_is_disk_space_available,
+  )
+  return instance
 
 
 @pytest.fixture

@@ -6,6 +6,7 @@ from unittest import mock
 import pytest
 from pi_portal import config
 from pi_portal.modules.configuration import state
+from pi_portal.modules.integrations.camera.service_client import CameraClient
 from pi_portal.modules.system import supervisor_config
 from pi_portal.modules.tasks import enums
 from pi_portal.modules.tasks.task.non_scheduled import Args as DiskSpaceArgs
@@ -21,7 +22,6 @@ class TestDiskSpaceCronJob:
   def test_initialize__attributes(
       self,
       disk_space_cron_job_instance: disk_space.CronJob,
-      test_state: state.State,
   ) -> None:
     assert disk_space_cron_job_instance.interval == \
         config.CRON_INTERVAL_DISK_SPACE
@@ -30,15 +30,18 @@ class TestDiskSpaceCronJob:
         "** The camera has been shut off! **"
     )
     assert disk_space_cron_job_instance.name == "Disk Space"
-    assert disk_space_cron_job_instance.threshold_path == (
-        config.PATH_CAMERA_CONTENT
-    )
     assert disk_space_cron_job_instance.quiet is True
-    assert disk_space_cron_job_instance.threshold_value == (
-        test_state.user_config["CAMERA"]["DISK_SPACE_MONITOR"]["THRESHOLD"]
-    )
     assert disk_space_cron_job_instance.type == \
         enums.TaskType.NON_SCHEDULED
+
+  def test_initialize__camera_client(
+      self,
+      disk_space_cron_job_instance: disk_space.CronJob,
+  ) -> None:
+    assert isinstance(
+        disk_space_cron_job_instance.camera_client,
+        CameraClient,
+    )
 
   def test_initialize__process(
       self,
@@ -103,9 +106,6 @@ class TestDiskSpaceCronJob:
         scenario.mocked_task_scheduler
     )
 
-    scenario.mocked_shutil.disk_usage.assert_called_once_with(
-        scenario.disk_space_cron_job_instance.threshold_path
-    )
     scenario.mocked_supervisor_process.return_value.\
         stop.assert_called_once_with()
 
@@ -143,9 +143,11 @@ class TestDiskSpaceCronJob:
       self,
       create_disk_space_scenario: TypeDiskSpaceScenarioCreator,
       mocked_stream: StringIO,
+      test_state: state.State,
       disk_space_scenario: DiskSpaceScenario,
   ) -> None:
     scenario = create_disk_space_scenario(disk_space_scenario)
+    camera_config = test_state.user_config["CAMERA"]
 
     scenario.disk_space_cron_job_instance.schedule(
         scenario.mocked_task_scheduler
@@ -154,7 +156,7 @@ class TestDiskSpaceCronJob:
     assert mocked_stream.getvalue() == (
         f"WARNING - None - {scenario.disk_space_cron_job_instance.name} - "
         "None - Camera storage disk space is now below the "
-        f"{scenario.disk_space_cron_job_instance.threshold_value} MB(s) "
+        f"{camera_config['DISK_SPACE_MONITOR']['THRESHOLD']} MB(s) "
         f"threshold.\n"
         f"WARNING - None - {scenario.disk_space_cron_job_instance.name} - "
         "None - Camera has been deactivated due to lack of disk space.\n"
@@ -191,9 +193,11 @@ class TestDiskSpaceCronJob:
       self,
       create_disk_space_scenario: TypeDiskSpaceScenarioCreator,
       mocked_stream: StringIO,
+      test_state: state.State,
       disk_space_scenario: DiskSpaceScenario,
   ) -> None:
     scenario = create_disk_space_scenario(disk_space_scenario)
+    camera_config = test_state.user_config["CAMERA"]
 
     scenario.disk_space_cron_job_instance.schedule(
         scenario.mocked_task_scheduler
@@ -202,7 +206,7 @@ class TestDiskSpaceCronJob:
     assert mocked_stream.getvalue() == (
         f"WARNING - None - {scenario.disk_space_cron_job_instance.name} - "
         "None - Camera storage disk space is now below the "
-        f"{scenario.disk_space_cron_job_instance.threshold_value} MB(s) "
+        f"{camera_config['DISK_SPACE_MONITOR']['THRESHOLD']} MB(s) "
         f"threshold.\n"
     )
 
@@ -229,9 +233,6 @@ class TestDiskSpaceCronJob:
         scenario.mocked_task_scheduler
     )
 
-    scenario.mocked_shutil.disk_usage.assert_called_once_with(
-        scenario.disk_space_cron_job_instance.threshold_path
-    )
     scenario.mocked_supervisor_process.return_value.stop.assert_not_called()
 
   @pytest.mark.parametrize(

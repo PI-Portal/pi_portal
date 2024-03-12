@@ -1,10 +1,9 @@
 """Periodically check for free disk space below a threshold."""
 
-import shutil
 from typing import TYPE_CHECKING
 
 from pi_portal import config
-from pi_portal.modules.configuration import state
+from pi_portal.modules.integrations.camera.service_client import CameraClient
 from pi_portal.modules.system import supervisor_config, supervisor_process
 from pi_portal.modules.tasks import enums, service_client
 from pi_portal.modules.tasks.task import non_scheduled
@@ -24,10 +23,9 @@ class CronJob(cron_job_base.CronJobBase[non_scheduled.Args]):
   """
 
   __slots__ = (
+      "camera_client",
       "process",
       "task_scheduler_client",
-      "threshold_path",
-      "threshold_value",
   )
 
   interval = config.CRON_INTERVAL_DISK_SPACE
@@ -41,15 +39,11 @@ class CronJob(cron_job_base.CronJobBase[non_scheduled.Args]):
 
   def __init__(self, log: "logging.Logger", registry: "TaskRegistry") -> None:
     super().__init__(log, registry)
-    camera_configuration = state.State().user_config["CAMERA"]
     self.process = supervisor_process.SupervisorProcess(
         supervisor_config.ProcessList.CAMERA
     )
+    self.camera_client = CameraClient(self.log)
     self.task_scheduler_client = service_client.TaskSchedulerServiceClient()
-    self.threshold_path = config.PATH_CAMERA_CONTENT
-    self.threshold_value = (
-        camera_configuration["DISK_SPACE_MONITOR"]["THRESHOLD"]
-    )
 
   def _args(self) -> non_scheduled.Args:
     return non_scheduled.Args()
@@ -57,14 +51,12 @@ class CronJob(cron_job_base.CronJobBase[non_scheduled.Args]):
   def _hook_submit(self, scheduler: "TaskScheduler") -> None:
     """Cron implementation."""
 
-    free_space = shutil.disk_usage(self.threshold_path).free
-
-    if free_space >= self.threshold_value * 1000000:
+    if self.camera_client.is_disk_space_available():
       return
 
     self.log.warning(
         "Camera storage disk space is now below the %s MB(s) threshold.",
-        self.threshold_value,
+        self.camera_client.camera_config["DISK_SPACE_MONITOR"]["THRESHOLD"],
         extra={
             "cron": self.name,
         },

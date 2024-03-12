@@ -20,12 +20,22 @@ from .. import (
 
 
 @pytest.fixture
-def mocked_system_metrics() -> mock.Mock:
+def mocked_camera_client() -> mock.Mock:
   return mock.Mock()
 
 
 @pytest.fixture
 def mocked_shutil_module() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
+def mocked_super_hook_invoker() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
+def mocked_system_metrics() -> mock.Mock:
   return mock.Mock()
 
 
@@ -41,9 +51,20 @@ def mocked_uptime_subcommands() -> Dict[str, mock.Mock]:
 
 @pytest.fixture
 def arm_command_instance(
+    mocked_camera_client: mock.Mock,
     mocked_chat_bot: mock.Mock,
+    mocked_super_hook_invoker: mock.Mock,
     setup_process_command_mocks: Callable[[], None],
+    monkeypatch: pytest.MonkeyPatch,
 ) -> command_arm.ArmCommand:
+  monkeypatch.setattr(
+      command_arm.__name__ + ".CameraClient",
+      mocked_camera_client,
+  )
+  monkeypatch.setattr(
+      command_arm.__name__ + ".ChatProcessManagementCommandBase.hook_invoker",
+      mocked_super_hook_invoker,
+  )
   setup_process_command_mocks()
   return command_arm.ArmCommand(mocked_chat_bot)
 
