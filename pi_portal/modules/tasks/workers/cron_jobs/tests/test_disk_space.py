@@ -103,7 +103,7 @@ class TestDiskSpaceCronJob:
         scenario.mocked_task_scheduler
     )
 
-    scenario.mocked_shutil_module.disk_usage.assert_called_once_with(
+    scenario.mocked_shutil.disk_usage.assert_called_once_with(
         scenario.disk_space_cron_job_instance.threshold_path
     )
     scenario.mocked_supervisor_process.return_value.\
@@ -229,7 +229,7 @@ class TestDiskSpaceCronJob:
         scenario.mocked_task_scheduler
     )
 
-    scenario.mocked_shutil_module.disk_usage.assert_called_once_with(
+    scenario.mocked_shutil.disk_usage.assert_called_once_with(
         scenario.disk_space_cron_job_instance.threshold_path
     )
     scenario.mocked_supervisor_process.return_value.stop.assert_not_called()
