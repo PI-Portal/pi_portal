@@ -101,8 +101,8 @@ class TestChatBotBase:
     concrete_chat_bot_instance.handle_command(valid_command)
 
     assert mocked_stream.getvalue() == (
-        f"DEBUG - Received command: '{valid_command}'\n"
-        f"INFO - Executing valid command: '{valid_command}'\n"
+        f"DEBUG - None - Received command: '{valid_command}'\n"
+        f"INFO - None - Executing valid command: '{valid_command}'\n"
     )
 
   @pytest.mark.parametrize("invalid_command", ["id", "help"])
@@ -136,4 +136,4 @@ class TestChatBotBase:
     concrete_chat_bot_instance.handle_command(invalid_command)
 
     assert mocked_stream.getvalue() == \
-        f"DEBUG - Received command: '{invalid_command}'\n"
+        f"DEBUG - None - Received command: '{invalid_command}'\n"

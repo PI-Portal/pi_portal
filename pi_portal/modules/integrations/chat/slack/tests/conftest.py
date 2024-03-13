@@ -1,12 +1,13 @@
 """Test fixtures for the slack modules tests."""
-# pylint: disable=redefined-outer-name
-
+import logging
 from typing import List
 from unittest import mock
 
 import pytest
 from pi_portal.modules.integrations.chat.bases import bot as base_bot
 from pi_portal.modules.integrations.chat.slack import bot, client, config
+
+# pylint: disable=redefined-outer-name
 
 
 @pytest.fixture
@@ -66,7 +67,7 @@ def mocked_task_scheduler_client() -> mock.Mock:
 
 @pytest.fixture
 def slack_bot_instance(
-    mocked_chat_logger: mock.Mock,
+    mocked_chat_logger: logging.Logger,
     mocked_os_module: mock.Mock,
     mocked_slack_bolt_app: mock.Mock,
     mocked_slack_bolt_socket_handler: mock.Mock,
@@ -124,7 +125,7 @@ def slack_bot_instance_mocked_handle_event(
 
 @pytest.fixture
 def slack_client_instance(
-    mocked_chat_logger: mock.Mock,
+    mocked_chat_logger: logging.Logger,
     mocked_slack_web_client: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> client.SlackClient:

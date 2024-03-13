@@ -132,8 +132,9 @@ class TestSlackClient:
         channel=slack_client_instance.channel,
         text=test_message,
     )
-    expected_calls = [expected_client_call
-                     ] * (slack_client_instance.message_retries)
+    expected_calls = (
+        [expected_client_call] * slack_client_instance.message_retries
+    )
 
     with pytest.raises(ChatClientError):
       slack_client_instance.send_message(test_message)
@@ -162,9 +163,9 @@ class TestSlackClient:
       slack_client_instance.send_message(test_message)
 
     assert mocked_stream.getvalue() == (
-        f"WARNING - Retrying failed message: '{test_message}' !\n" *
+        f"WARNING - None - Retrying failed message: '{test_message}' !\n" *
         slack_client_instance.message_retries
-    ) + f"ERROR - Failed to send message: '{test_message}' !\n"
+    ) + f"ERROR - None - Failed to send message: '{test_message}' !\n"
 
   def test_send_file__success__calls_slack_client(
       self,
@@ -194,8 +195,8 @@ class TestSlackClient:
     slack_client_instance.send_file(test_file_path, test_file_description)
 
     assert mocked_stream.getvalue() == (
-        f"DEBUG - Starting file transfer: '{test_file_path}' ...\n"
-        f"DEBUG - File transfer: '{test_file_path}' complete !\n"
+        f"DEBUG - None - Starting file transfer: '{test_file_path}' ...\n"
+        f"DEBUG - None - File transfer: '{test_file_path}' complete !\n"
     )
 
   @pytest.mark.parametrize(
@@ -244,6 +245,6 @@ class TestSlackClient:
       slack_client_instance.send_file(test_file_path, test_file_description)
 
     assert mocked_stream.getvalue() == (
-        f"DEBUG - Starting file transfer: '{test_file_path}' ...\n"
-        f"ERROR - Failed to transfer file: '{test_file_path}' !\n"
+        f"DEBUG - None - Starting file transfer: '{test_file_path}' ...\n"
+        f"ERROR - None - Failed to transfer file: '{test_file_path}' !\n"
     )
