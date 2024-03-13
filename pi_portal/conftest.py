@@ -1,8 +1,23 @@
 """Global test fixtures."""
 
+import logging
+from typing import List
+
 import pytest
 from pi_portal.modules.configuration import state
 from pi_portal.modules.configuration.tests.fixtures import mock_state
+
+
+class OptionalFieldsLoggingFilter(logging.Filter):
+  """Enable optional fields in test logging."""
+
+  optional_fields: List[str]
+
+  def filter(self, record: logging.LogRecord) -> bool:
+    for field_name in self.optional_fields:
+      if not hasattr(record, field_name):
+        setattr(record, field_name, None)
+    return True
 
 
 @pytest.fixture

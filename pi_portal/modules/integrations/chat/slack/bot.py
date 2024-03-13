@@ -57,6 +57,7 @@ class SlackBot(ChatBotBase[TypeUserConfigChatSlack]):
 
       :param event: An unvalidated Slack Bot message event.
       """
+      self.log.debug("Slack Bolt event.", extra={"event": event})
 
       self.handle_event(event)
 
@@ -74,6 +75,7 @@ class SlackBot(ChatBotBase[TypeUserConfigChatSlack]):
 
     :param event: An unvalidated Slack Bot message event.
     """
+    self.log.debug("Slack event", extra={"event": event})
 
     if self._is_valid_channel(event) and event["text"]:
       command = event["text"].lower()

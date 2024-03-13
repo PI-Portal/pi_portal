@@ -1,4 +1,5 @@
 """Test the SlackBot class."""
+
 from io import StringIO
 from typing import cast
 from unittest import mock
@@ -82,7 +83,7 @@ class TestSlackBot:
     slack_bot_instance.halt()
 
     assert mocked_stream.getvalue() == \
-        "WARNING - Chat Bot process has been terminated ...\n"
+        "WARNING - None - Chat Bot process has been terminated ...\n"
 
   def test_halt__bolt_app__calls_close(
       self,
@@ -112,7 +113,7 @@ class TestSlackBot:
     slack_bot_instance.start()
 
     assert mocked_stream.getvalue() == \
-        "WARNING - Chat Bot process has started.\n"
+        "WARNING - None - Chat Bot process has started.\n"
 
   def test_start__sends_chat_message(
       self,
@@ -160,6 +161,25 @@ class TestSlackBot:
     bolt_event_receiver(test_event)
 
     mocked_handle_event_method.assert_called_once_with(test_event)
+
+  def test_start__bolt_app__created_receiver__logs_event(
+      self,
+      slack_bot_instance_mocked_handle_event: bot.SlackBot,
+      mocked_slack_bolt_app: mock.Mock,
+      mocked_stream: StringIO,
+  ) -> None:
+    test_event = cast(bot.TypeSlackBoltEvent, {"test": "event"})
+    slack_bot_instance_mocked_handle_event.start()
+    bolt_event_receiver = (
+        mocked_slack_bolt_app.return_value.event.return_value.call_args[0][0]
+    )
+
+    bolt_event_receiver(test_event)
+
+    assert mocked_stream.getvalue() == (
+        "WARNING - None - Chat Bot process has started.\n"
+        f"DEBUG - {str(test_event)} - Slack Bolt event.\n"
+    )
 
   @pytest.mark.parametrize("command", ["id", "help"])
   def test_handle_event__vary_command__valid_event__calls_handler(
