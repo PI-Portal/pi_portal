@@ -8,6 +8,7 @@ from typing import Dict, List
 from unittest import mock
 
 import pytest
+from pi_portal.conftest import OptionalFieldsLoggingFilter
 from pi_portal.modules.tasks.enums import RoutingLabel, TaskType
 from pi_portal.modules.tasks.task.bases import task_args_base
 
@@ -16,7 +17,7 @@ class Interrupt(Exception):
   """Raised during testing to interrupt scheduling loops."""
 
 
-class TaskLoggingFilter(logging.Filter):
+class TaskLoggingFilter(OptionalFieldsLoggingFilter):
 
   optional_fields = [
       "cron",
@@ -30,12 +31,6 @@ class TaskLoggingFilter(logging.Filter):
       "task",
       "total_time",
   ]
-
-  def filter(self, record: logging.LogRecord) -> bool:
-    for field_name in self.optional_fields:
-      if not hasattr(record, field_name):
-        setattr(record, field_name, None)
-    return True
 
 
 @dataclass
