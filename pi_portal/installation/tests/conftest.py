@@ -14,16 +14,15 @@ INSTALLER_MODULE = installer.__name__
 
 step_sequence = [
     steps.StepEnsureRoot,
-    steps.StepKillMotion,
-    steps.StepKillSupervisor,
-    steps.StepInitializeDataPaths,
-    steps.StepInitializeEtc,
-    steps.StepInitializeLogging,
+    steps.StepStopSupervisordService,
+    steps.StepConfigureSupervisord,
     steps.StepConfigureMotion,
-    steps.StepRenderConfiguration,
-    steps.StepInstallConfigFile,
+    steps.StepCreateDataPaths,
+    steps.StepCreateLoggingPaths,
+    steps.StepConfigurePiPortalShim,
+    steps.StepInstallPiPortalConfigFile,
     steps.StepConfigureLogzIo,
-    steps.StepStartSupervisor,
+    steps.StepEnableSupervisordService,
 ]
 
 
@@ -35,7 +34,6 @@ def mocked_config_file_path() -> str:
 @pytest.fixture
 def mocked_steps() -> List[mock.Mock]:
   return [
-      mock.Mock(),
       mock.Mock(),
       mock.Mock(),
       mock.Mock(),

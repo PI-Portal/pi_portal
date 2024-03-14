@@ -21,8 +21,8 @@ class ConfileFileTemplate:
       self,
       source: str,
       destination: str,
-      permissions: str = "600",
-      user: str = "root",
+      permissions: str,
+      user: str,
   ) -> None:
     """Initialize a Template instance."""
 

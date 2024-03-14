@@ -1,1 +1,1 @@
-"""Installer step base classes."""
+"""Action classes for the installation process."""
