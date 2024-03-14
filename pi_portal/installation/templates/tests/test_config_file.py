@@ -16,7 +16,7 @@ CONFIG_FILE_MODULE = config_file.__name__
 class TestConfigFileTemplate:
   """Test the ConfileFileTemplate class."""
 
-  def test__initialize__attrs(
+  def test_initialize__attrs(
       self,
       config_file_template: config_file.ConfileFileTemplate,
       mocked_source_file: str,
@@ -26,7 +26,7 @@ class TestConfigFileTemplate:
     assert config_file_template.source == mocked_source_file
     assert config_file_template.destination == mocked_destination_file
 
-  def test__update_context__default_tz__stores_updated_context(
+  def test_update_context__default_tz__stores_updated_context(
       self,
       test_state: state.State,
       config_file_template: config_file.ConfileFileTemplate,
@@ -48,7 +48,7 @@ class TestConfigFileTemplate:
       assert config_file_template.context == expected_values
 
   @pytest.mark.parametrize("tz_name", ["UTC", "EST"])
-  def test__update_context__vary_tz__stores_updated_context(
+  def test_update_context__vary_tz__stores_updated_context(
       self,
       test_state: state.State,
       config_file_template: config_file.ConfileFileTemplate,
@@ -73,7 +73,7 @@ class TestConfigFileTemplate:
 
   @mock.patch(CONFIG_FILE_MODULE + ".JinjaTemplate")
   @mock.patch(CONFIG_FILE_MODULE + ".open")
-  def test__render__file_transactions(
+  def test_render__file_transactions(
       self,
       m_open: mock.Mock,
       m_template: mock.Mock,
@@ -95,7 +95,7 @@ class TestConfigFileTemplate:
 
   @mock.patch(CONFIG_FILE_MODULE + ".JinjaTemplate")
   @mock.patch(CONFIG_FILE_MODULE + ".open", mock.mock_open())
-  def test__render__template_rendered(
+  def test_render__template_rendered(
       self,
       m_template: mock.Mock,
       config_file_template: config_file.ConfileFileTemplate,
