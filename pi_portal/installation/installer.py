@@ -7,15 +7,14 @@ from pi_portal.modules.configuration.logging import installer
 from .steps import (
     StepConfigureLogzIo,
     StepConfigureMotion,
+    StepConfigurePiPortalShim,
+    StepConfigureSupervisord,
+    StepCreateDataPaths,
+    StepCreateLoggingPaths,
+    StepEnableSupervisordService,
     StepEnsureRoot,
-    StepInitializeDataPaths,
-    StepInitializeEtc,
-    StepInitializeLogging,
-    StepInstallConfigFile,
-    StepKillMotion,
-    StepKillSupervisor,
-    StepRenderConfiguration,
-    StepStartSupervisor,
+    StepInstallPiPortalConfigFile,
+    StepStopSupervisordService,
 )
 from .steps.bases import base_step
 
@@ -39,16 +38,15 @@ class Installer:
   def _configure_steps(self) -> List[base_step.StepBase]:
     return [
         StepEnsureRoot(self.log),
-        StepKillMotion(self.log),
-        StepKillSupervisor(self.log),
-        StepInitializeDataPaths(self.log),
-        StepInitializeEtc(self.log),
-        StepInitializeLogging(self.log),
+        StepStopSupervisordService(self.log),
+        StepConfigureSupervisord(self.log),
         StepConfigureMotion(self.log),
-        StepRenderConfiguration(self.log),
-        StepInstallConfigFile(self.log, self.config_file_path),
+        StepCreateDataPaths(self.log),
+        StepCreateLoggingPaths(self.log),
+        StepConfigurePiPortalShim(self.log),
+        StepInstallPiPortalConfigFile(self.log, self.config_file_path),
         StepConfigureLogzIo(self.log),
-        StepStartSupervisor(self.log),
+        StepEnableSupervisordService(self.log),
     ]
 
   def install(self) -> None:
