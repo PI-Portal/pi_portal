@@ -34,6 +34,11 @@ class FilePathCreationScenarioMocks(NamedTuple):
 
 
 @pytest.fixture
+def mocked_config_template() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
 def mocked_file_security() -> mock.Mock:
   return mock.Mock()
 
@@ -72,11 +77,6 @@ def mocked_service_definition() -> service_definition.ServiceDefinition:
 
 @pytest.fixture
 def mocked_system() -> mock.Mock:
-  return mock.Mock()
-
-
-@pytest.fixture
-def mocked_template_render() -> mock.Mock:
   return mock.Mock()
 
 
@@ -261,12 +261,12 @@ def concrete_action_remote_files_instance(
 @pytest.fixture
 def concrete_action_render_templates_class(
     mocked_file_system: mock.Mock,
-    mocked_template_render: mock.Mock,
+    mocked_config_template: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> Type[action_render_templates.RenderTemplatesAction]:
   monkeypatch.setattr(
-      config_file.__name__ + ".ConfileFileTemplate.render",
-      mocked_template_render,
+      config_file.__name__ + ".ConfileFileTemplate",
+      mocked_config_template,
   )
   monkeypatch.setattr(
       action_render_templates.__name__ + ".file_system.FileSystem",
@@ -277,17 +277,19 @@ def concrete_action_render_templates_class(
       action_render_templates.RenderTemplatesAction
   ):
     templates = [
-        config_file.ConfileFileTemplate(
+        action_render_templates.FileSystemTemplate(
             source="templates/file1",
             destination="/etc/file1",
             permissions="750",
             user="test_user1",
+            group="test_group1",
         ),
-        config_file.ConfileFileTemplate(
+        action_render_templates.FileSystemTemplate(
             source="templates/file2",
             destination="/etc/file2",
             permissions="755",
             user="test_user2",
+            group="test_group2",
         )
     ]
 
