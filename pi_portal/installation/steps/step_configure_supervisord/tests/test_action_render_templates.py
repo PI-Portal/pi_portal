@@ -1,7 +1,5 @@
 """Test the RenderSupervisordTemplatesAction class."""
 
-import os
-
 from pi_portal import config
 from ...utility.generate_action_render_templates_test import (
     GenericRenderTemplatesActionTest,
@@ -19,10 +17,8 @@ class TestRenderSupervisordTemplatesAction(GenericRenderTemplatesActionTest):
 
   def test_initialize__attributes__supervisord_config(self) -> None:
     supervisord_config = self.action_class.templates[0]
-    assert supervisord_config.source == os.path.join(
-        self.templates_base_path,
-        "supervisor/supervisord.conf",
-    )
+    assert supervisord_config.source == "supervisor/supervisord.conf"
     assert supervisord_config.destination == config.PATH_SUPERVISOR_CONFIG
     assert supervisord_config.permissions == "600"
     assert supervisord_config.user == "root"
+    assert supervisord_config.group == "root"

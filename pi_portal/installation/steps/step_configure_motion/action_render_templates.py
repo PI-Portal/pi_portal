@@ -2,9 +2,9 @@
 
 from pi_portal import config
 from pi_portal.installation.actions.action_render_templates import (
+    FileSystemTemplate,
     RenderTemplatesAction,
 )
-from pi_portal.installation.templates.config_file import ConfileFileTemplate
 from pi_portal.modules.configuration import state
 
 
@@ -12,11 +12,12 @@ class RenderMotionTemplatesAction(RenderTemplatesAction):
   """Render the required motion templates."""
 
   templates = [
-      ConfileFileTemplate(
+      FileSystemTemplate(
           source='motion/motion.conf',
           destination=config.PATH_CAMERA_CONFIG,
           permissions="600",
           user=config.PI_PORTAL_USER,
+          group=config.PI_PORTAL_USER,
       ),
   ]
 
@@ -37,11 +38,12 @@ class RenderMotionTemplatesAction(RenderTemplatesAction):
           "Creating template for '%s' ...",
           camera["DEVICE"],
       )
-      camera_config_file = ConfileFileTemplate(
+      camera_config_file = FileSystemTemplate(
           source='motion/camera.conf',
           destination=f'/etc/motion/camera{index}.conf',
           permissions="600",
           user=config.PI_PORTAL_USER,
+          group=config.PI_PORTAL_USER,
       )
       camera_config_file.context["CAMERA"] = camera
       camera_config_file.context["CAMERA"]["NAME"] = f"CAMERA-{index}"
