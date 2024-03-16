@@ -2,7 +2,7 @@
 # pylint: disable=redefined-outer-name
 
 import logging
-from typing import Dict, Type
+from typing import Callable, Dict, List, NamedTuple, Optional, Type
 from unittest import mock
 
 import pytest
@@ -14,6 +14,23 @@ from .. import (
     action_remote_files,
     action_render_templates,
 )
+
+TypeFilePathCreationScenarioCreator = (
+    Callable[
+        ["FilePathCreationScenario"],
+        "FilePathCreationScenarioMocks",
+    ]
+)
+
+
+class FilePathCreationScenario(NamedTuple):
+  path_exists: bool
+  wrong_path_index: Optional[int] = None
+
+
+class FilePathCreationScenarioMocks(NamedTuple):
+  wrong_path: Optional[str]
+  expected_type: Optional[str]
 
 
 @pytest.fixture
@@ -28,6 +45,11 @@ def mocked_file_system() -> mock.Mock:
 
 @pytest.fixture
 def mocked_http_client() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
+def mocked_os_path_isdir() -> mock.Mock:
   return mock.Mock()
 
 
@@ -59,13 +81,60 @@ def mocked_template_render() -> mock.Mock:
 
 
 @pytest.fixture
+def setup_file_path_creation_scenario(
+    concrete_action_create_paths_instance: action_create_paths.
+    CreatePathsAction, mocked_os_path_isdir: mock.Mock,
+    monkeypatch: pytest.MonkeyPatch
+) -> "TypeFilePathCreationScenarioCreator":
+
+  def setup(
+      scenario: "FilePathCreationScenario"
+  ) -> "FilePathCreationScenarioMocks":
+
+    scenario_mocks = FilePathCreationScenarioMocks(
+        wrong_path=None,
+        expected_type=None,
+    )
+
+    isdir_return_values: List[bool] = []
+    for index, file_system_path in enumerate(
+        concrete_action_create_paths_instance.file_system_paths
+    ):
+      return_value = file_system_path.folder
+
+      if scenario.wrong_path_index == index:
+        scenario_mocks = FilePathCreationScenarioMocks(
+            wrong_path=file_system_path.path,
+            expected_type="directory" if file_system_path.folder else "file"
+        )
+        return_value = not file_system_path.folder
+
+      isdir_return_values.append(return_value)
+
+    mocked_os_path_isdir.side_effect = isdir_return_values
+    monkeypatch.setattr(
+        action_create_paths.__name__ + '.os.path.exists',
+        mock.Mock(return_value=scenario.path_exists),
+    )
+
+    return scenario_mocks
+
+  return setup
+
+
+@pytest.fixture
 def concrete_action_create_paths_class(
     mocked_file_system: mock.Mock,
+    mocked_os_path_isdir: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
 ) -> Type[action_create_paths.CreatePathsAction]:
   monkeypatch.setattr(
       action_create_paths.__name__ + ".file_system.FileSystem",
       mocked_file_system,
+  )
+  monkeypatch.setattr(
+      action_create_paths.__name__ + ".os.path.isdir",
+      mocked_os_path_isdir,
   )
 
   class ConcreteCreatePathsAction(action_create_paths.CreatePathsAction):
