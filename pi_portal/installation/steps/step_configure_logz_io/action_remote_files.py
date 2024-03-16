@@ -24,5 +24,6 @@ class RemoteFileLogzIoAction(RemoteFilesAction):
               "master/AAACertificateServices.crt"
           ),
           user="root",
+          group="root",
       )
   ]
