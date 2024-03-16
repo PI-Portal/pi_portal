@@ -1,6 +1,5 @@
 """Test the RenderMotionTemplatesAction class."""
 
-import os
 from io import StringIO
 from unittest import mock
 
@@ -24,13 +23,11 @@ class TestRenderMotionTemplatesAction(GenericRenderTemplatesActionTest):
 
   def test_initialize__attributes__motion_config(self) -> None:
     motion_config = self.action_class.templates[0]
-    assert motion_config.source == os.path.join(
-        self.templates_base_path,
-        "motion/motion.conf",
-    )
+    assert motion_config.source == "motion/motion.conf"
     assert motion_config.destination == config.PATH_CAMERA_CONFIG
     assert motion_config.permissions == "600"
     assert motion_config.user == config.PI_PORTAL_USER
+    assert motion_config.group == config.PI_PORTAL_USER
 
   def test_invoke__generates_camera_templates_before_rendering(
       self,
@@ -90,10 +87,7 @@ class TestRenderMotionTemplatesAction(GenericRenderTemplatesActionTest):
     camera_templates = render_motion_templates_action_instance.templates[1:]
     for index0, template in enumerate(camera_templates):
       index = index0 + 1
-      assert template.source == os.path.join(
-          self.templates_base_path,
-          "motion/camera.conf",
-      )
+      assert template.source == "motion/camera.conf"
       assert template.destination == f'/etc/motion/camera{index}.conf'
       assert template.permissions == "600"
       assert template.user == config.PI_PORTAL_USER

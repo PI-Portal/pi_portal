@@ -23,8 +23,6 @@ def config_file_template(
     mocked_source_file: str,
 ) -> config_file.ConfileFileTemplate:
   return config_file.ConfileFileTemplate(
-      permissions="644",
       destination=mocked_destination_file,
       source=mocked_source_file,
-      user="test_user1",
   )
