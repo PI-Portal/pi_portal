@@ -141,7 +141,7 @@ class TestRemoteFilesAction:
           mock.call(remote_file.target),
           mock.call().ownership(
               remote_file.user,
-              remote_file.user,
+              remote_file.group,
           ),
           mock.call().permissions(remote_file.permissions),
       ]

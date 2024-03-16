@@ -29,3 +29,4 @@ class TestRemoteFileLogzIoAction(GenericRemoteFilesActionTest):
         "master/AAACertificateServices.crt"
     )
     assert file_beat_cert.user == "root"
+    assert file_beat_cert.group == "root"

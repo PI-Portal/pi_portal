@@ -25,6 +25,7 @@ class RemoteFile:
   url: str
   permissions: str
   user: str
+  group: str
 
 
 class RemoteFileDownloadError(Exception):
@@ -59,7 +60,7 @@ class RemoteFilesAction(base_action.ActionBase):
       local_file = file_security.FileSecurity(remote_file.target)
       local_file.sha256(remote_file.sha256)
       fs = file_system.FileSystem(remote_file.target)
-      fs.ownership(remote_file.user, remote_file.user)
+      fs.ownership(remote_file.user, remote_file.group)
       fs.permissions(remote_file.permissions)
       self.log.info(f"Download: Successfully saved '{remote_file.target}' !")
     except http.HttpClientError as exc:

@@ -231,6 +231,7 @@ def concrete_action_remote_files_class(
             url="https://remote.com/source1.txt",
             permissions="750",
             user="test_user1",
+            group="test_group1"
         ),
         action_remote_files.RemoteFile(
             sha256="expected_sha256_2",
@@ -238,6 +239,7 @@ def concrete_action_remote_files_class(
             url="https://remote.com/source2.sh",
             permissions="755",
             user="test_user2",
+            group="test_group2"
         )
     ]
 
