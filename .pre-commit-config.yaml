@@ -89,6 +89,7 @@ repos:
       - id: security-credentials
       - id: spelling-commit-message
       - id: spelling-markdown
+      - id: spelling-vale-synchronize
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.33.0
     hooks:
