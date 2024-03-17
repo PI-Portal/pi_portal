@@ -6,17 +6,17 @@ There are a variety of ways to get up and running with pi_portal depending on th
 
 ### USB Webcams
 
-This might save someone some trouble ...
+This might save someone some trouble…
 
-In some cases unplugging and then reconnecting USB web cameras may renumber the devices.  This changes  their hardware device name.  Since the pi_portal configuration needs to match the hardware device names, this can occasionally cause problems.  
+In some cases unplugging and then reconnecting USB web cameras may renumber the devices.  This changes  their hardware device name.  Since the Portal configuration needs to match the hardware device names, this can occasionally cause problems.
 
 For reliability, it's recommended to avoid these types of disconnections while using the application.  If this scenario does occur, restarting your Raspberry Pi will restore the original device numbering.
 
 ### Supervisord
 
-Pi Portal makes heavy use of [supervisord](http://supervisord.org/) to manage processes.
+pi_portal makes heavy use of [supervisord](http://supervisord.org/) to manage processes.
 
-If you have custom configuration for supervisord you will encounter problems during install and uninstall.  Deploying Pi Portal as a docker container is strongly recommended in these types of scenarios.
+If you have custom configuration for supervisord you will encounter problems during install and uninstall.  Deploying pi_portal as a docker container is strongly recommended in these types of scenarios.
 
 ### Older Hardware
 
@@ -27,7 +27,7 @@ On older Raspberry Pi hardware you should give the supervisor processes plenty o
 This is probably the simplest approach, but requires [installing docker](https://docs.docker.com/engine/install/raspberry-pi-os/). It's recommended to use a Raspberry PI OS docker host to eliminate possible problems with GPIO or video hardware access inside the container.
 
 Steps:
-1. Create a configuration file based on your Slack Bot and GPIOs.
+1. Create a configuration file based on your PaaS accounts and GPIOs.  (Secure this file with appropriate permissions and ownership: you should disable read or write access for other users.)
 2. Identify the GPIO device.  On Raspberry PI OS this is `/dev/gpiomem`.
 3. Identify the video devices of your webcams.  Usually this is `/dev/video0` or similar.
 4. Find your [timezone identifier](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
@@ -88,8 +88,8 @@ Steps:
    apt install ./pi-portal_x.x.x-[architecture]_[distribution].deb
    ```
 
-6. Create a configuration file based on your Slack Bot and GPIOs.
-7. Find your [timezone identifier](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).  This may already be configured on your system, check the value of the TZ environment variable.
+6. Create a configuration file based on your PaaS accounts and GPIOs.
+7. Find your [timezone identifier](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).  This may already be configured on your system: check the value of the TZ environment variable.
 8. Install your configuration file:
 
    ```shell
@@ -116,7 +116,7 @@ Steps:
 
 ## Installation Method 3: Other Linux Distributions
 
-You'll need to roll up your sleeves a little bit when installing pi_portal manually, but it's not that hard ...
+You'll need to roll up your sleeves a little bit when installing pi_portal manually, but it's not that hard…
 
 Steps:
 1. Identify your CPU architecture:
@@ -186,7 +186,7 @@ Steps:
     ```
 
     This group may be named differently, or may not exist at all.  Creating this group yourself is possible, via [udevadm](https://manpages.debian.org/bookworm/udev/udevadm.8.en.html).
-11. Create a configuration file based on your Slack Bot and GPIOs.
+11. Create a configuration file based on your PaaS accounts and GPIOs.
 12. Install the pi_portal wheel:
 
     ```shell
@@ -200,7 +200,7 @@ Steps:
     ```
 
     - It's possible to change the location by setting an [environment variable](../pi_portal/config.py).
-13. Find your [timezone identifier](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).  This may already be configured on your system, check the value of the TZ environment variable.
+13. Find your [timezone identifier](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).  This may already be configured on your system: check the value of the TZ environment variable.
 14. While still acting as root, install your configuration file:
 
     ```shell
