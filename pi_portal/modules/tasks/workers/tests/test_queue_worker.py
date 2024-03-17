@@ -24,6 +24,20 @@ if TYPE_CHECKING:
 class TestQueueWorker:
   """Test the QueueWorker class."""
 
+  logging_message_start = (
+      "WARNING - None - None - None - {routing_label.value} - "
+      "Worker thread has started ...\n"
+  )
+  logging_message_halt = (
+      "WARNING - None - None - None - {routing_label.value} - "
+      "Worker thread has exited!\n"
+  )
+  logging_message_failed_task = (
+      "DEBUG - {task.id} - {task.type.value} - None - {routing_label.value} - "
+      "Failed task '{task}' will be rescheduled in {task.retry_after} "
+      "second(s).\n"
+  )
+
   def test_initialize__attributes(
       self,
       queue_worker_instance: queue_worker.QueueWorker,
@@ -72,9 +86,8 @@ class TestQueueWorker:
     with pytest.raises(Interrupt):
       queue_worker_instance.start()
 
-    assert mocked_stream.getvalue() == (
-        f"WARNING - None - None - {queue_worker_instance.routing_label.value} "
-        f"- Worker thread has started ...\n"
+    assert mocked_stream.getvalue() == self.logging_message_start.format(
+        routing_label=queue_worker_instance.routing_label
     )
 
   def test_start__mocked_consumer__calls_consumer(
@@ -550,10 +563,10 @@ class TestQueueWorker:
     scenario_mocks.instance.consumer()
 
     has_no_retry_logging = mocked_stream.getvalue() == ""
-    has_retry_logging = mocked_stream.getvalue() == (
-        f"DEBUG - {task.id} - None - "
-        f"{scenario_mocks.instance.routing_label.value} - Failed task '{task}' "
-        f"will be rescheduled in {scenario.retry_after} second(s).\n"
+    has_retry_logging = mocked_stream.getvalue(
+    ) == (self.logging_message_failed_task).format(
+        routing_label=scenario_mocks.instance.routing_label,
+        task=task,
     )
     assert has_no_retry_logging is (scenario.ok or scenario.retry_after < 1)
     assert has_retry_logging is (not scenario.ok and scenario.retry_after > 0)
@@ -568,11 +581,8 @@ class TestQueueWorker:
       queue_worker_instance.halt()
 
     assert mocked_stream.getvalue() == (
-        f"WARNING - None - None - {queue_worker_instance.routing_label.value} "
-        f"- Worker thread has started ...\n"
-        f"WARNING - None - None - {queue_worker_instance.routing_label.value} "
-        f"- Worker thread has exited!\n"
-    )
+        self.logging_message_start + self.logging_message_halt
+    ).format(routing_label=queue_worker_instance.routing_label)
 
   def test_halt__scheduler_is_running__stops_all_threads(
       self,

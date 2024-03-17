@@ -15,7 +15,7 @@ class TestQueueMetricsCronJob:
   """Test the queue_metrics module."""
 
   log_message = (
-      "INFO - None - Queue Metrics - "
+      "INFO - None - None - Queue Metrics - "
       "{queue} - {queue_metrics} - "
       "None - None - "
       "None - "

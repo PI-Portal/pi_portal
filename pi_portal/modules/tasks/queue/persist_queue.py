@@ -70,18 +70,12 @@ class Queue(QueueBase):
     except AttributeError:
       self.log.error(
           "Fatal error during deserialization!",
-          extra={
-              "task": None,
-              'queue': self.routing_label.value
-          },
+          extra={'queue': self.routing_label.value},
       )
       self.log.error(
           "To restore service the queue is being cleared. "
           "Tasks have been lost!",
-          extra={
-              "task": None,
-              'queue': self.routing_label.value
-          },
+          extra={'queue': self.routing_label.value},
       )
       shutil.rmtree(self._path)
       self._initialize()

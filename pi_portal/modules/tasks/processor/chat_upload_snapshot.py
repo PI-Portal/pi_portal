@@ -31,10 +31,14 @@ class ProcessorClass(
       ],
   ) -> chat_upload_snapshot.ReturnType:
     if os.path.exists(task.args.path):
+      # pylint: disable=duplicate-code
       self.log.debug(
           "Uploading: '%s' -> 'CHAT' ...",
           task.args.path,
-          extra={"task": task.id},
+          extra={
+              "task_id": task.id,
+              "task_type": task.type.value,
+          },
       )
       self.client.send_file(task.args.path, task.args.description)
       next_args = file_system_remove.Args(path=task.args.path)
