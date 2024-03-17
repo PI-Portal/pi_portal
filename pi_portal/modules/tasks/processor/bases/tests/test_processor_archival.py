@@ -20,57 +20,58 @@ class TestArchivalTaskProcessorBaseClass:
 
   logging__mutex_locked__no_files = "\n".join(
       [
-          "DEBUG - {id} - Processing: '{task}' ...",
-          "INFO - {id} - Mutex is locked, aborting '{task}' cron run ...",
-          "DEBUG - {id} - Completed: '{task}'!",
-          "DEBUG - {id} - Task Timing: '{task}'.",
+          "DEBUG - {id} - {type} - Processing: '{task}' ...",
+          "INFO - {id} - {type} - Mutex is locked, aborting '{task}' "
+          "cron run ...",
+          "DEBUG - {id} - {type} - Completed: '{task}'!",
+          "DEBUG - {id} - {type} - Task Timing: '{task}'.",
       ]
   ) + "\n"
 
   logging__no_mutex__no_files = "\n".join(
       [
-          "DEBUG - {id} - Processing: '{task}' ...",
-          "DEBUG - {id} - Completed: '{task}'!",
-          "DEBUG - {id} - Task Timing: '{task}'.",
+          "DEBUG - {id} - {type} - Processing: '{task}' ...",
+          "DEBUG - {id} - {type} - Completed: '{task}'!",
+          "DEBUG - {id} - {type} - Task Timing: '{task}'.",
       ]
   ) + "\n"
 
   logging__no_mutex__files = "\n".join(
       [
-          "DEBUG - {id} - Processing: '{task}' ...",
-          "DEBUG - {id} - Uploading '/1/file1' -> 'file1' ...",
-          "DEBUG - {id} - Removing '/1/file1' ...",
-          "DEBUG - {id} - Uploading '/2/file2' -> 'file2' ...",
-          "DEBUG - {id} - Removing '/2/file2' ...",
-          "DEBUG - {id} - Uploading '/3/file3' -> 'file3' ...",
-          "DEBUG - {id} - Removing '/3/file3' ...",
-          "DEBUG - {id} - Completed: '{task}'!",
-          "DEBUG - {id} - Task Timing: '{task}'.",
+          "DEBUG - {id} - {type} - Processing: '{task}' ...",
+          "DEBUG - {id} - {type} - Uploading '/1/file1' -> 'file1' ...",
+          "DEBUG - {id} - {type} - Removing '/1/file1' ...",
+          "DEBUG - {id} - {type} - Uploading '/2/file2' -> 'file2' ...",
+          "DEBUG - {id} - {type} - Removing '/2/file2' ...",
+          "DEBUG - {id} - {type} - Uploading '/3/file3' -> 'file3' ...",
+          "DEBUG - {id} - {type} - Removing '/3/file3' ...",
+          "DEBUG - {id} - {type} - Completed: '{task}'!",
+          "DEBUG - {id} - {type} - Task Timing: '{task}'.",
       ]
   ) + "\n"
 
   logging__no_mutex__files__exception1 = "\n".join(
       [
-          "DEBUG - {id} - Processing: '{task}' ...",
-          "DEBUG - {id} - Uploading '/1/file1' -> 'file1' ...",
-          "DEBUG - {id} - Removing '/1/file1' ...",
-          "DEBUG - {id} - Uploading '/2/file2' -> 'file2' ...",
-          "ERROR - {id} - Failed to upload '/2/file2' ...",
-          "ERROR - {id} - Failed: '{task}'!",
-          "ERROR - {id} - Exception",
+          "DEBUG - {id} - {type} - Processing: '{task}' ...",
+          "DEBUG - {id} - {type} - Uploading '/1/file1' -> 'file1' ...",
+          "DEBUG - {id} - {type} - Removing '/1/file1' ...",
+          "DEBUG - {id} - {type} - Uploading '/2/file2' -> 'file2' ...",
+          "ERROR - {id} - {type} - Failed to upload '/2/file2' ...",
+          "ERROR - {id} - {type} - Failed: '{task}'!",
+          "ERROR - {id} - {type} - Exception",
       ]
   ) + "\n"
 
   logging__no_mutex__files__exception2 = "\n".join(
       [
-          "DEBUG - {id} - Processing: '{task}' ...",
-          "DEBUG - {id} - Uploading '/1/file1' -> 'file1' ...",
-          "DEBUG - {id} - Removing '/1/file1' ...",
-          "DEBUG - {id} - Uploading '/2/file2' -> 'file2' ...",
-          "DEBUG - {id} - Removing '/2/file2' ...",
-          "ERROR - {id} - Failed to remove '/2/file2' ...",
-          "ERROR - {id} - Failed: '{task}'!",
-          "ERROR - {id} - Exception",
+          "DEBUG - {id} - {type} - Processing: '{task}' ...",
+          "DEBUG - {id} - {type} - Uploading '/1/file1' -> 'file1' ...",
+          "DEBUG - {id} - {type} - Removing '/1/file1' ...",
+          "DEBUG - {id} - {type} - Uploading '/2/file2' -> 'file2' ...",
+          "DEBUG - {id} - {type} - Removing '/2/file2' ...",
+          "ERROR - {id} - {type} - Failed to remove '/2/file2' ...",
+          "ERROR - {id} - {type} - Failed: '{task}'!",
+          "ERROR - {id} - {type} - Exception",
       ]
   ) + "\n"
 
@@ -206,8 +207,9 @@ class TestArchivalTaskProcessorBaseClass:
     archival_processor_instance.disk_queue_class = \
         mock.Mock(return_value=[])
     values = {
-        "task": mocked_archival_task,
         "id": mocked_archival_task.id,
+        "task": mocked_archival_task,
+        "type": mocked_archival_task.type,
     }
 
     archival_processor_instance.process(mocked_archival_task)
@@ -330,8 +332,9 @@ class TestArchivalTaskProcessorBaseClass:
       mocked_stream: StringIO,
   ) -> None:
     logging_values = {
-        "task": mocked_archival_task,
         "id": mocked_archival_task.id,
+        "task": mocked_archival_task,
+        "type": mocked_archival_task.type,
     }
 
     archival_processor_instance_with_files.process(mocked_archival_task)
@@ -352,8 +355,9 @@ class TestArchivalTaskProcessorBaseClass:
         None
     ]
     logging_values = {
-        "task": mocked_archival_task,
         "id": mocked_archival_task.id,
+        "task": mocked_archival_task,
+        "type": mocked_archival_task.type,
     }
 
     archival_processor_instance_with_files.process(mocked_archival_task)
@@ -361,7 +365,9 @@ class TestArchivalTaskProcessorBaseClass:
     assert mocked_stream.getvalue() == (
         self.logging__no_mutex__files__exception1.format(**logging_values) +
         traceback.get_traceback(mocked_archival_task.result.value) +
-        "DEBUG - {id} - Task Timing: '{task}'.\n".format(**logging_values)
+        "DEBUG - {id} - {type} - Task Timing: '{task}'.\n".format(
+            **logging_values
+        )
     )
 
   def test_process__mutex_unlocked__files__logging__exception2(
@@ -373,8 +379,9 @@ class TestArchivalTaskProcessorBaseClass:
   ) -> None:
     mocked_os_remove.side_effect = [None, OSError, None]
     logging_values = {
-        "task": mocked_archival_task,
         "id": mocked_archival_task.id,
+        "task": mocked_archival_task,
+        "type": mocked_archival_task.type,
     }
 
     archival_processor_instance_with_files.process(mocked_archival_task)
@@ -384,5 +391,7 @@ class TestArchivalTaskProcessorBaseClass:
         traceback.get_traceback(mocked_archival_task.result.value).replace(
             "builtins.OSError",
             "OSError",
-        ) + "DEBUG - {id} - Task Timing: '{task}'.\n".format(**logging_values)
+        ) + "DEBUG - {id} - {type} - Task Timing: '{task}'.\n".format(
+            **logging_values
+        )
     )

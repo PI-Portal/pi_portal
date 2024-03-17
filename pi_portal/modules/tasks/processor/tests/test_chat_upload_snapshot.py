@@ -117,25 +117,26 @@ class TestChatUploadSnapshotProcessor:
   ) -> None:
     mocked_os_path_exists.return_value = scenario.exists
     chat_snapshot_task_id = mocked_chat_file_task.id
+    chat_snapshot_task_type = mocked_chat_file_task.type
 
     chat_upload_snapshot_instance.process(mocked_chat_file_task)
 
     logging_with_upload = mocked_stream.getvalue() == (
-        f"DEBUG - {chat_snapshot_task_id} - "
+        f"DEBUG - {chat_snapshot_task_id} - {chat_snapshot_task_type} - "
         f"Processing: '{mocked_chat_file_task}' ...\n"
-        f"DEBUG - {chat_snapshot_task_id} - "
+        f"DEBUG - {chat_snapshot_task_id} - {chat_snapshot_task_type} - "
         f"Uploading: '{mocked_chat_file_task.args.path}' -> 'CHAT' ...\n"
-        f"DEBUG - {chat_snapshot_task_id} - "
+        f"DEBUG - {chat_snapshot_task_id} - {chat_snapshot_task_type} - "
         f"Completed: '{mocked_chat_file_task}'!\n"
-        f"DEBUG - {chat_snapshot_task_id} - "
+        f"DEBUG - {chat_snapshot_task_id} - {chat_snapshot_task_type} - "
         f"Task Timing: '{mocked_chat_file_task}'.\n"
     )
     logging_without_upload = mocked_stream.getvalue() == (
-        f"DEBUG - {chat_snapshot_task_id} - "
+        f"DEBUG - {chat_snapshot_task_id} - {chat_snapshot_task_type} - "
         f"Processing: '{mocked_chat_file_task}' ...\n"
-        f"DEBUG - {chat_snapshot_task_id} - "
+        f"DEBUG - {chat_snapshot_task_id} - {chat_snapshot_task_type} - "
         f"Completed: '{mocked_chat_file_task}'!\n"
-        f"DEBUG - {chat_snapshot_task_id} - "
+        f"DEBUG - {chat_snapshot_task_id} - {chat_snapshot_task_type} - "
         f"Task Timing: '{mocked_chat_file_task}'.\n"
     )
 

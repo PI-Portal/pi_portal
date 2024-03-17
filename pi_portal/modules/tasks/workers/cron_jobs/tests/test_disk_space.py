@@ -154,11 +154,13 @@ class TestDiskSpaceCronJob:
     )
 
     assert mocked_stream.getvalue() == (
-        f"WARNING - None - {scenario.disk_space_cron_job_instance.name} - "
+        "WARNING - None - None - "
+        f"{scenario.disk_space_cron_job_instance.name} - "
         "None - Camera storage disk space is now below the "
         f"{camera_config['DISK_SPACE_MONITOR']['THRESHOLD']} MB(s) "
         f"threshold.\n"
-        f"WARNING - None - {scenario.disk_space_cron_job_instance.name} - "
+        "WARNING - None - None - "
+        f"{scenario.disk_space_cron_job_instance.name} - "
         "None - Camera has been deactivated due to lack of disk space.\n"
     )
 
@@ -204,7 +206,8 @@ class TestDiskSpaceCronJob:
     )
 
     assert mocked_stream.getvalue() == (
-        f"WARNING - None - {scenario.disk_space_cron_job_instance.name} - "
+        "WARNING - None - None - "
+        f"{scenario.disk_space_cron_job_instance.name} - "
         "None - Camera storage disk space is now below the "
         f"{camera_config['DISK_SPACE_MONITOR']['THRESHOLD']} MB(s) "
         f"threshold.\n"

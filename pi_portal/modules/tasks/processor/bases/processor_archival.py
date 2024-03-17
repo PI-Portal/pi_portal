@@ -32,7 +32,10 @@ class ArchivalTaskProcessorBaseClass(
       self.log.info(
           "Mutex is locked, aborting '%s' cron run ...",
           task,
-          extra={"task": task.id},
+          extra={
+              "task_id": task.id,
+              "task_type": task.type,
+          },
       )
       return None
 
@@ -47,27 +50,39 @@ class ArchivalTaskProcessorBaseClass(
               "Uploading '%s' -> '%s' ...",
               source_path,
               obj_name,
-              extra={"task": task.id},
+              extra={
+                  "task_id": task.id,
+                  "task_type": task.type,
+              },
           )
           client.upload(source_path, obj_name)
           self.log.debug(
               "Removing '%s' ...",
               source_path,
-              extra={"task": task.id},
+              extra={
+                  "task_id": task.id,
+                  "task_type": task.type,
+              },
           )
           os.remove(source_path)
         except self.archival_client_exception_class as exc:
           self.log.error(
               "Failed to upload '%s' ...",
               source_path,
-              extra={"task": task.id},
+              extra={
+                  "task_id": task.id,
+                  "task_type": task.type,
+              },
           )
           raise exc
         except OSError as exc:
           self.log.error(
               "Failed to remove '%s' ...",
               source_path,
-              extra={"task": task.id},
+              extra={
+                  "task_id": task.id,
+                  "task_type": task.type,
+              },
           )
           raise exc
     return None

@@ -145,7 +145,7 @@ class TestSystemMetricsCronJob:
     )
 
     assert mocked_metrics_stream.getvalue() == (
-        "INFO - None - System Metrics - "
+        "INFO - None - None - System Metrics - "
         "None - None - "
         "None - None - "
         "{"

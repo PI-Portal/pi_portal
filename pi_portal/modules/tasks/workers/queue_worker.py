@@ -101,7 +101,8 @@ class QueueWorker(worker_base.WorkerBase):
             task.retry_after,
             extra={
                 "queue": self.routing_label.value,
-                "task": task.id,
+                "task_id": task.id,
+                "task_type": task.type,
             },
         )
         self.failed_task_manifest.add(task)

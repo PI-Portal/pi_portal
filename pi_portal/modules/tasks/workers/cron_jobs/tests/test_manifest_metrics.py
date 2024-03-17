@@ -15,7 +15,7 @@ class TestManifestMetricsCronJob:
   """Test the manifest_metrics module."""
 
   log_message = (
-      "INFO - None - Manifest Metrics - "
+      "INFO - None - None - Manifest Metrics - "
       "None - None - "
       "{manifest} - {manifest_metrics} - "
       "None - "

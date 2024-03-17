@@ -16,14 +16,15 @@ class TestTaskScheduler:
   """Test the TaskScheduler class."""
 
   logging_startup_message = (
-      "WARNING - None - None - Task scheduler is starting ...\n"
-      "WARNING - None - None - Creating the '{manifest.value}' manifest ...\n"
-      "WARNING - None - None - Creating the cron scheduler ...\n"
-      "WARNING - None - None - Creating the failed task scheduler ...\n"
+      "WARNING - None - None - None - Task scheduler is starting ...\n"
+      "WARNING - None - None - None - Creating the '{manifest.value}' "
+      "manifest ...\n"
+      "WARNING - None - None - None - Creating the cron scheduler ...\n"
+      "WARNING - None - None - None - Creating the failed task scheduler ...\n"
   ) + "".join(
       [
           (
-              "WARNING - None - {routing_label.value} - "
+              "WARNING - None - None - {routing_label.value} - "
               "Creating the '{routing_label.value}' queue worker pool ...\n"
           ).format(routing_label=routing_label)
           for routing_label in MOCKED_CONFIG
@@ -171,7 +172,8 @@ class TestTaskScheduler:
     assert mocked_stream.getvalue() == (
         self.logging_startup_message.format(
             manifest=TaskManifests.FAILED_TASKS
-        ) + "WARNING - None - None - Task scheduler is shutting down ...\n"
+        ) + "WARNING - None - None - None - Task scheduler is shutting "
+        "down ...\n"
     )
 
   def test_halt__scheduler_has_started__halts_all_managed_workers(

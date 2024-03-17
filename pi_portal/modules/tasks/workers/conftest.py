@@ -29,7 +29,7 @@ def mocked_metrics_logger(mocked_metrics_stream: StringIO,) -> logging.Logger:
   handler.setFormatter(
       logging.Formatter(
           (
-              '%(levelname)s - %(task)s - %(cron)s - '
+              '%(levelname)s - %(task_id)s - %(task_type)s - %(cron)s - '
               '%(queue)s - %(queue_metrics)s - '
               '%(manifest)s - %(manifest_metrics)s - '
               '%(system_metrics)s - '
@@ -62,7 +62,8 @@ def mocked_task_scheduler(
 @pytest.fixture
 def mocked_worker_logger(mocked_task_logger: logging.Logger) -> logging.Logger:
   worker_formatter = logging.Formatter(
-      '%(levelname)s - %(task)s - %(cron)s - %(queue)s - %(message)s',
+      '%(levelname)s - %(task_id)s - %(task_type)s - '
+      '%(cron)s - %(queue)s - %(message)s',
       validate=False,
   )
   mocked_task_logger.handlers[0].formatter = worker_formatter
