@@ -28,7 +28,8 @@ class TaskLoggingFilter(OptionalFieldsLoggingFilter):
       "queue_metrics",
       "scheduled_time",
       "system_metrics",
-      "task",
+      "task_id",
+      "task_type",
       "total_time",
   ]
 
@@ -97,7 +98,8 @@ def mocked_task_logger(mocked_stream: StringIO) -> logging.Logger:
   logger = logging.getLogger("test")
   handler = logging.StreamHandler(stream=mocked_stream)
   handler.setFormatter(
-      logging.Formatter('%(levelname)s - %(task)s - %(message)s')
+      logging.
+      Formatter('%(levelname)s - %(task_id)s - %(task_type)s - %(message)s')
   )
   logger.handlers = [handler]
   logger.setLevel(logging.DEBUG)

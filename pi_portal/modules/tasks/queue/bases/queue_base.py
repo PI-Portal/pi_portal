@@ -60,8 +60,9 @@ class QueueBase(abc.ABC):
         "Ack: '%s'!",
         task,
         extra={
-            "task": task.id,
             "queue": self.routing_label.value,
+            "task_id": task.id,
+            "task_type": task.type,
         },
     )
 
@@ -75,8 +76,9 @@ class QueueBase(abc.ABC):
         "Dequeued: '%s'!",
         task,
         extra={
-            "task": task.id,
             "queue": self.routing_label.value,
+            "task_id": task.id,
+            "task_type": task.type,
         },
     )
     return task
@@ -103,8 +105,9 @@ class QueueBase(abc.ABC):
         "Enqueued: '%s'!",
         task,
         extra={
-            "task": task.id,
             "queue": self.routing_label.value,
+            "task_id": task.id,
+            "task_type": task.type,
         },
     )
 
@@ -121,8 +124,9 @@ class QueueBase(abc.ABC):
         "Retried: '%s'!",
         task,
         extra={
-            "task": task.id,
             "queue": self.routing_label.value,
+            "task_id": task.id,
+            "task_type": task.type,
         }
     )
 

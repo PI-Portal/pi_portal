@@ -44,7 +44,7 @@ def mocked_scheduler_logger(
     mocked_task_logger: logging.Logger,
 ) -> logging.Logger:
   scheduler_formatter = logging.Formatter(
-      '%(levelname)s - %(task)s - %(queue)s - %(message)s',
+      '%(levelname)s - %(task_id)s - %(task_type)s - %(queue)s - %(message)s',
       validate=False,
   )
   mocked_task_logger.handlers[0].formatter = scheduler_formatter

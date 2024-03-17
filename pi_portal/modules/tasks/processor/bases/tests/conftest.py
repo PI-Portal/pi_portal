@@ -84,8 +84,8 @@ def mocked_task_timing_logger(
 ) -> logging.Logger:
   mocked_task_logger.handlers[0].setFormatter(
       logging.Formatter(
-          '%(levelname)s - %(task)s - %(message)s - %(processing_time)s - '
-          '%(scheduled_time)s - %(total_time)s'
+          '%(levelname)s - %(task_id)s - %(task_type)s - %(message)s - '
+          '%(processing_time)s - %(scheduled_time)s - %(total_time)s'
       )
   )
   return mocked_task_logger

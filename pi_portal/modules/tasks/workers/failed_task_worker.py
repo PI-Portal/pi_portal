@@ -45,7 +45,14 @@ class FailedTaskWorker(worker_base.WorkerBase):
       time.sleep(1)
       for task in self.manifest.contents:
         if self._is_due(task):
-          self.log.info("Rescheduling: '%s' !", task, extra={"task": task.id})
+          self.log.info(
+              "Rescheduling: '%s' !",
+              task,
+              extra={
+                  "task_id": task.id,
+                  "task_type": task.type,
+              }
+          )
           self.router.retry(task)
           self.manifest.remove(task)
 

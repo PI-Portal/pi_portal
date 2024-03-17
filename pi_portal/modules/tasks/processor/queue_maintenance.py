@@ -28,8 +28,9 @@ class ProcessorClass(
           "Performing maintenance on the '%s' task queue ...",
           routing_label.value,
           extra={
-              "task": task.id,
-              "queue": routing_label.value
+              "queue": routing_label.value,
+              "task_id": task.id,
+              "task_type": task.type,
           },
       )
       queue.maintenance()

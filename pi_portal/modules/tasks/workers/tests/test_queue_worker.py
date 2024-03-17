@@ -73,8 +73,9 @@ class TestQueueWorker:
       queue_worker_instance.start()
 
     assert mocked_stream.getvalue() == (
-        f"WARNING - None - None - {queue_worker_instance.routing_label.value} "
-        f"- Worker thread has started ...\n"
+        "WARNING - None - None - None - "
+        f"{queue_worker_instance.routing_label.value} "
+        "- Worker thread has started ...\n"
     )
 
   def test_start__mocked_consumer__calls_consumer(
@@ -551,7 +552,7 @@ class TestQueueWorker:
 
     has_no_retry_logging = mocked_stream.getvalue() == ""
     has_retry_logging = mocked_stream.getvalue() == (
-        f"DEBUG - {task.id} - None - "
+        f"DEBUG - {task.id} - {task.type} - None - "
         f"{scenario_mocks.instance.routing_label.value} - Failed task '{task}' "
         f"will be rescheduled in {scenario.retry_after} second(s).\n"
     )
@@ -568,9 +569,11 @@ class TestQueueWorker:
       queue_worker_instance.halt()
 
     assert mocked_stream.getvalue() == (
-        f"WARNING - None - None - {queue_worker_instance.routing_label.value} "
+        "WARNING - None - None - None - "
+        f"{queue_worker_instance.routing_label.value} "
         f"- Worker thread has started ...\n"
-        f"WARNING - None - None - {queue_worker_instance.routing_label.value} "
+        f"WARNING - None - None - None - "
+        f"{queue_worker_instance.routing_label.value} "
         f"- Worker thread has exited!\n"
     )
 

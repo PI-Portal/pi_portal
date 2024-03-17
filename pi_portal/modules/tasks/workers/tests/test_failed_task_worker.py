@@ -19,15 +19,17 @@ class TestFailedTaskWorker:
   """Test the FailedTaskWorker class."""
 
   logging_start_up_message = (
-      "WARNING - None - None - None - Failed task scheduler is starting ...\n"
+      "WARNING - None - None - None - None - "
+      "Failed task scheduler is starting ...\n"
   )
 
   logging_reschedule_message = (
-      "INFO - {task.id} - None - None - Rescheduling: '{task}' !\n"
+      "INFO - {task.id} - {task.type} - None - None - Rescheduling: "
+      "'{task}' !\n"
   )
 
   logging_halt_message = (
-      "WARNING - None - None - None - "
+      "WARNING - None - None - None - None - "
       "Failed task scheduler is shutting down ...\n"
   )
 

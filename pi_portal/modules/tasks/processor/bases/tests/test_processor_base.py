@@ -65,7 +65,8 @@ class TestTaskProcessorBase:
     )
 
     assert mocked_stream.getvalue() == (
-        f"DEBUG - {mocked_task.id} - Task Timing: '{mocked_task}'. - "
+        f"DEBUG - {mocked_task.id} - {mocked_task.type} - "
+        f"Task Timing: '{mocked_task}'. - "
         f"{expected.processing_time} - "
         f"{expected.scheduled_time} - "
         f"{expected.total_time}\n"
@@ -80,9 +81,12 @@ class TestTaskProcessorBase:
     concrete_task_processor_base_instance.process(mocked_task)
 
     assert mocked_stream.getvalue() == (
-        f"DEBUG - {mocked_task.id} - Processing: '{mocked_task}' ...\n"
-        f"DEBUG - {mocked_task.id} - Completed: '{mocked_task}'!\n"
-        f"DEBUG - {mocked_task.id} - Task Timing: '{mocked_task}'.\n"
+        f"DEBUG - {mocked_task.id} - {mocked_task.type} - "
+        f"Processing: '{mocked_task}' ...\n"
+        f"DEBUG - {mocked_task.id} - {mocked_task.type} - "
+        f"Completed: '{mocked_task}'!\n"
+        f"DEBUG - {mocked_task.id} - {mocked_task.type} - "
+        f"Task Timing: '{mocked_task}'.\n"
     )
 
   def test_process__success__updates_task(
@@ -120,11 +124,14 @@ class TestTaskProcessorBase:
     concrete_task_processor_base_instance.process(mocked_task)
 
     assert mocked_stream.getvalue() == (
-        f"DEBUG - {mocked_task.id} - Processing: '{mocked_task}' ...\n"
-        f"ERROR - {mocked_task.id} - Failed: '{mocked_task}'!\n"
-        f"ERROR - {mocked_task.id} - Exception\n" +
+        f"DEBUG - {mocked_task.id} - {mocked_task.type} - "
+        f"Processing: '{mocked_task}' ...\n"
+        f"ERROR - {mocked_task.id} - {mocked_task.type} - "
+        f"Failed: '{mocked_task}'!\n"
+        f"ERROR - {mocked_task.id} - {mocked_task.type} - Exception\n" +
         traceback.get_traceback(mocked_task.result.value) +
-        f"DEBUG - {mocked_task.id} - Task Timing: '{mocked_task}'.\n"
+        f"DEBUG - {mocked_task.id} - {mocked_task.type} - "
+        f"Task Timing: '{mocked_task}'.\n"
     )
 
   def test_process__failure__updates_task(
@@ -162,5 +169,7 @@ class TestTaskProcessorBase:
   ) -> None:
     concrete_task_processor_base_instance.recover(mocked_task)
 
-    assert mocked_stream.getvalue() == \
-        f"WARNING - {mocked_task.id} - Recovered: '{mocked_task}'!\n"
+    assert mocked_stream.getvalue() == (
+        f"WARNING - {mocked_task.id} - {mocked_task.type} - "
+        f"Recovered: '{mocked_task}'!\n"
+    )

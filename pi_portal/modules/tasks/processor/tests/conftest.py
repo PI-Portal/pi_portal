@@ -360,7 +360,7 @@ def queue_maintenance_instance(
     mocked_task_router: mock.Mock,
 ) -> queue_maintenance.ProcessorClass:
   queue_formatter = logging.Formatter(
-      '%(levelname)s - %(task)s - %(queue)s - %(message)s',
+      '%(levelname)s - %(task_id)s - %(task_type)s - %(queue)s - %(message)s',
       validate=False,
   )
   mocked_task_logger.handlers[0].formatter = queue_formatter

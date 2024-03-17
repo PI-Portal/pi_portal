@@ -19,11 +19,12 @@ class TestCronWorker:
   """Test the CronWorker class."""
 
   logging_start_up_message = (
-      "WARNING - None - Scheduler - None - "
+      "WARNING - None - None - Scheduler - None - "
       "Loading cron job '{mocked_cron_job_1.CronJobClass.name}' ...\n"
-      "WARNING - None - Scheduler - None - "
+      "WARNING - None - None - Scheduler - None - "
       "Loading cron job '{mocked_cron_job_2.CronJobClass.name}' ...\n"
-      "WARNING - None - Scheduler - None - Cron scheduler is starting ...\n"
+      "WARNING - None - None - Scheduler - None - Cron scheduler is "
+      "starting ...\n"
   )
 
   def test_initialize__scheduler(
@@ -199,7 +200,7 @@ class TestCronWorker:
         mocked_cron_job_1=mocked_task_registry_cron_jobs[0],
         mocked_cron_job_2=mocked_task_registry_cron_jobs[1],
     ) + (
-        "INFO - None - Scheduler - None - Scheduling the "
+        "INFO - None - None - Scheduler - None - Scheduling the "
         f"'{mocked_task_registry_cron_jobs[1].name}' cron job.\n"
     )
 
@@ -266,10 +267,10 @@ class TestCronWorker:
             mocked_cron_job_1=mocked_task_registry_cron_jobs[0],
             mocked_cron_job_2=mocked_task_registry_cron_jobs[1],
         ) + (
-            f"ERROR - None - {mocked_task_registry_cron_jobs[1].name} - None - "
-            f"A scheduled '{mocked_task_registry_cron_jobs[1].name}' cron job "
-            "encountered a critical failure!\n"
-            f"ERROR - None - {mocked_task_registry_cron_jobs[1].name} - "
+            f"ERROR - None - None - {mocked_task_registry_cron_jobs[1].name} - "
+            f"None - A scheduled '{mocked_task_registry_cron_jobs[1].name}' "
+            "cron job encountered a critical failure!\n"
+            f"ERROR - None - None - {mocked_task_registry_cron_jobs[1].name} - "
             "None - Exception\n"
         )
     )
@@ -294,12 +295,12 @@ class TestCronWorker:
             mocked_cron_job_1=mocked_task_registry_cron_jobs[0],
             mocked_cron_job_2=mocked_task_registry_cron_jobs[1],
         ) + (
-            "INFO - None - Scheduler - None - Scheduling the "
+            "INFO - None - None - Scheduler - None - Scheduling the "
             f"'{mocked_task_registry_cron_jobs[1].name}' cron job.\n"
-            f"ERROR - None - {mocked_task_registry_cron_jobs[1].name} - None - "
-            f"A scheduled '{mocked_task_registry_cron_jobs[1].name}' cron job "
-            "encountered a critical failure!\n"
-            f"ERROR - None - {mocked_task_registry_cron_jobs[1].name} - "
+            f"ERROR - None - None - {mocked_task_registry_cron_jobs[1].name} - "
+            f"None - A scheduled '{mocked_task_registry_cron_jobs[1].name}' "
+            "cron job encountered a critical failure!\n"
+            f"ERROR - None - None - {mocked_task_registry_cron_jobs[1].name} - "
             "None - Exception\n"
         )
     )
@@ -363,7 +364,7 @@ class TestCronWorker:
         mocked_cron_job_1=mocked_task_registry_cron_jobs[0],
         mocked_cron_job_2=mocked_task_registry_cron_jobs[1],
     ) + (
-        "WARNING - None - Scheduler - None - "
+        "WARNING - None - None - Scheduler - None - "
         "Cron scheduler is shutting down ...\n"
     )
 
