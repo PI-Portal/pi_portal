@@ -233,11 +233,12 @@ class TestQueue:
     persist_queue_instance_standard.get()
 
     assert mocked_stream.getvalue() == (
-        f"ERROR - None - {label} - Fatal error during deserialization!\n"
-        f"ERROR - None - {label} - "
+        f"ERROR - None - None - {label} - Fatal error during deserialization!\n"
+        f"ERROR - None - None - {label} - "
         "To restore service the queue is being cleared. Tasks have been lost!\n"
-        f"DEBUG - {mocked_raw_task['pqid']} - {label} - Dequeued: "
-        f"'{mocked_raw_task['data']}'!\n"
+        f"DEBUG - {mocked_raw_task['pqid']} - "
+        f"{mocked_raw_task['data'].type.value} - "
+        f"{label} - Dequeued: '{mocked_raw_task['data']}'!\n"
     )
 
   def test_maintenance__underlying_implementation(

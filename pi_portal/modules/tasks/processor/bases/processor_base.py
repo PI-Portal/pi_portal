@@ -57,7 +57,8 @@ class TaskProcessorBase(Generic[TypeTaskArguments_co, TypeTaskResult], abc.ABC):
         "Processing: '%s' ...",
         task,
         extra={
-            "task": task.id,
+            "task_id": task.id,
+            "task_type": task.type.value,
         },
     )
     try:
@@ -67,7 +68,8 @@ class TaskProcessorBase(Generic[TypeTaskArguments_co, TypeTaskResult], abc.ABC):
           "Completed: '%s'!",
           task,
           extra={
-              "task": task.id,
+              "task_id": task.id,
+              "task_type": task.type.value,
           },
       )
     except Exception as exc:  # pylint: disable=broad-exception-caught
@@ -78,13 +80,17 @@ class TaskProcessorBase(Generic[TypeTaskArguments_co, TypeTaskResult], abc.ABC):
           "Failed: '%s'!",
           task,
           extra={
-              "task": task.id,
+              "task_id": task.id,
+              "task_type": task.type.value,
           },
       )
       self.log.error(
           "Exception",
           exc_info=exc,
-          extra={"task": task.id},
+          extra={
+              "task_id": task.id,
+              "task_type": task.type.value,
+          },
       )
     finally:
       task.completed = datetime.now(tz=timezone.utc)
@@ -105,8 +111,10 @@ class TaskProcessorBase(Generic[TypeTaskArguments_co, TypeTaskResult], abc.ABC):
         "Task Timing: '%s'.",
         task,
         extra={
-            "task":
+            "task_id":
                 task.id,
+            "task_type":
+                task.type.value,
             "processing_time":
                 self._timing_two_decimal_precision(
                     processing_start_time,
@@ -142,6 +150,11 @@ class TaskProcessorBase(Generic[TypeTaskArguments_co, TypeTaskResult], abc.ABC):
     :param task: The task to process.
     """
 
-    self.log.warning("Recovered: '%s'!", task, extra={
-        "task": task.id,
-    })
+    self.log.warning(
+        "Recovered: '%s'!",
+        task,
+        extra={
+            "task_id": task.id,
+            "task_type": task.type.value,
+        }
+    )

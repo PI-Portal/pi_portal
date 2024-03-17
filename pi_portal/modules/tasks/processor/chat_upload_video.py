@@ -42,10 +42,14 @@ class ProcessorClass(
       return
 
     if exists_source and not exists_destination:
+      # pylint: disable=duplicate-code
       self.log.debug(
           "Uploading: '%s' -> 'CHAT' ...",
           task.args.path,
-          extra={"task": task.id},
+          extra={
+              "task_id": task.id,
+              "task_type": task.type.value,
+          },
       )
       self.client.send_file(task.args.path, task.args.description)
 
