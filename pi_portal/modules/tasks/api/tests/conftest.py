@@ -1,15 +1,15 @@
 """Test fixtures for the task scheduler api module tests."""
-# pylint: disable=redefined-outer-name
-
 import os
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from typing import Any, Dict, List
 from unittest import mock
 
 import pytest
 from fastapi import FastAPI
+from fastapi.encoders import jsonable_encoder
 from fastapi.testclient import TestClient
 from pi_portal import config
+from pi_portal.modules.system import supervisor_config
 from pi_portal.modules.tasks import scheduler
 from pi_portal.modules.tasks.registration import registry, registry_factory
 from pi_portal.modules.tasks.task import (
@@ -25,10 +25,13 @@ from pi_portal.modules.tasks.task import (
     file_system_remove,
     non_scheduled,
     queue_maintenance,
+    supervisor_process,
 )
 from pi_portal.modules.tasks.task.bases import task_args_base
 from typing_extensions import NotRequired, TypedDict
 from .. import lifespan, router, security, server
+
+# pylint: disable=redefined-outer-name
 
 
 class TypedTaskCreationRequestParameters(TypedDict):
@@ -48,19 +51,21 @@ class InvalidArg(task_args_base.TaskArgsBase):
 enabled_tasks__valid_payloads__creation_request_scenarios = [
     TypedTaskCreationRequestParameters(
         type=camera_snapshot.TaskType.value,
-        args=asdict(camera_snapshot.Args(camera=2)),
+        args=jsonable_encoder(camera_snapshot.Args(camera=2)),
     ),
     TypedTaskCreationRequestParameters(
         type=chat_send_message.TaskType.value,
-        args=asdict(chat_send_message.Args(message="Test message.")),
+        args=jsonable_encoder(chat_send_message.Args(message="Test message.")),
     ),
     TypedTaskCreationRequestParameters(
         type=chat_send_temperature_reading.TaskType.value,
-        args=asdict(chat_send_temperature_reading.Args(header="Test header:")),
+        args=jsonable_encoder(
+            chat_send_temperature_reading.Args(header="Test header:")
+        ),
     ),
     TypedTaskCreationRequestParameters(
         type=chat_upload_snapshot.TaskType.value,
-        args=asdict(
+        args=jsonable_encoder(
             chat_upload_snapshot.Args(
                 description="A snapshot file for testing purposes.",
                 path=os.path.join(
@@ -72,7 +77,7 @@ enabled_tasks__valid_payloads__creation_request_scenarios = [
     ),
     TypedTaskCreationRequestParameters(
         type=chat_upload_video.TaskType.value,
-        args=asdict(
+        args=jsonable_encoder(
             chat_upload_video.Args(
                 description="A video file for testing purposes.",
                 path=os.path.join(
@@ -84,7 +89,7 @@ enabled_tasks__valid_payloads__creation_request_scenarios = [
     ),
     TypedTaskCreationRequestParameters(
         type=file_system_copy.TaskType.value,
-        args=asdict(
+        args=jsonable_encoder(
             file_system_copy.Args(
                 source=os.path.join(
                     config.LOG_FILE_BASE_FOLDER,
@@ -102,42 +107,42 @@ enabled_tasks__valid_payloads__creation_request_scenarios = [
 enabled_tasks__invalid__payloads__creation_request_scenarios = [
     TypedTaskCreationRequestParameters(
         type=camera_snapshot.TaskType.value,
-        args=asdict(InvalidArg(invalid_arg="invalid_args")),
+        args=jsonable_encoder(InvalidArg(invalid_arg="invalid_args")),
     ),
     TypedTaskCreationRequestParameters(
         type=chat_send_message.TaskType.value,
-        args=asdict(InvalidArg(invalid_arg="invalid_args")),
+        args=jsonable_encoder(InvalidArg(invalid_arg="invalid_args")),
     ),
     TypedTaskCreationRequestParameters(
         type=chat_send_temperature_reading.TaskType.value,
-        args=asdict(InvalidArg(invalid_arg="invalid_args")),
+        args=jsonable_encoder(InvalidArg(invalid_arg="invalid_args")),
     ),
     TypedTaskCreationRequestParameters(
         type=chat_upload_snapshot.TaskType.value,
-        args=asdict(InvalidArg(invalid_arg="invalid_args")),
+        args=jsonable_encoder(InvalidArg(invalid_arg="invalid_args")),
     ),
     TypedTaskCreationRequestParameters(
         type=chat_upload_video.TaskType.value,
-        args=asdict(InvalidArg(invalid_arg="invalid_args")),
+        args=jsonable_encoder(InvalidArg(invalid_arg="invalid_args")),
     ),
     TypedTaskCreationRequestParameters(
         type=file_system_copy.TaskType.value,
-        args=asdict(InvalidArg(invalid_arg="invalid_args")),
+        args=jsonable_encoder(InvalidArg(invalid_arg="invalid_args")),
     ),
 ]
 
 disabled_tasks__valid_payloads__creation_request_scenarios = [
     TypedTaskCreationRequestParameters(
         type=archive_logs.TaskType.value,
-        args=asdict(archive_logs.Args(partition_name="partition1")),
+        args=jsonable_encoder(archive_logs.Args(partition_name="partition1")),
     ),
     TypedTaskCreationRequestParameters(
         type=archive_videos.TaskType.value,
-        args=asdict(archive_videos.Args(partition_name="partition2")),
+        args=jsonable_encoder(archive_videos.Args(partition_name="partition2")),
     ),
     TypedTaskCreationRequestParameters(
         type=file_system_move.TaskType.value,
-        args=asdict(
+        args=jsonable_encoder(
             file_system_move.Args(
                 source=os.path.join(
                     config.PATH_CAMERA_CONTENT,
@@ -152,7 +157,7 @@ disabled_tasks__valid_payloads__creation_request_scenarios = [
     ),
     TypedTaskCreationRequestParameters(
         type=file_system_remove.TaskType.value,
-        args=asdict(
+        args=jsonable_encoder(
             file_system_remove.Args(
                 path=os.path.join(
                     config.PATH_ARCHIVAL_QUEUE_VIDEO_UPLOAD,
@@ -163,11 +168,20 @@ disabled_tasks__valid_payloads__creation_request_scenarios = [
     ),
     TypedTaskCreationRequestParameters(
         type=non_scheduled.TaskType.value,
-        args=asdict(non_scheduled.Args()),
+        args=jsonable_encoder(non_scheduled.Args()),
     ),
     TypedTaskCreationRequestParameters(
         type=queue_maintenance.TaskType.value,
-        args=asdict(queue_maintenance.Args()),
+        args=jsonable_encoder(queue_maintenance.Args()),
+    ),
+    TypedTaskCreationRequestParameters(
+        type=supervisor_process.TaskType.value,
+        args=jsonable_encoder(
+            supervisor_process.Args(
+                process=supervisor_config.ProcessList.CAMERA,
+                requested_state=supervisor_config.ProcessStatus.STOPPED,
+            )
+        ),
     ),
 ]
 

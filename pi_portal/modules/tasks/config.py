@@ -12,7 +12,8 @@ QUEUE_WORKER_CONFIGURATION: Dict[RoutingLabel, int] = {
     RoutingLabel.CHAT_UPLOAD_SNAPSHOT: 1,
     RoutingLabel.CHAT_UPLOAD_VIDEO: 2,
     RoutingLabel.FILE_SYSTEM: 1,
-    RoutingLabel.PI_PORTAL_CONTROL: 1
+    RoutingLabel.PI_PORTAL_CONTROL: 1,
+    RoutingLabel.SUPERVISOR_PROCESS: 1,
 }
 
 ROUTING_MATRIX: DefaultDict[TaskType, RoutingLabel] = defaultdict(
@@ -27,5 +28,6 @@ ROUTING_MATRIX: DefaultDict[TaskType, RoutingLabel] = defaultdict(
         TaskType.FILE_SYSTEM_COPY: RoutingLabel.FILE_SYSTEM,
         TaskType.FILE_SYSTEM_MOVE: RoutingLabel.FILE_SYSTEM,
         TaskType.FILE_SYSTEM_REMOVE: RoutingLabel.FILE_SYSTEM,
+        TaskType.SUPERVISOR_PROCESS: RoutingLabel.SUPERVISOR_PROCESS,
     }
 )

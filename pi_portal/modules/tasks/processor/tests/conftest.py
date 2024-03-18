@@ -2,10 +2,11 @@
 # pylint: disable=redefined-outer-name
 
 import logging
-from typing import Callable, NamedTuple, Tuple
+from typing import Callable, NamedTuple, Optional, Tuple, Type
 from unittest import mock
 
 import pytest
+from pi_portal.modules.system import supervisor_config
 from pi_portal.modules.tasks.processor.bases import processor_base
 from pi_portal.modules.tasks.processor.mixins import camera_client, chat_client
 from .. import (
@@ -20,7 +21,13 @@ from .. import (
     file_system_move,
     file_system_remove,
     queue_maintenance,
+    supervisor_process,
 )
+
+TypeProcessManagementScenarioCreator = Callable[
+    ["ProcessManagementScenario"],
+    "ProcessManagementScenarioMocks",
+]
 
 
 class BooleanScenario(NamedTuple):
@@ -31,6 +38,18 @@ class BooleanScenario(NamedTuple):
 class MutableBooleanScenario(NamedTuple):
   side_effect: Tuple[bool, bool]
   expected: bool
+
+
+class ProcessManagementScenario(NamedTuple):
+  process: supervisor_config.ProcessList
+  requested_state: supervisor_config.ProcessStatus
+  method_name: str
+  process_exception: Optional[Type[Exception]]
+
+
+class ProcessManagementScenarioMocks(NamedTuple):
+  mocked_task: mock.Mock
+  mocked_supervisor_process: mock.Mock
 
 
 @pytest.fixture
@@ -132,6 +151,11 @@ def mocked_shutil() -> mock.Mock:
 
 
 @pytest.fixture
+def mocked_supervisor_process() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
 def setup_camera_processor_mocks(
     mocked_camera_client: mock.Mock,
     monkeypatch: pytest.MonkeyPatch,
@@ -161,6 +185,32 @@ def setup_chat_processor_mocks(
     monkeypatch.setattr(
         processor_base.__name__ + ".TaskProcessorBase.recover",
         mocked_recover,
+    )
+
+  return setup
+
+
+@pytest.fixture
+def setup_process_management_scenario(
+    mocked_base_task: mock.Mock,
+    mocked_supervisor_process: mock.Mock,
+) -> TypeProcessManagementScenarioCreator:
+
+  def setup(
+      scenario: "ProcessManagementScenario"
+  ) -> "ProcessManagementScenarioMocks":
+    mocked_base_task.type = supervisor_process.TaskType
+    mocked_base_task.args.process = scenario.process
+    mocked_base_task.args.requested_state = scenario.requested_state
+
+    getattr(
+        mocked_supervisor_process.return_value,
+        scenario.method_name,
+    ).side_effect = scenario.process_exception
+
+    return ProcessManagementScenarioMocks(
+        mocked_task=mocked_base_task,
+        mocked_supervisor_process=mocked_supervisor_process,
     )
 
   return setup
@@ -365,6 +415,23 @@ def queue_maintenance_instance(
   )
   mocked_task_logger.handlers[0].formatter = queue_formatter
   return queue_maintenance.ProcessorClass(
+      mocked_task_logger,
+      mocked_task_router,
+  )
+
+
+@pytest.fixture
+def supervisor_process_instance(
+    mocked_supervisor_process: mock.Mock,
+    mocked_task_logger: logging.Logger,
+    mocked_task_router: mock.Mock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> supervisor_process.ProcessorClass:
+  monkeypatch.setattr(
+      supervisor_process.__name__ + ".SupervisorProcess",
+      mocked_supervisor_process,
+  )
+  return supervisor_process.ProcessorClass(
       mocked_task_logger,
       mocked_task_router,
   )
