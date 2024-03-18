@@ -25,6 +25,7 @@ class TestRegistryFactory:
         "file_system_remove",
         "non_scheduled",
         "queue_maintenance",
+        "supervisor_process",
     ]
 
   def test_initialize__attributes__cron_modules(

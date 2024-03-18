@@ -31,6 +31,7 @@ class RegistryFactory:
       "file_system_remove",
       "non_scheduled",
       "queue_maintenance",
+      "supervisor_process",
   ]
   _registry: Optional[TaskRegistry] = None
 
