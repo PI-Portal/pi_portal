@@ -219,3 +219,24 @@ class TaskSchedulerServiceClient:
     }
 
     return self.http_client.post("/schedule/", payload)
+
+  def set_flag(
+      self,
+      flag_name: str,
+      value: bool,
+  ) -> UnixStreamHttpResponse:
+    """Schedule copying a file via the API.
+
+    :param flag_name: The flag name to set.
+    :param value: The value to assign to this flag.
+    :returns: A response from the task scheduler API.
+    """
+    payload = {
+        "type": TaskType.FLAG_SET_VALUE.value,
+        "args": {
+            "flag_name": flag_name,
+            "value": value
+        },
+    }
+
+    return self.http_client.post("/schedule/", payload)

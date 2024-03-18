@@ -23,6 +23,7 @@ from pi_portal.modules.tasks.task import (
     file_system_copy,
     file_system_move,
     file_system_remove,
+    flag_set_value,
     non_scheduled,
     queue_maintenance,
     supervisor_process,
@@ -102,6 +103,15 @@ enabled_tasks__valid_payloads__creation_request_scenarios = [
             )
         ),
     ),
+    TypedTaskCreationRequestParameters(
+        type=flag_set_value.TaskType.value,
+        args=jsonable_encoder(
+            flag_set_value.Args(
+                flag_name="FLAG_CAMERA_DISABLED_BY_CRON",
+                value=True,
+            )
+        ),
+    ),
 ]
 
 enabled_tasks__invalid__payloads__creation_request_scenarios = [
@@ -127,6 +137,10 @@ enabled_tasks__invalid__payloads__creation_request_scenarios = [
     ),
     TypedTaskCreationRequestParameters(
         type=file_system_copy.TaskType.value,
+        args=jsonable_encoder(InvalidArg(invalid_arg="invalid_args")),
+    ),
+    TypedTaskCreationRequestParameters(
+        type=flag_set_value.TaskType.value,
         args=jsonable_encoder(InvalidArg(invalid_arg="invalid_args")),
     ),
 ]

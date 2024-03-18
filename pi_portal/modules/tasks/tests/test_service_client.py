@@ -366,3 +366,46 @@ class TestServiceClient:
     assert response == (
         mocked_unix_stream_http_client.return_value.post.return_value
     )
+
+  def test_set_flag__sends_correct_api_request(
+      self,
+      task_scheduler_service_client_instance: TaskSchedulerServiceClient,
+      mocked_unix_stream_http_client: mock.Mock,
+  ) -> None:
+    mocked_flag_name = "mocked_flag_name"
+    mocked_value = False
+    # pylint: disable=duplicate-code
+    expected_payload = {
+        "type": TaskType.FLAG_SET_VALUE.value,
+        "args": {
+            "flag_name": mocked_flag_name,
+            "value": mocked_value
+        },
+    }
+
+    task_scheduler_service_client_instance.set_flag(
+        mocked_flag_name,
+        mocked_value,
+    )
+
+    mocked_unix_stream_http_client.return_value.post.assert_called_once_with(
+        "/schedule/",
+        expected_payload,
+    )
+
+  def test_set_flag__returns_expected_response(
+      self,
+      task_scheduler_service_client_instance: TaskSchedulerServiceClient,
+      mocked_unix_stream_http_client: mock.Mock,
+  ) -> None:
+    mocked_flag_name = "mocked_flag_name"
+    mocked_value = False
+
+    response = task_scheduler_service_client_instance.set_flag(
+        mocked_flag_name,
+        mocked_value,
+    )
+
+    assert response == (
+        mocked_unix_stream_http_client.return_value.post.return_value
+    )
