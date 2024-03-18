@@ -20,6 +20,7 @@ from .. import (
     file_system_copy,
     file_system_move,
     file_system_remove,
+    flag_set_value,
     queue_maintenance,
     supervisor_process,
 )
@@ -399,6 +400,23 @@ def file_system_remove_instance(
       mocked_recover,
   )
   return file_system_remove.ProcessorClass(
+      mocked_task_logger,
+      mocked_task_router,
+  )
+
+
+@pytest.fixture
+def flag_set_value_instance(
+    mocked_flags: mock.Mock,
+    mocked_task_logger: logging.Logger,
+    mocked_task_router: mock.Mock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> flag_set_value.ProcessorClass:
+  monkeypatch.setattr(
+      flag_set_value.__name__ + ".Flags",
+      mocked_flags,
+  )
+  return flag_set_value.ProcessorClass(
       mocked_task_logger,
       mocked_task_router,
   )

@@ -23,6 +23,7 @@ class TestRegistryFactory:
         "file_system_copy",
         "file_system_move",
         "file_system_remove",
+        "flag_set_value",
         "non_scheduled",
         "queue_maintenance",
         "supervisor_process",
