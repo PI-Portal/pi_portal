@@ -1,5 +1,4 @@
 """Test the API."""
-
 from dataclasses import asdict
 from unittest import mock
 
