@@ -5,6 +5,7 @@ from typing import cast
 from unittest import mock
 
 import pytest
+from pi_portal.modules.collections.limited_dictionary import LimitedDictionary
 from pi_portal.modules.configuration import state
 from pi_portal.modules.integrations.chat.bases.bot import ChatBotBase
 from pi_portal.modules.integrations.chat.slack import bot, config
@@ -13,6 +14,12 @@ from pi_portal.modules.integrations.chat.slack import bot, config
 @pytest.mark.usefixtures("test_state")
 class TestSlackBot:
   """Test the SlackBot class."""
+
+  logging_message_start = "WARNING - None - Chat Bot process has started.\n"
+  logging_message_halt = (
+      "WARNING - None - Chat Bot process has been terminated ...\n"
+  )
+  logging_message_event = "DEBUG - {event} - Slack Bolt event.\n"
 
   def test_initialize__attributes(
       self,
@@ -32,6 +39,16 @@ class TestSlackBot:
         slack_bot_instance.configuration,
         config.SlackIntegrationConfiguration,
     )
+
+  def test_initialize__filter(
+      self,
+      slack_bot_instance: bot.SlackBot,
+  ) -> None:
+    assert isinstance(
+        slack_bot_instance.filter,
+        LimitedDictionary,
+    )
+    assert slack_bot_instance.filter.limit == 10
 
   def test_initialize__slack_bolt_app(
       self,
@@ -82,8 +99,7 @@ class TestSlackBot:
   ) -> None:
     slack_bot_instance.halt()
 
-    assert mocked_stream.getvalue() == \
-        "WARNING - None - Chat Bot process has been terminated ...\n"
+    assert mocked_stream.getvalue() == self.logging_message_halt
 
   def test_halt__bolt_app__calls_close(
       self,
@@ -112,8 +128,7 @@ class TestSlackBot:
   ) -> None:
     slack_bot_instance.start()
 
-    assert mocked_stream.getvalue() == \
-        "WARNING - None - Chat Bot process has started.\n"
+    assert mocked_stream.getvalue() == self.logging_message_start
 
   def test_start__sends_chat_message(
       self,
@@ -146,13 +161,46 @@ class TestSlackBot:
 
     mocked_slack_bolt_app.return_value.event.assert_called_once_with("message")
 
-  def test_start__bolt_app__created_receiver__calls_handle_event(
+  @pytest.mark.parametrize(
+      "test_event", [
+          cast(bot.TypeSlackBoltEvent, {"client_msg_id": "unique"}),
+          cast(bot.TypeSlackBoltEvent, {"client_msg_id": "clone"}),
+          cast(bot.TypeSlackBoltEvent, {})
+      ]
+  )
+  def test_start__bolt_app__created_receiver__vary_event__logs_event(
+      self,
+      slack_bot_instance_mocked_handle_event: bot.SlackBot,
+      mocked_slack_bolt_app: mock.Mock,
+      mocked_stream: StringIO,
+      test_event: bot.TypeSlackBoltEvent,
+  ) -> None:
+    slack_bot_instance_mocked_handle_event.filter["clone"] = True
+    slack_bot_instance_mocked_handle_event.start()
+    bolt_event_receiver = (
+        mocked_slack_bolt_app.return_value.event.return_value.call_args[0][0]
+    )
+
+    bolt_event_receiver(test_event)
+
+    assert mocked_stream.getvalue() == (
+        self.logging_message_start +
+        self.logging_message_event.format(event=str(test_event))
+    )
+
+  @pytest.mark.parametrize(
+      "test_event", [
+          cast(bot.TypeSlackBoltEvent, {"client_msg_id": "unique"}),
+          cast(bot.TypeSlackBoltEvent, {})
+      ]
+  )
+  def test_start__bolt_app__created_receiver__unique_event__handles_event(
       self,
       slack_bot_instance_mocked_handle_event: bot.SlackBot,
       mocked_handle_event_method: mock.Mock,
       mocked_slack_bolt_app: mock.Mock,
+      test_event: bot.TypeSlackBoltEvent,
   ) -> None:
-    test_event = cast(bot.TypeSlackBoltEvent, {})
     slack_bot_instance_mocked_handle_event.start()
     bolt_event_receiver = (
         mocked_slack_bolt_app.return_value.event.return_value.call_args[0][0]
@@ -162,13 +210,21 @@ class TestSlackBot:
 
     mocked_handle_event_method.assert_called_once_with(test_event)
 
-  def test_start__bolt_app__created_receiver__logs_event(
+  @pytest.mark.parametrize(
+      "test_event", [
+          cast(bot.TypeSlackBoltEvent, {"client_msg_id": "clone1"}),
+          cast(bot.TypeSlackBoltEvent, {"client_msg_id": "clone2"}),
+      ]
+  )
+  def test_start__bolt_app__created_receiver__duplicate_event__does_not_handle(
       self,
       slack_bot_instance_mocked_handle_event: bot.SlackBot,
+      mocked_handle_event_method: mock.Mock,
       mocked_slack_bolt_app: mock.Mock,
-      mocked_stream: StringIO,
+      test_event: bot.TypeSlackBoltEvent,
   ) -> None:
-    test_event = cast(bot.TypeSlackBoltEvent, {"test": "event"})
+    slack_bot_instance_mocked_handle_event.filter["clone1"] = True
+    slack_bot_instance_mocked_handle_event.filter["clone2"] = True
     slack_bot_instance_mocked_handle_event.start()
     bolt_event_receiver = (
         mocked_slack_bolt_app.return_value.event.return_value.call_args[0][0]
@@ -176,10 +232,7 @@ class TestSlackBot:
 
     bolt_event_receiver(test_event)
 
-    assert mocked_stream.getvalue() == (
-        "WARNING - None - Chat Bot process has started.\n"
-        f"DEBUG - {str(test_event)} - Slack Bolt event.\n"
-    )
+    mocked_handle_event_method.assert_not_called()
 
   @pytest.mark.parametrize("command", ["id", "help"])
   def test_handle_event__vary_command__valid_event__calls_handler(
