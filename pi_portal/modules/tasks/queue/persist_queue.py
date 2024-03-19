@@ -104,7 +104,7 @@ class Queue(QueueBase):
         length=self._queue.size,
         acked_length=self._queue.acked_count(),
         unacked_length=self._queue.unack_count(),
-        storage=self._size_on_disk_in_mb()
+        storage_mb=self._size_on_disk_in_mb()
     )
 
   def _size_on_disk_in_mb(self) -> float:
