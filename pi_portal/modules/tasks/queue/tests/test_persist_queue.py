@@ -268,7 +268,7 @@ class TestQueue:
                   length=200,
                   acked_length=101,
                   unacked_length=99,
-                  storage=0.25,
+                  storage_mb=0.25,
               ),
           ],
           [
@@ -282,7 +282,7 @@ class TestQueue:
                   length=203,
                   acked_length=102,
                   unacked_length=101,
-                  storage=0.75,
+                  storage_mb=0.75,
               ),
           ],
       ],
