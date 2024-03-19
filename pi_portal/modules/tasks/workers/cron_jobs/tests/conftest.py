@@ -9,6 +9,7 @@ import pytest
 from .. import (
     archive_logs,
     archive_videos,
+    disk_space,
     manifest_metrics,
     queue_maintenance,
     queue_metrics,
@@ -66,6 +67,11 @@ def mocked_system_metrics() -> mock.Mock:
 
 
 @pytest.fixture
+def mocked_is_disk_space_available() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
 def archive_logs_cron_job_instance(
     mocked_worker_logger: logging.Logger,
     mocked_task_registry: mock.Mock,
@@ -85,6 +91,32 @@ def archive_videos_cron_job_instance(
       mocked_worker_logger,
       mocked_task_registry,
   )
+
+
+@pytest.fixture
+def disk_space_cron_job_instance(
+    mocked_worker_logger: logging.Logger,
+    mocked_flags: mock.Mock,
+    mocked_is_disk_space_available: mock.Mock,
+    mocked_task_registry: mock.Mock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> disk_space.CronJob:
+  mocked_flag_state = mock.Mock()
+  mocked_flag_state.return_value.flags = mocked_flags
+  monkeypatch.setattr(
+      disk_space.__name__ + ".FlagState",
+      mocked_flag_state,
+  )
+  instance = disk_space.CronJob(
+      mocked_worker_logger,
+      mocked_task_registry,
+  )
+  monkeypatch.setattr(
+      instance.camera_client,
+      "is_disk_space_available",
+      mocked_is_disk_space_available,
+  )
+  return instance
 
 
 @pytest.fixture

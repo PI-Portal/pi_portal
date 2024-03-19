@@ -9,6 +9,7 @@ from pi_portal.modules.system.socket.unix_stream_http_client import (
     UnixStreamHttpClient,
     UnixStreamHttpResponse,
 )
+from pi_portal.modules.tasks.config import DEFERRED_MESSAGE_PREFIX
 from pi_portal.modules.tasks.enums import TaskType
 
 
@@ -16,7 +17,6 @@ class TaskSchedulerServiceClient:
   """Client for the task scheduler service."""
 
   http_client: UnixStreamHttpClient
-  deferred_message = "** Deferred! ** "
   camera_snapshot_failure_message = (
       "An error occurred while requesting a snapshot!"
   )
@@ -76,7 +76,7 @@ class TaskSchedulerServiceClient:
                 {
                     "type": TaskType.CHAT_SEND_MESSAGE.value,
                     "args": {
-                        "message": self.deferred_message + message,
+                        "message": DEFERRED_MESSAGE_PREFIX + message,
                     },
                     "retry_after": 300,
                 }
@@ -103,7 +103,7 @@ class TaskSchedulerServiceClient:
                 {
                     "type": TaskType.CHAT_SEND_TEMPERATURE_READING.value,
                     "args": {
-                        "header": self.deferred_message + header,
+                        "header": DEFERRED_MESSAGE_PREFIX + header,
                     },
                     "retry_after": 300,
                 }
@@ -138,8 +138,10 @@ class TaskSchedulerServiceClient:
                     "type": TaskType.CHAT_UPLOAD_SNAPSHOT.value,
                     "args":
                         {
-                            "description": self.deferred_message + description,
-                            "path": path
+                            "description":
+                                DEFERRED_MESSAGE_PREFIX + description,
+                            "path":
+                                path
                         },
                     "retry_after": 300,
                 }
@@ -174,8 +176,10 @@ class TaskSchedulerServiceClient:
                     "type": TaskType.CHAT_UPLOAD_VIDEO.value,
                     "args":
                         {
-                            "description": self.deferred_message + description,
-                            "path": path,
+                            "description":
+                                DEFERRED_MESSAGE_PREFIX + description,
+                            "path":
+                                path,
                         },
                     "retry_after": 300,
                 }
