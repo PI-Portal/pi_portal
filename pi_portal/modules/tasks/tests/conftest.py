@@ -9,7 +9,7 @@ import pytest
 from pi_portal.modules import tasks
 from pi_portal.modules.configuration.tests.fixtures import mock_state
 from pi_portal.modules.tasks.enums import RoutingLabel
-from .. import scheduler, service, service_client
+from .. import flags, scheduler, service, service_client
 
 MOCKED_CONFIG: Dict[RoutingLabel, int] = {
     RoutingLabel.PI_PORTAL_CONTROL: 2,
@@ -92,6 +92,11 @@ def mocked_task_scheduler() -> mock.Mock:
 @pytest.fixture
 def mocked_unix_stream_http_client() -> mock.Mock:
   return mock.Mock()
+
+
+@pytest.fixture
+def flags_instance() -> flags.Flags:
+  return flags.Flags()
 
 
 @pytest.fixture
