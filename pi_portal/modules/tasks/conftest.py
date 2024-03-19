@@ -42,6 +42,11 @@ class MockGenericTaskArgs(task_args_base.TaskArgsBase):
 
 
 @pytest.fixture
+def mocked_flags() -> mock.Mock:
+  return mock.Mock()
+
+
+@pytest.fixture
 def mocked_generic_task_args() -> MockGenericTaskArgs:
   return MockGenericTaskArgs(
       value_a=1,
