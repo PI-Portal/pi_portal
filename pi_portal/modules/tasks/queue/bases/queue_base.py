@@ -137,4 +137,4 @@ class QueueMetrics(NamedTuple):
   length: int
   acked_length: int
   unacked_length: int
-  storage: float
+  storage_mb: float
