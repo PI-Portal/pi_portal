@@ -37,6 +37,7 @@ class TestRegistryFactory:
         # pylint: disable=duplicate-code
         "archive_logs",
         "archive_videos",
+        "disk_space",
         "manifest_metrics",
         "queue_maintenance",
         "queue_metrics",

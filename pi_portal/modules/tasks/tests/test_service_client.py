@@ -4,6 +4,7 @@ from unittest import mock
 
 import pytest
 from pi_portal import config
+from pi_portal.modules.tasks.config import DEFERRED_MESSAGE_PREFIX
 from pi_portal.modules.tasks.enums import TaskType
 from pi_portal.modules.tasks.service_client import TaskSchedulerServiceClient
 
@@ -94,14 +95,9 @@ class TestServiceClient:
             [
                 {
                     "type": TaskType.CHAT_SEND_MESSAGE.value,
-                    "args":
-                        {
-                            "message":
-                                (
-                                    task_scheduler_service_client_instance.
-                                    deferred_message + message
-                                ),
-                        },
+                    "args": {
+                        "message": DEFERRED_MESSAGE_PREFIX + message,
+                    },
                     "retry_after": 300,
                 }
             ]
@@ -147,14 +143,9 @@ class TestServiceClient:
             [
                 {
                     "type": TaskType.CHAT_SEND_TEMPERATURE_READING.value,
-                    "args":
-                        {
-                            "header":
-                                (
-                                    task_scheduler_service_client_instance.
-                                    deferred_message + header
-                                ),
-                        },
+                    "args": {
+                        "header": DEFERRED_MESSAGE_PREFIX + header,
+                    },
                     "retry_after": 300,
                 }
             ]
@@ -219,11 +210,9 @@ class TestServiceClient:
                     "args":
                         {
                             "description":
-                                (
-                                    task_scheduler_service_client_instance.
-                                    deferred_message + description
-                                ),
-                            "path": path
+                                DEFERRED_MESSAGE_PREFIX + description,
+                            "path":
+                                path
                         },
                     "retry_after": 300,
                 }
@@ -291,11 +280,9 @@ class TestServiceClient:
                     "args":
                         {
                             "description":
-                                (
-                                    task_scheduler_service_client_instance.
-                                    deferred_message + description
-                                ),
-                            "path": path
+                                DEFERRED_MESSAGE_PREFIX + description,
+                            "path":
+                                path
                         },
                     "retry_after": 300,
                 }

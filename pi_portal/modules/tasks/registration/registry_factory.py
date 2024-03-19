@@ -13,6 +13,7 @@ class RegistryFactory:
   cron_job_modules = [
       "archive_logs",
       "archive_videos",
+      "disk_space",
       "manifest_metrics",
       "queue_maintenance",
       "queue_metrics",

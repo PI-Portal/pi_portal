@@ -5,6 +5,8 @@ from typing import DefaultDict, Dict
 
 from .enums import RoutingLabel, TaskType
 
+DEFERRED_MESSAGE_PREFIX = "** Deferred ! **"
+
 QUEUE_WORKER_CONFIGURATION: Dict[RoutingLabel, int] = {
     RoutingLabel.ARCHIVAL: 1,
     RoutingLabel.CAMERA: 1,
