@@ -132,7 +132,7 @@ pi_portal = 'pi_portal.cli_user:cli'
 [tool.pylint]
 [tool.pylint.basic]
 argument-rgx = '[a-z_][a-z0-9_]{1,40}$|^(concrete|test)_[a-z0-9_]{2,70}$'
-attr-rgx = '(^[a-z_][a-z0-9_]{1,30})$'
+attr-rgx = '(^[a-z_][a-z0-9_]{1,30})$|^(FLAG)_[A-Z0-9_]{1,30}$'
 bad-names = 'foo,bar,baz,toto,tutu,tata'
 class-attribute-rgx = '([A-Za-z_][A-Za-z0-9_]{1,50}|(__.{2,30}__))$'
 class-rgx = '[A-Z_][a-zA-Z0-9]+$'
