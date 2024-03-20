@@ -39,13 +39,13 @@ sections = 'FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER'
 skip_glob = '*_pb2.py'
 
 [tool.mypy]
-exclude = '^pi_portal\/modules\/python\/.+\.py$'
+exclude = ''
 ignore_missing_imports = false
 mypy_path = 'pi_portal/stubs'
 
 [[tool.mypy.overrides]]
 ignore_missing_imports = true
-module = ['fake_rpi.*', 'jsonschema.*', 'RPi.*']
+module = ['adafruit_dht', 'adafruit_platformdetect.constants', 'board', 'defusedxml', 'fake_rpi.*', 'jsonschema.*', 'RPi.*']
 
 [tool.poetry]
 authors = ['Niall Byrne <niall@niallbyrne.ca>']
