@@ -2,7 +2,7 @@
 
 SHELL := /bin/bash
 
-.PHONY: help fmt lint md sectest build-docs build-wheel clean coverage format-python format-shell format-toml lint-markdown lint-dockerfile lint-docstrings lint-python lint-shell lint-workflows lint-yaml release security-bandit security-leaks security-safety spelling-add spelling-sync spelling-markdown test types
+.PHONY: help clean docker fmt lint md sectest build-docs build-wheel clean-git clean-pycache coverage format-python format-shell format-toml lint-dockerfile lint-docstrings lint-markdown lint-python lint-shell lint-workflows lint-yaml release security-bandit security-leaks security-safety spelling-add spelling-markdown spelling-sync test types
 
 export PROJECT_NAME = pi_portal
 export GIT_ROOT = $(shell git rev-parse --show-toplevel)
@@ -35,16 +35,17 @@ help:
 	@echo "Please use \`dev <target>' where <target> is one of"
 	@echo "  build-docs        to build the documentation"
 	@echo "  build-wheel       to build the wheel"
-	@echo "  clean             to clean __pycache__ content"
+	@echo "  clean-git         to run git clean"
+	@echo "  clean-pycache     to clean __pycache__ content"
 	@echo "  coverage          to run coverage"
 	@echo "  format-python     to format Python files"
 	@echo "  format-shell      to format shell scripts"
 	@echo "  format-toml       to format TOML files"
 	@echo "  lint-dockerfile   to lint Dockerfiles"
 	@echo "  lint-docstrings   to lint docstrings"
-	@echo "  lint-shell        to lint shell scripts"
 	@echo "  lint-markdown     to lint markdown files"
 	@echo "  lint-python       to lint Python files"
+	@echo "  lint-shell        to lint shell scripts"
 	@echo "  lint-workflows    to lint all files"
 	@echo "  lint-yaml         to lint YAML files"
 	@echo "  release           to cut a new release"
@@ -52,11 +53,12 @@ help:
 	@echo "  security-leaks    to check for credential leaks"
 	@echo "  security-safety   to check dependencies"
 	@echo "  spelling-add      to add a regex to the ignore patterns"
-	@echo "  spelling-sync     to synchronize vale packages"
 	@echo "  spelling-markdown to spellcheck markdown files"
+	@echo "  spelling-sync     to synchronize vale packages"
 	@echo "  test              to run tests"
 	@echo "  types             to check typing"
 
+clean: clean-git clean-pycache
 docker: lint-dockerfile
 fmt: format-python format-shell format-toml
 lint: lint-docstrings lint-shell lint-python lint-yaml
@@ -78,7 +80,12 @@ build-wheel:
 	@poetry build -f wheel
 	@echo "Done."
 
-clean:
+clean-git:
+	@echo "Cleaning git content ..."
+	@git clean -fd
+	@echo "Done."
+
+clean-pycache:
 	@echo "Cleaning __pycache__ content ..."
 	@$(call p, "find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete")
 	@echo "Done."
