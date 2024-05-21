@@ -67,9 +67,9 @@ boto3 = '^1.33.12'
 click = '^8.1.7'
 defusedxml = '^0.7.1'
 fake-rpi = '^0.7.1'
-fastapi = '^0.109.0'
+fastapi = '^0.115.2'
 humanize = '^4.0.0'
-jinja2 = '^3.1.2'
+jinja2 = '^3.1.6'
 jsonschema = '>=3.2.0,<4.0.0'
 persist-queue = '^0.8.1'
 psutil = '^5.9.8'
@@ -109,11 +109,18 @@ types-freezegun = '^1.1.10'
 types-psutil = '^5.9.5.20240311'
 types-pyyaml = '^6.0.12.20240311'
 types-requests = '^2.31.0'
-types-setuptools = '^69.0.0.0'
 wheel = '^0.42.0'
 
 [tool.poetry.group.dev.dependencies.pre-commit-dind]
 git = 'https://github.com/cicd-tools-org/pre-commit-dind'
+
+[[tool.poetry.group.dev.dependencies.types-setuptools]]
+python = '3.8'
+version = '^69.0.0'
+
+[[tool.poetry.group.dev.dependencies.types-setuptools]]
+python = '^3.9'
+version = '^80.1.0'
 
 [tool.poetry.group.docs]
 [tool.poetry.group.docs.dependencies]
