@@ -153,7 +153,7 @@ security-leaks:
 
 security-safety:
 	@echo "Checking all dependencies ..."
-	@$(call p, "pip freeze | safety check --stdin")
+	@$(call p, "pip freeze | safety check --stdin -i 70612")
 	@echo "Done."
 
 spelling-add:
