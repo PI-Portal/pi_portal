@@ -8,3 +8,4 @@ pi_portal
 pib_cli
 slack_cli
 xmlrpc
+zipp
