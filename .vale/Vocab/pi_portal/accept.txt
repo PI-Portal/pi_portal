@@ -6,6 +6,7 @@ defusedxml
 dind
 pi_portal
 pib_cli
+setuptools
 slack_cli
 xmlrpc
 zipp
