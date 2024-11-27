@@ -18,9 +18,8 @@ class TestRotatingFileHandlerUnarchived:
     assert unarchived_rotating_file_handler_instance.baseFilename == \
         mocked_logger_file_name
     assert unarchived_rotating_file_handler_instance.encoding == "utf-8"
-    # This seems to be broken typing in a distributed stub file.
     assert unarchived_rotating_file_handler_instance.maxBytes == \
-        10000000  # type: ignore[comparison-overlap]
+        10000000
 
   def test__initialize__inheritance(
       self,
