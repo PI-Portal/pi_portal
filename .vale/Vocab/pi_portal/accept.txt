@@ -8,5 +8,6 @@ pi_portal
 pib_cli
 setuptools
 slack_cli
+sqlitedict
 xmlrpc
 zipp
