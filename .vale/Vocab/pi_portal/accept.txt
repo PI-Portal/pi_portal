@@ -7,5 +7,6 @@ dind
 pi_portal
 pib_cli
 slack_cli
+sqlitedict
 tzdata
 xmlrpc

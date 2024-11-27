@@ -160,7 +160,8 @@ security-leaks:
 
 security-safety:
 	@echo "Checking all dependencies ..."
-	@$(call p, "pip freeze | safety check --stdin")
+	@$(call p, "pip freeze | safety check --stdin -i 73282")
+	# 73282 - sqlitedict - vulnerability is already managed by via securing access to the database
 	@echo "Done."
 
 spelling-add:
