@@ -153,7 +153,9 @@ security-leaks:
 
 security-safety:
 	@echo "Checking all dependencies ..."
-	@$(call p, "pip freeze | safety check --stdin -i 70612")
+	@$(call p, "pip freeze | safety check --stdin -i 70612 -i 73282")
+	# 70612 - jinja2     - vulnerability requires externally supplied templates
+	# 73282 - sqlitedict - vulnerability is already managed by via securing access to the database
 	@echo "Done."
 
 spelling-add:
