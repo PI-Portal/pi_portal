@@ -24,9 +24,8 @@ class TestRotatingFileHandlerArchived:
     assert archived_rotating_file_handler_instance.baseFilename == \
         mocked_logger_file_name
     assert archived_rotating_file_handler_instance.encoding == "utf-8"
-    # This seems to be broken typing in a distributed stub file.
     assert archived_rotating_file_handler_instance.maxBytes == \
-        10000000  # type: ignore[comparison-overlap]
+        10000000
     assert archived_rotating_file_handler_instance.\
         post_rotation_queue_folder == config.PATH_ARCHIVAL_QUEUE_LOG_UPLOAD
 
