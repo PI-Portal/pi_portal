@@ -106,11 +106,18 @@ safety = '^2.3.1'
 types-boto3 = '^1.0.2'
 types-freezegun = '^1.1.10'
 types-requests = '^2.31.0'
-types-setuptools = '^69.0.0.0'
 wheel = '^0.42.0'
 
 [tool.poetry.group.dev.dependencies.pre-commit-dind]
 git = 'https://github.com/cicd-tools-org/pre-commit-dind'
+
+[[tool.poetry.group.dev.dependencies.types-setuptools]]
+python = '3.8'
+version = '^69.0.0'
+
+[[tool.poetry.group.dev.dependencies.types-setuptools]]
+python = '^3.9'
+version = '^80.1.0'
 
 [tool.poetry.group.docs]
 [tool.poetry.group.docs.dependencies]
