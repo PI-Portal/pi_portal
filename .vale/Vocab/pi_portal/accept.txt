@@ -9,5 +9,6 @@ pib_cli
 setuptools
 slack_cli
 sqlitedict
+uname
 xmlrpc
 zipp

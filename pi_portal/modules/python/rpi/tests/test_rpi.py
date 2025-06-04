@@ -21,12 +21,17 @@ class TestPatchedRpiModule:
     sys.modules.pop('RPi', None)
 
   @mock.patch.dict(os.environ, {"PI_PORTAL_MOCK_GPIO": "1"}, clear=True)
+  @pytest.mark.parametrize(
+      "platform_name", ["mocked_platform_arm32", "mocked_platform_arm64"]
+  )
   def test__arm_platform__docker_testing(
       self,
-      mocked_platform_arm: mock.Mock,
       monkeypatch: pytest.MonkeyPatch,
+      platform_name: str,
+      request: pytest.FixtureRequest,
   ) -> None:
-    monkeypatch.setattr(patch.os, "uname", mocked_platform_arm)
+    mocked_platform = request.getfixturevalue(platform_name)
+    monkeypatch.setattr(patch.os, "uname", mocked_platform)
 
     rpi = importlib.import_module("pi_portal.modules.python.rpi")
 
@@ -35,12 +40,17 @@ class TestPatchedRpiModule:
     assert isinstance(rpi.RPi, mock.Mock)
 
   @mock.patch.dict(os.environ, {}, clear=True)
+  @pytest.mark.parametrize(
+      "platform_name", ["mocked_platform_arm32", "mocked_platform_arm64"]
+  )
   def test__arm_platform__not_docker_testing(
       self,
-      mocked_platform_arm: mock.Mock,
       monkeypatch: pytest.MonkeyPatch,
+      platform_name: str,
+      request: pytest.FixtureRequest,
   ) -> None:
-    monkeypatch.setattr(patch.os, "uname", mocked_platform_arm)
+    mocked_platform = request.getfixturevalue(platform_name)
+    monkeypatch.setattr(patch.os, "uname", mocked_platform)
 
     rpi = importlib.import_module("pi_portal.modules.python.rpi")
 
