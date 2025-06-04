@@ -26,10 +26,11 @@ class LimitedDictionary(Generic[K, V], MutableMapping[K, V]):
       **initial_dictionary: V,
   ):
     self.limit = limit
-    self._internal: Dict[K, V] = dict(
-        *initial_values,
-        **cast(Dict[K, V], initial_dictionary),
-    )
+    self._internal: Dict[K, V] = \
+        cast(Dict[K, V], dict(
+            *initial_values,
+            **initial_dictionary,
+        ))
     while len(self) > limit:
       self.popitem()
 
