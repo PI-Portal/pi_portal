@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Manages the packaging process for the project's binaries on various architectures.
+# (Requires a fresh sdist created with `poetry build`.)
 
 # CI only script.
 
@@ -10,6 +11,7 @@
 set -eo pipefail
 
 BUILD_USER="$(whoami)"
+BUILD_GROUP="${BUILD_USER}"
 DOCKER_USER_UID="$(id -u)"
 BUILD_PYTHON_VERSION="3.9"
 
@@ -46,7 +48,7 @@ debian_package() {
 
   pushd packaging/debian > /dev/null
 
-  sudo chown "${BUILD_USER}":"${BUILD_USER}" -R dist*
+  sudo chown "${BUILD_USER}":"${BUILD_GROUP}" -R dist*
 
   mkdir -p dist
 
@@ -117,6 +119,12 @@ multiarch_to_specific() {
   docker rmi "debian:${3}"
 }
 
+osx_support() {
+  if [[ "$(uname -s)" == "Darwin" ]]; then
+    BUILD_GROUP="staff"
+  fi
+}
+
 unpack_filebeat() {
   pushd packaging/filebeat/dist > /dev/null
 
@@ -151,6 +159,7 @@ validate_debian_test() {
 }
 
 main() {
+  osx_support
   unpack_filebeat
   debian_build
   debian_test

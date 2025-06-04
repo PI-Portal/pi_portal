@@ -152,11 +152,15 @@ local.config.json
 # Filebeat
 packaging/filebeat/bin
 packaging/filebeat/dist
+packaging/filebeat/docker-compose.yml
 
 # Debian
 packaging/debian/build_*
 packaging/debian/dist_*
 packaging/debian/result_*
+packaging/debian/*.buildinfo
+packaging/debian/*.changes
+packaging/debian/docker-compose.yml
 
 # Docker
 packaging/docker/dist

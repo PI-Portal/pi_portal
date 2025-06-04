@@ -12,6 +12,9 @@ read -r -d' ' -a ARCHITECTURES < <(yq -r 'to_entries | sort_by(.keys) | .[].key'
 
 export FILEBEAT_VERSION
 
+FILEBEAT_PERMISSIONS="root:root"
+FILEBEAT_TAR_BINARY="tar"
+
 fail() {
   echo "ERROR: $1"
   exit 127
@@ -40,9 +43,10 @@ filebeat_package() {
 
   mkdir -p ../dist
 
-  sudo chown root:root ./*
+  sudo chown "${FILEBEAT_PERMISSIONS}" ./*
+
   for ARCHITECTURE in "${ARCHITECTURES[@]}"; do
-    tar --transform "s|filebeat-${ARCHITECTURE}|filebeat|" -cvzf ../dist/"filebeat-linux-${FILEBEAT_VERSION}-${ARCHITECTURE}.tar.gz" "filebeat-${ARCHITECTURE}"
+    "${FILEBEAT_TAR_BINARY}" --transform "s|filebeat-${ARCHITECTURE}|filebeat|" -cvzf ../dist/"filebeat-linux-${FILEBEAT_VERSION}-${ARCHITECTURE}.tar.gz" "filebeat-${ARCHITECTURE}"
   done
 
   ls -la ../dist/*
@@ -52,7 +56,15 @@ filebeat_package() {
   popd > /dev/null
 }
 
+osx_support() {
+  if [[ "$(uname -s)" == "Darwin" ]]; then
+    FILEBEAT_PERMISSIONS="root:wheel"
+    FILEBEAT_TAR_BINARY="/usr/local/opt/gnu-tar/libexec/gnubin/tar"
+  fi
+}
+
 main() {
+  osx_support
   filebeat_build
   filebeat_package
 }
