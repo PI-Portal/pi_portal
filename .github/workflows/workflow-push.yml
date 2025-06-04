@@ -271,7 +271,7 @@ jobs:
     secrets:
       SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         debian: ${{ fromJSON(needs.configuration.outputs.JSON_FILE_DATA).ci_debian_distributions }}
       max-parallel: ${{ fromJSON(needs.configuration.outputs.JSON_FILE_DATA).ci_concurrency_limit }}
