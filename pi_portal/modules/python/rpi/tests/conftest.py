@@ -17,10 +17,19 @@ def mocked_module_name() -> str:
 
 
 @pytest.fixture
-def mocked_platform_arm() -> mock.Mock:
+def mocked_platform_arm32() -> mock.Mock:
   return mock.Mock(
       return_value=UnameTuple(
           "linux", "unknown", "6.4.16-linuxkit", "unknown version", "armv7l"
+      )
+  )
+
+
+@pytest.fixture
+def mocked_platform_arm64() -> mock.Mock:
+  return mock.Mock(
+      return_value=UnameTuple(
+          "linux", "unknown", "6.4.16-linuxkit", "unknown version", "aarch64"
       )
   )
 

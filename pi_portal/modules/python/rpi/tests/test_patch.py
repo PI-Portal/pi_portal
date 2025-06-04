@@ -17,13 +17,18 @@ class TestPatchModule:
       {"PI_PORTAL_MOCK_GPIO": "True"},
       clear=True,
   )
-  def test__docker_testing__arm_platform__no_substitute(
+  @pytest.mark.parametrize(
+      "platform_name", ["mocked_platform_arm32", "mocked_platform_arm64"]
+  )
+  def test__env__arm__no_substitute_given__patches_module(
       self,
       mocked_module_name: str,
-      mocked_platform_arm: mock.Mock,
+      platform_name: str,
+      request: pytest.FixtureRequest,
       monkeypatch: pytest.MonkeyPatch,
   ) -> None:
-    monkeypatch.setattr(patch.os, "uname", mocked_platform_arm)
+    mocked_platform = request.getfixturevalue(platform_name)
+    monkeypatch.setattr(patch.os, "uname", mocked_platform)
 
     patch.patch_module(mocked_module_name)
 
@@ -35,14 +40,19 @@ class TestPatchModule:
       {"PI_PORTAL_MOCK_GPIO": "True"},
       clear=True,
   )
-  def test__docker_testing__arm_platform__substitute(
+  @pytest.mark.parametrize(
+      "platform_name", ["mocked_platform_arm32", "mocked_platform_arm64"]
+  )
+  def test__env__arm__substitute_given__patches_module(
       self,
       mocked_module_name: str,
       mocked_substitute_name: str,
-      mocked_platform_arm: mock.Mock,
+      platform_name: str,
+      request: pytest.FixtureRequest,
       monkeypatch: pytest.MonkeyPatch,
   ) -> None:
-    monkeypatch.setattr(patch.os, "uname", mocked_platform_arm)
+    mocked_platform = request.getfixturevalue(platform_name)
+    monkeypatch.setattr(patch.os, "uname", mocked_platform)
 
     patch.patch_module(mocked_module_name, mocked_substitute_name)
 
@@ -54,7 +64,7 @@ class TestPatchModule:
       {"PI_PORTAL_MOCK_GPIO": "True"},
       clear=True,
   )
-  def test__docker_testing__x86_platform__no_substitute(
+  def test__env__x86__no_substitute_given__patches_module(
       self,
       mocked_module_name: str,
       mocked_platform_x86: mock.Mock,
@@ -72,7 +82,7 @@ class TestPatchModule:
       {"PI_PORTAL_MOCK_GPIO": "True"},
       clear=True,
   )
-  def test__docker_testing__x86_platform__substitute(
+  def test__env__x86__substitute_given__patches_module(
       self,
       mocked_module_name: str,
       mocked_substitute_name: str,
@@ -87,34 +97,44 @@ class TestPatchModule:
     assert isinstance(sys.modules[mocked_module_name], mock.Mock)
 
   @mock.patch.dict(patch.os.environ, {}, clear=True)
-  def test__not_docker_testing__arm_platform__no_substitute(
+  @pytest.mark.parametrize(
+      "platform_name", ["mocked_platform_arm32", "mocked_platform_arm64"]
+  )
+  def test__no_env__arm__no_substitute_given__loads_module(
       self,
       mocked_module_name: str,
-      mocked_platform_arm: mock.Mock,
       monkeypatch: pytest.MonkeyPatch,
+      platform_name: str,
+      request: pytest.FixtureRequest,
   ) -> None:
-    monkeypatch.setattr(patch.os, "uname", mocked_platform_arm)
+    mocked_platform = request.getfixturevalue(platform_name)
+    monkeypatch.setattr(patch.os, "uname", mocked_platform)
 
     patch.patch_module(mocked_module_name)
 
     assert mocked_module_name not in sys.modules
 
   @mock.patch.dict(patch.os.environ, {}, clear=True)
-  def test__not_docker_testing__arm_platform__substitute(
+  @pytest.mark.parametrize(
+      "platform_name", ["mocked_platform_arm32", "mocked_platform_arm64"]
+  )
+  def test__no_env__arm__substitute_given__loads_module(
       self,
       mocked_module_name: str,
       mocked_substitute_name: str,
-      mocked_platform_arm: mock.Mock,
       monkeypatch: pytest.MonkeyPatch,
+      platform_name: str,
+      request: pytest.FixtureRequest,
   ) -> None:
-    monkeypatch.setattr(patch.os, "uname", mocked_platform_arm)
+    mocked_platform = request.getfixturevalue(platform_name)
+    monkeypatch.setattr(patch.os, "uname", mocked_platform)
 
     patch.patch_module(mocked_module_name, mocked_substitute_name)
 
     assert mocked_module_name not in sys.modules
 
   @mock.patch.dict(patch.os.environ, {}, clear=True)
-  def test__not_docker_testing__x86__no_substitute(
+  def test__no_env__x86__no_substitute_given__patches_module(
       self,
       mocked_module_name: str,
       mocked_platform_x86: mock.Mock,
@@ -128,7 +148,7 @@ class TestPatchModule:
     assert isinstance(sys.modules[mocked_module_name], mock.Mock)
 
   @mock.patch.dict(patch.os.environ, {}, clear=True)
-  def test__not_docker_testing__x86__substitute(
+  def test__no_env__x86__substitute_given__patches_substitute(
       self,
       mocked_module_name: str,
       mocked_substitute_name: str,
