@@ -9,4 +9,5 @@ pib_cli
 slack_cli
 sqlitedict
 tzdata
+uname
 xmlrpc

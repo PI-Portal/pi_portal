@@ -24,7 +24,7 @@ def patch_module(
     sys.modules[module_name] = mock.Mock()
     return
 
-  if not os.uname()[4].startswith("arm"):
+  if not (os.uname()[4].startswith("arm") or os.uname()[4].startswith("aarch")):
     if not substitute_module:
       sys.modules[module_name] = mock.Mock()
     else:
