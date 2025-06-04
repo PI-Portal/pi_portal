@@ -45,7 +45,7 @@ mypy_path = 'pi_portal/stubs'
 
 [[tool.mypy.overrides]]
 ignore_missing_imports = true
-module = ['adafruit_dht', 'adafruit_platformdetect.constants', 'board', 'defusedxml', 'fake_rpi.*', 'jsonschema.*', 'RPi.*']
+module = ['adafruit_dht', 'adafruit_platformdetect.constants', 'board', 'defusedxml', 'fake_rpi.*', 'importlib_metadata', 'jsonschema.*', 'RPi.*']
 
 [tool.poetry]
 authors = ['Niall Byrne <niall@niallbyrne.ca>']
