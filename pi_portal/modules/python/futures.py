@@ -13,10 +13,9 @@ def wait_cm(future: "Future[TypeAwaited]") -> "Iterator[Future[TypeAwaited]]":
 
   :param future: The :class:`Future` to await.
   :yields: The future being awaited.
-  :returns: The awaited future's result.
   """
 
   try:
     yield future
   finally:
-    return future.result()  # pylint: disable=lost-exception
+    future.result()
