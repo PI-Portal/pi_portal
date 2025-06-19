@@ -27,9 +27,9 @@ Please use at your own risk.
 1. A Raspberry Pi.
    - You'll need a Raspberry PI with Raspberry PI OS or similar installed and reliable internet.
    - I developed and tested this project on a Pi 1Bv2 and a Pi 3.
-2. Contact switches.
+2. Magnetic Contact switches.
    - These are available cheaply on ebay, Amazon or at your local electronics store.
-   - Some examples can be found [here](https://www.burglaryalarmsystem.com/category/magnetic-contact.html).
+   - Some examples can be found [here](https://www.amazon.com/s?k=magnetic+door+switch).
 3. Temperature monitors.
    - Currently, only the DHT11 is supported, but it's trivial to add support for the DHT22.
    - You can find out more about these sensors [here](https://learn.adafruit.com/dht).
