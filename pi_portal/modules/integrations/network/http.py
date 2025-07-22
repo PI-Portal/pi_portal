@@ -20,6 +20,9 @@ class HttpClient:
   :param log: A logging instance.
   """
 
+  # Be very careful you don't trigger the issue referenced here:
+  # https://github.com/advisories/GHSA-pq67-6m6q-mj2v
+  # Since you are using requests, and not a PoolManager class this should be ok
   retry_config = urllib3.Retry(5, redirect=5)
   basic_auth: Optional[Tuple[str, str]]
 
