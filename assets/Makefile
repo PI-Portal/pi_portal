@@ -153,8 +153,11 @@ security-leaks:
 
 security-safety:
 	@echo "Checking all dependencies ..."
-	@$(call p, "pip freeze | safety check --stdin -i 70612 -i 73282")
+	@$(call p, "pip freeze | safety check --stdin -i 70612 -i 73282 -i 77744 -i 77745")
 	# 70612 - jinja2     - vulnerability requires externally supplied templates
+	# 73282 - sqlitedict - vulnerability is already managed by via securing access to the database
+	# 77744 - urllib3    - vulnerability does not affect requests - do not use urlib3 directly
+	# 77745 - urllib3    - vulnerability only affects implementations using the Pyodide runtime
 	# 73282 - sqlitedict - vulnerability is already managed by via securing access to the database
 	@echo "Done."
 
