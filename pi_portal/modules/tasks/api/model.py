@@ -30,7 +30,10 @@ class TaskCreationRequestModel(BaseModel):
   retry_after: int = Field(default=0)
   routing_label: "Optional[RoutingLabel]" = Field(default=None)
 
-  def model_post_init(self, __context: Any) -> None:
+  def model_post_init(  # pylint: disable=arguments-differ
+      self,
+      __context: Any,
+  ) -> None:
     """Complete model initialization."""
     self._init_registry()
     if not self.routing_label:

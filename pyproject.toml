@@ -149,6 +149,7 @@ inlinevar-rgx = '[A-Za-z_][A-Za-z0-9_]*$'
 method-rgx = '^[A-Za-z_][A-Za-z0-9_]{2,40}$|^(concrete|test)_[A-Za-z0-9_]{2,70}$'
 module-rgx = '(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$'
 no-docstring-rgx = '.*'
+typealias-rgx = '^(Type[A-Z][a-zA-Z0-9]*|ReturnType)$'
 variable-rgx = '^[a-z_][a-z0-9_]{1,30}$'
 
 [tool.pylint.classes]
