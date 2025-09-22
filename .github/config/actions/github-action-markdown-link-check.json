@@ -14,7 +14,13 @@
   ],
   "ignorePatterns": [
     {
+      "pattern": "^https://www.amazon.com/s"
+    },
+    {
       "pattern": "^https://github.com/pi-portal/pi_portal/"
+    },
+    {
+      "pattern": "^https://packages.ubuntu.com/jammy/"
     }
   ]
 }
