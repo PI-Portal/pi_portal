@@ -62,7 +62,7 @@ repos:
         files: "^pi_portal/.*test.*\\.py$"
         stages: [pre-commit]
   - repo: https://github.com/cicd-tools-org/pre-commit.git
-    rev: 0.4.0
+    rev: 0.6.0
     hooks:
       - id: format-shell
         args:
@@ -89,7 +89,7 @@ repos:
       - id: security-credentials
       - id: spelling-commit-message
       - id: spelling-markdown
-      - id: spelling-vale-synchronize
+      - id: spelling-vale-sync
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.33.0
     hooks:

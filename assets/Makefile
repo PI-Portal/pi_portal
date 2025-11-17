@@ -169,7 +169,7 @@ spelling-add:
 
 spelling-sync:
 	@echo "Synchronizing vale ..."
-	@$(call p, "pre-commit run --hook-stage manual spelling-vale-synchronize --verbose")
+	@$(call p, "pre-commit run --hook-stage manual spelling-vale-sync --verbose")
 
 spelling-markdown:
 	@echo "Checking markdown spelling ..."
