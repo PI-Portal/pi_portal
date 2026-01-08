@@ -153,7 +153,7 @@ security-leaks:
 
 security-safety:
 	@echo "Checking all dependencies ..."
-	@$(call p, "pip freeze | safety check --stdin -i 70612 -i 73282 -i 77744 -i 77745 -i 78279 -i 80876")
+	@$(call p, "pip freeze | safety check --stdin -i 70612 -i 73282 -i 77744 -i 77745 -i 78279 -i 80876 -i 82331 -i 82332")
 	# 70612 - jinja2     - vulnerability requires externally supplied templates
 	# 73282 - sqlitedict - vulnerability is already managed by via securing access to the database
 	# 77744 - urllib3    - vulnerability does not affect requests - do not use urlib3 directly
@@ -161,6 +161,8 @@ security-safety:
 	# 73282 - sqlitedict - vulnerability is already managed by via securing access to the database
 	# 78279 - starlette  - vulnerability affects uploaded files, which is not applicable (depends on fastapi)
 	# 80876 - starlette  - vulnerability affects downloaded files, which is not applicable (depends on fastapi)
+	# 82331 - urllib3	 - vulnerability affects streaming content, which is not applicable (closed server/client relationship)
+	# 82332 - urllib3	 - vulnerability affects streaming content, which is not applicable (closed server/client relationship)
 	@echo "Done."
 
 spelling-add:
