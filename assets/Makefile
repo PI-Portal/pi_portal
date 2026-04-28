@@ -153,7 +153,7 @@ security-leaks:
 
 security-safety:
 	@echo "Checking all dependencies ..."
-	@$(call p, "pip freeze | safety check --stdin -i 70612 -i 73282 -i 77744 -i 77745 -i 78279 -i 80876 -i 82331 -i 82332 -i 82754 -i 84031 -i 84183 -i 84415 -i SFTY-20260122-20373")
+	@$(call p, "pip freeze | safety check --stdin -i 70612 -i 73282 -i 77744 -i 77745 -i 78279 -i 80876 -i 82331 -i 82332 -i 82754 -i 84031 -i 84183 -i 84415 -i SFTY-20260122-20373 -i SFTY-20260322-35073")
 	# 70612               - jinja2     - vulnerability requires externally supplied templates
 	# 73282               - sqlitedict - vulnerability is already managed by via securing access to the database
 	# 77744               - urllib3    - vulnerability does not affect requests - do not use urlib3 directly
@@ -168,6 +168,7 @@ security-safety:
 	# 84183               - filelock   - vulnerability affects locking used in virtualenv, which is not applicable (filesystem permissions)
 	# 84415               - filelock   - vulnerability affects locking used in virtualenv, which is not applicable (filesystem permissions)
     # SFTY-20260122-20373 - pytest     - vulnerability affects temp file creation (dockerized development environment)
+    # SFTY-20260322-35073 - pygments   - vulnerability affects regular expressions (scoped to documentation builds)
 	@echo "Done."
 
 spelling-add:
