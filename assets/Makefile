@@ -153,7 +153,7 @@ security-leaks:
 
 security-safety:
 	@echo "Checking all dependencies ..."
-	@$(call p, "pip freeze | safety check --stdin -i 70612 -i 73282 -i 77744 -i 77745 -i 78279 -i 80876 -i 82331 -i 82332 -i 82754 -i 84031 -i 84183 -i 84415 -i SFTY-20260122-20373 -i SFTY-20260322-35073 -i 90553 -i SFTY-20260107-76089")
+	@$(call p, "pip freeze | safety check --stdin -i 70612 -i 73282 -i 77744 -i 77745 -i 78279 -i 80876 -i 82331 -i 82332 -i 82754 -i 84031 -i 84183 -i 84415 -i SFTY-20260122-20373 -i SFTY-20260322-35073 -i 90553 -i SFTY-20260107-76089 -i 94066")
 	# 70612               - jinja2     - vulnerability requires externally supplied templates
 	# 73282               - sqlitedict - vulnerability is already managed by via securing access to the database
 	# 77744               - urllib3    - vulnerability does not affect requests - do not use urlib3 directly
@@ -171,6 +171,8 @@ security-safety:
 	# SFTY-20260322-35073 - pygments   - vulnerability affects regular expressions (scoped to documentation builds)
 	# 90553               - requests   - vulnerability affects temp file creation (scoped to unused extract_zipped_paths method)
 	# SFTY-20260107-76089 - urllib3    - vulnerability affects decompression bomb safe guards (closed server/client relationship)
+	# 94066               - dotenv     - vulnerability affects symlinking (requires write access to configuration directory)
+
 	@echo "Done."
 
 spelling-add:
