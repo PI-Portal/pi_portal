@@ -153,7 +153,7 @@ security-leaks:
 
 security-safety:
 	@echo "Checking all dependencies ..."
-	@$(call p, "pip freeze | safety check --stdin -i 70612 -i 73282 -i 77744 -i 77745 -i 78279 -i 80876 -i 82331 -i 82332 -i 82754 -i 84031 -i 84183 -i 84415 -i SFTY-20260122-20373 -i SFTY-20260322-35073 -i 90553 -i SFTY-20260107-76089 -i 94066 -i 96886 -i SFTY-20260511-47957 -i 99546")
+	@$(call p, "pip freeze | safety check --stdin -i 70612 -i 73282 -i 77744 -i 77745 -i 78279 -i 80876 -i 82331 -i 82332 -i 82754 -i 84031 -i 84183 -i 84415 -i SFTY-20260122-20373 -i SFTY-20260322-35073 -i 90553 -i SFTY-20260107-76089 -i 94066 -i 96886 -i SFTY-20260511-47957 -i 99546 -i SFTY-20260615-22503 -i SFTY-20260615-32787 -i SFTY-20260615-83407 -i SFTY-20260615-86827")
 	# 70612               - jinja2     - vulnerability requires externally supplied templates
 	# 73282               - sqlitedict - vulnerability is already managed by via securing access to the database
 	# 77744               - urllib3    - vulnerability does not affect requests - do not use urlib3 directly
@@ -175,6 +175,10 @@ security-safety:
 	# 96886               - urllib3    - vulnerability affects proxy headers (closed server/client relationship)
 	# SFTY-20260511-47957 - urllib3    - vulnerability affects decompression safeguards (closed server/client relationship)
 	# 99546               - starlette  - vulnerability affects http request smuggling (close server/clinet relationship)
+	# SFTY-20260615-22503 - starkette  - vulnerability affects http method dispatching (close server/clinet relationship)
+	# SFTY-20260615-32787 - starkette  - vulnerability exposes a dos risk (close server/clinet relationship)
+	# SFTY-20260615-83407 - starkette  - vulnerability affects request path parsing (close server/clinet relationship)
+	# SFTY-20260615-86827 - starkette  - vulnerability affects static files path parsing (close server/clinet relationship)
 
 	@echo "Done."
 
