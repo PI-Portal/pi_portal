@@ -37,7 +37,7 @@ Please use at your own risk.
    - Female [jump wires](https://en.wikipedia.org/wiki/Jump_wire) make installing the connections pretty painless. I spliced them to the ends of modular cables (i.e. phone cables) for longer runs.
    - Edit the [config.json](config.json) file to customize your pin outs and integrations.
 5. A USB camera or webcam that's compatible with [motion](https://motion-project.github.io/).
-   - [Many](https://www.lavrsen.dk/foswiki/bin/view/Motion/WorkingDevices) webcams are compatible and widely available.
+   - [Many](https://github.com/Motion-Project/motion/wiki/Supported-hardware) webcams are compatible and widely available.
 
 ### Python
 
